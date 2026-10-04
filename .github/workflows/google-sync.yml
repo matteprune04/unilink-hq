@@ -1,0 +1,43 @@
+name: Aggiorna dati Google
+
+on:
+  schedule:
+    - cron: "15 5 * * *"   # ogni giorno alle 05:15 UTC (7:15 in Italia d'estate)
+  workflow_dispatch: {}      # avvio manuale dalla scheda Actions
+
+permissions:
+  contents: write            # solo per il commit "keepalive" che evita lo stop dopo 60 giorni
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: sync/requirements.txt
+      - run: pip install -r sync/requirements.txt
+      - name: Legge Google (sola lettura) e aggiorna il database
+        env:
+          GOOGLE_KEY_JSON: ${{ secrets.GOOGLE_KEY_JSON }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          printf '%s' "$GOOGLE_KEY_JSON" > "$RUNNER_TEMP/gkey.json"
+          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/gkey.json"
+          python sync/google_sync.py
+          rm -f "$RUNNER_TEMP/gkey.json"
+      - name: Keepalive (GitHub sospende i workflow pianificati dopo 60 giorni senza commit)
+        run: |
+          last=$(git log -1 --format=%ct)
+          if [ $(( $(date +%s) - last )) -gt $(( 45 * 86400 )) ]; then
+            git config user.name "hq-bot"
+            git config user.email "hq-bot@users.noreply.github.com"
+            git commit --allow-empty -m "keepalive aggiornamento automatico"
+            git push
+          fi

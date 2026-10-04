@@ -1,0 +1,5 @@
+_private/
+_sync/
+__pycache__/
+*.json.key
+unilink-lettura.json
