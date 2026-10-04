@@ -74,6 +74,32 @@ function startRealtime() {
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && S.ready) loadAll().catch(() => {}); });
 }
 
+/* ---------- allegati: Supabase Storage (bucket privato "hq-files") ---------- */
+window.HQ_FILES = {
+  max: 25 * 1024 * 1024,
+  async upload(file, folder) {
+    const safe = file.name.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^A-Za-z0-9._-]+/g, "_").slice(-80);
+    const path = `${folder}/${newId()}-${safe}`;
+    const { error } = await SB.storage.from("hq-files").upload(path, file, { contentType: file.type || "application/octet-stream", upsert: false });
+    if (error) {
+      const m = error.message || "";
+      let msg = "Non sono riuscito a caricare il file. Riprova.";
+      if (/bucket/i.test(m)) msg = "Per allegare file manca un'impostazione del database: esegui il file supabase/files.sql (vedi istruzioni).";
+      else if (/size|exceed|too large/i.test(m)) msg = `“${file.name}” è troppo grande (massimo 25 MB).`;
+      else if (/jwt|auth|expired/i.test(m)) msg = "Sessione scaduta: ricarica la pagina e rientra con la password.";
+      throw { code: "file_error", message: msg };
+    }
+    return { path, name: file.name, size: file.size, type: file.type || "" };
+  },
+  async remove(paths) { if (paths && paths.length) await SB.storage.from("hq-files").remove(paths); },
+  async open(path) {
+    const w = window.open("", "_blank");
+    const { data, error } = await SB.storage.from("hq-files").createSignedUrl(path, 600);
+    if (error || !data) { if (w) w.close(); toast("Non riesco ad aprire il file."); return; }
+    if (w) w.location = data.signedUrl; else location.href = data.signedUrl;
+  },
+};
+
 /* ---------- schermata di accesso ---------- */
 function showLogin(msg) {
   const box = document.getElementById("login");

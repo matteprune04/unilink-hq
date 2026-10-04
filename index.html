@@ -337,7 +337,8 @@ const SCHEMA = {
     { k: "name", l: "Nome", req: 1 }, { k: "role", l: "Ruolo", ph: "Es. Contenuti e dispense" },
     { k: "focus", l: "Di cosa è responsabile", t: "textarea", rows: 3, wide: 1 }, { k: "contact", l: "Contatto", ph: "Telefono o email" } ] },
 };
-const COLS = ["ideas", "feedback", "okrs", "tasks", "metrics", "mvalues", "partners", "finance", "meetings", "decisions", "links", "team", "google"];
+Object.values(SCHEMA).forEach(sc => sc.fields.push({ k: "files", l: "Allegati", t: "files", wide: 1 }));
+const COLS = ["ideas", "feedback", "okrs", "tasks", "metrics", "mvalues", "partners", "finance", "meetings", "decisions", "links", "team", "google", "sfiles"];
 
 const NAV = [
   { items: [["home", "Cruscotto"]] },
@@ -374,6 +375,27 @@ function toast(msg) { const t = $("#toast"); t.textContent = msg; t.hidden = fal
 function chip(text, cls = "") { return text ? `<span class="chip ${cls}">${esc(text)}</span>` : ""; }
 function stChip(s) { const m = { "Nuova": "navy", "Da valutare": "yl", "Approvata": "gr", "In sviluppo": "or", "Fatta": "gr", "Archiviata": "", "Da fare": "navy", "In corso": "or", "Bloccato": "rd", "Fatto": "gr", "Problema": "rd", "Richiesta": "or", "Apprezzamento": "gr", "Critica": "yl", "Presa": "gr", "Da rivedere": "yl", "Superata": "", "Alta": "rd", "Bassa": "" }; return chip(s, m[s] || ""); }
 function whenCls(s) { const n = daysFrom(s); return n < 0 ? "late" : n <= 3 ? "soon" : ""; }
+const hasFiles = () => !!window.HQ_FILES;
+const fsize = b => b > 1048576 ? (b / 1048576).toFixed(1).replace(".", ",") + " MB" : Math.max(1, Math.round((b || 0) / 1024)) + " KB";
+const attChip = d => hasFiles() && d.files && d.files.length ? " " + chip(`${d.files.length} ${d.files.length === 1 ? "allegato" : "allegati"}`, "navy") : "";
+function fileList(list) {
+  return `<div>${list.map(f => `<div class="li"><div class="grow"><button type="button" class="linkbtn t" data-openfile="${esc(f.path)}">${esc(f.name)}</button><div class="small muted">${fsize(f.size)}${f.by ? " · " + esc(f.by) : ""}${f.at ? " · " + fmtD(f.at.slice(0, 10)) : ""}</div></div></div>`).join("")}</div>`;
+}
+const filesBlock = d => hasFiles() && d.files && d.files.length ? `<section class="stack"><h3>Allegati</h3>${fileList(d.files)}</section>` : "";
+function sectionFiles() {
+  if (!hasFiles() || !S.ready || S.view === "home") return "";
+  const list = S.data.sfiles.filter(f => f.section === S.view).sort(byDate("createdAt")).reverse();
+  return `<div class="wrap" style="margin-top:26px"><section class="card panel"><div class="panel-h"><h2>Allegati di questa sezione</h2>${S.canWrite ? `<label class="btn sm acc" style="cursor:pointer">+ Allega file<input type="file" multiple hidden data-sfin></label>` : ""}</div>${list.length ? `<div>${list.map(f => `<div class="li"><div class="grow"><button type="button" class="linkbtn t" data-openfile="${esc(f.path)}">${esc(f.name)}</button><div class="small muted">${fsize(f.size)}${f.by ? " · " + esc(f.by) : ""}${f.createdAt ? " · " + fmtD(f.createdAt.slice(0, 10)) : ""}</div></div>${S.canWrite ? `<button type="button" class="btn ghost sm danger" data-rmsf="${f.id}">Elimina</button>` : ""}</div>`).join("")}</div>` : `<p class="small muted">Nessun file. Qui puoi caricare documenti validi per tutta la sezione: PDF, presentazioni, fogli di calcolo, immagini. Per allegare un file a una singola voce, aprila e usa "Allegati".</p>`}</section></div>`;
+}
+async function uploadSection(files) {
+  const sec = S.view; let n = 0;
+  for (const f of files) {
+    if (f.size > HQ_FILES.max) { toast(`“${f.name}” supera i 25 MB.`); continue; }
+    toast(`Carico ${f.name}…`);
+    try { await guard(async () => { const up = await HQ_FILES.upload(f, "sezioni/" + sec); await S.db.collection("sfiles").doc().set({ ...up, section: sec, by: S.uid || "", createdAt: new Date().toISOString() }); }); n++; } catch (e) {}
+  }
+  if (n) toast(n === 1 ? "File allegato" : `${n} file allegati`);
+}
 const author = (d) => d.by && !/^u_/.test(d.by) ? `<span class="who">${esc(d.by)}</span>` : "";
 
 function spark(vals, w = 140, h = 36, dark) {
@@ -524,7 +546,7 @@ V.ideas = () => {
       ${imgs[0] ? `<img class="thumb" data-img="${esc(imgs[0])}" alt="">` : ""}
       <h3>${esc(i.title)}</h3>
       ${i.body ? `<div class="excerpt">${esc(i.body)}</div>` : ""}
-      <div class="row">${chip(i.area)}${qw ? chip("Quick win", "gr") : ""}${imgs.length > 1 ? chip(`${imgs.length} immagini`) : ""}</div>
+      <div class="row">${chip(i.area)}${qw ? chip("Quick win", "gr") : ""}${attChip(i)}${imgs.length > 1 ? chip(`${imgs.length} immagini`) : ""}</div>
       <div class="row between"><button class="vote ${voted(i) ? "on" : ""}" data-vote="${i.id}" title="Vota questa idea">${IC.up}<span class="num">${votes(i)}</span></button><span class="small muted">${(i.comments || []).length ? `${(i.comments || []).length} commenti · ` : ""}${author(i)}</span></div>
     </article>`;
   };
@@ -543,7 +565,7 @@ V.feedback = () => {
   ${head("Idee e ascolto", "Voce degli studenti", "Le cose che gli studenti ci dicono: problemi, richieste, complimenti, critiche. Le idee migliori nascono da qui.", addBtn("feedback", "Aggiungi feedback", "acc"))}
   ${byArea.length ? `<div class="card row"><span class="small muted">Dove si concentrano problemi e richieste:</span>${byArea.map(([a, n]) => `<span class="chip or">${esc(a)} <b class="num">${n}</b></span>`).join("")}</div>` : ""}
   <div class="filters">${searchBox("fb", "Cerca nei feedback")}${fchips("fbKind", ["Problema", "Richiesta", "Apprezzamento", "Critica"], "Tutti")}</div>
-  ${list.length ? `<div class="grid">${list.map(f => `<article class="card click stack" data-edit="feedback:${f.id}"><blockquote>${esc(f.text)}</blockquote><div class="row">${stChip(f.kind)}${chip(f.area)}</div><div class="small muted">${esc(f.who || "Studente")}${f.source ? " · " + esc(f.source) : ""}${f.date ? " · " + fmtD(f.date) : ""}</div><div class="row"><button class="btn sm" data-toidea="${f.id}">Trasforma in idea</button></div></article>`).join("")}</div>` : emptyBox("Nessun feedback ancora", "Dopo ogni chiacchierata con uno studente, nel gruppo WhatsApp o sotto un post, annota qui cosa ha detto.", "feedback", "Aggiungi il primo feedback")}
+  ${list.length ? `<div class="grid">${list.map(f => `<article class="card click stack" data-edit="feedback:${f.id}"><blockquote>${esc(f.text)}</blockquote><div class="row">${stChip(f.kind)}${chip(f.area)}${attChip(f)}</div><div class="small muted">${esc(f.who || "Studente")}${f.source ? " · " + esc(f.source) : ""}${f.date ? " · " + fmtD(f.date) : ""}</div><div class="row"><button class="btn sm" data-toidea="${f.id}">Trasforma in idea</button></div></article>`).join("")}</div>` : emptyBox("Nessun feedback ancora", "Dopo ogni chiacchierata con uno studente, nel gruppo WhatsApp o sotto un post, annota qui cosa ha detto.", "feedback", "Aggiungi il primo feedback")}
   </div>`;
 };
 
@@ -571,7 +593,7 @@ V.tasks = () => {
     ["Senza data", open.filter(t => !t.due)],
   ];
   const done = all.filter(t => t.status === "Fatto").sort((a, b) => String(b.doneAt || b.due || "").localeCompare(String(a.doneAt || a.due || "")));
-  const row = t => `<div class="task ${t.status === "Fatto" ? "done" : ""}"><button class="chk ${t.status === "Fatto" ? "on" : ""}" data-done="${t.id}" aria-label="${t.status === "Fatto" ? "Riapri" : "Segna come fatto"}">${t.status === "Fatto" ? IC.tick : ""}</button><div class="grow" data-edit="tasks:${t.id}"><div class="t">${esc(t.title)}</div><div class="row small muted" style="margin-top:3px">${t.status !== "Da fare" && t.status !== "Fatto" ? stChip(t.status) : ""}${t.priority === "Alta" ? stChip("Alta") : ""}${chip(t.area)}${t.owner ? `<span>${esc(t.owner)}</span>` : ""}</div></div>${t.due ? `<span class="when ${t.status === "Fatto" ? "" : whenCls(t.due)}">${t.status === "Fatto" ? fmtD(t.due) : rel(t.due) + " · " + fmtD(t.due)}</span>` : ""}</div>`;
+  const row = t => `<div class="task ${t.status === "Fatto" ? "done" : ""}"><button class="chk ${t.status === "Fatto" ? "on" : ""}" data-done="${t.id}" aria-label="${t.status === "Fatto" ? "Riapri" : "Segna come fatto"}">${t.status === "Fatto" ? IC.tick : ""}</button><div class="grow" data-edit="tasks:${t.id}"><div class="t">${esc(t.title)}</div><div class="row small muted" style="margin-top:3px">${t.status !== "Da fare" && t.status !== "Fatto" ? stChip(t.status) : ""}${t.priority === "Alta" ? stChip("Alta") : ""}${chip(t.area)}${attChip(t)}${t.owner ? `<span>${esc(t.owner)}</span>` : ""}</div></div>${t.due ? `<span class="when ${t.status === "Fatto" ? "" : whenCls(t.due)}">${t.status === "Fatto" ? fmtD(t.due) : rel(t.due) + " · " + fmtD(t.due)}</span>` : ""}</div>`;
   const people = [...new Set([...team(), ...S.data.tasks.map(t => t.owner).filter(Boolean)])];
   return `<div class="wrap">
   ${head("Pianificazione", "Scadenze e task", "Chi fa cosa, entro quando. Spunta quando hai finito.", addBtn("tasks", "Nuovo task", "acc"))}
@@ -671,7 +693,7 @@ V.web = () => {
 
 V.partners = () => {
   const list = S.data.partners.filter(p => (!S.f.pType || p.type === S.f.pType) && match(p, "partners", ["name", "contact", "notes", "next"]));
-  const card = p => `<article class="card click" data-edit="partners:${p.id}"><h3>${esc(p.name)}</h3><div class="row">${chip(p.type)}</div>${p.contact ? `<div class="small">${esc(p.contact)}</div>` : ""}${p.next ? `<div class="small"><b>Prossimo passo:</b> ${esc(p.next)}${p.nextDate ? ` <span class="when ${whenCls(p.nextDate)}">· ${rel(p.nextDate)}</span>` : ""}</div>` : ""}<div class="row between"><span class="small muted">${esc(p.owner || "")}</span>${S.canWrite ? `<select class="mini-sel" data-move="partners:${p.id}" aria-label="Sposta">${PIPE.map(s => `<option ${s === p.status ? "selected" : ""}>${s}</option>`).join("")}</select>` : ""}</div></article>`;
+  const card = p => `<article class="card click" data-edit="partners:${p.id}"><h3>${esc(p.name)}</h3><div class="row">${chip(p.type)}${attChip(p)}</div>${p.contact ? `<div class="small">${esc(p.contact)}</div>` : ""}${p.next ? `<div class="small"><b>Prossimo passo:</b> ${esc(p.next)}${p.nextDate ? ` <span class="when ${whenCls(p.nextDate)}">· ${rel(p.nextDate)}</span>` : ""}</div>` : ""}<div class="row between"><span class="small muted">${esc(p.owner || "")}</span>${S.canWrite ? `<select class="mini-sel" data-move="partners:${p.id}" aria-label="Sposta">${PIPE.map(s => `<option ${s === p.status ? "selected" : ""}>${s}</option>`).join("")}</select>` : ""}</div></article>`;
   return `<div class="wrap">
   ${head("Crescita", "Partner e contatti", "Associazioni, aziende, business school, docenti, sponsor: chi stiamo sentendo, a che punto siamo e qual è il prossimo passo.", addBtn("partners", "Nuovo contatto", "acc"))}
   <div class="filters">${searchBox("partners", "Cerca un contatto")}${fchips("pType", PTYPES, "Tutti")}</div>
@@ -690,7 +712,7 @@ V.finance = () => {
   ${head("Crescita", "Finanze", "Entrate e uscite di UniLink. Il dato chiave è la runway: per quanti mesi possiamo andare avanti con la cassa di oggi.", addBtn("finance", "Nuovo movimento", "acc"))}
   <div class="kpis">${tile("Saldo di cassa", eur(mo.saldo))}${tile("Entrate del mese", eur(mo.inM))}${tile("Uscite del mese", eur(mo.outM))}${tile("Costi fissi mensili", eur(mo.fixed), "abbonamenti e spese ricorrenti")}${tile("Runway", mo.runway ? nf(mo.runway, 1) + " mesi" : "—", mo.burn > 0 ? `consumo medio ${eur(mo.burn)}/mese` : "nessun consumo netto negli ultimi 3 mesi")}</div>
   ${rows.length ? `<section class="card panel"><h2>Ultimi 6 mesi</h2><div class="stack">${mrow.map(r => `<div class="row" style="flex-wrap:nowrap;gap:12px"><span class="small num" style="width:64px;flex:none">${new Date(r.m + "-01T00:00").toLocaleDateString("it-IT", { month: "short", year: "2-digit" })}</span><div class="stack" style="gap:3px;flex:1;min-width:0"><div class="bar gr" title="Entrate"><i style="width:${r.i / mx * 100}%"></i></div><div class="bar" title="Uscite"><i style="width:${r.o / mx * 100}%"></i></div></div><span class="small num" style="width:120px;text-align:right;flex:none"><span class="in">${eur(r.i)}</span> / <span class="out">${eur(r.o)}</span></span></div>`).join("")}</div><div class="row small muted"><span class="chip gr">entrate</span><span class="chip or">uscite</span></div></section>
-  <div class="tbl-wrap"><table><thead><tr><th>Data</th><th>Descrizione</th><th>Categoria</th><th class="r">Importo</th></tr></thead><tbody>${rows.map(r => `<tr class="card-row" data-edit="finance:${r.id}" style="cursor:pointer"><td class="num">${fmtD(r.date, 1)}</td><td>${esc(r.desc || "")}${r.recurring ? " " + chip("mensile", "navy") : ""}</td><td class="muted">${esc(r.category || "")}</td><td class="r num ${r.type === "Entrata" ? "in" : "out"}">${r.type === "Entrata" ? "+" : "−"}${eur(r.amount)}</td></tr>`).join("")}</tbody></table></div>` : emptyBox("Nessun movimento", "Registra anche le spese piccole (dominio, Framer, Canva, stampe): sommate fanno la differenza.", "finance", "Registra il primo movimento")}
+  <div class="tbl-wrap"><table><thead><tr><th>Data</th><th>Descrizione</th><th>Categoria</th><th class="r">Importo</th></tr></thead><tbody>${rows.map(r => `<tr class="card-row" data-edit="finance:${r.id}" style="cursor:pointer"><td class="num">${fmtD(r.date, 1)}</td><td>${esc(r.desc || "")}${r.recurring ? " " + chip("mensile", "navy") : ""}${attChip(r)}</td><td class="muted">${esc(r.category || "")}</td><td class="r num ${r.type === "Entrata" ? "in" : "out"}">${r.type === "Entrata" ? "+" : "−"}${eur(r.amount)}</td></tr>`).join("")}</tbody></table></div>` : emptyBox("Nessun movimento", "Registra anche le spese piccole (dominio, Framer, Canva, stampe): sommate fanno la differenza.", "finance", "Registra il primo movimento")}
   </div>`;
 };
 
@@ -700,7 +722,7 @@ V.meetings = () => {
   const up = ms.filter(m => new Date(m.when).toISOString() >= nowISO).sort(byDate("when"));
   const past = ms.filter(m => new Date(m.when).toISOString() < nowISO).sort(byDate("when")).reverse().concat(S.data.meetings.filter(m => !m.when));
   const rooms = S.data.links.filter(l => l.category === "Meeting fissi");
-  const card = m => `<article class="card click stack" data-meeting="${m.id}"><div class="eyebrow">${m.when ? fmtDT(m.when) : "Senza data"}</div><h3>${esc(m.title)}</h3><div class="row">${chip(m.kind)}${m.notes ? chip("verbale", "gr") : ""}${m.actions ? chip(`${m.actions.split("\n").filter(x => x.trim()).length} azioni`, "or") : ""}</div>${m.link ? `<div><a class="btn sm acc" href="${esc(safeUrl(m.link))}" target="_blank" rel="noopener">Entra</a></div>` : ""}</article>`;
+  const card = m => `<article class="card click stack" data-meeting="${m.id}"><div class="eyebrow">${m.when ? fmtDT(m.when) : "Senza data"}</div><h3>${esc(m.title)}</h3><div class="row">${chip(m.kind)}${attChip(m)}${m.notes ? chip("verbale", "gr") : ""}${m.actions ? chip(`${m.actions.split("\n").filter(x => x.trim()).length} azioni`, "or") : ""}</div>${m.link ? `<div><a class="btn sm acc" href="${esc(safeUrl(m.link))}" target="_blank" rel="noopener">Entra</a></div>` : ""}</article>`;
   return `<div class="wrap">
   ${head("Team", "Meeting", "Link delle call, agenda e verbali. Le azioni decise diventano task con un clic.", addBtn("meetings", "Nuovo meeting", "acc"))}
   <section class="card panel"><div class="panel-h"><h2>Stanze fisse</h2>${S.canWrite ? `<button class="linkbtn" data-add="links" data-preset="Meeting fissi">Aggiungi stanza</button>` : ""}</div>
@@ -715,7 +737,7 @@ V.decisions = () => {
   return `<div class="wrap">
   ${head("Team", "Decisioni", "Il registro di cosa abbiamo deciso e perché. Fra sei mesi nessuno ricorderà le motivazioni: scriverle evita di ridiscutere le stesse cose.", addBtn("decisions", "Registra decisione", "acc"))}
   <div class="filters">${searchBox("dec", "Cerca una decisione")}</div>
-  ${list.length ? `<div class="stack">${list.map(d => `<article class="card click stack" data-edit="decisions:${d.id}" style="gap:8px"><div class="row between"><span class="eyebrow">${fmtD(d.date, 1)}</span><div class="row">${stChip(d.status || "Presa")}${d.review ? `<span class="when ${whenCls(d.review)}">rivedere ${rel(d.review)}</span>` : ""}</div></div><h3>${esc(d.title)}</h3>${d.why ? `<p class="pre small"><b>Perché:</b> ${esc(d.why)}</p>` : ""}${d.options ? `<p class="pre small muted"><b>Scartato:</b> ${esc(d.options)}</p>` : ""}${d.owner ? `<span class="small muted">Porta avanti: ${esc(d.owner)}</span>` : ""}</article>`).join("")}</div>` : emptyBox("Nessuna decisione registrata", "Prezzi, nome di un prodotto, chi fa cosa, quale esame coprire prima: ogni scelta importante va qui con il suo perché.", "decisions", "Registra la prima decisione")}
+  ${list.length ? `<div class="stack">${list.map(d => `<article class="card click stack" data-edit="decisions:${d.id}" style="gap:8px"><div class="row between"><span class="eyebrow">${fmtD(d.date, 1)}</span><div class="row">${stChip(d.status || "Presa")}${attChip(d)}${d.review ? `<span class="when ${whenCls(d.review)}">rivedere ${rel(d.review)}</span>` : ""}</div></div><h3>${esc(d.title)}</h3>${d.why ? `<p class="pre small"><b>Perché:</b> ${esc(d.why)}</p>` : ""}${d.options ? `<p class="pre small muted"><b>Scartato:</b> ${esc(d.options)}</p>` : ""}${d.owner ? `<span class="small muted">Porta avanti: ${esc(d.owner)}</span>` : ""}</article>`).join("")}</div>` : emptyBox("Nessuna decisione registrata", "Prezzi, nome di un prodotto, chi fa cosa, quale esame coprire prima: ogni scelta importante va qui con il suo perché.", "decisions", "Registra la prima decisione")}
   </div>`;
 };
 
@@ -723,7 +745,7 @@ V.links = () => {
   const cats = LCAT.filter(c => S.data.links.some(l => (l.category || "Altro") === c));
   return `<div class="wrap">
   ${head("Team", "Team e risorse", "Chi siamo, chi è responsabile di cosa, e i link che usiamo ogni giorno.", `${addBtn("team", "Aggiungi persona", "")}${addBtn("links", "Aggiungi link", "acc")}`)}
-  <section class="stack"><h2>Il team</h2>${S.data.team.length ? `<div class="grid">${S.data.team.map(t => `<article class="card click stack" data-edit="team:${t.id}" style="gap:6px"><h3>${esc(t.name)}</h3>${t.role ? `<div class="eyebrow">${esc(t.role)}</div>` : ""}${t.focus ? `<p class="small pre">${esc(t.focus)}</p>` : ""}${t.contact ? `<p class="small muted">${esc(t.contact)}</p>` : ""}<div class="row small muted"><span>${openTasks().filter(x => x.owner === t.name).length} task aperti</span></div></article>`).join("")}</div>` : emptyBox("Aggiungi i founder", "Nome, ruolo e di cosa è responsabile ciascuno. I nomi compariranno come responsabili di task, obiettivi e contatti.", "team", "Aggiungi una persona")}</section>
+  <section class="stack"><h2>Il team</h2>${S.data.team.length ? `<div class="grid">${S.data.team.map(t => `<article class="card click stack" data-edit="team:${t.id}" style="gap:6px"><h3>${esc(t.name)}</h3>${attChip(t)}${t.role ? `<div class="eyebrow">${esc(t.role)}</div>` : ""}${t.focus ? `<p class="small pre">${esc(t.focus)}</p>` : ""}${t.contact ? `<p class="small muted">${esc(t.contact)}</p>` : ""}<div class="row small muted"><span>${openTasks().filter(x => x.owner === t.name).length} task aperti</span></div></article>`).join("")}</div>` : emptyBox("Aggiungi i founder", "Nome, ruolo e di cosa è responsabile ciascuno. I nomi compariranno come responsabili di task, obiettivi e contatti.", "team", "Aggiungi una persona")}</section>
   <section class="stack"><h2>Link utili</h2>
   ${cats.length ? `<div class="grid2">${cats.map(c => `<div class="card panel"><h3>${c}</h3><div>${S.data.links.filter(l => (l.category || "Altro") === c).map(l => `<div class="li"><div class="grow"><a href="${esc(safeUrl(l.url))}" target="_blank" rel="noopener" class="t">${esc(l.title)}</a>${l.note ? `<div class="small muted">${esc(l.note)}</div>` : ""}</div>${S.canWrite ? `<button class="btn ghost sm" data-edit="links:${l.id}">Modifica</button>` : ""}</div>`).join("")}</div></div>`).join("")}</div>` : `<p class="muted">Ancora nessun link.</p>`}
   <div class="banner warn">Non salvare qui password o codici di accesso: chiunque abbia il link della pagina può leggerli. Usate un gestore di password condiviso.</div></section>
@@ -740,7 +762,7 @@ function doRender() {
   let html;
   if (S.offline) html = `<div class="wrap">${head("UniLink HQ", "Accedi per vedere lo spazio di lavoro", "")}<div class="banner">Questa pagina salva idee, obiettivi e numeri in un archivio condiviso, visibile solo a chi ha effettuato l'accesso a claude.ai. Accedi con il tuo account e ricarica la pagina.</div></div>`;
   else if (!S.ready) html = `<div class="wrap"><div class="empty" style="margin-top:20vh">Caricamento dello spazio di lavoro…</div></div>`;
-  else html = (S.canWrite ? "" : `<div class="wrap" style="margin-bottom:16px"><div class="banner">Stai guardando in sola lettura. Per aggiungere e modificare chiedi al proprietario della pagina di invitarti come Contributor o Editor.</div></div>`) + (V[S.view] || V.home)();
+  else html = (S.canWrite ? "" : `<div class="wrap" style="margin-bottom:16px"><div class="banner">Stai guardando in sola lettura. Per aggiungere e modificare chiedi al proprietario della pagina di invitarti come Contributor o Editor.</div></div>`) + (V[S.view] || V.home)() + sectionFiles();
   main.innerHTML = html;
   if (actId) { const el = document.getElementById(actId); if (el) { el.focus(); try { el.setSelectionRange(sel, sel); } catch (e) {} } }
   hydrate(main);
@@ -771,6 +793,7 @@ function fieldHTML(f, v) {
     case "person": inp = `<input id="${id}" list="dl_team" value="${esc(v || "")}" placeholder="${team().length ? "Scegli dal team" : "Nome"}" autocomplete="off"><datalist id="dl_team">${team().map(n => `<option value="${esc(n)}">`).join("")}</datalist>`; break;
     case "check": return `<label class="fld chk-f"><input id="${id}" type="checkbox" ${v ? "checked" : ""}><span>${f.l}</span></label>`;
     case "images": return `<div class="fld wide"><span>${f.l}</span><div class="imgs" id="imgs"></div><small>JPG o PNG, anche più di una. Puoi anche incollare uno screenshot con Ctrl+V. Le immagini vengono ridimensionate automaticamente.</small></div>`;
+    case "files": return hasFiles() ? `<div class="fld wide"><span>${f.l}</span><div class="stack" id="fls" style="gap:6px"></div><small>Documenti, PDF, fogli di calcolo, immagini. Fino a 25 MB ciascuno.</small></div>` : "";
     case "krs": return `<div class="fld wide"><span>${f.l}</span><div class="stack" id="krs" style="gap:6px"></div>${f.help ? `<small>${f.help}</small>` : ""}</div>`;
     default: inp = `<input id="${id}" type="text" value="${esc(v || "")}"${ph}>`;
   }
@@ -782,14 +805,19 @@ function openForm(col, id, preset) {
   if (!S.canWrite) return;
   const sc = SCHEMA[col]; const doc = id ? S.data[col].find(d => d.id === id) : null;
   const vals = Object.assign({}, ...sc.fields.map(f => ({ [f.k]: doc ? doc[f.k] : defVal(f) })), preset || {});
-  S.form = { col, id, imgs: (vals.images || []).map(x => ({ id: x })), removed: [], krs: (vals.krs && vals.krs.length ? vals.krs : [{ label: "", current: 0, target: "", unit: "" }]).map(k => ({ ...k })) };
+  S.form = { col, id, imgs: (vals.images || []).map(x => ({ id: x })), removed: [], files: (vals.files || []).map(x => ({ ...x })), removedFiles: [], krs: (vals.krs && vals.krs.length ? vals.krs : [{ label: "", current: 0, target: "", unit: "" }]).map(k => ({ ...k })) };
   openModal(`${sheetHead(doc ? "Modifica" : "Aggiungi", doc ? esc(doc.title || doc.name || doc.desc || sc.one) : "")}
     <form class="form" id="frm" novalidate>${sc.fields.map(f => fieldHTML(f, vals[f.k])).join("")}
     <div class="form-foot fld wide"><div class="row">${doc ? `<button type="button" class="btn danger" data-del="${col}:${id}">Elimina</button>` : ""}</div><div class="row"><button type="button" class="btn" data-close>Annulla</button><button type="submit" class="btn pri">${doc ? "Salva" : "Aggiungi"}</button></div></div></form>`);
   // titolo "Nuova/Nuovo" corretto
   const h = $(".sheet h2"); if (!doc) h.textContent = (["obiettivo", "task", "feedback", "contatto", "movimento", "meeting"].includes(sc.one) ? "Nuovo " : "Nuova ") + sc.one;
-  drawImgs(); drawKrs();
+  drawImgs(); drawKrs(); drawFiles();
   const first = $("#frm input, #frm textarea"); if (first) first.focus();
+}
+function drawFiles() {
+  const box = $("#fls"); if (!box || !S.form) return;
+  box.innerHTML = S.form.files.map((f, i) => `<div class="row" style="flex-wrap:nowrap;gap:8px;background:var(--white);border:1px solid var(--line);border-radius:var(--r-sm);padding:6px 10px"><div style="min-width:0;flex:1;overflow-wrap:anywhere">${f.path ? `<button type="button" class="linkbtn" data-openfile="${esc(f.path)}">${esc(f.name)}</button>` : esc(f.name) + " " + chip("da caricare", "or")}<div class="small muted">${fsize(f.size)}</div></div><button type="button" class="x" style="width:26px;height:26px;font-size:14px" data-rmfile="${i}" aria-label="Rimuovi">×</button></div>`).join("") +
+    `<label class="addimg" style="width:auto;height:auto;padding:10px 14px;align-self:flex-start">+ Allega file<input type="file" multiple id="f_attach"></label>`;
 }
 function drawImgs() {
   const box = $("#imgs"); if (!box || !S.form) return;
@@ -822,7 +850,7 @@ async function addFiles(files) {
 function readForm(sc) {
   const o = {};
   for (const f of sc.fields) {
-    if (f.t === "images" || f.t === "krs") continue;
+    if (f.t === "images" || f.t === "krs" || f.t === "files") continue;
     const el = document.getElementById("f_" + f.k); if (!el) continue;
     if (f.t === "check") o[f.k] = el.checked;
     else if (f.t === "number") o[f.k] = el.value === "" ? "" : Number(el.value);
@@ -838,6 +866,7 @@ async function guard(fn) {
     const code = e && e.code;
     if (code === "invalid_argument" && /permission|level|denied|write/i.test(e.message || "")) { S.canWrite = false; render(); toast("Non hai i permessi per modificare questa pagina."); }
     else if (code === "invalid_argument") { toast("Non sono riuscito a salvare: " + (e.message || "dato non valido") + "."); if (!S.canWrite) render(); }
+    else if (code === "file_error") toast(e.message);
     else if (code === "quota_exceeded") toast("Spazio esaurito: elimina qualche immagine o elemento vecchio.");
     else if (code === "unavailable") toast("Connessione instabile: riprova tra un attimo.");
     else toast("Non sono riuscito a salvare. Riprova.");
@@ -858,11 +887,17 @@ async function submitForm(e) {
         for (const im of F.imgs) { if (im.id) ids.push(im.id); else { const r = S.db.collection("images").doc(); await r.set({ data: im.data, by: S.uid || "", at: new Date().toISOString() }); S.imgCache[r.id] = Promise.resolve(im.data); ids.push(r.id); } }
         o.images = ids;
       }
+      if (hasFiles() && sc.fields.some(f => f.t === "files")) {
+        const out = [];
+        for (const f of F.files) { if (f.file) { const up = await HQ_FILES.upload(f.file, F.col); out.push({ ...up, by: S.uid || "", at: new Date().toISOString() }); } else out.push(f); }
+        o.files = out;
+      }
       if (sc.fields.some(f => f.t === "krs")) o.krs = F.krs.filter(k => (k.label || "").trim()).map(k => ({ label: k.label.trim(), current: Number(k.current) || 0, target: Number(k.target) || 0, unit: (k.unit || "").trim() }));
       if (F.col === "tasks" && o.status === "Fatto") o.doneAt = localISO();
       if (F.id) await S.db.collection(F.col).doc(F.id).update(o);
       else await S.db.collection(F.col).doc().set({ ...o, by: S.uid || "", createdAt: new Date().toISOString() });
       for (const rid of F.removed) await S.db.doc("images/" + rid).delete().catch(() => {});
+      if (hasFiles() && F.removedFiles.length) await HQ_FILES.remove(F.removedFiles).catch(() => {});
     });
     const after = F.after; closeModal(); toast(F.id ? "Salvato" : "Aggiunto"); if (after) after();
   } catch (err) { btn.disabled = false; btn.textContent = "Riprova"; }
@@ -875,6 +910,7 @@ async function del(col, id, btn) {
     await guard(async () => {
       await S.db.collection(col).doc(id).delete();
       for (const im of (d && d.images) || []) await S.db.doc("images/" + im).delete().catch(() => {});
+      if (hasFiles() && d && d.files && d.files.length) await HQ_FILES.remove(d.files.map(f => f.path)).catch(() => {});
       if (col === "metrics") for (const v of series(id)) await S.db.collection("mvalues").doc(v.id).delete().catch(() => {});
     });
     closeModal(); toast("Eliminato");
@@ -888,6 +924,7 @@ function openIdea(id) {
   openModal(`${sheetHead(esc(i.area || "Idea"), esc(i.title))}
     ${imgs.length ? `<div class="gallery">${imgs.map(m => `<img data-img="${esc(m)}" data-zoom="${esc(m)}" alt="">`).join("")}</div>` : ""}
     ${i.body ? `<p class="pre">${esc(i.body)}</p>` : ""}
+    ${filesBlock(i)}
     <div class="meta"><div><span>Stato</span>${S.canWrite ? `<select class="mini-sel" data-move="ideas:${i.id}">${IDEA_ST.map(s => `<option ${s === (i.status || "Nuova") ? "selected" : ""}>${s}</option>`).join("")}</select>` : esc(i.status)}</div><div><span>Impatto</span>${esc(i.impact || "—")} / 5</div><div><span>Sforzo</span>${esc(i.effort || "—")} / 5</div><div><span>Proposta da</span>${author(i) || "—"}${i.createdAt ? " · " + fmtD(i.createdAt.slice(0, 10)) : ""}</div></div>
     ${i.url ? `<a href="${esc(safeUrl(i.url))}" target="_blank" rel="noopener" class="small" style="overflow-wrap:anywhere">${esc(i.url)}</a>` : ""}
     <div class="row"><button class="vote ${voted(i) ? "on" : ""}" data-vote="${i.id}">${IC.up}<span class="num">${votes(i)}</span> ${voted(i) ? "Hai votato" : "Vota"}</button>${S.canWrite ? `<button class="btn sm" data-edit="ideas:${i.id}">Modifica</button><button class="btn sm" data-ideatask="${i.id}">Crea un task</button>` : ""}</div>
@@ -903,6 +940,7 @@ function openMeeting(id) {
   openModal(`${sheetHead(m.when ? fmtDT(m.when) : "Meeting", esc(m.title))}
     <div class="row">${chip(m.kind)}${m.link ? `<a class="btn acc" href="${esc(safeUrl(m.link))}" target="_blank" rel="noopener">Entra nel meeting</a><button class="btn sm" data-copy="${esc(safeUrl(m.link))}">Copia link</button>` : ""}</div>
     ${m.agenda ? `<section class="stack"><h3>Agenda</h3><p class="pre">${esc(m.agenda)}</p></section>` : ""}
+    ${filesBlock(m)}
     <section class="stack"><h3>Verbale</h3>${m.notes ? `<p class="pre">${esc(m.notes)}</p>` : `<p class="small muted">Ancora nessun verbale. Modifica il meeting per scriverlo.</p>`}</section>
     ${acts.length ? `<section class="stack"><h3>Azioni decise</h3><ul style="margin:0;padding-left:20px">${acts.map(a => `<li>${esc(a)}</li>`).join("")}</ul>${S.canWrite ? `<div><button class="btn sm acc" data-acts="${m.id}" ${m.tasksCreated ? "disabled" : ""}>${m.tasksCreated ? "Task già creati" : "Trasforma in task"}</button></div>` : ""}</section>` : ""}
     ${S.canWrite ? `<div class="row"><button class="btn" data-edit="meetings:${m.id}">Modifica e scrivi il verbale</button></div>` : ""}`);
@@ -917,6 +955,7 @@ function openMetric(id) {
     <div class="row between" style="align-items:flex-end"><div><div class="small muted">Ultimo valore</div><div class="num" style="font-family:var(--fd);font-size:36px;color:var(--navy)">${st.v != null ? nf(st.v, 1) : "—"} <span class="small muted" style="font-family:var(--fb)">${esc(m.unit || "")}</span></div>${st.delta}</div>${spark(st.s.slice(-20).map(x => +x.value), 260, 60)}</div>
     ${S.canWrite ? `<form class="row" id="mval" data-mid="${m.id}"><input class="inp" type="date" id="mv_date" value="${localISO()}" style="width:auto"><input class="inp num" type="number" step="any" id="mv_val" placeholder="Valore" style="width:140px"><input class="inp" id="mv_note" placeholder="Nota (facoltativa)" style="flex:1;min-width:140px"><button class="btn pri">Aggiungi valore</button></form>` : ""}
     ${rows.length ? `<div class="tbl-wrap"><table><thead><tr><th>Data</th><th class="r">Valore</th><th>Nota</th><th></th></tr></thead><tbody>${rows.map(r => `<tr><td class="num">${fmtD(r.date, 1)}</td><td class="r num">${nf(r.value, 2)}</td><td class="muted">${esc(r.note || "")}</td><td class="r">${S.canWrite ? `<button class="btn ghost sm danger" data-delval="${r.id}">Elimina</button>` : ""}</td></tr>`).join("")}</tbody></table></div>` : `<p class="small muted">Nessun valore ancora.</p>`}
+    ${filesBlock(m)}
     ${S.canWrite ? `<div class="row"><button class="btn" data-edit="metrics:${m.id}">Modifica metrica</button></div>` : ""}`);
 }
 
@@ -939,6 +978,14 @@ document.addEventListener("click", async e => {
   if (!t) return;
   const ds = t.dataset;
   if (t.matches("select, input, label, a") && !ds.zoom) { if (t.tagName === "A") return; if (!ds.nav) return; }
+  if (ds.openfile) { e.stopPropagation(); if (hasFiles()) HQ_FILES.open(ds.openfile); return; }
+  if (ds.rmfile != null) { const f = S.form.files.splice(+ds.rmfile, 1)[0]; if (f && f.path) S.form.removedFiles.push(f.path); drawFiles(); return; }
+  if (ds.rmsf) {
+    if (!t.classList.contains("armed")) { t.classList.add("armed"); t.textContent = "Conferma"; setTimeout(() => { if (t.isConnected) { t.classList.remove("armed"); t.textContent = "Elimina"; } }, 4000); return; }
+    const f = S.data.sfiles.find(x => x.id === ds.rmsf);
+    try { await guard(async () => { if (f) await HQ_FILES.remove([f.path]).catch(() => {}); await S.db.collection("sfiles").doc(ds.rmsf).delete(); }); toast("File eliminato"); } catch (er) {}
+    return;
+  }
   if ("logout" in ds) { logout(); return; }
   if ("menu" in ds) { document.body.classList.toggle("nav-open"); return; }
   if (ds.nav) { go(ds.nav); return; }
@@ -971,6 +1018,11 @@ document.addEventListener("click", async e => {
 });
 document.addEventListener("change", async e => {
   const t = e.target;
+  if (t.id === "f_attach" && S.form) {
+    for (const f of Array.from(t.files || [])) { if (f.size > HQ_FILES.max) { toast(`“${f.name}” supera i 25 MB.`); continue; } S.form.files.push({ name: f.name, size: f.size, type: f.type, file: f }); }
+    drawFiles(); return;
+  }
+  if (t.dataset.sfin !== undefined) { const fl = Array.from(t.files || []); t.value = ""; if (hasFiles()) await uploadSection(fl); return; }
   if (t.id === "f_file") { addFiles(Array.from(t.files || [])); return; }
   if (t.dataset.move) { const [c, id] = t.dataset.move.split(":"); await setDoc(c, id, { status: t.value }); toast("Spostato in “" + t.value + "”"); return; }
   if (t.dataset.kr) { const [oid, idx] = t.dataset.kr.split(":"); const o = S.data.okrs.find(x => x.id === oid); const krs = (o.krs || []).map(k => ({ ...k })); krs[+idx].current = Number(t.value) || 0; await setDoc("okrs", oid, { krs }); return; }
@@ -1097,6 +1149,32 @@ function startRealtime() {
   // al ritorno sulla scheda ricarica tutto: recupera eventuali modifiche perse mentre il telefono dormiva
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && S.ready) loadAll().catch(() => {}); });
 }
+
+/* ---------- allegati: Supabase Storage (bucket privato "hq-files") ---------- */
+window.HQ_FILES = {
+  max: 25 * 1024 * 1024,
+  async upload(file, folder) {
+    const safe = file.name.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^A-Za-z0-9._-]+/g, "_").slice(-80);
+    const path = `${folder}/${newId()}-${safe}`;
+    const { error } = await SB.storage.from("hq-files").upload(path, file, { contentType: file.type || "application/octet-stream", upsert: false });
+    if (error) {
+      const m = error.message || "";
+      let msg = "Non sono riuscito a caricare il file. Riprova.";
+      if (/bucket/i.test(m)) msg = "Per allegare file manca un'impostazione del database: esegui il file supabase/files.sql (vedi istruzioni).";
+      else if (/size|exceed|too large/i.test(m)) msg = `“${file.name}” è troppo grande (massimo 25 MB).`;
+      else if (/jwt|auth|expired/i.test(m)) msg = "Sessione scaduta: ricarica la pagina e rientra con la password.";
+      throw { code: "file_error", message: msg };
+    }
+    return { path, name: file.name, size: file.size, type: file.type || "" };
+  },
+  async remove(paths) { if (paths && paths.length) await SB.storage.from("hq-files").remove(paths); },
+  async open(path) {
+    const w = window.open("", "_blank");
+    const { data, error } = await SB.storage.from("hq-files").createSignedUrl(path, 600);
+    if (error || !data) { if (w) w.close(); toast("Non riesco ad aprire il file."); return; }
+    if (w) w.location = data.signedUrl; else location.href = data.signedUrl;
+  },
+};
 
 /* ---------- schermata di accesso ---------- */
 function showLogin(msg) {
