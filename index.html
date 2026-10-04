@@ -1087,7 +1087,9 @@ const DB = {
     };
   },
 };
+let rtStarted = false;
 function startRealtime() {
+  if (rtStarted) return; rtStarted = true;
   SB.channel("hq-docs").on("postgres_changes", { event: "*", schema: "public", table: "docs" }, p => {
     if (p.eventType === "DELETE") { if (p.old && p.old.col) applyLocal(p.old.col, p.old.id, null); }
     else if (p.new && p.new.col) applyLocal(p.new.col, p.new.id, p.new.data);
