@@ -58,7 +58,7 @@ head = f"""<!doctype html>
 <link rel="icon" href="logo-white.png">
 <link rel="apple-touch-icon" href="logo-white.png">
 {title}
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
 """
 # lo <style> e i <link> dei font vanno nell'head, il resto nel body
