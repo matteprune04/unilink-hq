@@ -37,6 +37,10 @@ assert n == 1
 rep('window.addEventListener("hashchange"', (HERE / "online.js").read_text(encoding="utf-8") + '\nwindow.addEventListener("hashchange"')
 
 login_css = """
+/* reset che su claude.ai aggiungeva lo skeleton dell'Artifact */
+[hidden] { display: none !important; }
+body { margin: 0; }
+img { max-width: 100%; }
 #login { position: fixed; inset: 0; z-index: 100; background: var(--navy); display: grid; place-items: center; padding: 24px 16px; overflow-y: auto; }
 .login-card { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 16px; color: #fff; }
 .login-card h1 { color: #fff; font-size: 40px; }
