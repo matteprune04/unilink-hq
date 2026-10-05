@@ -284,6 +284,12 @@ blockquote::before { content: "“"; font-family: var(--fd); color: var(--orange
 .tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--line); }
 .tab { background: none; border: 0; padding: 10px 16px; font-size: 15px; cursor: pointer; color: var(--muted); border-bottom: 3px solid transparent; margin-bottom: -1px; font-weight: 600; } .tab.on { color: var(--navy); border-bottom-color: var(--orange); }
 @media (max-width: 880px) { .homegrid, .calwrap { grid-template-columns: 1fr; } .hero { padding: 20px; } .cc { min-height: 52px; } .cal.big .cc { min-height: 52px; } .cpill { padding: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--k); } .cpill i, .cpill span { display: none; } .cps { flex-direction: row; flex-wrap: wrap; gap: 3px; } }
+.hero.ai { background: linear-gradient(120deg, #172554 0%, #3b2a86 100%); }
+.ver { display: flex; gap: 14px; align-items: flex-start; padding: 12px 0; border-top: 1px solid var(--beige); flex-wrap: wrap; } .ver:first-of-type { border-top: 0; }
+.ver .vn { width: 48px; height: 48px; border-radius: 12px; background: var(--navy); color: #fff; display: grid; place-items: center; font-family: var(--fd); font-size: 17px; flex: none; }
+.ver .grow { flex: 1; min-width: 220px; overflow-wrap: anywhere; } .ver details { margin-top: 6px; } .ver summary { cursor: pointer; color: var(--orange-dark); } .ver ul { margin: 6px 0 0; padding-left: 18px; }
+.incl { display: flex; flex-direction: column; } .inc { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-top: 1px solid var(--beige); cursor: pointer; } .inc:first-child { border-top: 0; } .inc input { margin-top: 4px; width: 18px; height: 18px; accent-color: var(--orange); flex: none; } .inc .grow { min-width: 0; }
+.mdprev { white-space: pre-wrap; background: #fff; border: 1px solid var(--line); border-radius: var(--r-sm); padding: 14px; font-size: 12.5px; max-height: 58vh; overflow: auto; margin: 0; }
 .comment { background: var(--white); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 10px 12px; font-size: 14px; }
 .big-img { width: 100%; border-radius: var(--r-sm); }
 
@@ -907,6 +913,7 @@ function doRender() {
   main.innerHTML = html;
   if (actId) { const el = document.getElementById(actId); if (el) { el.focus(); try { el.setSelectionRange(sel, sel); } catch (e) {} } }
   hydrate(main);
+  if (S.ready && !S._autoChk) { S._autoChk = true; setTimeout(() => { try { maybeAutoBrief(); } catch (e) {} }, 3500); }
 }
 function hydrate(root) { loadImgs(root); }
 function getImg(id) {
@@ -1425,6 +1432,180 @@ document.addEventListener("submit", async e => {
     inp.value = "";
     try { await guard(() => S.db.collection("notes").doc().set({ text, state: "aperta", by: S.uid || "", createdAt: new Date().toISOString() })); toast("Nota salvata"); } catch (er) { inp.value = text; }
   }
+});
+
+/* ====================================================== v2: contesto per AI (briefing versionato) ====================================================== */
+const BLOB = {};
+async function putBlob(text) { const r = S.db.collection("images").doc(); await r.set({ data: text, by: S.uid || "" }); BLOB[r.id] = Promise.resolve(text); return r.id; }
+function getBlob(id) { return BLOB[id] || (BLOB[id] = S.db.doc("images/" + id).get().then(s => s.exists ? s.data().data : "").catch(() => { delete BLOB[id]; return ""; })); }
+function downloadText(name, text, type = "text/markdown") { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type: type + ";charset=utf-8" })); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); }
+const fnv = s => { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(16).padStart(8, "0"); };
+const ctxDoc = () => (S.data.ctx || []).find(x => x.id === "main") || {};
+async function saveCtx(patch) { const o = { ...ctxDoc(), ...patch, updatedAt: new Date().toISOString(), updatedBy: S.uid || "" }; delete o.id; await guard(() => S.db.collection("ctx").doc("main").set(o)); }
+
+const TIPO_HELP = {
+  [T.prod]: "Funzioni e miglioramenti della piattaforma. Servono a capire cosa costruire e per chi.",
+  [T.cont]: "Dispense, quiz, video e materiali didattici: il cuore dell'offerta agli studenti.",
+  [T.evt]: "Eventi e momenti di community. Le date indicate sono quelle previste.",
+  [T.mkt]: "Comunicazione e social. Il campo \"Caption\" contiene il testo del post pronto all'uso.",
+  [T.par]: "Collaborazioni con associazioni, aziende, atenei. Indicano cosa offriamo e cosa chiediamo.",
+  [T.mon]: "Modi per generare ricavi. Prezzi e stime sono ipotesi, non dati reali.",
+  [T.org]: "Come lavoriamo come team: processi, ruoli, strumenti.",
+  [TIPO_NONE.id]: "Idee senza un tipo assegnato.",
+};
+const BRIEF_SECTIONS = [
+  { k: "ctx", t: "Chi è UniLink e come lavoriamo", on: true, why: "Missione, target, tono di voce, priorità. È la sezione più importante per dare contesto." },
+  { k: "team", t: "Il team", on: true, why: "Nomi, ruoli e responsabilità, così l'AI sa chi fa cosa." },
+  { k: "teamContacts", t: "Contatti del team (email, telefono)", on: false, sens: true, why: "Dati personali: esclusi di default." },
+  { k: "goals", t: "Obiettivi e numeri", on: true, why: "Obiettivi del trimestre e ultime metriche." },
+  { k: "ideas", t: "Idee", on: true, why: "Tutte le idee, divise per tipo e natura, con problema, descrizione, campi specifici e discussione." },
+  { k: "feedback", t: "Voce degli studenti", on: true, why: "Cosa dicono gli studenti: problemi, richieste, apprezzamenti." },
+  { k: "tasks", t: "Task e scadenze", on: true, why: "Cosa è in corso e chi se ne occupa." },
+  { k: "decisions", t: "Decisioni prese", on: true, why: "Le scelte già fatte e il perché, per non riproporre cose già decise." },
+  { k: "meetings", t: "Meeting e verbali", on: true, why: "Prossimi meeting e verbali recenti." },
+  { k: "partners", t: "Partner e pipeline (senza contatti)", on: true, why: "Stato delle trattative. I contatti personali sono esclusi." },
+  { k: "partnerContacts", t: "Contatti dei partner (referente, email, telefono)", on: false, sens: true, why: "Dati personali di terzi: esclusi di default." },
+  { k: "lab", t: "Laboratorio AI", on: true, why: "Materiali e demo già creati con AI, con la versione in uso." },
+  { k: "docs", t: "Archivio documenti (solo elenco)", on: true, why: "Nomi dei file e cartelle; il contenuto dei file non è incluso." },
+  { k: "notes", t: "Note rapide aperte", on: true, why: "Appunti non ancora smistati." },
+  { k: "finance", t: "Finanze (riepilogo)", on: false, sens: true, why: "Dati economici riservati: esclusi di default." },
+];
+const incl = k => { const c = ctxDoc().include || {}; return k in c ? !!c[k] : BRIEF_SECTIONS.find(s => s.k === k).on; };
+const ml = s => String(s ?? "").replace(/\r/g, "").trim();
+const bq = s => ml(s).split("\n").map(l => "> " + l).join("\n");
+const mdDate = s => s ? fmtD(String(s).slice(0, 10), 1) : "";
+const sect = (n, title, what, how, body) => `## ${n}. ${title}\n\n> **Cosa contiene:** ${what}\n> **Come usarla:** ${how}\n\n${body}\n`;
+
+function briefBodies() {
+  const D = S.data, out = {}, idx = {};
+  const mine = (k, fn) => { if (incl(k)) out[k] = fn(); };
+  mine("ctx", () => { const c = ctxDoc(); const f = (l, v) => `### ${l}\n${ml(v) || "_(non ancora compilato in HQ → Contesto per AI)_"}\n`; return f("Missione", c.mission) + "\n" + f("Studenti a cui ci rivolgiamo", c.audience) + "\n" + f("Tono di voce e stile", c.tone) + "\n" + f("Priorità del momento", c.priorities) + "\n" + f("Glossario e termini interni", c.glossary) + "\n" + f("Regole per l'AI (cosa fare e non fare)", c.rules); });
+  mine("team", () => D.team.length ? D.team.map(t => `- **${t.name}** — ${t.role || "ruolo n/d"}${t.city ? ` (${t.city})` : ""}. ${ml(t.focus) ? "Responsabile di: " + ml(t.focus).replace(/\n+/g, "; ") + "." : ""}${t.skills ? " Competenze: " + t.skills + "." : ""}${t.availability ? " Disponibilità: " + t.availability + "." : ""}${incl("teamContacts") ? ` Contatti: ${[t.email, t.phone].filter(Boolean).join(", ") || "n/d"}.` : ""}`).join("\n") : "_Nessuna persona inserita._");
+  mine("goals", () => {
+    const q = curQ(), okrs = D.okrs.slice().sort((a, b) => String(b.quarter).localeCompare(String(a.quarter)));
+    let o = "### Obiettivi\n" + (okrs.length ? okrs.map(k => `- **${k.title}** (${k.quarter || "n/d"}${k.owner ? ", resp. " + k.owner : ""}) — avanzamento ${okrPct(k)}%${ml(k.why) ? `. Perché: ${ml(k.why)}` : ""}\n` + (k.krs || []).map(r => `  - ${r.label}: ${r.current}/${r.target}${r.unit ? " " + r.unit : ""}`).join("\n")).join("\n") : "_Nessun obiettivo._");
+    o += "\n\n### Metriche (ultimi valori)\n" + (D.metrics.length ? D.metrics.map(m => { const st = mStat(m); return `- **${m.name}**${m.north ? " ⭐ (North Star)" : ""}: ${st.v != null ? nf(st.v, 1) + " " + (m.unit || "") : "n/d"}${m.target ? `, obiettivo ${nf(m.target)}` : ""}${ml(m.desc) ? `. Come si misura: ${ml(m.desc)}` : ""}`; }).join("\n") : "_Nessuna metrica._");
+    return o;
+  });
+  mine("ideas", () => {
+    const live = D.ideas.filter(i => ideaSt(i) !== "Archiviata"), arch = D.ideas.filter(i => ideaSt(i) === "Archiviata");
+    idx.ideas = Object.fromEntries(D.ideas.map(i => [i.id, [i.title, ideaSt(i), (kindOf(i) || {}).id || ""]]));
+    const tipi = TIPI.concat([TIPO_NONE]).filter(t => live.some(i => tipoOf(i) === t));
+    let o = `Totale: ${live.length} idee attive, ${arch.length} archiviate.\n\n| Tipo | Idee attive |\n|---|---|\n` + tipi.map(t => `| ${t.id} | ${live.filter(i => tipoOf(i) === t).length} |`).join("\n") + "\n\n";
+    o += tipi.map(t => `### Tipo: ${t.id}\n_${TIPO_HELP[t.id]}_\n\n` + live.filter(i => tipoOf(i) === t).sort((a, b) => votes(b) - votes(a)).map(i => {
+      const k = kindOf(i), sp = specOf(i, t), tasks = D.tasks.filter(x => x.ideaId === i.id), l = [];
+      l.push(`#### ${i.title}`);
+      l.push(`- **Natura:** ${k ? k.id : "n/d"} · **Stato:** ${ideaSt(i)} · **Voti:** ${votes(i)} · **Impatto:** ${i.impact || "?"}/5 · **Sforzo:** ${i.effort || "?"}/5${Number(i.impact) >= 4 && Number(i.effort) <= 2 ? " · **Quick win**" : ""}`);
+      if (i.by || i.createdAt) l.push(`- **Proposta da:** ${i.by || "n/d"}${i.createdAt ? " il " + mdDate(i.createdAt) : ""}`);
+      if (ml(i.problem)) l.push(`- **Il problema:** ${ml(i.problem)}`);
+      if (ml(i.body)) l.push(`- **L'idea:** ${ml(i.body).replace(/\n+/g, " ")}`);
+      sp.forEach(f => l.push(`- **${f.l}:** ${f.k === "m_caption" ? "\n" + bq(i[f.k]) : specVal(f, i[f.k]).replace(/\n+/g, " ")}`));
+      if (i.url) l.push(`- **Riferimento:** ${i.url}`);
+      if (tasks.length) l.push(`- **Task collegati:** ` + tasks.map(x => `${x.title} (${x.status || "Da fare"}${x.owner ? ", " + x.owner : ""})`).join("; "));
+      (i.comments || []).forEach(c => l.push(`- **Commento di ${c.by || "?"}:** ${ml(c.text).replace(/\n+/g, " ")}`));
+      return l.join("\n");
+    }).join("\n\n")).join("\n\n");
+    if (arch.length) o += "\n\n### Idee archiviate (solo titoli)\n" + arch.map(i => `- ${i.title} — ${tipoOf(i).id}`).join("\n");
+    return o;
+  });
+  mine("feedback", () => { idx.feedback = Object.fromEntries(D.feedback.map(f => [f.id, [String(f.text).slice(0, 60), f.kind || ""]])); return D.feedback.length ? D.feedback.slice().sort(byDate("date")).reverse().slice(0, 40).map(f => `- [${f.kind || "n/d"}${f.area ? " · " + f.area : ""}${f.source ? " · " + f.source : ""}${f.date ? " · " + mdDate(f.date) : ""}] “${ml(f.text).replace(/\n+/g, " ")}”${f.who ? " — " + f.who : ""}`).join("\n") : "_Nessun feedback._"; });
+  mine("tasks", () => { idx.tasks = Object.fromEntries(D.tasks.map(t => [t.id, [t.title, t.status || "Da fare"]])); const op = openTasks().sort(byDate("due")); return (op.length ? op.map(t => `- [${t.status || "Da fare"}] **${t.title}** — ${t.owner || "nessun responsabile"}${t.due ? `, scadenza ${mdDate(t.due)}${daysFrom(t.due) < 0 ? " ⚠ in ritardo" : ""}` : ""}${t.priority === "Alta" ? ", priorità alta" : ""}${ml(t.notes) ? `. Note: ${ml(t.notes).replace(/\n+/g, " ")}` : ""}`).join("\n") : "_Nessun task aperto._") + `\n\nCompletati di recente: ${D.tasks.filter(t => t.status === "Fatto").length} task in totale.`; });
+  mine("decisions", () => { idx.decisions = Object.fromEntries(D.decisions.map(d => [d.id, [d.title, d.status || ""]])); return D.decisions.length ? D.decisions.slice().sort(byDate("date")).reverse().map(d => `- **${d.title}** (${d.status || "Presa"}, ${mdDate(d.date)}${d.owner ? ", " + d.owner : ""}). ${ml(d.why) ? "Perché: " + ml(d.why).replace(/\n+/g, " ") + "." : ""}${ml(d.options) ? " Alternative scartate: " + ml(d.options).replace(/\n+/g, " ") + "." : ""}${d.review ? " Da rivedere entro " + mdDate(d.review) + "." : ""}`).join("\n") : "_Nessuna decisione registrata._"; });
+  mine("meetings", () => { idx.meetings = Object.fromEntries(D.meetings.map(m => [m.id, [m.title, m.when ? "" : "senza data"]])); const nowI = new Date(Date.now() - 2 * 3600e3).toISOString(), up = D.meetings.filter(m => m.when && new Date(m.when).toISOString() >= nowI).sort(byDate("when")), past = D.meetings.filter(m => m.when && new Date(m.when).toISOString() < nowI).sort(byDate("when")).reverse().slice(0, 6); return "### In programma\n" + (up.length ? up.map(m => `- **${m.title}** — ${fmtDT(m.when)} (${m.kind || "n/d"})${ml(m.agenda) ? "\n  - Agenda: " + ml(m.agenda).replace(/\n+/g, "; ") : ""}`).join("\n") : "_Nessuno._") + "\n\n### Verbali recenti\n" + (past.length ? past.map(m => `- **${m.title}** — ${fmtDT(m.when)}${ml(m.notes) ? "\n  - Verbale: " + ml(m.notes).replace(/\n+/g, " ") : ""}${ml(m.actions) ? "\n  - Azioni decise: " + ml(m.actions).replace(/\n+/g, "; ") : ""}`).join("\n") : "_Nessuno._"); });
+  mine("partners", () => { idx.partners = Object.fromEntries(D.partners.map(p => [p.id, [p.name, p.status || ""]])); return D.partners.length ? PIPE.map(st => { const l = D.partners.filter(p => p.status === st); return l.length ? `### ${st}\n` + l.map(p => `- **${p.name}** (${p.type || "n/d"})${p.owner ? ", segue " + p.owner : ""}.${p.next ? " Prossimo passo: " + p.next + (p.nextDate ? " entro " + mdDate(p.nextDate) : "") + "." : ""}${ml(p.value) ? " Valore: " + ml(p.value).replace(/\n+/g, " ") + "." : ""}${incl("partnerContacts") ? ` Contatto: ${[p.contact, p.channel].filter(Boolean).join(" — ") || "n/d"}.` : ""}`).join("\n") : ""; }).filter(Boolean).join("\n\n") : "_Nessun contatto._"; });
+  mine("lab", () => { idx.lab = Object.fromEntries((D.lab || []).map(l => [l.id, [l.title, ""]])); const L = D.lab || []; return L.length ? L.map(l => { const vs = (D.labver || []).filter(v => v.itemId === l.id), cur = vs.find(v => v.role === "attuale"); const idea = D.ideas.find(i => i.id === l.ideaId); return `- **${l.title}** — ${l.cat || "n/d"}, creato con ${l.ai || "n/d"} (${l.kind || "n/d"}). ${ml(l.summary) ? ml(l.summary).replace(/\n+/g, " ") + " " : ""}${vs.length ? `Versioni: ${vs.length}; in uso: ${cur ? cur.label : "nessuna"}${cur && ml(cur.note) ? " (" + ml(cur.note).replace(/\n+/g, " ") + ")" : ""}.` : ""}${idea ? ` Collegato all'idea “${idea.title}”.` : ""}`; }).join("\n") : "_Nessun materiale._"; });
+  mine("docs", () => { const all = allFiles(), byc = DOC_CATS.map(c => [c.id, all.filter(f => f.cat === c.id)]).filter(x => x[1].length); return byc.length ? byc.map(([c, l]) => `### ${c}\n` + l.map(f => `- ${f.name}${f.title ? " (" + f.title + ")" : ""} — ${f.label}`).join("\n")).join("\n\n") : "_Nessun file archiviato._"; });
+  mine("notes", () => { const n = noteList(false); return n.length ? n.map(x => `- ${ml(x.text).replace(/\n+/g, " ")} — ${x.by || "?"}, ${mdDate(x.createdAt)}`).join("\n") : "_Nessuna nota in sospeso._"; });
+  mine("finance", () => { const mo = money(); return `- Saldo di cassa: ${eur(mo.saldo)}\n- Entrate del mese: ${eur(mo.inM)} · Uscite del mese: ${eur(mo.outM)}\n- Costi fissi mensili: ${eur(mo.fixed)}\n- Runway stimata: ${mo.runway ? nf(mo.runway, 1) + " mesi" : "n/d"}`; });
+  return { out, idx };
+}
+function briefAssemble(meta) {
+  const { out, idx } = briefBodies(), nums = {};
+  let n = 0, body = "", toc = "";
+  BRIEF_SECTIONS.forEach(s => {
+    const inc = incl(s.k); toc += `| ${s.t} | ${inc ? "✅ Incluso" : "⛔ Escluso"} | ${s.why} |\n`;
+    if (!inc || s.k === "teamContacts" || s.k === "partnerContacts" || !(s.k in out)) return;
+    n++; nums[s.k] = n;
+    const meta2 = { ctx: ["missione, target, tono di voce, priorità e regole del team", "come cornice per qualsiasi risposta o contenuto: rispetta tono e regole indicati"], team: ["chi sono i founder, il ruolo e le responsabilità", "per sapere a chi attribuire una cosa o per chi scrivere"], goals: ["obiettivi del trimestre con risultati chiave e le metriche più recenti", "per valutare se un'idea o un'azione aiuta i numeri che contano"], ideas: ["tutte le idee raccolte, divise per **Tipo** (di cosa parla) e **Natura** (novità, miglioramento, aggiornamento grafico, altro), con stato, voti, problema, descrizione, campi specifici del tipo, task collegati e commenti", "per capire cosa è già stato pensato, evitare duplicati, proporre idee coerenti e aiutare a svilupparle; le idee 'Nuova' non sono ancora decise"], feedback: ["cosa dicono gli studenti (problemi, richieste, apprezzamenti)", "come fonte di verità sui bisogni reali: privilegia queste evidenze rispetto alle ipotesi"], tasks: ["task aperti con responsabile e scadenza", "per sapere cosa è in corso e cosa è urgente; non assegnare lavoro già assegnato"], decisions: ["scelte già prese con motivazioni e alternative scartate", "non riproporre alternative scartate senza nuovi elementi"], meetings: ["meeting in programma e verbali recenti", "per il contesto delle discussioni più recenti"], partners: ["pipeline delle collaborazioni per stato", "per preparare proposte e follow-up coerenti con lo stato della trattativa"], lab: ["materiali e demo creati con AI, con la versione attualmente in uso", "per continuare un lavoro esistente invece di ricominciare: indica quale versione è quella 'attuale'"], docs: ["elenco dei file archiviati per cartella (il contenuto non è incluso)", "per sapere che documenti esistono e dove si trovano"], notes: ["appunti rapidi non ancora trasformati in idee o task", "come spunti grezzi, non come decisioni"], finance: ["solo indicatori aggregati di cassa", "con prudenza: sono dati riservati e non vanno citati all'esterno"] }[s.k];
+    body += sect(n, s.t, meta2[0], meta2[1], out[s.k]) + "\n---\n\n";
+  });
+  const cnt = { ideas: S.data.ideas.length, tasks: S.data.tasks.length, decisions: S.data.decisions.length, feedback: S.data.feedback.length, lab: (S.data.lab || []).length, partners: S.data.partners.length };
+  return { body, toc, idx, nums, cnt };
+}
+function briefDiff(prevIdx, idx) {
+  if (!prevIdx) return [];
+  const lines = [], names = { ideas: "idea", tasks: "task", decisions: "decisione", feedback: "feedback", meetings: "meeting", partners: "contatto", lab: "materiale" }, fem = { ideas: 1, decisions: 1, partners: 0, lab: 0 };
+  Object.keys(names).forEach(c => { if (!idx[c]) return; const a = (prevIdx || {})[c] || {}, b = idx[c];
+    Object.keys(b).forEach(id => { if (!a[id]) lines.push(`+ ${fem[c] ? "Nuova" : "Nuovo"} ${names[c]}: ${b[id][0]}`); else if (a[id][1] !== b[id][1]) lines.push(`~ ${names[c][0].toUpperCase() + names[c].slice(1)} “${b[id][0]}”: ${a[id][1] || "—"} → ${b[id][1] || "—"}`); });
+    if (prevIdx) Object.keys(a).forEach(id => { if (!b[id]) lines.push(`− ${fem[c] ? "Rimossa" : "Rimosso"} ${names[c]}: ${a[id][0]}`); }); });
+  return lines;
+}
+function briefFile(meta, a, changes) {
+  const when = new Date(meta.createdAt), stamp = when.toLocaleString("it-IT", { dateStyle: "long", timeStyle: "short" });
+  const head = `# UniLink HQ — Contesto per AI\n\n> **Versione ${meta.n}** · generato il ${stamp} da ${meta.auto ? "HQ (aggiornamento automatico)" : meta.by} · fonte: UniLink HQ (spazio di lavoro privato dei founder)\n\n## Come leggere questo file\n\n- Questo file è la fotografia di UniLink HQ: lo usi per avere contesto prima di aiutarci. **Leggilo tutto prima di rispondere.**\n- È diviso in sezioni numerate separate da \`---\`. Ogni sezione inizia con due righe in citazione: **Cosa contiene** e **Come usarla**.\n- I dati li scrivono i founder: possono essere incompleti o provvisori. **Non inventare** informazioni che non trovi qui: se manca qualcosa, chiedi.\n- Le sezioni elencate come ⛔ *Escluso* nell'indice sotto contengono dati riservati e non sono presenti di proposito.\n- **Legenda delle idee.** *Tipo* = di cosa parla l'idea (Prodotto / funzione, Contenuto, Evento / community, Marketing e social, Partnership, Monetizzazione, Organizzazione). *Natura* = che genere di intervento è (Novità, Miglioramento, Aggiornamento grafico, Altro). *Stato* = Nuova (appena proposta, da valutare) → Approvata (decisa) → In sviluppo → Fatta; Archiviata = scartata o chiusa.\n- Le date sono in formato italiano. La data di riferimento di questa fotografia è quella indicata sopra.\n\n## Indice e cosa è incluso\n\n| Sezione | Stato | Note |\n|---|---|---|\n${a.toc}\n`;
+  const ch = changes.length ? `## Cosa è cambiato dall'ultima versione\n\n${changes.slice(0, 40).map(l => "- " + l).join("\n")}${changes.length > 40 ? `\n- … e altre ${changes.length - 40} modifiche` : ""}\n\n---\n\n` : (meta.n > 1 ? "## Cosa è cambiato dall'ultima versione\n\nNessuna modifica di rilievo su idee, task, decisioni, feedback e partner.\n\n---\n\n" : "---\n\n");
+  return head + ch + a.body + `_Fine del file — versione ${meta.n}._\n`;
+}
+const briefName = (n, d) => `UniLink-HQ_Contesto-AI_v${String(n).padStart(3, "0")}_${localISO(new Date(d))}.md`;
+const briefList = () => (S.data.aibriefs || []).slice().sort((a, b) => (b.n || 0) - (a.n || 0));
+async function makeBrief(auto) {
+  const list = briefList(), last = list[0], a = briefAssemble(), hash = fnv(a.body + JSON.stringify(ctxDoc().include || {}));
+  if (last && last.hash === hash) return { same: last };
+  const meta = { n: (last ? last.n : 0) + 1, createdAt: new Date().toISOString(), by: S.uid || "", auto: !!auto };
+  const changes = briefDiff(last && last.idx, a.idx), md = briefFile(meta, a, changes), blobId = await putBlob(md);
+  const id = auto ? "auto-" + hash : undefined, ref = S.db.collection("aibriefs").doc(id);
+  await ref.set({ ...meta, hash, blobId, size: md.length, fileName: briefName(meta.n, meta.createdAt), sections: BRIEF_SECTIONS.filter(s => incl(s.k)).map(s => s.k), counts: a.cnt, changes: changes.slice(0, 60), idx: a.idx });
+  return { made: { ...meta, id: ref.id, fileName: briefName(meta.n, meta.createdAt) } };
+}
+async function maybeAutoBrief() {
+  if (!S.canWrite || !S.ready || S._autoBrief || ctxDoc().autoUpdate === false) return; S._autoBrief = true;
+  const last = briefList()[0]; if (last && Date.now() - new Date(last.createdAt) < 6 * 3600e3) return;
+  try { const r = await makeBrief(true); if (r.made) toast("Contesto per AI aggiornato (v" + r.made.n + ")"); } catch (e) {}
+}
+
+V.aictx = () => {
+  const c = ctxDoc(), list = briefList(), last = list[0], a = briefAssemble();
+  const cnt = S.data.ideas.length + " idee · " + S.data.tasks.length + " task · " + S.data.decisions.length + " decisioni · " + S.data.feedback.length + " feedback";
+  const fld = (k, l, ph, rows = 3) => `<label class="fld wide"><span>${l}</span><textarea id="cx_${k}" rows="${rows}" placeholder="${esc(ph)}">${esc(c[k] || "")}</textarea></label>`;
+  const ver = b => `<div class="ver"><div class="vn num">v${b.n}</div><div class="grow"><div class="t">${esc(b.fileName || briefName(b.n, b.createdAt))}</div><div class="small muted">${fmtD(String(b.createdAt).slice(0, 10), 1)} · ${new Date(b.createdAt).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" })} · ${b.auto ? "automatica" : esc(b.by || "")} · ${Math.max(1, Math.round((b.size || 0) / 1024))} KB</div>${(b.changes || []).length ? `<details class="small"><summary>${b.changes.length} novità rispetto alla versione precedente</summary><ul>${b.changes.slice(0, 12).map(x => `<li>${esc(x)}</li>`).join("")}</ul></details>` : ""}</div><div class="row"><button class="btn sm acc" data-aidl="${b.id}">Scarica</button><button class="btn sm" data-aicp="${b.id}">Copia</button><button class="btn ghost sm" data-aiprev="${b.id}">Anteprima</button></div></div>`;
+  return `<div class="wrap">
+  <section class="hero ai"><div class="hero-t"><div class="eyebrow" style="color:var(--orange)">Intelligenza artificiale</div><h1>Contesto per AI</h1><p style="max-width:640px;opacity:.9">Un file unico che racconta UniLink a Claude, ChatGPT o a qualsiasi AI: chi siamo, le idee divise per tipo, i numeri, le decisioni. Si aggiorna da solo, ogni versione resta archiviata e tutti possono scaricarla.</p>
+    <div class="row" style="margin-top:14px">${last ? `<span class="hchip">Ultima versione: <b>v${last.n}</b> · ${ago(last.createdAt)}</span>` : '<span class="hchip">Nessuna versione ancora</span>'}<span class="hchip">${cnt}</span></div></div>
+    <div class="hero-a">${S.canWrite ? '<button class="btn acc" data-aigen>Genera nuova versione</button>' : ""}${last ? `<button class="btn" data-aidl="${last.id}">Scarica l'ultima (v${last.n})</button><button class="btn" data-aicp="${last.id}">Copia per ChatGPT / Claude</button>` : ""}</div></section>
+  <div class="grid2" style="align-items:start">
+    <section class="card panel"><div class="panel-h"><h2>Il contesto di UniLink</h2></div><p class="small muted">Scrivilo una volta sola: finisce in cima al file e guida ogni risposta dell'AI. Più è concreto, meglio funziona.</p>
+      <form id="ctxfrm" class="form">${fld("mission", "Missione", "Es. Aiutare le matricole di Firenze a superare i primi esami con dispense, quiz e mentor.")}${fld("audience", "Studenti a cui ci rivolgiamo", "Es. Matricole di Economia e Giurisprudenza, 18–20 anni, usano Instagram e WhatsApp.")}${fld("tone", "Tono di voce e stile", "Es. Amichevole, diretto, mai formale. Diamo del tu. Niente gergo accademico.")}${fld("priorities", "Priorità del momento", "Es. 1) Lanciare il primo corso. 2) Arrivare a 300 iscritti entro dicembre.")}${fld("glossary", "Glossario e termini interni", "Es. HQ = questo spazio di lavoro; Quick win = idea con impatto alto e sforzo basso.", 2)}${fld("rules", "Regole per l'AI", "Es. Non inventare dati. Scrivi in italiano. Proponi sempre 2 alternative.", 2)}
+      <div class="form-foot fld wide"><span class="small muted">${c.updatedAt ? "Ultimo salvataggio: " + esc(c.updatedBy || "") + " · " + ago(c.updatedAt) : ""}</span>${S.canWrite ? '<button class="btn pri">Salva contesto</button>' : ""}</div></form></section>
+    <section class="card panel"><div class="panel-h"><h2>Cosa entra nel file</h2></div><p class="small muted">Le sezioni riservate sono escluse di default. Cambia solo se serve davvero.</p>
+      <div class="incl">${BRIEF_SECTIONS.map(s => `<label class="inc ${s.sens ? "sens" : ""}"><input type="checkbox" data-aiinc="${s.k}" ${incl(s.k) ? "checked" : ""} ${S.canWrite ? "" : "disabled"}><div class="grow"><div class="t">${esc(s.t)} ${s.sens ? '<span class="chip rd">riservato</span>' : ""}</div><div class="small muted">${esc(s.why)}</div></div></label>`).join("")}</div>
+      <label class="inc"><input type="checkbox" data-aiauto ${c.autoUpdate === false ? "" : "checked"} ${S.canWrite ? "" : "disabled"}><div class="grow"><div class="t">Aggiornamento automatico</div><div class="small muted">Quando qualcuno apre l'HQ e i dati sono cambiati, crea una nuova versione (al massimo ogni 6 ore).</div></div></label></section></div>
+  <section class="card panel"><div class="panel-h"><h2>Archivio versioni</h2><span class="small muted">${list.length} ${list.length === 1 ? "versione" : "versioni"} · nome file: <code>UniLink-HQ_Contesto-AI_v###_data.md</code></span></div>
+    ${list.length ? list.slice(0, S.f.aiAll ? 200 : 8).map(ver).join("") + (list.length > 8 && !S.f.aiAll ? `<button class="linkbtn" data-toggle="aiAll">Mostra tutte le ${list.length} versioni</button>` : "") : `<p class="muted">Premi "Genera nuova versione": il file viene creato e archiviato qui, pronto da scaricare.</p>`}</section>
+  </div>`;
+};
+
+document.addEventListener("click", async e => {
+  const t = e.target;
+  const get = async id => { const b = (S.data.aibriefs || []).find(x => x.id === id); if (!b) return null; return { b, md: await getBlob(b.blobId) }; };
+  if (t.closest("[data-aigen]")) {
+    const btn = t.closest("[data-aigen]"); btn.disabled = true; btn.textContent = "Genero…";
+    try { const r = await makeBrief(false); if (r.same) toast("Nessuna modifica dall'ultima versione (v" + r.same.n + "): ecco quella aggiornata."); else toast("Versione v" + r.made.n + " creata e archiviata"); } catch (er) {}
+    if (btn.isConnected) { btn.disabled = false; btn.textContent = "Genera nuova versione"; }
+    return;
+  }
+  const dl = t.closest("[data-aidl]"); if (dl) { const r = await get(dl.dataset.aidl); if (!r || !r.md) { toast("File non trovato."); return; } downloadText(r.b.fileName || briefName(r.b.n, r.b.createdAt), r.md); toast("Scaricato " + (r.b.fileName || "")); return; }
+  const cp = t.closest("[data-aicp]"); if (cp) { const r = await get(cp.dataset.aicp); if (!r || !r.md) return; try { await navigator.clipboard.writeText(r.md); toast("Copiato: incollalo in una chat con Claude o ChatGPT"); } catch (er) { toast("Copia non riuscita: usa Scarica."); } return; }
+  const pv = t.closest("[data-aiprev]"); if (pv) { const r = await get(pv.dataset.aiprev); if (!r) return; openModal(`${sheetHead("Anteprima", esc(r.b.fileName || "Contesto per AI"))}<pre class="mdprev">${esc(r.md || "")}</pre><div class="row"><button class="btn acc" data-aidl="${r.b.id}">Scarica</button><button class="btn" data-aicp="${r.b.id}">Copia</button></div>`); return; }
+});
+document.addEventListener("change", async e => {
+  const t = e.target;
+  if (t.dataset && t.dataset.aiinc) { try { await saveCtx({ include: { ...(ctxDoc().include || {}), [t.dataset.aiinc]: t.checked } }); } catch (er) { t.checked = !t.checked; } }
+  if (t.dataset && t.dataset.aiauto !== undefined) { try { await saveCtx({ autoUpdate: t.checked }); toast(t.checked ? "Aggiornamento automatico attivo" : "Aggiornamento automatico disattivato"); } catch (er) { t.checked = !t.checked; } }
+});
+document.addEventListener("submit", async e => {
+  if (e.target.id !== "ctxfrm") return; e.preventDefault();
+  const v = k => document.getElementById("cx_" + k).value.trim();
+  try { await saveCtx({ mission: v("mission"), audience: v("audience"), tone: v("tone"), priorities: v("priorities"), glossary: v("glossary"), rules: v("rules") }); toast("Contesto salvato"); } catch (er) {}
 });
 
 function go(v) {
