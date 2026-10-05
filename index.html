@@ -242,6 +242,48 @@ blockquote::before { content: "“"; font-family: var(--fd); color: var(--orange
 .col-h.tcol { color: var(--tc); border-bottom: 3px solid var(--tc); padding-bottom: 6px; }
 .col-h.tcol span:first-child { display: inline-flex; align-items: center; gap: 6px; }
 .fld[hidden] { display: none; }
+.hero { background: linear-gradient(120deg, var(--navy) 0%, #2a3f86 100%); color: #fff; border-radius: 22px; padding: 26px 30px; display: flex; justify-content: space-between; gap: 18px; flex-wrap: wrap; align-items: flex-end; box-shadow: var(--shadow); position: relative; overflow: hidden; }
+.hero::after { content: ""; position: absolute; right: -60px; top: -70px; width: 280px; height: 280px; border-radius: 50%; background: radial-gradient(circle, rgba(207,117,39,.38), transparent 65%); pointer-events: none; }
+.hero h1 { color: #fff; font-size: clamp(30px, 4.4vw, 46px); margin: 4px 0 14px; }
+.hero-t { position: relative; z-index: 1; min-width: 0; } .hero-a { position: relative; z-index: 1; display: flex; gap: 8px; flex-wrap: wrap; }
+.hero .btn { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.3); color: #fff; } .hero .btn.acc { background: var(--orange); border-color: var(--orange); }
+.hchip { font-size: 13px; padding: 5px 12px; border-radius: var(--pill); background: rgba(255,255,255,.15); color: #fff; } .hchip.red { background: #c2412c; } .hchip.or { background: var(--orange); }
+.kpis-l { grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); } .kpis-l .kpi .val { font-size: 38px; }
+.homegrid { display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.calwrap { display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 18px; align-items: start; }
+.calcard { padding: 20px; } .calwrap.in { grid-template-columns: 1fr; gap: 16px; } .calwrap.in .agenda { border-top: 1px solid var(--beige); padding-top: 14px; }
+.cal-h { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; }
+.cal-w, .cal-g { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.cal-w span { font-size: 11.5px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding: 4px 6px; }
+.cal-g { border-top: 1px solid var(--line); border-left: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.cc { min-height: 96px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 4px; cursor: pointer; background: #fff; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.cal.big .cc { min-height: 108px; }
+.cc.oth { background: var(--cream); } .cc.oth .d { color: #b4afa5; } .cc:hover { background: var(--navy-soft); }
+.cc.sel { outline: 2px solid var(--navy); outline-offset: -2px; }
+.cc .d { font-size: 12.5px; font-weight: 600; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; }
+.cc.today .d { background: var(--orange); color: #fff; }
+.cps { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.cpill { display: flex; gap: 5px; align-items: center; border: 0; background: color-mix(in srgb, var(--k) 12%, #fff); color: var(--k); border-radius: 6px; padding: 1px 5px; font-size: 11.5px; cursor: pointer; text-align: left; min-width: 0; }
+.cpill i, .lg i { width: 7px; height: 7px; border-radius: 50%; background: var(--k); flex: none; }
+.cpill span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.cmore { font-size: 11px; color: var(--muted); padding-left: 4px; }
+.cal-lg { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 12px; }
+.lg { border: 0; background: none; font-size: 12.5px; color: var(--ink); cursor: pointer; display: inline-flex; gap: 6px; align-items: center; padding: 0; } .lg.off { opacity: .35; text-decoration: line-through; }
+.agenda { display: flex; flex-direction: column; gap: 10px; }
+.aev { display: flex; gap: 10px; align-items: flex-start; text-align: left; border: 1px solid var(--line); background: #fff; border-radius: var(--r-sm); padding: 9px 11px; cursor: pointer; border-left: 4px solid var(--k); width: 100%; } .aev:hover { background: var(--navy-soft); }
+.folders { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.folder { display: flex; align-items: center; gap: 10px; background: var(--ts); color: var(--tc); border: 1.5px solid transparent; border-radius: var(--r); padding: 13px 14px; cursor: pointer; font-weight: 600; text-align: left; font-size: 14px; }
+.folder span { flex: 1; line-height: 1.15; } .folder .ico { width: 20px; height: 20px; } .folder.on { border-color: var(--tc); box-shadow: var(--shadow); }
+.frow { display: flex; gap: 12px; align-items: center; padding: 12px 0; border-top: 1px solid var(--beige); flex-wrap: wrap; } .frow:first-child { border-top: 0; }
+.fico { width: 44px; height: 44px; border-radius: 10px; background: var(--ts); color: var(--tc); display: grid; place-items: center; font-size: 11px; font-weight: 700; text-transform: uppercase; flex: none; }
+.frow .grow { flex: 1; min-width: 200px; overflow-wrap: anywhere; }
+.qn { display: flex; gap: 8px; } .qn .inp { flex: 1; min-width: 0; }
+.note { border-left: 4px solid var(--orange); } .note.arch { opacity: .7; border-left-color: var(--line); }
+.act { display: flex; gap: 10px; align-items: flex-start; padding: 7px 0; border-top: 1px solid var(--beige); } .act:first-of-type { border-top: 0; }
+.av { width: 28px; height: 28px; border-radius: 50%; background: var(--navy); color: #fff; display: grid; place-items: center; font-size: 12px; font-weight: 700; flex: none; }
+.tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--line); }
+.tab { background: none; border: 0; padding: 10px 16px; font-size: 15px; cursor: pointer; color: var(--muted); border-bottom: 3px solid transparent; margin-bottom: -1px; font-weight: 600; } .tab.on { color: var(--navy); border-bottom-color: var(--orange); }
+@media (max-width: 880px) { .homegrid, .calwrap { grid-template-columns: 1fr; } .hero { padding: 20px; } .cc { min-height: 52px; } .cal.big .cc { min-height: 52px; } .cpill { padding: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--k); } .cpill i, .cpill span { display: none; } .cps { flex-direction: row; flex-wrap: wrap; gap: 3px; } }
 .comment { background: var(--white); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 10px 12px; font-size: 14px; }
 .big-img { width: 100%; border-radius: var(--r-sm); }
 
@@ -421,14 +463,16 @@ const SCHEMA = {
     { k: "notes", l: "Note interne", t: "textarea", rows: 3, wide: 1 } ] },
 };
 Object.values(SCHEMA).forEach(sc => sc.fields.push({ k: "files", l: "Allegati", t: "files", wide: 1 }));
-const COLS = ["ideas", "feedback", "okrs", "tasks", "metrics", "mvalues", "partners", "finance", "meetings", "decisions", "links", "team", "google", "sfiles"];
+const COLS = ["ideas", "feedback", "okrs", "tasks", "metrics", "mvalues", "partners", "finance", "meetings", "decisions", "links", "team", "google", "sfiles", "docs", "notes", "lab", "labver", "aibriefs", "ctx"];
 
 const NAV = [
-  { items: [["home", "Cruscotto"]] },
-  { g: "Idee e ascolto", items: [["ideas", "Idee"], ["feedback", "Voce degli studenti"]] },
-  { g: "Pianificazione", items: [["okrs", "Obiettivi"], ["tasks", "Scadenze e task"]] },
-  { g: "Crescita", items: [["metrics", "Metriche"], ["web", "Sito e Google"], ["partners", "Partner e contatti"], ["finance", "Finanze"]] },
-  { g: "Team", items: [["meetings", "Meeting"], ["decisions", "Decisioni"], ["team", "Persone"], ["links", "Team e risorse"]] },
+  { items: [["home", "Cruscotto"], ["calendar", "Calendario"]] },
+  { g: "Idee e ascolto", items: [["ideas", "Idee"], ["feedback", "Voce degli studenti"], ["notes", "Note rapide"]] },
+  { g: "Pianificazione", items: [["goals", "Obiettivi e numeri"], ["tasks", "Scadenze e task"]] },
+  { g: "Crescita", items: [["web", "Sito e Google"], ["partners", "Partner e contatti"], ["finance", "Finanze"]] },
+  { g: "Team", items: [["meetings", "Meeting"], ["decisions", "Decisioni"], ["team", "Persone"], ["links", "Risorse"]] },
+  { g: "Intelligenza artificiale", items: [["lab", "Laboratorio AI"], ["aictx", "Contesto per AI"]] },
+  { g: "Archivio", items: [["docs", "Documenti"]] },
 ];
 
 /* ================= stato ================= */
@@ -551,7 +595,7 @@ function money() {
 function counts() {
   return {
     ideas: S.data.ideas.filter(i => ideaSt(i) === "Nuova").length,
-    tasks: lateTasks().length, tasksOpen: openTasks().length,
+    tasks: lateTasks().length, tasksOpen: openTasks().length, notes: noteList(false).length,
     web: (gdoc()?.index?.missing || []).length,
     partners: S.data.partners.filter(p => p.nextDate && daysFrom(p.nextDate) < 0 && !["Accordo attivo", "Non interessato"].includes(p.status)).length,
   };
@@ -560,6 +604,7 @@ function renderSide() {
   const c = counts();
   const badge = id => {
     if (id === "tasks") return c.tasks ? `<span class="cnt alert num" title="In ritardo">${c.tasks}</span>` : c.tasksOpen ? `<span class="cnt num">${c.tasksOpen}</span>` : "";
+    if (id === "notes" && c.notes) return `<span class="cnt num" title="Note da smistare">${c.notes}</span>`;
     if (id === "ideas" && c.ideas) return `<span class="cnt num" title="Nuove, da valutare">${c.ideas}</span>`;
     if (id === "web" && c.web) return `<span class="cnt alert num" title="Pagine non indicizzate">${c.web}</span>`;
     if (id === "partners" && c.partners) return `<span class="cnt alert num" title="Follow-up scaduti">${c.partners}</span>`;
@@ -582,62 +627,6 @@ const match = (d, key, fields) => { const q = (S.f["q_" + key] || "").toLowerCas
 
 const V = {};
 
-V.home = () => {
-  const now = new Date();
-  const hour = now.getHours();
-  const hi = hour < 13 ? "Buongiorno" : hour < 18 ? "Buon pomeriggio" : "Buonasera";
-  const ms = S.data.metrics;
-  const north = ms.find(m => m.north);
-  const pinned = ms.filter(m => m.pinned && !m.north).slice(0, 4);
-  const kpi = (m, isN) => { const st = mStat(m); return `<div class="card kpi click ${isN ? "north" : ""}" data-metric="${m.id}">${isN ? '<div class="eyebrow">North Star</div>' : ""}<div class="lab">${esc(m.name)}</div><div class="val num">${st.v != null ? nf(st.v, 1) : "—"}<small>${esc(m.unit || "")}</small></div>${st.delta || `<span class="delta flat">${st.v == null ? "Nessun valore ancora" : "Primo valore"}</span>`}${spark(st.s.slice(-12).map(x => +x.value), 160, 34, isN)}${st.pctT != null ? `<div class="small" style="opacity:.8">${Math.round(st.pctT)}% dell'obiettivo (${nf(st.tgt)})</div>` : ""}</div>`; };
-
-  const up = openTasks().filter(t => t.due && daysFrom(t.due) <= 14).sort(byDate("due")).slice(0, 7);
-  const nowISO = new Date(Date.now() - 2 * 3600e3).toISOString();
-  const nextM = S.data.meetings.filter(m => m.when && new Date(m.when).toISOString() >= nowISO).sort(byDate("when"))[0];
-  const rooms = S.data.links.filter(l => l.category === "Meeting fissi");
-  const q = curQ(); const okrs = S.data.okrs.filter(o => o.quarter === q);
-  const topIdeas = S.data.ideas.filter(i => !["Archiviata", "Fatta"].includes(i.status)).sort((a, b) => votes(b) - votes(a) || String(b.createdAt).localeCompare(String(a.createdAt))).slice(0, 4);
-  const fb = S.data.feedback.slice().sort(byDate("date")).reverse().slice(0, 3);
-  const mo = money();
-  const pipe = PIPE.slice(0, 4).map(p => [p, S.data.partners.filter(x => x.status === p).length]);
-
-  const steps = [
-    ["Aggiungi i founder e chi fa cosa", S.data.team.length > 0, "links"],
-    ["Fissa 1–3 obiettivi del trimestre", S.data.okrs.length > 0, "okrs"],
-    ["Inserisci i numeri di questa settimana", S.data.mvalues.length > 1, "metrics"],
-    ["Carica le idee che avete in testa", S.data.ideas.length > 0, "ideas"],
-    ["Salva il link della call settimanale", rooms.length > 0 || S.data.meetings.length > 0, "meetings"],
-  ];
-  const showStarter = steps.filter(s => !s[1]).length >= 2;
-
-  return `<div class="wrap">
-  ${head(now.toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" }), hi, "Il punto della situazione di UniLink: numeri, scadenze e cosa c'è da decidere.", `<button class="btn" data-weekly>Aggiorna metriche</button>${addBtn("ideas", "Nuova idea", "acc")}`)}
-  ${showStarter ? `<div class="card starter"><h3>Da dove partire</h3><ol>${steps.map(s => `<li class="${s[1] ? "done" : ""}"><button class="linkbtn" data-nav="${s[2]}">${s[0]}</button></li>`).join("")}</ol></div>` : ""}
-  <div class="kpis">${north ? kpi(north, 1) : ""}${pinned.map(m => kpi(m)).join("")}${!north && !pinned.length ? `<div class="empty" style="grid-column:1/-1"><h3>Nessuna metrica nel cruscotto</h3><p>Nella sezione Metriche scegli la North Star e i numeri da tenere sott'occhio.</p><button class="btn pri" data-nav="metrics">Vai alle metriche</button></div>` : ""}</div>
-  <div class="grid2">
-    <section class="card panel"><div class="panel-h"><h2>Scadenze</h2><button class="linkbtn" data-nav="tasks">Tutte</button></div>
-      ${up.length ? `<div>${up.map(t => `<div class="li"><button class="chk" data-done="${t.id}" aria-label="Segna come fatto"></button><div class="grow" data-edit="tasks:${t.id}" style="cursor:pointer"><div class="t">${esc(t.title)}</div><div class="row small muted">${esc(t.owner || "")}${t.area ? " · " + esc(t.area) : ""}</div></div><span class="when ${whenCls(t.due)}">${rel(t.due)}</span></div>`).join("")}</div>` : `<p class="muted">Niente in scadenza nei prossimi 14 giorni.</p>`}
-    </section>
-    <section class="card panel"><div class="panel-h"><h2>Prossimo meeting</h2><button class="linkbtn" data-nav="meetings">Tutti</button></div>
-      ${nextM ? `<div class="stack"><div><div class="eyebrow">${fmtDT(nextM.when)}</div><h3 style="margin-top:4px">${esc(nextM.title)}</h3></div>${nextM.agenda ? `<div class="pre small muted">${esc(nextM.agenda)}</div>` : ""}<div class="row">${nextM.link ? `<a class="btn acc" href="${esc(safeUrl(nextM.link))}" target="_blank" rel="noopener">Entra nel meeting</a>` : ""}<button class="btn" data-meeting="${nextM.id}">Apri</button></div></div>` : `<p class="muted">Nessun meeting in calendario.</p>${addBtn("meetings", "Programma un meeting", "")}`}
-      ${rooms.length ? `<div class="row" style="border-top:1px solid var(--beige);padding-top:12px"><span class="small muted">Stanze fisse:</span>${rooms.map(r => `<a class="btn sm" href="${esc(safeUrl(r.url))}" target="_blank" rel="noopener">${esc(r.title)}</a>`).join("")}</div>` : ""}
-    </section>
-    <section class="card panel"><div class="panel-h"><h2>Obiettivi ${q}</h2><button class="linkbtn" data-nav="okrs">Dettagli</button></div>
-      ${okrs.length ? okrs.map(o => { const p = okrPct(o); return `<div class="stack" style="gap:6px"><div class="row between"><span class="t" style="font-weight:500">${esc(o.title)}</span><span class="num small">${p}%</span></div><div class="bar ${p >= 60 ? "gr" : ""}"><i style="width:${p}%"></i></div></div>`; }).join("") : `<p class="muted">Nessun obiettivo per questo trimestre.</p>${addBtn("okrs", "Fissa un obiettivo", "")}`}
-    </section>
-    <section class="card panel"><div class="panel-h"><h2>Idee più votate</h2><button class="linkbtn" data-nav="ideas">Bacheca</button></div>
-      ${topIdeas.length ? `<div>${topIdeas.map(i => `<div class="li"><div class="grow" data-idea="${i.id}" style="cursor:pointer"><div class="t">${esc(i.title)}</div><div class="row">${tipoChip(tipoOf(i))}${kindChip(kindOf(i))}${stChip(ideaSt(i))}</div></div><button class="vote ${voted(i) ? "on" : ""}" data-vote="${i.id}">${IC.up}<span class="num">${votes(i)}</span></button></div>`).join("")}</div>` : `<p class="muted">Ancora nessuna idea.</p>`}
-    </section>
-    <section class="card panel"><div class="panel-h"><h2>Voce degli studenti</h2><button class="linkbtn" data-nav="feedback">Tutti</button></div>
-      ${fb.length ? fb.map(f => `<div class="stack" style="gap:4px"><blockquote>${esc(f.text)}</blockquote><div class="row small muted">${stChip(f.kind)}${esc(f.who || "")}${f.date ? " · " + fmtD(f.date) : ""}</div></div>`).join("") : `<p class="muted">Annota qui quello che vi dicono gli studenti: è la fonte migliore di idee.</p>${addBtn("feedback", "Aggiungi feedback", "")}`}
-    </section>
-    ${homeWeb()}
-    <section class="card panel"><div class="panel-h"><h2>Cassa e partner</h2><button class="linkbtn" data-nav="finance">Finanze</button></div>
-      <div class="row between"><div><div class="small muted">Saldo</div><div class="num" style="font-family:var(--fd);font-size:26px;color:var(--navy)">${eur(mo.saldo)}</div></div><div><div class="small muted">Uscite del mese</div><div class="num" style="font-family:var(--fd);font-size:26px;color:var(--navy)">${eur(mo.outM)}</div></div><div><div class="small muted">Runway</div><div class="num" style="font-family:var(--fd);font-size:26px;color:var(--navy)">${mo.runway ? nf(mo.runway, 1) + " mesi" : "—"}</div></div></div>
-      <div class="row" style="border-top:1px solid var(--beige);padding-top:12px">${pipe.map(([p, n]) => `<span class="chip ${p === "Accordo attivo" ? "gr" : p === "In trattativa" ? "or" : ""}">${p}: <b class="num">${n}</b></span>`).join("")}</div>
-    </section>
-  </div></div>`;
-};
 
 V.ideas = () => {
   const showArch = S.f.ideaArch, byTipo = S.f.ideaView === "tipo";
@@ -896,8 +885,7 @@ V.team = () => {
 V.links = () => {
   const cats = LCAT.filter(c => S.data.links.some(l => (l.category || "Altro") === c));
   return `<div class="wrap">
-  ${head("Team", "Team e risorse", "Chi siamo, chi è responsabile di cosa, e i link che usiamo ogni giorno.", `${addBtn("team", "Aggiungi persona", "")}${addBtn("links", "Aggiungi link", "acc")}`)}
-  <section class="stack"><h2>Il team</h2>${S.data.team.length ? `<div class="grid">${S.data.team.map(t => `<article class="card click stack" data-edit="team:${t.id}" style="gap:6px"><h3>${esc(t.name)}</h3>${attChip(t)}${t.role ? `<div class="eyebrow">${esc(t.role)}</div>` : ""}${t.focus ? `<p class="small pre">${esc(t.focus)}</p>` : ""}${t.contact ? `<p class="small muted">${esc(t.contact)}</p>` : ""}<div class="row small muted"><span>${openTasks().filter(x => x.owner === t.name).length} task aperti</span></div></article>`).join("")}</div>` : emptyBox("Aggiungi i founder", "Nome, ruolo e di cosa è responsabile ciascuno. I nomi compariranno come responsabili di task, obiettivi e contatti.", "team", "Aggiungi una persona")}</section>
+  ${head("Team", "Risorse", "I link che usiamo ogni giorno: cartelle, strumenti, stanze dei meeting.", addBtn("links", "Aggiungi link", "acc"))}
   <section class="stack"><h2>Link utili</h2>
   ${cats.length ? `<div class="grid2">${cats.map(c => `<div class="card panel"><h3>${c}</h3><div>${S.data.links.filter(l => (l.category || "Altro") === c).map(l => `<div class="li"><div class="grow"><a href="${esc(safeUrl(l.url))}" target="_blank" rel="noopener" class="t">${esc(l.title)}</a>${l.note ? `<div class="small muted">${esc(l.note)}</div>` : ""}</div>${S.canWrite ? `<button class="btn ghost sm" data-edit="links:${l.id}">Modifica</button>` : ""}</div>`).join("")}</div></div>`).join("")}</div>` : `<p class="muted">Ancora nessun link.</p>`}
   <div class="banner warn">Non salvare qui password o codici di accesso: chiunque abbia il link della pagina può leggerli. Usate un gestore di password condiviso.</div></section>
@@ -908,13 +896,14 @@ V.links = () => {
 let raf = 0;
 function render() { cancelAnimationFrame(raf); raf = requestAnimationFrame(doRender); }
 function doRender() {
+  if (S.view === "okrs" || S.view === "metrics") { S.f.goalTab = S.view; S.view = "goals"; }
   renderSide();
   const main = $("#main");
   const act = document.activeElement; const actId = act && act.id && main.contains(act) ? act.id : null; const sel = actId && act.selectionStart;
   let html;
   if (S.offline) html = `<div class="wrap">${head("UniLink HQ", "Accedi per vedere lo spazio di lavoro", "")}<div class="banner">Questa pagina salva idee, obiettivi e numeri in un archivio condiviso, visibile solo a chi ha effettuato l'accesso a claude.ai. Accedi con il tuo account e ricarica la pagina.</div></div>`;
   else if (!S.ready) html = `<div class="wrap"><div class="empty" style="margin-top:20vh">Caricamento dello spazio di lavoro…</div></div>`;
-  else html = (S.canWrite ? "" : `<div class="wrap" style="margin-bottom:16px"><div class="banner">Stai guardando in sola lettura. Per aggiungere e modificare chiedi al proprietario della pagina di invitarti come Contributor o Editor.</div></div>`) + (V[S.view] || V.home)() + sectionFiles();
+  else html = (S.canWrite ? "" : `<div class="wrap" style="margin-bottom:16px"><div class="banner">Stai guardando in sola lettura. Per aggiungere e modificare chiedi al proprietario della pagina di invitarti come Contributor o Editor.</div></div>`) + (V[S.view] || V.home)();
   main.innerHTML = html;
   if (actId) { const el = document.getElementById(actId); if (el) { el.focus(); try { el.setSelectionRange(sel, sel); } catch (e) {} } }
   hydrate(main);
@@ -963,7 +952,7 @@ function openForm(col, id, preset) {
     <form class="form" id="frm" novalidate>${sc.fields.map(f => fieldHTML(f, vals[f.k])).join("")}
     <div class="form-foot fld wide"><div class="row">${doc ? `<button type="button" class="btn danger" data-del="${col}:${id}">Elimina</button>` : ""}</div><div class="row"><button type="button" class="btn" data-close>Annulla</button><button type="submit" class="btn pri">${doc ? "Salva" : "Aggiungi"}</button></div></div></form>`);
   // titolo "Nuova/Nuovo" corretto
-  const h = $(".sheet h2"); if (!doc) h.textContent = (["obiettivo", "task", "feedback", "contatto", "movimento", "meeting"].includes(sc.one) ? "Nuovo " : "Nuova ") + sc.one;
+  const h = $(".sheet h2"); if (!doc) h.textContent = (["obiettivo", "task", "feedback", "contatto", "movimento", "meeting", "documento", "materiale"].includes(sc.one) ? "Nuovo " : "Nuova ") + sc.one;
   drawImgs(); drawKrs(); drawFiles(); syncOnly();
   const first = $("#frm input, #frm textarea"); if (first) first.focus();
 }
@@ -1048,7 +1037,7 @@ async function submitForm(e) {
       }
       if (sc.fields.some(f => f.t === "krs")) o.krs = F.krs.filter(k => (k.label || "").trim()).map(k => ({ label: k.label.trim(), current: Number(k.current) || 0, target: Number(k.target) || 0, unit: (k.unit || "").trim() }));
       if (F.col === "tasks" && o.status === "Fatto") o.doneAt = localISO();
-      if (F.id) await S.db.collection(F.col).doc(F.id).update(o);
+      if (F.id) await S.db.collection(F.col).doc(F.id).update({ ...o, updatedAt: new Date().toISOString(), updatedBy: S.uid || "" });
       else await S.db.collection(F.col).doc().set({ ...o, ...(F.extra || {}), by: S.uid || "", createdAt: new Date().toISOString() });
       for (const rid of F.removed) await S.db.doc("images/" + rid).delete().catch(() => {});
       if (hasFiles() && F.removedFiles.length) await HQ_FILES.remove(F.removedFiles).catch(() => {});
@@ -1131,7 +1120,7 @@ function openWeekly() {
 }
 
 /* ================= azioni ================= */
-async function setDoc(col, id, patch) { try { await guard(() => S.db.collection(col).doc(id).update(patch)); } catch (e) {} }
+async function setDoc(col, id, patch) { try { if ("status" in patch || "doneAt" in patch) patch = { ...patch, updatedAt: new Date().toISOString(), updatedBy: S.uid || "" }; await guard(() => S.db.collection(col).doc(id).update(patch)); } catch (e) {} }
 
 document.addEventListener("click", async e => {
   const t = e.target.closest("button, [data-menu], [data-nav], [data-edit], [data-idea], [data-meeting], [data-metric], [data-zoom], a, select, input, label");
@@ -1224,7 +1213,222 @@ document.addEventListener("paste", e => {
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("#modal").hidden) closeModal(); });
 $("#modal").addEventListener("mousedown", e => { if (e.target.id === "modal") closeModal(); });
 
+/* ====================================================== v2: archivio, calendario, note, attività, home ====================================================== */
+const DOC_CATS = [
+  { id: "Dispense e didattica", c: "#1a453c", s: "#dcebe6", ic: _ic.cont },
+  { id: "Brand e grafica", c: "#6d28d9", s: "#ede4fb", ic: _ic.gra },
+  { id: "Marketing e social", c: "#9d174d", s: "#fbe3ee", ic: _ic.mkt },
+  { id: "Partner e contratti", c: "#0f5f6b", s: "#d9eef1", ic: _ic.par },
+  { id: "Finanza e burocrazia", c: "#7a5a00", s: "#fbefc8", ic: _ic.mon },
+  { id: "Prodotto e tech", c: "#172554", s: "#e3e7f2", ic: _ic.prod },
+  { id: "Team e organizzazione", c: "#475569", s: "#e6e9ee", ic: _ic.org },
+  { id: "AI e demo", c: "#914809", s: "#f6e6d6", ic: _ic.nov },
+  { id: "Altro", c: "#5f5b53", s: "#e9e5dd", ic: _ic.alt },
+];
+const docCat = id => DOC_CATS.find(c => c.id === id) || DOC_CATS[DOC_CATS.length - 1];
+SCHEMA.docs = { one: "documento", fields: [
+  { k: "title", l: "Nome del documento", req: 1, wide: 1, ph: "Es. Contratto sponsor AIESEC" },
+  { k: "cat", l: "Cartella", t: "select", o: DOC_CATS.map(c => c.id), d: "Altro", help: "Dove va archiviato: serve a ritrovarlo." },
+  { k: "url", l: "Link esterno (Drive, Notion…)", t: "url", ph: "Se il file sta altrove" },
+  { k: "note", l: "A cosa serve", t: "textarea", rows: 2, wide: 1 },
+  { k: "files", l: "File", t: "files", wide: 1 } ] };
+const FILE_COLS = { ideas: "Idee", tasks: "Task", okrs: "Obiettivi", partners: "Partner", finance: "Finanze", meetings: "Meeting", decisions: "Decisioni", links: "Risorse", team: "Persone", lab: "Laboratorio AI", docs: "Documenti" };
+const SEC_CAT = { ideas: "Prodotto e tech", feedback: "Prodotto e tech", okrs: "Team e organizzazione", tasks: "Team e organizzazione", metrics: "Team e organizzazione", web: "Marketing e social", partners: "Partner e contratti", finance: "Finanza e burocrazia", meetings: "Team e organizzazione", decisions: "Team e organizzazione", team: "Team e organizzazione", links: "Team e organizzazione" };
+const IDEA_CAT = { [T.prod]: "Prodotto e tech", [T.cont]: "Dispense e didattica", [T.evt]: "Marketing e social", [T.mkt]: "Marketing e social", [T.par]: "Partner e contratti", [T.mon]: "Finanza e burocrazia", [T.org]: "Team e organizzazione" };
+const itemCat = (col, d) => col === "docs" ? (d.cat || "Altro") : col === "ideas" ? IDEA_CAT[tipoOf(d).id] : col === "lab" ? "AI e demo" : (SEC_CAT[col] || "Altro");
+const itemTitle = d => d.title || d.name || d.desc || "";
+const fileExt = n => ((String(n).match(/\.([A-Za-z0-9]{1,5})$/) || [])[1] || "file").toLowerCase();
+
+function allFiles() {
+  const out = [];
+  Object.keys(FILE_COLS).forEach(col => (S.data[col] || []).forEach(d => (d.files || []).forEach(f => out.push({ ...f, cat: itemCat(col, d), title: itemTitle(d), src: { col, id: d.id }, label: FILE_COLS[col] }))));
+  (S.data.sfiles || []).forEach(f => out.push({ ...f, cat: SEC_CAT[f.section] || "Altro", title: "", src: null, legacy: true, label: "Allegato di sezione" }));
+  return out;
+}
+function openRef(col, id) {
+  if (col === "ideas") { openIdea(id); return; }
+  if (col === "meetings") { openMeeting(id); return; }
+  if (col === "lab") { S.labOpen = id; closeModal(); go("lab"); return; }
+  if (col === "notes") { go("notes"); return; }
+  if (S.canWrite) { closeModal(); openForm(col, id); }
+}
+
+V.docs = () => {
+  const all = allFiles(), cur = S.f.docCat || "";
+  const links = (S.data.docs || []).filter(d => d.url && !(d.files || []).length).map(d => ({ name: d.title, link: d.url, cat: d.cat || "Altro", title: d.note || "", src: { col: "docs", id: d.id }, label: "Documento", by: d.by, createdAt: d.createdAt }));
+  const rows = all.concat(links).filter(x => (!cur || x.cat === cur) && match({ n: x.name, t: x.title, l: x.label }, "docs", ["n", "t", "l"])).sort((a, b) => String(b.createdAt || b.at || "").localeCompare(String(a.createdAt || a.at || "")));
+  const cnt = id => all.concat(links).filter(x => x.cat === id).length;
+  const folder = c => `<button class="folder ${cur === c.id ? "on" : ""}" data-f="docCat" data-v="${cur === c.id ? "" : esc(c.id)}" style="--tc:${c.c};--ts:${c.s}">${svgI(c.ic)}<span>${esc(c.id)}</span><b class="num">${cnt(c.id)}</b></button>`;
+  const row = x => { const c = docCat(x.cat); return `<div class="frow"><div class="fico" style="--tc:${c.c};--ts:${c.s}">${x.link ? "link" : esc(fileExt(x.name))}</div><div class="grow">${x.link ? `<a class="t" href="${esc(safeUrl(x.link))}" target="_blank" rel="noopener">${esc(x.name)}</a>` : `<button type="button" class="linkbtn t" data-openfile="${esc(x.path)}">${esc(x.name)}</button>`}<div class="small muted">${[x.title && esc(x.title), x.size ? fsize(x.size) : "", x.by && esc(x.by), (x.createdAt || x.at) && fmtD(String(x.createdAt || x.at).slice(0, 10), 1)].filter(Boolean).join(" · ")}</div></div><div class="row" style="justify-content:flex-end"><span class="tchip" style="--tc:${c.c};--ts:${c.s}">${esc(x.cat)}</span>${x.src ? `<button class="btn ghost sm" data-openref="${x.src.col}:${x.src.id}">${esc(x.label)}</button>` : `<span class="chip">${esc(x.label)}</span>`}${x.legacy && S.canWrite ? `<button class="btn ghost sm danger" data-rmsf="${x.id}">Elimina</button>` : ""}</div></div>`; };
+  return `<div class="wrap">
+  ${head("Archivio", "Documenti", "Tutti i file di UniLink in un posto solo, divisi per uso. Ci trovi anche gli allegati delle idee, dei task, dei partner e dei meeting.", addBtn("docs", "Nuovo documento", "acc"))}
+  <div class="folders">${DOC_CATS.map(folder).join("")}</div>
+  <div class="filters">${searchBox("docs", "Cerca un file o un documento")}${cur ? `<button class="fchip on" data-f="docCat" data-v="">Cartella: ${esc(cur)} ✕</button>` : ""}</div>
+  ${rows.length ? `<section class="card panel" style="padding:6px 18px">${rows.map(row).join("")}</section>` : emptyBox("Nessun file qui", "Crea un documento e scegli la cartella giusta: i file allegati a idee, task e partner compaiono qui in automatico.", "docs", "Aggiungi il primo documento")}
+  </div>`;
+};
+
+/* ---------- note rapide ---------- */
+const noteList = st => (S.data.notes || []).filter(n => (n.state === "archiviata") === st).sort(byDate("createdAt")).reverse();
+const ago = iso => { if (!iso) return ""; const m = Math.round((Date.now() - new Date(iso)) / 60000); if (m < 1) return "adesso"; if (m < 60) return m + " min fa"; const h = Math.round(m / 60); if (h < 24) return h + (h === 1 ? " ora fa" : " ore fa"); const g = Math.round(h / 24); return g === 1 ? "ieri" : g < 8 ? g + " giorni fa" : fmtD(iso.slice(0, 10)); };
+const quickNote = (id = "qn") => S.canWrite ? `<form class="qn" id="${id}"><input class="inp" id="${id}_in" placeholder="Scrivi una nota al volo: un'idea, una cosa da ricordare…" autocomplete="off"><button class="btn acc">Salva</button></form>` : "";
+V.notes = () => {
+  const open = noteList(false), arch = noteList(true);
+  const card = n => `<article class="card note stack" style="gap:8px"><div class="pre">${esc(n.text)}</div><div class="row between"><span class="small muted">${author(n)} ${ago(n.createdAt)}</span>${S.canWrite ? `<div class="row"><button class="btn sm" data-nact="idea:${n.id}">→ Idea</button><button class="btn sm" data-nact="task:${n.id}">→ Task</button><button class="btn ghost sm" data-nact="arch:${n.id}">Archivia</button></div>` : ""}</div></article>`;
+  return `<div class="wrap">
+  ${head("Idee e ascolto", "Note rapide", "Il posto dove appuntare al volo, anche da telefono. Poi, con un clic, la nota diventa un'idea o un task e sparisce da qui.")}
+  ${quickNote("qn")}
+  ${open.length ? `<div class="grid">${open.map(card).join("")}</div>` : `<p class="muted">Nessuna nota in sospeso. Quando ti viene in mente qualcosa, scrivila qui sopra.</p>`}
+  ${arch.length ? `<section class="stack"><h3 class="muted">Archiviate</h3><div class="grid">${arch.slice(0, 12).map(n => `<article class="card note arch"><div class="pre small">${esc(n.text)}</div><div class="row between"><span class="small muted">${author(n)} ${ago(n.createdAt)}</span>${S.canWrite ? `<button class="btn ghost sm" data-nact="del:${n.id}">Elimina</button>` : ""}</div></article>`).join("")}</div></section>` : ""}
+  </div>`;
+};
+
+/* ---------- attività recente (ricavata dai dati, nessuna scrittura in più) ---------- */
+const ACT_NOUN = { ideas: ["l'idea", "ideas"], tasks: ["il task", "tasks"], okrs: ["l'obiettivo", "okrs"], meetings: ["il meeting", "meetings"], decisions: ["la decisione", "decisions"], partners: ["il contatto", "partners"], feedback: ["un feedback", "feedback"], lab: ["il materiale", "lab"], docs: ["il documento", "docs"], notes: ["una nota", "notes"], team: ["la persona", "team"], links: ["la risorsa", "links"] };
+function activity() {
+  const out = [];
+  Object.keys(ACT_NOUN).forEach(col => (S.data[col] || []).forEach(d => {
+    const t = itemTitle(d) || d.text || d.who || "", mk = (at, who, verb) => at && out.push({ at, who: who || "", verb, col, id: d.id, title: String(t).slice(0, 70) });
+    mk(d.createdAt, d.by, "ha aggiunto");
+    if (d.updatedAt && d.createdAt && new Date(d.updatedAt) - new Date(d.createdAt) > 120000) mk(d.updatedAt, d.updatedBy, d.status === "Fatto" && col === "tasks" ? "ha completato" : "ha modificato");
+    else if (d.updatedAt && !d.createdAt) mk(d.updatedAt, d.updatedBy, "ha modificato");
+    (d.comments || []).forEach(c => c.at && out.push({ at: c.at, who: c.by, verb: "ha commentato", col, id: d.id, title: String(t).slice(0, 70) }));
+  }));
+  (S.data.labver || []).forEach(v => { const it = (S.data.lab || []).find(x => x.id === v.itemId); if (it && v.createdAt) out.push({ at: v.createdAt, who: v.by, verb: "ha caricato " + (v.label || "una versione") + " di", col: "lab", id: it.id, title: it.title }); });
+  (S.data.aibriefs || []).forEach(b => b.createdAt && out.push({ at: b.createdAt, who: b.auto ? "HQ" : b.by, verb: "ha creato il briefing per l'AI v" + b.n, col: "ai", id: b.id, title: "" }));
+  return out.sort((a, b) => String(b.at).localeCompare(String(a.at)));
+}
+function activityHTML(n) {
+  const list = activity().slice(0, n);
+  if (!list.length) return `<p class="muted">Qui compariranno le ultime attività del team.</p>`;
+  return list.map(a => { const noun = (ACT_NOUN[a.col] || ["", ""])[0]; return `<div class="act"><span class="av">${esc((a.who || "?").trim().charAt(0).toUpperCase() || "?")}</span><div class="grow small"><b>${esc((a.who || "Qualcuno").split(" ")[0])}</b> ${esc(a.verb)} ${noun && a.col !== "ai" ? esc(noun) : ""} ${a.title ? `<button class="linkbtn" style="text-decoration:none;font-weight:600" data-openref="${a.col}:${a.id}">“${esc(a.title)}”</button>` : ""}<div class="muted" style="font-size:12px">${ago(a.at)}</div></div></div>`; }).join("");
+}
+
+/* ---------- calendario collegato ---------- */
+const CAL_K = { meeting: ["Meeting", "#172554"], task: ["Scadenze", "#cf7527"], late: ["In ritardo", "#a4321f"], done: ["Fatto", "#9a968d"], idea: ["Eventi e idee", "#9d174d"], decision: ["Da rivedere", "#7a5a00"], partner: ["Partner", "#0f5f6b"], bday: ["Compleanni", "#6d28d9"] };
+function calEvents(year) {
+  const ev = []; const add = (date, kind, title, ref, time) => { const d = String(date || "").slice(0, 10); if (/^\d{4}-\d\d-\d\d$/.test(d)) ev.push({ date: d, kind, title, ref, time: time || "" }); };
+  S.data.meetings.forEach(m => m.when && add(m.when, "meeting", m.title, "meetings:" + m.id, String(m.when).slice(11, 16)));
+  S.data.tasks.forEach(t => t.due && add(t.due, t.status === "Fatto" ? "done" : daysFrom(t.due) < 0 ? "late" : "task", t.title, "tasks:" + t.id));
+  S.data.ideas.forEach(i => { if (i.e_date) add(i.e_date, "idea", "Evento: " + i.title, "ideas:" + i.id); if (i.o_due) add(i.o_due, "idea", "Entro: " + i.title, "ideas:" + i.id); });
+  S.data.decisions.forEach(d => d.review && add(d.review, "decision", "Rivedere: " + d.title, "decisions:" + d.id));
+  S.data.partners.forEach(p => p.nextDate && add(p.nextDate, "partner", (p.next || "Follow-up") + " · " + p.name, "partners:" + p.id));
+  S.data.team.forEach(t => { if (t.birthday) [year - 1, year, year + 1].forEach(y => add(y + String(t.birthday).slice(4, 10), "bday", "Compleanno " + t.name.split(" ")[0], "team:" + t.id)); });
+  return ev;
+}
+function calMonthHTML(opts = {}) {
+  const now = new Date(), c = S.cal || (S.cal = { y: now.getFullYear(), m: now.getMonth(), sel: localISO() });
+  const first = new Date(c.y, c.m, 1), lead = (first.getDay() + 6) % 7, dim = new Date(c.y, c.m + 1, 0).getDate(), cells = Math.ceil((lead + dim) / 7) * 7;
+  const by = {}; calEvents(c.y).filter(e => !S.f.calHide || !S.f.calHide[e.kind]).forEach(e => (by[e.date] || (by[e.date] = [])).push(e));
+  const today = localISO();
+  let grid = "";
+  for (let i = 0; i < cells; i++) {
+    const d = new Date(c.y, c.m, 1 - lead + i), iso = localISO(d), es = (by[iso] || []).sort((a, b) => (a.time || "99").localeCompare(b.time || "99")), oth = d.getMonth() !== c.m;
+    grid += `<div class="cc ${oth ? "oth" : ""} ${iso === today ? "today" : ""} ${iso === c.sel ? "sel" : ""}" data-calday="${iso}"><span class="d">${d.getDate()}</span><div class="cps">${es.slice(0, opts.big ? 4 : 3).map(e => `<button class="cpill" data-cal="${e.ref}" style="--k:${CAL_K[e.kind][1]}" title="${esc(e.title)}"><i></i><span>${e.time ? e.time + " " : ""}${esc(e.title)}</span></button>`).join("")}${es.length > (opts.big ? 4 : 3) ? `<span class="cmore">+${es.length - (opts.big ? 4 : 3)}</span>` : ""}</div></div>`;
+  }
+  const title = first.toLocaleDateString("it-IT", { month: "long", year: "numeric" });
+  const hidden = S.f.calHide || {};
+  const legend = Object.entries(CAL_K).filter(([k]) => k !== "done").map(([k, [l, col]]) => `<button class="lg ${hidden[k] ? "off" : ""}" data-calkind="${k}" style="--k:${col}"><i></i>${l}</button>`).join("");
+  return `<div class="cal ${opts.big ? "big" : ""}"><div class="cal-h"><h2 style="text-transform:capitalize">${title}</h2><div class="row"><button class="btn sm" data-calnav="-1" aria-label="Mese precedente">‹</button><button class="btn sm" data-calnav="0">Oggi</button><button class="btn sm" data-calnav="1" aria-label="Mese successivo">›</button></div></div>
+    <div class="cal-w">${["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"].map(x => `<span>${x}</span>`).join("")}</div><div class="cal-g">${grid}</div><div class="cal-lg">${legend}</div></div>`;
+}
+function calAgendaHTML() {
+  const c = S.cal || {}, sel = c.sel || localISO();
+  const es = calEvents(+sel.slice(0, 4)).filter(e => e.date === sel).sort((a, b) => (a.time || "99").localeCompare(b.time || "99"));
+  const label = new Date(sel + "T00:00").toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" });
+  return `<div class="agenda"><div class="panel-h"><h3 style="text-transform:capitalize">${label}</h3>${sel === localISO() ? '<span class="chip or">oggi</span>' : `<span class="small muted">${rel(sel)}</span>`}</div>
+   ${es.length ? es.map(e => `<button class="aev" data-cal="${e.ref}" style="--k:${CAL_K[e.kind][1]}"><i></i><div class="grow"><div class="t">${esc(e.title)}</div><div class="small muted">${CAL_K[e.kind][0]}${e.time ? " · " + e.time : ""}</div></div></button>`).join("") : `<p class="muted small">Niente in programma questo giorno.</p>`}
+   ${S.canWrite ? `<div class="row"><button class="btn sm" data-adddate="tasks" data-date="${sel}">+ Task</button><button class="btn sm" data-adddate="meetings" data-date="${sel}">+ Meeting</button></div>` : ""}</div>`;
+}
+V.calendar = () => `<div class="wrap">
+  ${head("Home", "Calendario", "Meeting, scadenze, eventi, follow-up con i partner, decisioni da rivedere e compleanni: tutto in un unico calendario. Clicca un evento per aprirlo.")}
+  <div class="calwrap"><section class="card">${calMonthHTML({ big: true })}</section><section class="card">${calAgendaHTML()}</section></div></div>`;
+
+/* ---------- obiettivi e numeri: unico spazio con due schede ---------- */
+V.goals = () => { const tab = S.f.goalTab === "metrics" ? "metrics" : "okrs"; return `<div class="wrap" style="margin-bottom:-6px"><div class="tabs"><button class="tab ${tab === "okrs" ? "on" : ""}" data-f="goalTab" data-v="okrs">Obiettivi</button><button class="tab ${tab === "metrics" ? "on" : ""}" data-f="goalTab" data-v="metrics">Numeri e metriche</button></div></div>` + V[tab](); };
+
+/* ---------- home ---------- */
+const meName = () => String(S.uid || "").trim().split(" ")[0];
+const isMine = t => meName() && String(t.owner || "").toLowerCase().startsWith(meName().toLowerCase());
+V.home = () => {
+  const now = new Date(), hour = now.getHours(), hi = hour < 5 ? "Buonanotte" : hour < 13 ? "Buongiorno" : hour < 18 ? "Buon pomeriggio" : "Buonasera";
+  const ms = S.data.metrics, north = ms.find(m => m.north), pinned = ms.filter(m => m.pinned && !m.north).slice(0, 3);
+  const kpi = (m, isN) => { const st = mStat(m); return `<div class="card kpi click ${isN ? "north" : ""}" data-metric="${m.id}">${isN ? '<div class="eyebrow">North Star</div>' : ""}<div class="lab">${esc(m.name)}</div><div class="val num">${st.v != null ? nf(st.v, 1) : "—"}<small>${esc(m.unit || "")}</small></div>${st.delta || `<span class="delta flat">${st.v == null ? "Nessun valore ancora" : "Primo valore"}</span>`}${spark(st.s.slice(-12).map(x => +x.value), 160, 34, isN)}${st.pctT != null ? `<div class="small" style="opacity:.8">${Math.round(st.pctT)}% dell'obiettivo (${nf(st.tgt)})</div>` : ""}</div>`; };
+  const today = localISO(), late = lateTasks().length, dueToday = openTasks().filter(t => t.due === today).length;
+  const nowISO = new Date(Date.now() - 2 * 3600e3).toISOString();
+  const nextM = S.data.meetings.filter(m => m.when && new Date(m.when).toISOString() >= nowISO).sort(byDate("when"))[0];
+  const rooms = S.data.links.filter(l => l.category === "Meeting fissi");
+  const mine = openTasks().filter(isMine).sort(byDate("due")).slice(0, 6);
+  const q = curQ(), okrs = S.data.okrs.filter(o => o.quarter === q);
+  const topIdeas = S.data.ideas.filter(i => !["Archiviata", "Fatta"].includes(i.status)).sort((a, b) => votes(b) - votes(a) || String(b.createdAt).localeCompare(String(a.createdAt))).slice(0, 4);
+  const fb = S.data.feedback.slice().sort(byDate("date")).reverse().slice(0, 2);
+  const mo = money(), newIdeas = counts().ideas;
+  const lastLab = (S.data.lab || []).slice().sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt))).slice(0, 3);
+  const lastBrief = (S.data.aibriefs || []).slice().sort((a, b) => (b.n || 0) - (a.n || 0))[0];
+  const pill = (n, l, cls) => n ? `<span class="hchip ${cls || ""}"><b class="num">${n}</b> ${l}</span>` : "";
+  return `<div class="wrap">
+  <section class="hero"><div class="hero-t"><div class="eyebrow" style="color:var(--orange)">${now.toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" })}</div><h1>${hi}${meName() ? ", " + esc(meName()) : ""}</h1>
+    <div class="row" style="gap:8px">${pill(late, late === 1 ? "task in ritardo" : "task in ritardo", "red")}${pill(dueToday, "in scadenza oggi", "or")}${pill(newIdeas, newIdeas === 1 ? "idea nuova" : "idee nuove")}${nextM ? `<span class="hchip">Prossimo meeting: <b>${esc(nextM.title)}</b> · ${fmtDT(nextM.when)}</span>` : ""}${!late && !dueToday && !newIdeas && !nextM ? '<span class="hchip">Tutto in ordine per oggi</span>' : ""}</div></div>
+    <div class="hero-a">${addBtn("ideas", "+ Nuova idea", "acc")}<button class="btn" data-go="notes">Nota rapida</button><button class="btn" data-weekly>Aggiorna metriche</button></div></section>
+  <div class="kpis kpis-l">${north ? kpi(north, 1) : ""}${pinned.map(m => kpi(m)).join("")}
+    <div class="card kpi click" data-nav="tasks"><div class="lab">Task aperti</div><div class="val num">${openTasks().length}</div>${late ? `<span class="delta down">${late} in ritardo</span>` : '<span class="delta up">nessun ritardo</span>'}</div>
+    <div class="card kpi click" data-nav="finance"><div class="lab">Cassa</div><div class="val num">${eur(mo.saldo)}</div><span class="delta flat">${mo.runway ? "runway " + nf(mo.runway, 1) + " mesi" : "runway n/d"}</span></div>
+    ${!north && !pinned.length ? `<div class="empty" style="grid-column:1/-1"><h3>Nessuna metrica nel cruscotto</h3><p>Nelle metriche scegli la North Star e i numeri da tenere sott'occhio.</p><button class="btn pri" data-nav="metrics">Vai alle metriche</button></div>` : ""}</div>
+  <div class="homegrid">
+    <section class="card calcard"><div class="calwrap in">${calMonthHTML({ big: true })}${calAgendaHTML()}</div></section>
+    <div class="stack" style="gap:16px;min-width:0">
+      <section class="card panel"><div class="panel-h"><h2>La mia settimana</h2><button class="linkbtn" data-nav="tasks">Tutti i task</button></div>
+        ${mine.length ? mine.map(t => `<div class="li"><button class="chk" data-done="${t.id}" aria-label="Segna come fatto"></button><div class="grow" data-edit="tasks:${t.id}" style="cursor:pointer"><div class="t">${esc(t.title)}</div><div class="small muted">${esc(t.area || "")}</div></div>${t.due ? `<span class="when ${whenCls(t.due)}">${rel(t.due)}</span>` : ""}</div>`).join("") : `<p class="muted small">${meName() ? "Nessun task assegnato a te." : "Nessun task."} ${S.data.tasks.length ? "" : "Aggiungine uno dalla sezione Scadenze e task."}</p>`}</section>
+      <section class="card panel"><div class="panel-h"><h2>Note rapide</h2><button class="linkbtn" data-nav="notes">Tutte</button></div>${quickNote("qnh")}
+        ${noteList(false).slice(0, 3).map(n => `<div class="li"><div class="grow small pre">${esc(n.text)}</div><span class="small muted">${ago(n.createdAt)}</span></div>`).join("")}</section>
+      <section class="card panel"><div class="panel-h"><h2>Attività recente</h2></div>${activityHTML(7)}</section>
+    </div></div>
+  <div class="grid2">
+    <section class="card panel"><div class="panel-h"><h2>Obiettivi ${q}</h2><button class="linkbtn" data-nav="okrs">Dettagli</button></div>
+      ${okrs.length ? okrs.map(o => { const p = okrPct(o); return `<div class="stack" style="gap:6px"><div class="row between"><span class="t" style="font-weight:500">${esc(o.title)}</span><span class="num small">${p}%</span></div><div class="bar ${p >= 60 ? "gr" : ""}"><i style="width:${p}%"></i></div></div>`; }).join("") : `<p class="muted">Nessun obiettivo per questo trimestre.</p>${addBtn("okrs", "Fissa un obiettivo", "")}`}</section>
+    <section class="card panel"><div class="panel-h"><h2>Idee in evidenza</h2><button class="linkbtn" data-nav="ideas">Bacheca</button></div>
+      ${topIdeas.length ? topIdeas.map(i => `<div class="li"><div class="grow" data-idea="${i.id}" style="cursor:pointer"><div class="t">${esc(i.title)}</div><div class="row">${tipoChip(tipoOf(i))}${kindChip(kindOf(i))}</div></div><button class="vote ${voted(i) ? "on" : ""}" data-vote="${i.id}">${IC.up}<span class="num">${votes(i)}</span></button></div>`).join("") : `<p class="muted">Ancora nessuna idea.</p>`}</section>
+    <section class="card panel"><div class="panel-h"><h2>Prossimo meeting</h2><button class="linkbtn" data-nav="meetings">Tutti</button></div>
+      ${nextM ? `<div class="stack"><div><div class="eyebrow">${fmtDT(nextM.when)}</div><h3 style="margin-top:4px">${esc(nextM.title)}</h3></div>${nextM.agenda ? `<div class="pre small muted">${esc(String(nextM.agenda).slice(0, 220))}</div>` : ""}<div class="row">${nextM.link ? `<a class="btn acc" href="${esc(safeUrl(nextM.link))}" target="_blank" rel="noopener">Entra nel meeting</a>` : ""}<button class="btn" data-meeting="${nextM.id}">Apri</button></div></div>` : `<p class="muted">Nessun meeting in calendario.</p>${addBtn("meetings", "Programma un meeting", "")}`}
+      ${rooms.length ? `<div class="row" style="border-top:1px solid var(--beige);padding-top:12px"><span class="small muted">Stanze fisse:</span>${rooms.map(r => `<a class="btn sm" href="${esc(safeUrl(r.url))}" target="_blank" rel="noopener">${esc(r.title)}</a>`).join("")}</div>` : ""}</section>
+    <section class="card panel"><div class="panel-h"><h2>Laboratorio AI</h2><button class="linkbtn" data-nav="lab">Apri</button></div>
+      ${lastLab.length ? lastLab.map(l => `<div class="li"><div class="grow" data-openref="lab:${l.id}" style="cursor:pointer"><div class="t">${esc(l.title)}</div><div class="small muted">${esc(l.ai || "")} · ${esc(l.cat || "")}</div></div></div>`).join("") : `<p class="muted small">Qui compaiono le demo e i materiali creati con Claude e ChatGPT.</p>`}
+      <div class="row" style="border-top:1px solid var(--beige);padding-top:12px"><button class="btn sm" data-nav="aictx">Contesto per AI</button>${lastBrief ? `<span class="small muted">ultima versione v${lastBrief.n} · ${ago(lastBrief.createdAt)}</span>` : ""}</div></section>
+    <section class="card panel"><div class="panel-h"><h2>Voce degli studenti</h2><button class="linkbtn" data-nav="feedback">Tutti</button></div>
+      ${fb.length ? fb.map(f => `<div class="stack" style="gap:4px"><blockquote>${esc(f.text)}</blockquote><div class="row small muted">${stChip(f.kind)}${esc(f.who || "")}${f.date ? " · " + fmtD(f.date) : ""}</div></div>`).join("") : `<p class="muted">Annota qui quello che vi dicono gli studenti: è la fonte migliore di idee.</p>${addBtn("feedback", "Aggiungi feedback", "")}`}</section>
+    ${homeWeb()}
+  </div></div>`;
+};
+
+/* ---------- gestione eventi delle nuove parti ---------- */
+document.addEventListener("click", async e => {
+  const t = e.target;
+  const kb = t.closest("[data-calkind]"); if (kb) { const k = kb.dataset.calkind; S.f.calHide = { ...(S.f.calHide || {}), [k]: !(S.f.calHide || {})[k] }; render(); return; }
+  const nav = t.closest("[data-calnav]"); if (nav) { const c = S.cal || (S.cal = { y: new Date().getFullYear(), m: new Date().getMonth(), sel: localISO() }), d = +nav.dataset.calnav; if (!d) { const n = new Date(); S.cal = { y: n.getFullYear(), m: n.getMonth(), sel: localISO() }; } else { const n = new Date(c.y, c.m + d, 1); c.y = n.getFullYear(); c.m = n.getMonth(); } render(); return; }
+  const ev = t.closest("[data-cal]"); if (ev) { const [col, id] = ev.dataset.cal.split(":"); openRef(col, id); return; }
+  const day = t.closest("[data-calday]"); if (day) { (S.cal || (S.cal = {})).sel = day.dataset.calday; render(); return; }
+  const ad = t.closest("[data-adddate]"); if (ad) { const col = ad.dataset.adddate, d = ad.dataset.date; closeModal(); openForm(col, null, col === "tasks" ? { due: d } : { when: d + "T18:00" }); return; }
+  const rf = t.closest("[data-openref]"); if (rf) { e.stopPropagation(); const [col, id] = rf.dataset.openref.split(":"); if (col === "ai") { go("aictx"); return; } openRef(col, id); return; }
+  const g = t.closest("[data-go]"); if (g) { go(g.dataset.go); setTimeout(() => { const i = document.getElementById("qn_in"); if (i) i.focus(); }, 80); return; }
+  const na = t.closest("[data-nact]"); if (na) {
+    const [act, id] = na.dataset.nact.split(":"), n = (S.data.notes || []).find(x => x.id === id); if (!n) return;
+    const done = () => setDoc("notes", id, { state: "archiviata" });
+    if (act === "idea") { openForm("ideas", null, { title: n.text.split("\n")[0].slice(0, 90), body: n.text.includes("\n") ? n.text : "" }); if (S.form) S.form.after = done; }
+    else if (act === "task") { openForm("tasks", null, { title: n.text.split("\n")[0].slice(0, 120) }); if (S.form) S.form.after = done; }
+    else if (act === "arch") await done();
+    else if (act === "del") { try { await guard(() => S.db.collection("notes").doc(id).delete()); } catch (er) {} }
+  }
+});
+document.addEventListener("submit", async e => {
+  if (e.target.classList && e.target.classList.contains("qn")) {
+    e.preventDefault(); const inp = e.target.querySelector("input"), text = inp.value.trim(); if (!text) return;
+    inp.value = "";
+    try { await guard(() => S.db.collection("notes").doc().set({ text, state: "aperta", by: S.uid || "", createdAt: new Date().toISOString() })); toast("Nota salvata"); } catch (er) { inp.value = text; }
+  }
+});
+
 function go(v) {
+  if (v === "okrs" || v === "metrics") { S.f.goalTab = v; v = "goals"; }
   S.view = V[v] ? v : "home"; document.body.classList.remove("nav-open");
   try { history.replaceState(null, "", "#" + S.view); } catch (e) {}
   try { localStorage.setItem("ulhq_view", S.view); } catch (e) {}
