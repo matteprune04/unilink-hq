@@ -22,6 +22,27 @@ async function loadAll() {
   const cols = new Set([...Object.keys(LOCAL), ...Object.keys(fresh)]);
   cols.forEach(c => { LOCAL[c] = fresh[c] || new Map(); notify(c); });
 }
+const sessErr = () => ({ code: "session_expired", message: "Sessione scaduta" });
+/* prima di scrivere: rinnova la sessione se serve e, se il database rifiuta, riprova una volta con una sessione nuova */
+async function renew() {
+  const { data } = await SB.auth.getSession();
+  if (data && data.session) return "ok";
+  const r = await SB.auth.refreshSession();
+  if (r.data && r.data.session) return "ok";
+  return r.error && /fetch|network|timeout|load failed/i.test(r.error.message || "") ? "offline" : "expired";
+}
+async function authed(fn) {
+  const st = await renew();
+  if (st === "offline") throw { code: "unavailable", message: "offline" };
+  if (st === "expired") throw sessErr();
+  try { return await fn(); }
+  catch (e) {
+    if (!e || e.code !== "invalid_argument") throw e;
+    const r = await SB.auth.refreshSession();
+    if (!r.data || !r.data.session) throw sessErr();
+    try { return await fn(); } catch (e2) { throw e2 && e2.code === "invalid_argument" ? sessErr() : e2; }
+  }
+}
 const DB = {
   collection(col) {
     return {
@@ -45,9 +66,11 @@ const DB = {
         return { exists: !!data, data: () => body };
       },
       async set(d) {
-        const { error } = isImg ? await SB.from("images").upsert({ id, data: d.data, by: d.by || "" })
-          : await SB.from("docs").upsert({ col, id, data: d, updated_at: new Date().toISOString() });
-        if (error) throw wrapErr(error);
+        await authed(async () => {
+          const { error } = isImg ? await SB.from("images").upsert({ id, data: d.data, by: d.by || "" })
+            : await SB.from("docs").upsert({ col, id, data: d, updated_at: new Date().toISOString() });
+          if (error) throw wrapErr(error);
+        });
         if (!isImg) applyLocal(col, id, d);
       },
       async update(p) {
@@ -56,8 +79,10 @@ const DB = {
         await this.set(deepMerge(cur, p));
       },
       async delete() {
-        const { error } = isImg ? await SB.from("images").delete().eq("id", id) : await SB.from("docs").delete().eq("col", col).eq("id", id);
-        if (error) throw wrapErr(error);
+        await authed(async () => {
+          const { error } = isImg ? await SB.from("images").delete().eq("id", id) : await SB.from("docs").delete().eq("col", col).eq("id", id);
+          if (error) throw wrapErr(error);
+        });
         if (!isImg) applyLocal(col, id, null);
       },
     };
@@ -125,7 +150,7 @@ document.addEventListener("submit", async e => {
   const { error } = await SB.auth.signInWithPassword({ email: HQ_CONFIG.teamEmail, password: pass });
   if (error) { showLogin(/invalid/i.test(error.message) ? "Password sbagliata." : "Accesso non riuscito: controlla la connessione e riprova."); return; }
   try { localStorage.setItem("ulhq_name", name); } catch (er) {}
-  $("#login").hidden = true; enter(name);
+  $("#login").hidden = true; if (S.ready) toast("Accesso rinnovato: riprova a salvare."); else enter(name);
 }, true);
 async function logout() { await SB.auth.signOut(); location.reload(); }
 

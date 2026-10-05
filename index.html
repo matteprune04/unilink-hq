@@ -291,7 +291,7 @@ img { max-width: 100%; }
 /* ================= costanti ================= */
 const LOGO = "logo-white.png";
 const AREE = ["Dispense e quiz", "Tools", "Mentor", "Community", "Social e marketing", "Partnership e B2B", "Prodotto e tech", "Monetizzazione", "Organizzazione"];
-const IDEA_ST = ["Nuova", "Da valutare", "Approvata", "In sviluppo", "Fatta", "Archiviata"];
+const IDEA_ST = ["Nuova", "Approvata", "In sviluppo", "Fatta", "Archiviata"];
 /* Tipo = di che cosa parla l'idea (colore + icona). Natura = che genere di intervento è. */
 const _ic = {
   prod: '<path d="M12 3 3 7.5 12 12l9-4.5L12 3Z"/><path d="M3 7.5v9L12 21l9-4.5v-9M12 12v9"/>',
@@ -454,8 +454,9 @@ const IC = {
   tick: '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.2 5 8.6 9.6 3.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>',
 };
 
-function toast(msg) { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => t.hidden = true, 2800); }
+function toast(msg, ms = 2800) { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => t.hidden = true, ms); }
 const svgI = p => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+const ideaSt = i => !i.status || i.status === "Da valutare" ? "Nuova" : i.status; /* "Da valutare" è stato unito a "Nuova" */
 const tipoOf = i => TIPI.find(t => t.id === i.type) || TIPI.find(t => t.from.includes(i.area)) || TIPO_NONE;
 const kindOf = i => IKIND.find(k => k.id === i.kind);
 const tipoChip = t => `<span class="tchip" style="--tc:${t.c};--ts:${t.s}">${svgI(t.ic)}${esc(t.id)}</span>`;
@@ -549,7 +550,7 @@ function money() {
 /* ================= sidebar ================= */
 function counts() {
   return {
-    ideas: S.data.ideas.filter(i => i.status === "Nuova" || i.status === "Da valutare").length,
+    ideas: S.data.ideas.filter(i => ideaSt(i) === "Nuova").length,
     tasks: lateTasks().length, tasksOpen: openTasks().length,
     web: (gdoc()?.index?.missing || []).length,
     partners: S.data.partners.filter(p => p.nextDate && daysFrom(p.nextDate) < 0 && !["Accordo attivo", "Non interessato"].includes(p.status)).length,
@@ -559,7 +560,7 @@ function renderSide() {
   const c = counts();
   const badge = id => {
     if (id === "tasks") return c.tasks ? `<span class="cnt alert num" title="In ritardo">${c.tasks}</span>` : c.tasksOpen ? `<span class="cnt num">${c.tasksOpen}</span>` : "";
-    if (id === "ideas" && c.ideas) return `<span class="cnt num" title="Da valutare">${c.ideas}</span>`;
+    if (id === "ideas" && c.ideas) return `<span class="cnt num" title="Nuove, da valutare">${c.ideas}</span>`;
     if (id === "web" && c.web) return `<span class="cnt alert num" title="Pagine non indicizzate">${c.web}</span>`;
     if (id === "partners" && c.partners) return `<span class="cnt alert num" title="Follow-up scaduti">${c.partners}</span>`;
     return "";
@@ -625,7 +626,7 @@ V.home = () => {
       ${okrs.length ? okrs.map(o => { const p = okrPct(o); return `<div class="stack" style="gap:6px"><div class="row between"><span class="t" style="font-weight:500">${esc(o.title)}</span><span class="num small">${p}%</span></div><div class="bar ${p >= 60 ? "gr" : ""}"><i style="width:${p}%"></i></div></div>`; }).join("") : `<p class="muted">Nessun obiettivo per questo trimestre.</p>${addBtn("okrs", "Fissa un obiettivo", "")}`}
     </section>
     <section class="card panel"><div class="panel-h"><h2>Idee più votate</h2><button class="linkbtn" data-nav="ideas">Bacheca</button></div>
-      ${topIdeas.length ? `<div>${topIdeas.map(i => `<div class="li"><div class="grow" data-idea="${i.id}" style="cursor:pointer"><div class="t">${esc(i.title)}</div><div class="row">${tipoChip(tipoOf(i))}${kindChip(kindOf(i))}${stChip(i.status)}</div></div><button class="vote ${voted(i) ? "on" : ""}" data-vote="${i.id}">${IC.up}<span class="num">${votes(i)}</span></button></div>`).join("")}</div>` : `<p class="muted">Ancora nessuna idea.</p>`}
+      ${topIdeas.length ? `<div>${topIdeas.map(i => `<div class="li"><div class="grow" data-idea="${i.id}" style="cursor:pointer"><div class="t">${esc(i.title)}</div><div class="row">${tipoChip(tipoOf(i))}${kindChip(kindOf(i))}${stChip(ideaSt(i))}</div></div><button class="vote ${voted(i) ? "on" : ""}" data-vote="${i.id}">${IC.up}<span class="num">${votes(i)}</span></button></div>`).join("")}</div>` : `<p class="muted">Ancora nessuna idea.</p>`}
     </section>
     <section class="card panel"><div class="panel-h"><h2>Voce degli studenti</h2><button class="linkbtn" data-nav="feedback">Tutti</button></div>
       ${fb.length ? fb.map(f => `<div class="stack" style="gap:4px"><blockquote>${esc(f.text)}</blockquote><div class="row small muted">${stChip(f.kind)}${esc(f.who || "")}${f.date ? " · " + fmtD(f.date) : ""}</div></div>`).join("") : `<p class="muted">Annota qui quello che vi dicono gli studenti: è la fonte migliore di idee.</p>${addBtn("feedback", "Aggiungi feedback", "")}`}
@@ -650,14 +651,14 @@ V.ideas = () => {
       <h3>${esc(i.title)}</h3>
       ${i.problem ? `<div class="excerpt">${esc(i.problem)}</div>` : i.body ? `<div class="excerpt">${esc(i.body)}</div>` : ""}
       ${key ? `<div class="ikey">${esc(key)}</div>` : ""}
-      <div class="row">${showSt ? stChip(i.status || "Nuova") : ""}${qw ? chip("Quick win", "gr") : ""}${attChip(i)}${imgs.length > 1 ? chip(`${imgs.length} immagini`) : ""}</div>
+      <div class="row">${showSt ? stChip(ideaSt(i)) : ""}${qw ? chip("Quick win", "gr") : ""}${attChip(i)}${imgs.length > 1 ? chip(`${imgs.length} immagini`) : ""}</div>
       <div class="row between"><button class="vote ${voted(i) ? "on" : ""}" data-vote="${i.id}" title="Vota questa idea">${IC.up}<span class="num">${votes(i)}</span></button><span class="small muted">${(i.comments || []).length ? `${(i.comments || []).length} commenti · ` : ""}${author(i)}</span></div>
     </article>`;
   };
   const tipi = TIPI.concat(S.data.ideas.some(i => tipoOf(i) === TIPO_NONE) ? [TIPO_NONE] : []);
   const live = S.data.ideas.filter(i => i.status !== "Archiviata");
   const sum = tipi.map(t => [t, live.filter(i => tipoOf(i) === t).length]).filter(x => x[1]);
-  const cols = byTipo ? tipi.map(t => [t.id, list.filter(i => tipoOf(i) === t), t]) : IDEA_ST.filter(st => st !== "Archiviata" || showArch).map(st => [st, list.filter(i => (i.status || "Nuova") === st), null]);
+  const cols = byTipo ? tipi.map(t => [t.id, list.filter(i => tipoOf(i) === t), t]) : IDEA_ST.filter(st => st !== "Archiviata" || showArch).map(st => [st, list.filter(i => ideaSt(i) === st), null]);
   const tf = `<button class="fchip ${!S.f.ideaTipo ? "on" : ""}" data-f="ideaTipo" data-v="">Tutti i tipi</button>` + tipi.map(t => `<button class="fchip tf ${S.f.ideaTipo === t.id ? "on" : ""}" data-f="ideaTipo" data-v="${esc(t.id)}" style="--tc:${t.c};--ts:${t.s}">${svgI(t.ic)}${esc(t.id)}</button>`).join("");
   const kf = `<button class="fchip ${!S.f.ideaKind ? "on" : ""}" data-f="ideaKind" data-v="">Tutte le nature</button>` + IKIND.map(k => `<button class="fchip kf ${S.f.ideaKind === k.id ? "on" : ""}" data-f="ideaKind" data-v="${esc(k.id)}" style="--kc:${k.c}">${svgI(k.ic)}${esc(k.id)}</button>`).join("");
   return `<div class="wrap">
@@ -956,7 +957,7 @@ function openForm(col, id, preset) {
   if (!S.canWrite) return;
   const sc = SCHEMA[col]; const doc = id ? S.data[col].find(d => d.id === id) : null;
   const vals = Object.assign({}, ...sc.fields.map(f => ({ [f.k]: doc ? doc[f.k] : defVal(f) })), preset || {});
-  if (col === "ideas" && doc && !doc.type) vals.type = tipoOf(doc).id;
+  if (col === "ideas" && doc) { if (!doc.type) vals.type = tipoOf(doc).id; vals.status = ideaSt(doc); }
   S.form = { col, id, imgs: (vals.images || []).map(x => ({ id: x })), removed: [], files: (vals.files || []).map(x => ({ ...x })), removedFiles: [], krs: (vals.krs && vals.krs.length ? vals.krs : [{ label: "", current: 0, target: "", unit: "" }]).map(k => ({ ...k })), extra: preset && preset.ideaId ? { ideaId: preset.ideaId } : {} };
   openModal(`${sheetHead(doc ? "Modifica" : "Aggiungi", doc ? esc(doc.title || doc.name || doc.desc || sc.one) : "")}
     <form class="form" id="frm" novalidate>${sc.fields.map(f => fieldHTML(f, vals[f.k])).join("")}
@@ -1017,12 +1018,12 @@ async function guard(fn) {
   try { return await fn(); }
   catch (e) {
     const code = e && e.code;
-    if (code === "invalid_argument" && /permission|level|denied|write/i.test(e.message || "")) { S.canWrite = false; render(); toast("Non hai i permessi per modificare questa pagina."); }
-    else if (code === "invalid_argument") { toast("Non sono riuscito a salvare: " + (e.message || "dato non valido") + "."); if (!S.canWrite) render(); }
+    if (code === "session_expired") { toast("Sessione scaduta: rientra con la password, poi premi di nuovo Salva.", 6000); showLogin("Sessione scaduta: rientra con la tua password. Quello che hai scritto non va perso."); }
+    else if (code === "invalid_argument") toast("Non sono riuscito a salvare: " + (e.message || "dato non valido") + ".", 6000);
     else if (code === "file_error") toast(e.message);
     else if (code === "quota_exceeded") toast("Spazio esaurito: elimina qualche immagine o elemento vecchio.");
     else if (code === "unavailable") toast("Connessione instabile: riprova tra un attimo.");
-    else toast("Non sono riuscito a salvare. Riprova.");
+    else toast("Non sono riuscito a salvare. Riprova." + (e && e.message ? " (" + e.message + ")" : ""), 6000);
     throw e;
   }
 }
@@ -1083,7 +1084,7 @@ function openIdea(id) {
     ${shorts.length ? `<div class="meta">${shorts.map(f => `<div><span>${esc(f.l)}</span>${esc(specVal(f, i[f.k]))}</div>`).join("")}</div>` : ""}
     ${longs.map(f => f.k === "m_caption" ? `<section class="stack" style="gap:6px"><div class="row between"><h3>${esc(f.l)}</h3><button class="btn sm" data-copy="${esc(i[f.k])}">Copia testo</button></div><div class="comment pre">${esc(i[f.k])}</div></section>` : `<section class="stack" style="gap:4px"><h3>${esc(f.l)}</h3><p class="pre">${esc(i[f.k])}</p></section>`).join("")}
     ${filesBlock(i)}
-    <div class="meta"><div><span>Stato</span>${S.canWrite ? `<select class="mini-sel" data-move="ideas:${i.id}">${IDEA_ST.map(s => `<option ${s === (i.status || "Nuova") ? "selected" : ""}>${s}</option>`).join("")}</select>` : esc(i.status)}</div><div><span>Impatto</span>${esc(i.impact || "—")} / 5</div><div><span>Sforzo</span>${esc(i.effort || "—")} / 5</div><div><span>Proposta da</span>${author(i) || "—"}${i.createdAt ? " · " + fmtD(i.createdAt.slice(0, 10)) : ""}</div></div>
+    <div class="meta"><div><span>Stato</span>${S.canWrite ? `<select class="mini-sel" data-move="ideas:${i.id}">${IDEA_ST.map(s => `<option ${s === ideaSt(i) ? "selected" : ""}>${s}</option>`).join("")}</select>` : esc(ideaSt(i))}</div><div><span>Impatto</span>${esc(i.impact || "—")} / 5</div><div><span>Sforzo</span>${esc(i.effort || "—")} / 5</div><div><span>Proposta da</span>${author(i) || "—"}${i.createdAt ? " · " + fmtD(i.createdAt.slice(0, 10)) : ""}</div></div>
     ${i.url ? `<a href="${esc(safeUrl(i.url))}" target="_blank" rel="noopener" class="small" style="overflow-wrap:anywhere">${esc(i.url)}</a>` : ""}
     <div class="row"><button class="vote ${voted(i) ? "on" : ""}" data-vote="${i.id}">${IC.up}<span class="num">${votes(i)}</span> ${voted(i) ? "Hai votato" : "Vota"}</button>${S.canWrite ? `<button class="btn sm" data-edit="ideas:${i.id}">Modifica</button><button class="btn sm" data-ideatask="${i.id}">Crea un task</button>` : ""}</div>
     ${linked.length ? `<section class="stack"><h3>Task collegati</h3><div>${linked.map(x => `<div class="li"><div class="grow" data-edit="tasks:${x.id}" style="cursor:pointer"><div class="t">${esc(x.title)}</div><div class="row small muted">${stChip(x.status || "Da fare")}${x.owner ? `<span>${esc(x.owner)}</span>` : ""}${x.due ? `<span class="when ${x.status === "Fatto" ? "" : whenCls(x.due)}">${rel(x.due)}</span>` : ""}</div></div></div>`).join("")}</div></section>` : ""}
@@ -1263,6 +1264,27 @@ async function loadAll() {
   const cols = new Set([...Object.keys(LOCAL), ...Object.keys(fresh)]);
   cols.forEach(c => { LOCAL[c] = fresh[c] || new Map(); notify(c); });
 }
+const sessErr = () => ({ code: "session_expired", message: "Sessione scaduta" });
+/* prima di scrivere: rinnova la sessione se serve e, se il database rifiuta, riprova una volta con una sessione nuova */
+async function renew() {
+  const { data } = await SB.auth.getSession();
+  if (data && data.session) return "ok";
+  const r = await SB.auth.refreshSession();
+  if (r.data && r.data.session) return "ok";
+  return r.error && /fetch|network|timeout|load failed/i.test(r.error.message || "") ? "offline" : "expired";
+}
+async function authed(fn) {
+  const st = await renew();
+  if (st === "offline") throw { code: "unavailable", message: "offline" };
+  if (st === "expired") throw sessErr();
+  try { return await fn(); }
+  catch (e) {
+    if (!e || e.code !== "invalid_argument") throw e;
+    const r = await SB.auth.refreshSession();
+    if (!r.data || !r.data.session) throw sessErr();
+    try { return await fn(); } catch (e2) { throw e2 && e2.code === "invalid_argument" ? sessErr() : e2; }
+  }
+}
 const DB = {
   collection(col) {
     return {
@@ -1286,9 +1308,11 @@ const DB = {
         return { exists: !!data, data: () => body };
       },
       async set(d) {
-        const { error } = isImg ? await SB.from("images").upsert({ id, data: d.data, by: d.by || "" })
-          : await SB.from("docs").upsert({ col, id, data: d, updated_at: new Date().toISOString() });
-        if (error) throw wrapErr(error);
+        await authed(async () => {
+          const { error } = isImg ? await SB.from("images").upsert({ id, data: d.data, by: d.by || "" })
+            : await SB.from("docs").upsert({ col, id, data: d, updated_at: new Date().toISOString() });
+          if (error) throw wrapErr(error);
+        });
         if (!isImg) applyLocal(col, id, d);
       },
       async update(p) {
@@ -1297,8 +1321,10 @@ const DB = {
         await this.set(deepMerge(cur, p));
       },
       async delete() {
-        const { error } = isImg ? await SB.from("images").delete().eq("id", id) : await SB.from("docs").delete().eq("col", col).eq("id", id);
-        if (error) throw wrapErr(error);
+        await authed(async () => {
+          const { error } = isImg ? await SB.from("images").delete().eq("id", id) : await SB.from("docs").delete().eq("col", col).eq("id", id);
+          if (error) throw wrapErr(error);
+        });
         if (!isImg) applyLocal(col, id, null);
       },
     };
@@ -1366,7 +1392,7 @@ document.addEventListener("submit", async e => {
   const { error } = await SB.auth.signInWithPassword({ email: HQ_CONFIG.teamEmail, password: pass });
   if (error) { showLogin(/invalid/i.test(error.message) ? "Password sbagliata." : "Accesso non riuscito: controlla la connessione e riprova."); return; }
   try { localStorage.setItem("ulhq_name", name); } catch (er) {}
-  $("#login").hidden = true; enter(name);
+  $("#login").hidden = true; if (S.ready) toast("Accesso rinnovato: riprova a salvare."); else enter(name);
 }, true);
 async function logout() { await SB.auth.signOut(); location.reload(); }
 
