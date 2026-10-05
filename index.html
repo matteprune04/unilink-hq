@@ -290,6 +290,23 @@ blockquote::before { content: "“"; font-family: var(--fd); color: var(--orange
 .ver .grow { flex: 1; min-width: 220px; overflow-wrap: anywhere; } .ver details { margin-top: 6px; } .ver summary { cursor: pointer; color: var(--orange-dark); } .ver ul { margin: 6px 0 0; padding-left: 18px; }
 .incl { display: flex; flex-direction: column; } .inc { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-top: 1px solid var(--beige); cursor: pointer; } .inc:first-child { border-top: 0; } .inc input { margin-top: 4px; width: 18px; height: 18px; accent-color: var(--orange); flex: none; } .inc .grow { min-width: 0; }
 .mdprev { white-space: pre-wrap; background: #fff; border: 1px solid var(--line); border-radius: var(--r-sm); padding: 14px; font-size: 12.5px; max-height: 58vh; overflow: auto; margin: 0; }
+.gh { display: flex; align-items: center; gap: 10px; color: var(--tc); border-bottom: 2px solid var(--tc); padding-bottom: 6px; } .gh h2 { color: var(--tc); font-size: 19px; } .gh .ico { width: 20px; height: 20px; }
+.labcard { border-top: 5px solid var(--tc); display: flex; flex-direction: column; gap: 8px; }
+.aichip, .rchip { display: inline-flex; align-items: center; font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: var(--pill); background: var(--ts); color: var(--tc); }
+.vbadge { background: var(--navy-soft); color: var(--navy); font-weight: 600; font-size: 12px; padding: 1px 8px; border-radius: var(--pill); }
+.labhead { border-left: 6px solid var(--tc); background: #fff; border-radius: var(--r); padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; box-shadow: var(--shadow); }
+.labgrid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; align-items: start; }
+.seg { display: inline-flex; background: var(--beige); border-radius: var(--pill); padding: 3px; gap: 2px; } .seg button { border: 0; background: none; padding: 5px 14px; border-radius: var(--pill); cursor: pointer; font-size: 13px; font-weight: 600; color: var(--muted); } .seg button.on { background: var(--navy); color: #fff; }
+.fr { border: 1px solid var(--line); border-radius: var(--r-sm); overflow: hidden; background: #fff; min-width: 0; } .fr.empty { display: grid; place-items: center; min-height: 200px; padding: 20px; text-align: center; border-style: dashed; }
+.fr-h { display: flex; gap: 8px; align-items: center; padding: 8px 12px; background: var(--cream); border-bottom: 1px solid var(--line); }
+.fr-b { background: repeating-conic-gradient(#f0ede6 0 25%, #f7f5ef 0 50%) 0 0 / 18px 18px; display: flex; justify-content: center; } .fr-b.mob iframe { width: 390px; max-width: 100%; border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
+iframe.demo { width: 100%; height: 520px; border: 0; background: #fff; display: block; } iframe.demo.full { height: 76vh; border: 1px solid var(--line); border-radius: var(--r-sm); }
+.cmpgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; } .cmpgrid iframe.demo { height: 480px; }
+.drop { border: 2px dashed var(--line); border-radius: var(--r); padding: 18px; display: flex; flex-direction: column; gap: 4px; align-items: center; cursor: pointer; color: var(--navy); } .drop:hover { border-color: var(--orange); background: var(--orange-soft); }
+.vrow { display: flex; gap: 12px; align-items: center; padding: 12px 0; border-top: 1px solid var(--beige); flex-wrap: wrap; } .vrow:first-of-type { border-top: 0; } .vrow .grow { flex: 1; min-width: 180px; }
+.vtag { width: 46px; height: 46px; border-radius: 12px; background: var(--navy-soft); color: var(--navy); display: grid; place-items: center; font-family: var(--fd); flex: none; } .vrow.attuale .vtag { background: #1a6b3c; color: #fff; } .vrow.confronto .vtag { background: #6d28d9; color: #fff; }
+.sheet.wide { max-width: min(1250px, 96vw); }
+@media (max-width: 980px) { .labgrid, .cmpgrid { grid-template-columns: 1fr; } }
 .comment { background: var(--white); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 10px 12px; font-size: 14px; }
 .big-img { width: 100%; border-radius: var(--r-sm); }
 
@@ -915,7 +932,7 @@ function doRender() {
   hydrate(main);
   if (S.ready && !S._autoChk) { S._autoChk = true; setTimeout(() => { try { maybeAutoBrief(); } catch (e) {} }, 3500); }
 }
-function hydrate(root) { loadImgs(root); }
+function hydrate(root) { loadImgs(root); loadFrames(root); }
 function getImg(id) {
   if (!S.imgCache[id]) S.imgCache[id] = S.db.doc("images/" + id).get().then(s => s.exists ? s.data().data : "").catch(() => { delete S.imgCache[id]; return ""; });
   return S.imgCache[id];
@@ -923,7 +940,7 @@ function getImg(id) {
 function loadImgs(root) { if (!S.db) return; $$("img[data-img]", root).forEach(async im => { const id = im.dataset.img; if (!/^[\w.~:@+-]+$/.test(id)) return; const src = await getImg(id); if (src) im.src = src; }); }
 
 /* ================= modale ================= */
-function openModal(html) { const m = $("#modal"); $(".sheet", m).innerHTML = html; m.hidden = false; document.body.style.overflow = "hidden"; hydrate(m); }
+function openModal(html) { const m = $("#modal"); $(".sheet", m).classList.remove("wide"); $(".sheet", m).innerHTML = html; m.hidden = false; document.body.style.overflow = "hidden"; hydrate(m); }
 function closeModal() { $("#modal").hidden = true; document.body.style.overflow = ""; S.form = null; }
 const sheetHead = (eb, title) => `<div class="sheet-h"><div class="stack" style="gap:4px;min-width:0">${eb ? `<div class="eyebrow">${eb}</div>` : ""}<h2>${title}</h2></div><button class="x" data-close aria-label="Chiudi">×</button></div>`;
 
@@ -943,6 +960,7 @@ function fieldHTML(f, v) {
     case "images": return `<div class="fld wide"><span>${f.l}</span><div class="imgs" id="imgs"></div><small>JPG o PNG, anche più di una. Puoi anche incollare uno screenshot con Ctrl+V. Le immagini vengono ridimensionate automaticamente.</small></div>`;
     case "files": return hasFiles() ? `<div class="fld wide"><span>${f.l}</span><div class="stack" id="fls" style="gap:6px"></div><small>Documenti, PDF, fogli di calcolo, immagini. Fino a 25 MB ciascuno.</small></div>` : "";
     case "krs": return `<div class="fld wide"><span>${f.l}</span><div class="stack" id="krs" style="gap:6px"></div>${f.help ? `<small>${f.help}</small>` : ""}</div>`;
+    case "ideaRef": inp = `<select id="${id}"><option value="">— nessuna —</option>${S.data.ideas.slice().sort((a, b) => String(a.title).localeCompare(String(b.title))).map(i => `<option value="${i.id}" ${i.id === v ? "selected" : ""}>${esc(i.title)}</option>`).join("")}</select>`; break;
     default: inp = `<input id="${id}" type="text" value="${esc(v || "")}"${ph}>`;
   }
   return `<label class="fld ${f.wide ? "wide" : ""}"${f.only ? ` data-only="${esc(f.only.join("|"))}"` : ""}><span>${f.l}${f.req ? " *" : ""}</span>${inp}${f.help ? `<small>${f.help}</small>` : ""}</label>`;
@@ -1061,6 +1079,7 @@ async function del(col, id, btn) {
       await S.db.collection(col).doc(id).delete();
       for (const im of (d && d.images) || []) await S.db.doc("images/" + im).delete().catch(() => {});
       if (hasFiles() && d && d.files && d.files.length) await HQ_FILES.remove(d.files.map(f => f.path)).catch(() => {});
+      if (col === "lab") { for (const v of labVers(id)) { await S.db.doc("images/" + v.htmlId).delete().catch(() => {}); await S.db.collection("labver").doc(v.id).delete().catch(() => {}); } if (S.labOpen === id) S.labOpen = null; }
       if (col === "metrics") for (const v of series(id)) await S.db.collection("mvalues").doc(v.id).delete().catch(() => {});
     });
     closeModal(); toast("Eliminato");
@@ -1084,6 +1103,7 @@ function openIdea(id) {
     ${i.url ? `<a href="${esc(safeUrl(i.url))}" target="_blank" rel="noopener" class="small" style="overflow-wrap:anywhere">${esc(i.url)}</a>` : ""}
     <div class="row"><button class="vote ${voted(i) ? "on" : ""}" data-vote="${i.id}">${IC.up}<span class="num">${votes(i)}</span> ${voted(i) ? "Hai votato" : "Vota"}</button>${S.canWrite ? `<button class="btn sm" data-edit="ideas:${i.id}">Modifica</button><button class="btn sm" data-ideatask="${i.id}">Crea un task</button>` : ""}</div>
     ${linked.length ? `<section class="stack"><h3>Task collegati</h3><div>${linked.map(x => `<div class="li"><div class="grow" data-edit="tasks:${x.id}" style="cursor:pointer"><div class="t">${esc(x.title)}</div><div class="row small muted">${stChip(x.status || "Da fare")}${x.owner ? `<span>${esc(x.owner)}</span>` : ""}${x.due ? `<span class="when ${x.status === "Fatto" ? "" : whenCls(x.due)}">${rel(x.due)}</span>` : ""}</div></div></div>`).join("")}</div></section>` : ""}
+    ${(S.data.lab || []).filter(x => x.ideaId === i.id).length ? `<section class="stack"><h3>Materiali AI collegati</h3><div>${S.data.lab.filter(x => x.ideaId === i.id).map(x => `<div class="li"><div class="grow" data-openref="lab:${x.id}" style="cursor:pointer"><div class="t">${esc(x.title)}</div><div class="row small muted">${aiChip(x.ai)}<span>${esc(x.kind || "")}</span></div></div></div>`).join("")}</div></section>` : ""}
     <section class="stack"><h3>Discussione</h3>${(i.comments || []).map(c => `<div class="comment"><div class="small muted">${author(c)} · ${fmtD((c.at || "").slice(0, 10))}</div><div class="pre">${esc(c.text)}</div></div>`).join("") || `<p class="small muted">Nessun commento. Pro, contro, dubbi: scriveteli qui.</p>`}
     ${S.canWrite ? `<form class="row" id="cmt" style="flex-wrap:nowrap"><input class="inp" id="cmt_in" placeholder="Scrivi un commento" style="flex:1;min-width:0"><button class="btn pri">Invia</button></form>` : ""}</section>`);
   S.form = null; S.ideaOpen = id;
@@ -1606,6 +1626,165 @@ document.addEventListener("submit", async e => {
   if (e.target.id !== "ctxfrm") return; e.preventDefault();
   const v = k => document.getElementById("cx_" + k).value.trim();
   try { await saveCtx({ mission: v("mission"), audience: v("audience"), tone: v("tone"), priorities: v("priorities"), glossary: v("glossary"), rules: v("rules") }); toast("Contesto salvato"); } catch (er) {}
+});
+
+/* ====================================================== v2: laboratorio AI (materiali, demo, versioni, confronto) ====================================================== */
+const LAB_CATS = [
+  { id: "Demo e prototipi", c: "#172554", s: "#e3e7f2", ic: _ic.prod },
+  { id: "Contenuti didattici", c: "#1a453c", s: "#dcebe6", ic: _ic.cont },
+  { id: "Social e marketing", c: "#9d174d", s: "#fbe3ee", ic: _ic.mkt },
+  { id: "Grafica e brand", c: "#6d28d9", s: "#ede4fb", ic: _ic.gra },
+  { id: "Documenti e piani", c: "#475569", s: "#e6e9ee", ic: _ic.org },
+  { id: "Prompt e istruzioni", c: "#914809", s: "#f6e6d6", ic: _ic.nov },
+  { id: "Analisi e ricerche", c: "#0f5f6b", s: "#d9eef1", ic: _ic.par },
+  { id: "Altro", c: "#5f5b53", s: "#e9e5dd", ic: _ic.alt },
+];
+const labCat = id => LAB_CATS.find(c => c.id === id) || LAB_CATS[LAB_CATS.length - 1];
+const AI_COL = { Claude: ["#a8530f", "#f6e6d6"], ChatGPT: ["#0b6e57", "#d8f0e8"], Altro: ["#5f5b53", "#e9e5dd"] };
+const LAB_KINDS = ["Demo HTML", "Documento", "Immagine / grafica", "Prompt", "Conversazione", "Altro"];
+const ROLE = { attuale: ["Attuale", "#1a6b3c", "#dcebe6"], confronto: ["In confronto", "#6d28d9", "#ede4fb"], archivio: ["Archivio", "#5f5b53", "#e9e5dd"] };
+SCHEMA.lab = { one: "materiale", fields: [
+  { k: "title", l: "Titolo", req: 1, wide: 1, ph: "Es. Demo simulatore d'esame" },
+  { k: "cat", l: "Per cosa serve (cartella)", t: "select", o: LAB_CATS.map(c => c.id), d: "Demo e prototipi", help: "L'uso che ne facciamo: così lo ritrovi." },
+  { k: "kind", l: "Che tipo di materiale è", t: "select", o: LAB_KINDS, d: "Demo HTML" },
+  { k: "ai", l: "Creato con", t: "select", o: ["Claude", "ChatGPT", "Altro"], d: "Claude" },
+  { k: "status", l: "Stato", t: "select", o: ["In lavorazione", "Pronto", "Archiviato"], d: "In lavorazione" },
+  { k: "ideaId", l: "Collegato all'idea", t: "ideaRef", wide: 1, help: "Se nasce da un'idea della bacheca, i commenti dell'idea compaiono accanto al materiale." },
+  { k: "summary", l: "Cosa è e a cosa serve", t: "textarea", rows: 3, wide: 1 },
+  { k: "link", l: "Link all'originale (conversazione o artifact)", t: "url", wide: 1, ph: "https://claude.ai/… oppure https://chatgpt.com/share/…" },
+  { k: "text", l: "Testo o prompt", t: "textarea", rows: 5, wide: 1, ph: "Se è un prompt o un testo, incollalo qui: si potrà copiare con un clic." },
+  { k: "images", l: "Immagini", t: "images", wide: 1 },
+  { k: "files", l: "File allegati", t: "files", wide: 1 } ] };
+const labVers = id => (S.data.labver || []).filter(v => v.itemId === id).sort((a, b) => (b.n || 0) - (a.n || 0));
+const verCur = vs => vs.find(v => v.role === "attuale") || vs[0];
+const aiChip = a => { const c = AI_COL[a] || AI_COL.Altro; return `<span class="aichip" style="--tc:${c[0]};--ts:${c[1]}">${esc(a || "AI")}</span>`; };
+const roleChip = r => { const c = ROLE[r] || ROLE.archivio; return `<span class="rchip" style="--tc:${c[1]};--ts:${c[2]}">${r === "attuale" ? "★ " : ""}${c[0]}</span>`; };
+function loadFrames(root) { $$("iframe[data-blob]", root).forEach(async f => { const t = await getBlob(f.dataset.blob); f.srcdoc = t || "<p style='font:14px sans-serif;padding:20px'>Anteprima non disponibile.</p>"; }); }
+function openLab(id) { S.labOpen = id; S.labV = { mode: "cur", pick: "", dev: "desk" }; go("lab"); }
+
+V.lab = () => {
+  const it = S.labOpen && (S.data.lab || []).find(x => x.id === S.labOpen);
+  if (it) return labDetail(it);
+  const L = (S.data.lab || []), q = S.f.labAi || "", k = S.f.labKind || "";
+  const list = L.filter(x => (!q || x.ai === q) && (!k || x.kind === k) && match(x, "lab", ["title", "summary", "cat", "ai", "kind"]));
+  const card = x => {
+    const vs = labVers(x.id), cur = verCur(vs), c = labCat(x.cat), idea = S.data.ideas.find(i => i.id === x.ideaId), imgs = x.images || [];
+    return `<article class="card click labcard" data-labopen="${x.id}" style="--tc:${c.c};--ts:${c.s}">
+      <div class="row">${aiChip(x.ai)}<span class="chip">${esc(x.kind || "")}</span>${x.status === "Pronto" ? chip("Pronto", "gr") : x.status === "Archiviato" ? chip("Archiviato") : ""}</div>
+      ${imgs[0] ? `<img class="thumb" data-img="${esc(imgs[0])}" alt="">` : ""}
+      <h3>${esc(x.title)}</h3>${x.summary ? `<div class="excerpt">${esc(x.summary)}</div>` : ""}
+      <div class="row small">${vs.length ? `<span class="vbadge">${esc(cur.label || "v" + cur.n)} · ${ROLE[cur.role] ? ROLE[cur.role][0].toLowerCase() : ""}</span><span class="muted">${vs.length} ${vs.length === 1 ? "versione" : "versioni"}</span>` : ""}${idea ? `<span class="chip navy">💡 ${esc(idea.title.slice(0, 28))}</span>` : ""}${(x.comments || []).length ? `<span class="muted">${x.comments.length} commenti</span>` : ""}</div>
+      <div class="small muted">${author(x)} ${x.createdAt ? "· " + fmtD(x.createdAt.slice(0, 10)) : ""}</div></article>`;
+  };
+  const groups = LAB_CATS.map(c => [c, list.filter(x => (x.cat || "Altro") === c.id)]).filter(g => g[1].length);
+  return `<div class="wrap">
+  ${head("Intelligenza artificiale", "Laboratorio AI", "Tutto quello che create con Claude e ChatGPT per UniLink: demo, testi, grafiche, prompt. Ogni demo tiene le sue versioni (attuale, in confronto, archivio) e si guarda senza uscire dall'HQ.", addBtn("lab", "Nuovo materiale", "acc"))}
+  <div class="filters">${searchBox("lab", "Cerca un materiale")}${fchips("labAi", ["Claude", "ChatGPT", "Altro"], "Tutte le AI")}</div>
+  <div class="filters">${fchips("labKind", LAB_KINDS, "Tutti i tipi")}</div>
+  ${groups.length ? groups.map(([c, items]) => `<section class="stack"><div class="gh" style="--tc:${c.c};--ts:${c.s}">${svgI(c.ic)}<h2>${esc(c.id)}</h2><span class="num muted">${items.length}</span></div><div class="grid">${items.map(card).join("")}</div></section>`).join("") : emptyBox("Il laboratorio è vuoto", "Aggiungi la prima demo o il primo materiale creato con un'AI: scegli la cartella giusta, collega un'idea e carica il file HTML. Le versioni successive restano tutte qui.", "lab", "Aggiungi il primo materiale")}
+  </div>`;
+};
+
+function labDetail(it) {
+  const vs = labVers(it.id), c = labCat(it.cat), V0 = S.labV || (S.labV = { mode: "cur", pick: "", dev: "desk" });
+  const cur = verCur(vs), cmp = vs.find(v => v.role === "confronto"), pick = vs.find(v => v.id === V0.pick) || vs.find(v => v.role === "archivio") || vs[1];
+  const idea = S.data.ideas.find(i => i.id === it.ideaId);
+  const frame = (v, lab) => v ? `<div class="fr"><div class="fr-h"><b>${esc(v.label || "v" + v.n)}</b> ${roleChip(v.role)}<span class="small muted">${esc(lab || "")}</span></div><div class="fr-b ${V0.dev === "mob" ? "mob" : ""}"><iframe class="demo" sandbox="allow-scripts allow-forms allow-modals allow-popups" data-blob="${v.htmlId}" title="${esc(it.title)} ${esc(v.label || "")}"></iframe></div></div>` : `<div class="fr empty"><p class="muted">Nessuna versione da mostrare qui.</p></div>`;
+  let viewer = "";
+  if (!vs.length) viewer = "";
+  else if (V0.mode === "cmp") viewer = `<div class="cmpgrid">${frame(cur, "attuale")}${cmp ? frame(cmp, "nuova da valutare") : `<div class="fr empty"><p class="muted">Scegli una versione da mettere a confronto con "Metti a confronto" nell'elenco qui sotto.</p></div>`}</div>`;
+  else if (V0.mode === "arch") viewer = `<div class="row"><label class="small muted">Versione:</label><select class="mini-sel" data-labpick>${vs.map(v => `<option value="${v.id}" ${pick && pick.id === v.id ? "selected" : ""}>${esc(v.label || "v" + v.n)} — ${ROLE[v.role] ? ROLE[v.role][0] : ""}</option>`).join("")}</select></div>${frame(pick || cur)}`;
+  else viewer = frame(cur, "in uso");
+  const tabs = vs.length ? `<div class="row between" style="flex-wrap:wrap"><div class="seg">${[["cur", "Attuale"], ["cmp", "Confronto"], ["arch", "Archivio"]].map(([m, l]) => `<button class="${V0.mode === m ? "on" : ""}" data-labmode="${m}">${l}</button>`).join("")}</div><div class="row"><div class="seg">${[["desk", "Desktop"], ["mob", "Telefono"]].map(([m, l]) => `<button class="${V0.dev === m ? "on" : ""}" data-labdev="${m}">${l}</button>`).join("")}</div>${cur ? `<button class="btn sm" data-labfull="${(V0.mode === "arch" && pick ? pick : cur).id}">Schermo intero</button>` : ""}</div></div>` : "";
+  const verRow = v => `<div class="vrow ${v.role}"><div class="vtag num">${esc(v.label || "v" + v.n)}</div><div class="grow"><div class="row">${roleChip(v.role)}<span class="small muted">${esc(v.by || "")} · ${fmtD(String(v.createdAt).slice(0, 10), 1)} · ${Math.max(1, Math.round((v.size || 0) / 1024))} KB</span></div>${v.note ? `<div class="small pre" style="margin-top:3px">${esc(v.note)}</div>` : ""}</div><div class="row">${v.role !== "attuale" && S.canWrite ? `<button class="btn sm" data-lv="cur:${v.id}">Usa questa</button>` : ""}${v.role !== "confronto" && v.role !== "attuale" && S.canWrite ? `<button class="btn sm" data-lv="cmp:${v.id}">Metti a confronto</button>` : ""}${v.role === "confronto" && S.canWrite ? `<button class="btn ghost sm" data-lv="arch:${v.id}">Archivia</button>` : ""}<button class="btn ghost sm" data-lv="view:${v.id}">Vedi</button><button class="btn ghost sm" data-lv="dl:${v.id}">Scarica</button>${S.canWrite ? `<button class="btn ghost sm danger" data-lv="del:${v.id}">Elimina</button>` : ""}</div></div>`;
+  const demo = it.kind === "Demo HTML" || vs.length;
+  const imgs = it.images || [];
+  const comments = (it.comments || []).map(cm => `<div class="comment"><div class="small muted">${author(cm)} · ${fmtD((cm.at || "").slice(0, 10))}${cm.v ? ` · <span class="vbadge">${esc(cm.v)}</span>` : ""}</div><div class="pre">${esc(cm.text)}</div></div>`).join("");
+  return `<div class="wrap">
+  <div class="row between"><button class="btn sm" data-labback>← Tutti i materiali</button>${S.canWrite ? `<button class="btn sm" data-edit="lab:${it.id}">Modifica</button>` : ""}</div>
+  <header class="labhead" style="--tc:${c.c};--ts:${c.s}"><div class="row">${aiChip(it.ai)}<span class="tchip" style="--tc:${c.c};--ts:${c.s}">${svgI(c.ic)}${esc(it.cat || "")}</span><span class="chip">${esc(it.kind || "")}</span>${it.status ? `<span class="chip ${it.status === "Pronto" ? "gr" : ""}">${esc(it.status)}</span>` : ""}</div><h1>${esc(it.title)}</h1>${it.summary ? `<p class="pre">${esc(it.summary)}</p>` : ""}</header>
+  <div class="labgrid"><div class="stack" style="min-width:0;gap:16px">
+    ${demo ? `<section class="card panel">${tabs}${viewer}${!vs.length ? `<div class="empty" style="padding:30px"><h3>Nessuna versione caricata</h3><p>Carica il file HTML della demo: potrai guardarla qui dentro e, più avanti, caricare le versioni nuove tenendo traccia di tutte.</p></div>` : ""}${S.canWrite ? `<div class="drop" data-labup="${it.id}"><b>+ Carica ${vs.length ? "una nuova versione" : "il file HTML"}</b><span class="small muted">File .html, anche generato da Claude o ChatGPT. Le versioni precedenti restano archiviate.</span></div>` : ""}</section>
+    ${vs.length ? `<section class="card panel"><div class="panel-h"><h2>Versioni</h2><span class="small muted">${vs.length} in totale</span></div>${vs.map(verRow).join("")}</section>` : ""}` : ""}
+    ${it.text ? `<section class="card panel"><div class="panel-h"><h2>Testo / prompt</h2><button class="btn sm" data-labcopy="${it.id}">Copia testo</button></div><div class="comment pre">${esc(it.text)}</div></section>` : ""}
+    ${imgs.length ? `<section class="card panel"><h2>Immagini</h2><div class="gallery">${imgs.map(m => `<img data-img="${esc(m)}" data-zoom="${esc(m)}" alt="">`).join("")}</div></section>` : ""}
+    ${(it.files || []).length ? `<section class="card panel"><h2>File</h2>${it.files.map(f => `<div class="li"><div class="grow"><button type="button" class="linkbtn t" data-openfile="${esc(f.path)}">${esc(f.name)}</button><div class="small muted">${fsize(f.size)}</div></div></div>`).join("")}</section>` : ""}
+    ${it.link ? `<a class="btn" href="${esc(safeUrl(it.link))}" target="_blank" rel="noopener" style="align-self:flex-start">Apri l'originale su ${esc(it.ai || "AI")} ↗</a>` : ""}
+  </div>
+  <aside class="stack" style="min-width:0;gap:16px">
+    ${idea ? `<section class="card panel" style="--tc:${tipoOf(idea).c}"><div class="eyebrow">Collegato all'idea</div><h3>${esc(idea.title)}</h3><div class="row">${tipoChip(tipoOf(idea))}${kindChip(kindOf(idea))}</div>${idea.problem ? `<p class="small">${esc(idea.problem)}</p>` : ""}<button class="btn sm" data-idea="${idea.id}">Apri l'idea</button>${(idea.comments || []).length ? `<div class="stack" style="gap:8px;border-top:1px solid var(--beige);padding-top:10px"><div class="small muted">Discussione dell'idea</div>${idea.comments.slice(-3).map(cm => `<div class="small"><b>${esc(cm.by || "?")}</b>: ${esc(cm.text)}</div>`).join("")}</div>` : ""}</section>` : ""}
+    <section class="card panel"><div class="panel-h"><h2>Commenti</h2><span class="small muted">${(it.comments || []).length}</span></div>${comments || '<p class="small muted">Nessun commento. Scrivi cosa cambieresti o cosa non va in questa versione.</p>'}
+      ${S.canWrite ? `<form id="labcmt" class="stack" style="gap:8px"><textarea class="inp" id="labcmt_t" rows="2" placeholder="Scrivi un commento"></textarea><div class="row">${vs.length ? `<select class="mini-sel" id="labcmt_v"><option value="">Su tutto</option>${vs.map(v => `<option>${esc(v.label || "v" + v.n)}</option>`).join("")}</select>` : ""}<button class="btn pri" style="margin-left:auto">Invia</button></div></form>` : ""}</section>
+  </aside></div></div>`;
+}
+async function setVerRole(item, verId, role) {
+  const vs = labVers(item), now = new Date().toISOString();
+  await guard(async () => {
+    for (const v of vs) { if (v.id === verId) continue; if ((role === "attuale" && v.role === "attuale") || (role === "confronto" && v.role === "confronto")) await S.db.collection("labver").doc(v.id).update({ role: "archivio" }); }
+    await S.db.collection("labver").doc(verId).update({ role });
+    await S.db.collection("lab").doc(item).update({ updatedAt: now, updatedBy: S.uid || "" });
+  });
+}
+function openVerForm(itemId) {
+  const vs = labVers(itemId), n = (vs[0] ? vs[0].n : 0) + 1;
+  openModal(`${sheetHead("Laboratorio AI", "Carica la versione v" + n)}<form class="form" id="verfrm" data-item="${itemId}" data-n="${n}">
+    <label class="fld wide"><span>File HTML</span><input type="file" id="vf_file" accept=".html,.htm,text/html"><small>Oppure incolla qui sotto il codice.</small></label>
+    <label class="fld wide"><span>Codice HTML (facoltativo)</span><textarea id="vf_code" rows="4" placeholder="<!doctype html>…"></textarea></label>
+    <label class="fld wide"><span>Cosa cambia in questa versione</span><textarea id="vf_note" rows="3" placeholder="Es. Aggiunto il timer, nuova grafica dei pulsanti"></textarea></label>
+    <label class="fld chk-f wide"><input type="checkbox" id="vf_cur" ${vs.length ? "" : "checked"}><span>Usala come versione attuale${vs.length ? " (la precedente va in archivio)" : ""}</span></label>
+    ${vs.length ? `<label class="fld chk-f wide"><input type="checkbox" id="vf_cmp" ${vs.length ? "checked" : ""}><span>Oppure mettila a confronto con l'attuale (se non la imposti come attuale)</span></label>` : ""}
+    <div class="form-foot fld wide"><div></div><div class="row"><button type="button" class="btn" data-close>Annulla</button><button class="btn pri">Carica versione</button></div></div></form>`);
+}
+document.addEventListener("click", async e => {
+  const t = e.target, q = s => t.closest(s);
+  let x;
+  if ((x = q("[data-labopen]")) && !q("button:not([data-labopen]), a")) { openLab(x.dataset.labopen); return; }
+  if (q("[data-labback]")) { S.labOpen = null; render(); window.scrollTo(0, 0); return; }
+  if ((x = q("[data-labmode]"))) { S.labV.mode = x.dataset.labmode; render(); return; }
+  if ((x = q("[data-labdev]"))) { S.labV.dev = x.dataset.labdev; render(); return; }
+  if ((x = q("[data-labup]"))) { openVerForm(x.dataset.labup); return; }
+  if ((x = q("[data-labfull]"))) { const v = (S.data.labver || []).find(y => y.id === x.dataset.labfull); if (!v) return; openModal(`${sheetHead(esc(v.label || ""), "Schermo intero")}<iframe class="demo full" sandbox="allow-scripts allow-forms allow-modals allow-popups" data-blob="${v.htmlId}"></iframe>`); $("#modal .sheet").classList.add("wide"); return; }
+  if ((x = q("[data-labcopy]"))) { const it = (S.data.lab || []).find(y => y.id === x.dataset.labcopy); try { await navigator.clipboard.writeText(it.text); toast("Copiato"); } catch (er) { toast("Copia non riuscita"); } return; }
+  if ((x = q("[data-lv]"))) {
+    const [act, id] = x.dataset.lv.split(":"), v = (S.data.labver || []).find(y => y.id === id); if (!v) return;
+    if (act === "cur") { try { await setVerRole(v.itemId, id, "attuale"); S.labV.mode = "cur"; toast((v.label || "Versione") + " è ora la versione attuale"); } catch (er) {} }
+    else if (act === "cmp") { try { await setVerRole(v.itemId, id, "confronto"); S.labV.mode = "cmp"; } catch (er) {} }
+    else if (act === "arch") { try { await setVerRole(v.itemId, id, "archivio"); } catch (er) {} }
+    else if (act === "view") { S.labV.mode = "arch"; S.labV.pick = id; render(); window.scrollTo(0, 0); }
+    else if (act === "dl") { const html = await getBlob(v.htmlId); downloadText(v.fileName || ((v.label || "versione") + ".html"), html, "text/html"); }
+    else if (act === "del") {
+      if (!x.classList.contains("armed")) { x.classList.add("armed"); x.textContent = "Conferma"; setTimeout(() => { if (x.isConnected) { x.classList.remove("armed"); x.textContent = "Elimina"; } }, 4000); return; }
+      try { await guard(async () => { await S.db.collection("labver").doc(id).delete(); await S.db.doc("images/" + v.htmlId).delete().catch(() => {}); }); toast("Versione eliminata"); } catch (er) {}
+    }
+  }
+});
+document.addEventListener("change", e => { if (e.target.dataset && e.target.dataset.labpick !== undefined) { S.labV.pick = e.target.value; render(); } });
+document.addEventListener("submit", async e => {
+  const f = e.target;
+  if (f.id === "verfrm") {
+    e.preventDefault(); const itemId = f.dataset.item, n = +f.dataset.n, file = document.getElementById("vf_file").files[0];
+    let html = document.getElementById("vf_code").value.trim(), fileName = "";
+    if (file) { if (file.size > 3.5 * 1024 * 1024) { toast("Il file supera 3,5 MB: comprimi o semplifica la demo."); return; } html = await file.text(); fileName = file.name; }
+    if (!html) { toast("Carica un file HTML o incolla il codice."); return; }
+    if (html.length > 3.6e6) { toast("Il codice supera 3,5 MB."); return; }
+    const asCur = document.getElementById("vf_cur").checked, asCmp = document.getElementById("vf_cmp") ? document.getElementById("vf_cmp").checked : false, hadCur = labVers(itemId).length > 0;
+    const btn = f.querySelector("button.pri"); btn.disabled = true; btn.textContent = "Carico…";
+    try {
+      await guard(async () => {
+        const htmlId = await putBlob(html), ref = S.db.collection("labver").doc();
+        await ref.set({ itemId, n, label: "v" + n, note: document.getElementById("vf_note").value.trim(), htmlId, fileName: fileName || ("v" + n + ".html"), size: html.length, role: "archivio", by: S.uid || "", createdAt: new Date().toISOString() });
+        const role = asCur || !hadCur ? "attuale" : asCmp ? "confronto" : "archivio";
+        S.labV = S.labV || { mode: "cur", pick: "", dev: "desk" }; S.labV.mode = role === "confronto" ? "cmp" : "cur";
+        if (role !== "archivio") await setVerRole(itemId, ref.id, role); else await S.db.collection("lab").doc(itemId).update({ updatedAt: new Date().toISOString(), updatedBy: S.uid || "" });
+      });
+      closeModal(); toast("Versione v" + n + " caricata");
+    } catch (er) { btn.disabled = false; btn.textContent = "Riprova"; }
+  }
+  if (f.id === "labcmt") {
+    e.preventDefault(); const t = document.getElementById("labcmt_t"), text = t.value.trim(); if (!text) return; const it = (S.data.lab || []).find(y => y.id === S.labOpen); if (!it) return;
+    const vsel = document.getElementById("labcmt_v"); t.value = "";
+    try { await guard(() => S.db.collection("lab").doc(it.id).update({ comments: [...(it.comments || []), { by: S.uid || "", at: new Date().toISOString(), text, v: vsel ? vsel.value : "" }] })); toast("Commento inviato"); } catch (er) { t.value = text; }
+  }
 });
 
 function go(v) {
