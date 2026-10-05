@@ -1636,7 +1636,15 @@ const labVers = id => (S.data.labver || []).filter(v => v.itemId === id).sort((a
 const verCur = vs => vs.find(v => v.role === "attuale") || vs[0];
 const aiChip = a => { const c = AI_COL[a] || AI_COL.Altro; return `<span class="aichip" style="--tc:${c[0]};--ts:${c[1]}">${esc(a || "AI")}</span>`; };
 const roleChip = r => { const c = ROLE[r] || ROLE.archivio; return `<span class="rchip" style="--tc:${c[1]};--ts:${c[2]}">${r === "attuale" ? "★ " : ""}${c[0]}</span>`; };
-function loadFrames(root) { $$("iframe[data-blob]", root).forEach(async f => { const t = await getBlob(f.dataset.blob); f.srcdoc = t || "<p style='font:14px sans-serif;padding:20px'>Anteprima non disponibile.</p>"; }); }
+// Le demo girano in un iframe sandbox senza allow-same-origin: lì localStorage/sessionStorage lanciano un errore
+// e molte web app restano bloccate al caricamento. Diamo loro una memoria temporanea (si azzera a ogni apertura).
+const DEMO_STORAGE_SHIM = `<script>(function(){function m(){var d={};return{getItem:function(k){return Object.prototype.hasOwnProperty.call(d,k)?d[k]:null},setItem:function(k,v){d[k]=String(v)},removeItem:function(k){delete d[k]},clear:function(){d={}},key:function(i){return Object.keys(d)[i]||null},get length(){return Object.keys(d).length}}}["localStorage","sessionStorage"].forEach(function(n){try{window[n].getItem("x")}catch(e){try{Object.defineProperty(window,n,{value:m(),configurable:true})}catch(_){}}})})();<\/script>`;
+function withDemoShim(html) {
+  if (/<head[^>]*>/i.test(html)) return html.replace(/<head[^>]*>/i, m => m + DEMO_STORAGE_SHIM);
+  if (/<!doctype[^>]*>/i.test(html)) return html.replace(/<!doctype[^>]*>/i, m => m + DEMO_STORAGE_SHIM);
+  return DEMO_STORAGE_SHIM + html;
+}
+function loadFrames(root) { $$("iframe[data-blob]", root).forEach(async f => { const t = await getBlob(f.dataset.blob); f.srcdoc = t ? withDemoShim(t) : "<p style='font:14px sans-serif;padding:20px'>Anteprima non disponibile.</p>"; }); }
 function openLab(id) { S.labOpen = id; S.labV = { mode: "cur", pick: "", dev: "desk" }; go("lab"); }
 
 V.lab = () => {
