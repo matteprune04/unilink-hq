@@ -1038,7 +1038,9 @@ document.addEventListener("submit", async e => {
   if (e.target.id === "cmt") {
     const inp = $("#cmt_in"); const text = inp.value.trim(); if (!text) return;
     const i = S.data.ideas.find(x => x.id === S.ideaOpen);
-    try { await guard(() => S.db.collection("ideas").doc(i.id).update({ comments: [...(i.comments || []), { by: S.uid || "", at: new Date().toISOString(), text }] })); inp.value = ""; } catch (er) {}
+    inp.value = "";
+    try { await guard(() => S.db.collection("ideas").doc(i.id).update({ comments: [...(i.comments || []), { by: S.uid || "", at: new Date().toISOString(), text }] })); }
+    catch (er) { const ni = $("#cmt_in"); if (ni && !ni.value) ni.value = text; }
   }
   if (e.target.id === "mval") {
     const v = $("#mv_val").value; if (v === "") { toast("Scrivi un valore."); return; }
@@ -1069,7 +1071,7 @@ function go(v) {
 function refreshOpen(col) {
   if ($("#modal").hidden || S.form) return;
   const h = $(".sheet [data-close]"); if (!h) return;
-  if (col === "ideas" && S.ideaOpen && $("#cmt, .sheet [data-vote]")) { const val = $("#cmt_in")?.value; openIdea(S.ideaOpen); if (val && $("#cmt_in")) $("#cmt_in").value = val; }
+  if (col === "ideas" && S.ideaOpen && $("#cmt, .sheet [data-vote]")) { const had = document.activeElement && document.activeElement.id === "cmt_in"; const val = $("#cmt_in")?.value; openIdea(S.ideaOpen); const ni = $("#cmt_in"); if (ni) { if (val) ni.value = val; if (had) ni.focus(); } }
   else if ((col === "mvalues" || col === "metrics") && $("#mval")) openMetric($("#mval").dataset.mid);
 }
 
