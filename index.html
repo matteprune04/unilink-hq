@@ -307,6 +307,13 @@ iframe.demo { width: 100%; height: 520px; border: 0; background: #fff; display: 
 .vtag { width: 46px; height: 46px; border-radius: 12px; background: var(--navy-soft); color: var(--navy); display: grid; place-items: center; font-family: var(--fd); flex: none; } .vrow.attuale .vtag { background: #1a6b3c; color: #fff; } .vrow.confronto .vtag { background: #6d28d9; color: #fff; }
 .sheet.wide { max-width: min(1250px, 96vw); }
 @media (max-width: 980px) { .labgrid, .cmpgrid { grid-template-columns: 1fr; } }
+.hero.fin { background: linear-gradient(120deg, #172554 0%, #1a453c 100%); }
+.finhero { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 14px; align-items: stretch; }
+.cash { background: #fff; display: flex; flex-direction: column; gap: 8px; padding: 22px; } .cash .lab { color: var(--muted); font-size: 13px; } .cash .val { font-family: var(--fd); font-size: clamp(40px, 5vw, 58px); color: var(--navy); line-height: 1; }
+.runway { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; padding-top: 14px; border-top: 1px solid var(--beige); }
+.gauge { height: 12px; background: var(--beige); border-radius: var(--pill); overflow: hidden; } .gauge i { display: block; height: 100%; border-radius: var(--pill); background: #1a6b3c; } .gauge.mid i { background: #d99a1e; } .gauge.bad i { background: var(--red); }
+.finkpis { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; } .finkpis .kpi .val { font-size: 28px; }
+@media (max-width: 880px) { .finhero { grid-template-columns: 1fr; } }
 .comment { background: var(--white); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 10px 12px; font-size: 14px; }
 .big-img { width: 100%; border-radius: var(--r-sm); }
 
@@ -597,22 +604,6 @@ const lateTasks = () => openTasks().filter(t => t.due && daysFrom(t.due) < 0);
 const votes = d => Object.values(d.votes || {}).filter(Boolean).length;
 const voted = d => !!(S.uid && d.votes && d.votes[S.uid]);
 
-function money() {
-  const rows = S.data.finance;
-  const sign = r => (r.type === "Entrata" ? 1 : -1) * (Number(r.amount) || 0);
-  const saldo = rows.reduce((a, r) => a + sign(r), 0);
-  const ym = localISO().slice(0, 7);
-  const thisM = rows.filter(r => (r.date || "").startsWith(ym));
-  const inM = thisM.filter(r => r.type === "Entrata").reduce((a, r) => a + (+r.amount || 0), 0);
-  const outM = thisM.filter(r => r.type !== "Entrata").reduce((a, r) => a + (+r.amount || 0), 0);
-  const fixed = rows.filter(r => r.recurring && r.type !== "Entrata").reduce((a, r) => a + (+r.amount || 0), 0);
-  // burn medio sugli ultimi 3 mesi chiusi
-  const months = []; const d = new Date(); for (let i = 1; i <= 3; i++) { const x = new Date(d.getFullYear(), d.getMonth() - i, 1); months.push(localISO(x).slice(0, 7)); }
-  const net = months.map(m => rows.filter(r => (r.date || "").startsWith(m)).reduce((a, r) => a + sign(r), 0));
-  const burn = -net.reduce((a, b) => a + b, 0) / 3;
-  const runway = burn > 0 && saldo > 0 ? saldo / burn : null;
-  return { saldo, inM, outM, fixed, burn, runway };
-}
 
 /* ================= sidebar ================= */
 function counts() {
@@ -828,20 +819,6 @@ V.partners = () => {
   </div>`;
 };
 
-V.finance = () => {
-  const mo = money();
-  const rows = S.data.finance.slice().sort(byDate("date")).reverse();
-  const months = []; const d = new Date(); for (let i = 5; i >= 0; i--) months.push(localISO(new Date(d.getFullYear(), d.getMonth() - i, 1)).slice(0, 7));
-  const mrow = months.map(m => { const r = S.data.finance.filter(x => (x.date || "").startsWith(m)); const i = r.filter(x => x.type === "Entrata").reduce((a, x) => a + (+x.amount || 0), 0); const o = r.filter(x => x.type !== "Entrata").reduce((a, x) => a + (+x.amount || 0), 0); return { m, i, o }; });
-  const mx = Math.max(1, ...mrow.map(r => Math.max(r.i, r.o)));
-  const tile = (l, v, sub) => `<div class="card kpi"><div class="lab">${l}</div><div class="val num">${v}</div>${sub ? `<div class="small muted">${sub}</div>` : ""}</div>`;
-  return `<div class="wrap">
-  ${head("Crescita", "Finanze", "Entrate e uscite di UniLink. Il dato chiave è la runway: per quanti mesi possiamo andare avanti con la cassa di oggi.", addBtn("finance", "Nuovo movimento", "acc"))}
-  <div class="kpis">${tile("Saldo di cassa", eur(mo.saldo))}${tile("Entrate del mese", eur(mo.inM))}${tile("Uscite del mese", eur(mo.outM))}${tile("Costi fissi mensili", eur(mo.fixed), "abbonamenti e spese ricorrenti")}${tile("Runway", mo.runway ? nf(mo.runway, 1) + " mesi" : "—", mo.burn > 0 ? `consumo medio ${eur(mo.burn)}/mese` : "nessun consumo netto negli ultimi 3 mesi")}</div>
-  ${rows.length ? `<section class="card panel"><h2>Ultimi 6 mesi</h2><div class="stack">${mrow.map(r => `<div class="row" style="flex-wrap:nowrap;gap:12px"><span class="small num" style="width:64px;flex:none">${new Date(r.m + "-01T00:00").toLocaleDateString("it-IT", { month: "short", year: "2-digit" })}</span><div class="stack" style="gap:3px;flex:1;min-width:0"><div class="bar gr" title="Entrate"><i style="width:${r.i / mx * 100}%"></i></div><div class="bar" title="Uscite"><i style="width:${r.o / mx * 100}%"></i></div></div><span class="small num" style="width:120px;text-align:right;flex:none"><span class="in">${eur(r.i)}</span> / <span class="out">${eur(r.o)}</span></span></div>`).join("")}</div><div class="row small muted"><span class="chip gr">entrate</span><span class="chip or">uscite</span></div></section>
-  <div class="tbl-wrap"><table><thead><tr><th>Data</th><th>Descrizione</th><th>Categoria</th><th class="r">Importo</th></tr></thead><tbody>${rows.map(r => `<tr class="card-row" data-edit="finance:${r.id}" style="cursor:pointer"><td class="num">${fmtD(r.date, 1)}</td><td>${esc(r.desc || "")}${r.recurring ? " " + chip("mensile", "navy") : ""}${attChip(r)}</td><td class="muted">${esc(r.category || "")}</td><td class="r num ${r.type === "Entrata" ? "in" : "out"}">${r.type === "Entrata" ? "+" : "−"}${eur(r.amount)}</td></tr>`).join("")}</tbody></table></div>` : emptyBox("Nessun movimento", "Registra anche le spese piccole (dominio, Framer, Canva, stampe): sommate fanno la differenza.", "finance", "Registra il primo movimento")}
-  </div>`;
-};
 
 V.meetings = () => {
   const nowISO = new Date(Date.now() - 2 * 3600e3).toISOString();
@@ -1786,6 +1763,72 @@ document.addEventListener("submit", async e => {
     try { await guard(() => S.db.collection("lab").doc(it.id).update({ comments: [...(it.comments || []), { by: S.uid || "", at: new Date().toISOString(), text, v: vsel ? vsel.value : "" }] })); toast("Commento inviato"); } catch (er) { t.value = text; }
   }
 });
+
+/* ====================================================== v2: finanze in stile startup ====================================================== */
+const monthLabel = (m, short) => new Date(m + "-01T00:00").toLocaleDateString("it-IT", short ? { month: "short" } : { month: "long", year: "numeric" });
+const monthKeys = n => { const d = new Date(), out = []; for (let i = n - 1; i >= 0; i--) out.push(localISO(new Date(d.getFullYear(), d.getMonth() - i, 1)).slice(0, 7)); return out; };
+const finSign = r => (r.type === "Entrata" ? 1 : -1) * (Number(r.amount) || 0);
+function finMonth(m) { const r = S.data.finance.filter(x => (x.date || "").startsWith(m)); const i = r.filter(x => x.type === "Entrata").reduce((a, x) => a + (+x.amount || 0), 0), o = r.filter(x => x.type !== "Entrata").reduce((a, x) => a + (+x.amount || 0), 0); return { m, i, o, net: i - o }; }
+const FIN_COL = ["#cf7527", "#172554", "#1a6b3c", "#9d174d", "#0f5f6b", "#7a5a00", "#6d28d9", "#475569", "#a4321f"];
+function finChart(n) {
+  const ms = monthKeys(n).map(finMonth), W = 760, H = 230, pl = 44, pb = 28, pt = 10, mx = Math.max(100, ...ms.map(r => Math.max(r.i, r.o))), step = (W - pl) / ms.length, bw = Math.min(26, step / 2.6);
+  const y = v => pt + (H - pt - pb) * (1 - v / mx), ticks = [0, .5, 1].map(f => mx * f);
+  let g = ticks.map(t => `<line x1="${pl}" x2="${W}" y1="${y(t)}" y2="${y(t)}" stroke="#e9e5dd"/><text x="${pl - 6}" y="${y(t) + 4}" text-anchor="end" font-size="11" fill="#6d6a63">${t >= 1000 ? nf(t / 1000, 1) + "k" : nf(t)}</text>`).join("");
+  ms.forEach((r, k) => { const cx = pl + step * k + step / 2;
+    g += `<g><title>${monthLabel(r.m)}: entrate ${eur(r.i)}, uscite ${eur(r.o)}, netto ${eur(r.net)}</title><rect x="${cx - bw - 1}" y="${y(r.i)}" width="${bw}" height="${Math.max(0, H - pb - y(r.i))}" rx="4" fill="#1a6b3c"/><rect x="${cx + 1}" y="${y(r.o)}" width="${bw}" height="${Math.max(0, H - pb - y(r.o))}" rx="4" fill="#cf7527"/><text x="${cx}" y="${H - 9}" text-anchor="middle" font-size="11.5" fill="#6d6a63" style="text-transform:capitalize">${monthLabel(r.m, 1)}</text></g>`; });
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Entrate e uscite mensili" style="width:100%;height:auto">${g}</svg>`;
+}
+function finForecast(mo) {
+  const base = mo.saldo, out = mo.burn > 0 ? mo.burn : Math.max(0, mo.fixed - (mo.inM || 0)), pts = [];
+  for (let k = 0; k <= 6; k++) pts.push({ k, v: base - out * k });
+  const W = 360, H = 120, lo = Math.min(0, ...pts.map(p => p.v)), hi = Math.max(1, ...pts.map(p => p.v)), x = k => 8 + (W - 16) * k / 6, y = v => 8 + (H - 22) * (1 - (v - lo) / (hi - lo || 1));
+  const d = pts.map((p, i) => (i ? "L" : "M") + x(p.k).toFixed(1) + " " + y(p.v).toFixed(1)).join(" ");
+  const zero = lo < 0 ? `<line x1="8" x2="${W - 8}" y1="${y(0)}" y2="${y(0)}" stroke="#a4321f" stroke-dasharray="4 3"/>` : "";
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto"><path d="${d} L ${x(6)} ${H - 14} L ${x(0)} ${H - 14} Z" fill="#cf7527" opacity=".12"/>${zero}<path d="${d}" fill="none" stroke="#cf7527" stroke-width="2.5" stroke-linecap="round"/>${pts.map(p => `<circle cx="${x(p.k)}" cy="${y(p.v)}" r="3" fill="#cf7527"><title>${p.k === 0 ? "Oggi" : "Tra " + p.k + " mesi"}: ${eur(p.v)}</title></circle>`).join("")}<text x="8" y="${H - 2}" font-size="10.5" fill="#6d6a63">oggi</text><text x="${W - 8}" y="${H - 2}" text-anchor="end" font-size="10.5" fill="#6d6a63">+6 mesi</text></svg>`;
+}
+function money() {
+  const rows = S.data.finance, start = Number(ctxDoc().cashStart) || 0;
+  const saldo = start + rows.reduce((a, r) => a + finSign(r), 0);
+  const ym = localISO().slice(0, 7), cur = finMonth(ym), prev = finMonth(monthKeys(2)[0]);
+  const fixed = rows.filter(r => r.recurring && r.type !== "Entrata").reduce((a, r) => a + (+r.amount || 0), 0);
+  const closed = monthKeys(4).slice(0, 3).map(finMonth), withData = closed.filter(c => c.i || c.o);
+  const burn = withData.length ? -withData.reduce((a, c) => a + c.net, 0) / withData.length : 0;
+  const runway = burn > 0 && saldo > 0 ? saldo / burn : null;
+  return { saldo, start, inM: cur.i, outM: cur.o, prevIn: prev.i, prevOut: prev.o, fixed, burn, runway };
+}
+const delta = (a, b, inverse) => { if (!b) return ""; const p = Math.round((a - b) / b * 100), good = inverse ? p <= 0 : p >= 0; return `<span class="delta ${p === 0 ? "flat" : good ? "up" : "down"}">${p > 0 ? "+" : ""}${p}% vs mese scorso</span>`; };
+V.finance = () => {
+  const mo = money(), all = S.data.finance, per = S.f.finPer || "6";
+  const ft = S.f.finType || "", fc = S.f.finCat || "";
+  const rows = all.filter(r => (!ft || r.type === ft) && (!fc || r.category === fc) && match(r, "fin", ["desc", "category"])).sort(byDate("date")).reverse();
+  const nm = per === "tutto" ? 12 : +per, spanM = new Set(monthKeys(nm));
+  const exp = all.filter(r => r.type !== "Entrata" && spanM.has((r.date || "").slice(0, 7)));
+  const bycat = Object.entries(exp.reduce((a, r) => (a[r.category || "Altro"] = (a[r.category || "Altro"] || 0) + (+r.amount || 0), a), {})).sort((a, b) => b[1] - a[1]), totE = bycat.reduce((a, x) => a + x[1], 0) || 1;
+  const rec = all.filter(r => r.recurring && r.type !== "Entrata");
+  const groups = {}; rows.forEach(r => (groups[(r.date || "").slice(0, 7)] = groups[(r.date || "").slice(0, 7)] || []).push(r));
+  const rw = mo.runway, rwPct = rw ? Math.min(100, rw / 12 * 100) : 0, rwCls = rw == null ? "" : rw < 3 ? "bad" : rw < 6 ? "mid" : "ok";
+  const cutoff = (() => { if (!(mo.burn > 0)) return null; const out = mo.burn; if (mo.saldo <= 0) return "già a zero"; const m = Math.floor(mo.saldo / out), d = new Date(); return monthLabel(localISO(new Date(d.getFullYear(), d.getMonth() + m, 1)).slice(0, 7)); })();
+  const tile = (l, v, sub, cls = "") => `<div class="card kpi ${cls}"><div class="lab">${l}</div><div class="val num">${v}</div>${sub || ""}</div>`;
+  return `<div class="wrap">
+  <section class="hero fin"><div class="hero-t"><div class="eyebrow" style="color:var(--orange)">Crescita</div><h1>Finanze</h1><p style="opacity:.85;max-width:560px">La cassa di UniLink, quanto brucia ogni mese e per quanto possiamo andare avanti.</p></div><div class="hero-a">${addBtn("finance", "+ Nuovo movimento", "acc")}<button class="btn" data-fincsv>Esporta CSV</button></div></section>
+  <div class="finhero">
+    <div class="card cash"><div class="lab">Cassa oggi</div><div class="val num">${eur(mo.saldo)}</div><div class="small muted">${mo.start ? "include saldo iniziale di " + eur(mo.start) : "somma di tutti i movimenti registrati"}</div>
+      <div class="runway"><div class="row between"><b>Runway</b><span class="num"><b>${rw ? nf(rw, 1) + " mesi" : "—"}</b>${cutoff ? ` <span class="small muted">· cassa fino a ${esc(cutoff)}</span>` : ""}</span></div><div class="gauge ${rwCls}"><i style="width:${rwPct}%"></i></div><div class="row between small muted"><span>0</span><span>6 mesi</span><span>12+</span></div></div></div>
+    <div class="finkpis">${tile("Entrate del mese", eur(mo.inM), delta(mo.inM, mo.prevIn, false))}${tile("Uscite del mese", eur(mo.outM), delta(mo.outM, mo.prevOut, true))}${tile("Burn mensile", mo.burn > 0 ? eur(mo.burn) : "—", `<span class="small muted">media netta ultimi 3 mesi</span>`)}${tile("Costi fissi", eur(mo.fixed), `<span class="small muted">${rec.length} spese ricorrenti</span>`)}</div></div>
+  <div class="grid2" style="grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)">
+    <section class="card panel"><div class="panel-h"><h2>Entrate e uscite</h2><div class="seg">${[["6", "6 mesi"], ["12", "12 mesi"]].map(([v, l]) => `<button class="${per === v || (per === "tutto" && v === "12") ? "on" : ""}" data-f="finPer" data-v="${v}">${l}</button>`).join("")}</div></div>${finChart(per === "12" || per === "tutto" ? 12 : 6)}<div class="row small muted"><span class="chip gr">entrate</span><span class="chip or">uscite</span></div></section>
+    <section class="card panel"><div class="panel-h"><h2>Proiezione cassa</h2></div>${finForecast(mo)}<p class="small muted">${mo.burn > 0 ? "Se continuiamo a consumare cassa come negli ultimi 3 mesi." : mo.fixed > 0 ? "Nessun consumo netto negli ultimi mesi: la linea mostra solo il peso dei costi fissi, senza nuove entrate." : "Nessun consumo netto: la cassa non cala."} Stima, non previsione.</p></section></div>
+  <div class="grid2" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr)">
+    <section class="card panel"><div class="panel-h"><h2>Dove vanno i soldi</h2><span class="small muted">ultimi ${nm} mesi</span></div>${bycat.length ? bycat.map(([c, v], k) => `<div class="stack" style="gap:4px"><div class="row between small"><span>${esc(c)}</span><span class="num"><b>${eur(v)}</b> <span class="muted">${Math.round(v / totE * 100)}%</span></span></div><div class="bar"><i style="width:${v / totE * 100}%;background:${FIN_COL[k % FIN_COL.length]}"></i></div></div>`).join("") : '<p class="muted small">Nessuna uscita nel periodo.</p>'}</section>
+    <section class="card panel"><div class="panel-h"><h2>Costi fissi mensili</h2><span class="num"><b>${eur(mo.fixed)}</b> <span class="small muted">/ mese · ${eur(mo.fixed * 12)} / anno</span></span></div>${rec.length ? rec.sort((a, b) => b.amount - a.amount).map(r => `<div class="li" data-edit="finance:${r.id}" style="cursor:pointer"><div class="grow"><div class="t">${esc(r.desc || r.category || "")}</div><div class="small muted">${esc(r.category || "")}</div></div><span class="num out">${eur(r.amount)}</span></div>`).join("") : '<p class="muted small">Segna come "si ripete ogni mese" abbonamenti e spese fisse: compariranno qui.</p>'}
+      ${S.canWrite ? `<form id="cashfrm" class="row" style="border-top:1px solid var(--beige);padding-top:12px"><label class="small muted" for="cash_in">Saldo iniziale (€)</label><input class="inp" id="cash_in" type="number" step="any" value="${esc(ctxDoc().cashStart ?? "")}" placeholder="0" style="width:120px"><button class="btn sm">Imposta</button></form>` : ""}</section></div>
+  <section class="stack"><div class="ph"><div><h2>Storico movimenti</h2></div><div class="ph-act">${searchBox("fin", "Cerca un movimento")}</div></div>
+    <div class="filters">${fchips("finType", ["Entrata", "Uscita"], "Tutti")}${fchips("finCat", FCAT, "Ogni categoria")}</div>
+    ${rows.length ? Object.keys(groups).sort().reverse().map(m => { const g = groups[m], i = g.filter(x => x.type === "Entrata").reduce((a, x) => a + (+x.amount || 0), 0), o = g.filter(x => x.type !== "Entrata").reduce((a, x) => a + (+x.amount || 0), 0); return `<div class="tbl-wrap"><table><thead><tr><th colspan="3" style="text-transform:capitalize">${monthLabel(m)}</th><th class="r"><span class="in">+${eur(i)}</span> <span class="out">−${eur(o)}</span></th></tr></thead><tbody>${g.map(r => `<tr class="card-row" data-edit="finance:${r.id}" style="cursor:pointer"><td class="num" style="width:90px">${fmtD(r.date, 1)}</td><td>${esc(r.desc || "")}${r.recurring ? " " + chip("mensile", "navy") : ""}${attChip(r)}${r.updatedBy ? `<div class="small muted" style="font-size:12px">modificato da ${esc(r.updatedBy)} · ${ago(r.updatedAt)}</div>` : ""}</td><td class="muted">${esc(r.category || "")}</td><td class="r num ${r.type === "Entrata" ? "in" : "out"}">${r.type === "Entrata" ? "+" : "−"}${eur(r.amount)}</td></tr>`).join("")}</tbody></table></div>`; }).join("") : emptyBox("Nessun movimento", "Registra anche le spese piccole (dominio, Framer, Canva, stampe): sommate fanno la differenza.", "finance", "Registra il primo movimento")}</section>
+  </div>`;
+};
+document.addEventListener("click", e => { if (!e.target.closest("[data-fincsv]")) return; const q = v => '"' + String(v ?? "").replace(/"/g, '""') + '"'; const lines = [["Data", "Tipo", "Importo", "Categoria", "Descrizione", "Ricorrente", "Inserito da"].join(";")].concat(S.data.finance.slice().sort(byDate("date")).map(r => [r.date, r.type, String(r.amount).replace(".", ","), q(r.category), q(r.desc), r.recurring ? "sì" : "no", q(r.by)].join(";"))); downloadText("UniLink-HQ_Finanze_" + localISO() + ".csv", "﻿" + lines.join("\n"), "text/csv"); toast("CSV scaricato"); });
+document.addEventListener("submit", async e => { if (e.target.id !== "cashfrm") return; e.preventDefault(); const v = document.getElementById("cash_in").value; try { await saveCtx({ cashStart: v === "" ? 0 : Number(v) }); toast("Saldo iniziale impostato"); } catch (er) {} });
 
 function go(v) {
   if (v === "okrs" || v === "metrics") { S.f.goalTab = v; v = "goals"; }
