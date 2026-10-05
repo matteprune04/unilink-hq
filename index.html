@@ -491,16 +491,23 @@ const SCHEMA = {
     { k: "since", l: "Nel team dal", t: "date" }, { k: "birthday", l: "Compleanno", t: "date" },
     { k: "equity", l: "Quota societaria (%)", t: "number" }, { k: "contact", l: "Altri contatti", ph: "Instagram, indirizzo, contatto di emergenza…" },
     { k: "notes", l: "Note interne", t: "textarea", rows: 3, wide: 1 } ] },
+  accounts: { one: "strumento", fields: [
+    { k: "name", l: "Strumento o servizio", req: 1, ph: "Es. Framer, Canva, dominio unilinkfirenze.it" },
+    { k: "kind", l: "Tipo", t: "select", o: ["Sito e hosting", "Design", "Marketing e social", "Comunicazione", "Dati e analisi", "Pagamenti", "Altro"] },
+    { k: "owner", l: "Chi lo gestisce", t: "person" }, { k: "login", l: "Email dell'account", ph: "Con quale email si accede (mai la password)" },
+    { k: "cost", l: "Costo (€)", t: "number" }, { k: "period", l: "Si paga", t: "select", o: ["Ogni mese", "Ogni anno", "Una tantum", "Gratis"], d: "Ogni mese" },
+    { k: "renewal", l: "Prossimo rinnovo", t: "date" }, { k: "url", l: "Link", t: "url" },
+    { k: "notes", l: "A cosa serve e note", t: "textarea", rows: 3, wide: 1 } ] },
 };
 Object.values(SCHEMA).forEach(sc => sc.fields.push({ k: "files", l: "Allegati", t: "files", wide: 1 }));
-const COLS = ["ideas", "feedback", "okrs", "tasks", "metrics", "mvalues", "partners", "finance", "meetings", "decisions", "links", "team", "google", "sfiles", "docs", "notes", "lab", "labver", "aibriefs", "ctx"];
+const COLS = ["ideas", "feedback", "okrs", "tasks", "metrics", "mvalues", "partners", "finance", "meetings", "decisions", "links", "team", "accounts", "google", "sfiles", "docs", "notes", "lab", "labver", "aibriefs", "ctx"];
 
 const NAV = [
   { items: [["home", "Cruscotto"], ["calendar", "Calendario"]] },
   { g: "Idee e ascolto", items: [["ideas", "Idee"], ["feedback", "Voce degli studenti"], ["notes", "Note rapide"]] },
   { g: "Pianificazione", items: [["goals", "Obiettivi e numeri"], ["tasks", "Scadenze e task"]] },
   { g: "Crescita", items: [["web", "Sito e Google"], ["partners", "Partner e contatti"], ["finance", "Finanze"]] },
-  { g: "Team", items: [["meetings", "Meeting"], ["decisions", "Decisioni"], ["team", "Persone"], ["links", "Risorse"]] },
+  { g: "Team", items: [["meetings", "Meeting"], ["decisions", "Decisioni"], ["team", "Persone"], ["accounts", "Strumenti e account"], ["links", "Risorse"]] },
   { g: "Intelligenza artificiale", items: [["lab", "Laboratorio AI"], ["aictx", "Contesto per AI"]] },
   { g: "Archivio", items: [["docs", "Documenti"]] },
 ];
@@ -882,6 +889,18 @@ V.team = () => {
   </div>`;
 };
 
+V.accounts = () => {
+  const list = S.data.accounts.slice().sort((a, b) => String(a.renewal || "9999").localeCompare(String(b.renewal || "9999")));
+  const monthly = a => { const c = Number(a.cost) || 0; return a.period === "Ogni mese" ? c : a.period === "Ogni anno" ? c / 12 : 0; };
+  const tot = list.reduce((x, a) => x + monthly(a), 0);
+  const soon = list.filter(a => a.renewal && daysFrom(a.renewal) >= 0 && daysFrom(a.renewal) <= 30).length;
+  return `<div class="wrap">
+  ${head("Team", "Strumenti e account", "Gli strumenti che pagate o usate: chi li gestisce, quanto costano e quando si rinnovano. Mai password: solo l'email dell'account.", addBtn("accounts", "Aggiungi strumento", "acc"))}
+  ${list.length ? `<div class="kpis"><div class="card kpi"><div class="lab">Strumenti</div><div class="val num">${list.length}</div></div><div class="card kpi"><div class="lab">Costo mensile stimato</div><div class="val num">${eur(tot)}</div></div><div class="card kpi"><div class="lab">Rinnovi nei prossimi 30 giorni</div><div class="val num">${soon}</div></div></div>
+  <div class="tbl-wrap"><table><thead><tr><th>Strumento</th><th>Gestito da</th><th>Account</th><th class="r">Costo</th><th>Rinnovo</th></tr></thead><tbody>${list.map(a => `<tr data-edit="accounts:${a.id}" style="cursor:pointer"><td><div class="t" style="font-weight:500">${esc(a.name)}</div>${chip(a.kind)}${attChip(a)}${a.notes ? `<div class="small muted">${esc(a.notes)}</div>` : ""}</td><td>${esc(a.owner || "")}</td><td class="small" style="overflow-wrap:anywhere">${esc(a.login || "")}</td><td class="r num">${a.period === "Gratis" ? "Gratis" : a.cost ? eur(a.cost) + '<div class="small muted">' + esc((a.period || "").toLowerCase()) + "</div>" : "—"}</td><td class="num">${a.renewal ? `<span class="when ${whenCls(a.renewal)}">${fmtD(a.renewal, 1)}<br>${rel(a.renewal)}</span>` : "—"}</td></tr>`).join("")}</tbody></table></div>` : emptyBox("Nessuno strumento registrato", "Elenca sito, dominio, Canva, social e ogni abbonamento: così sapete sempre chi lo gestisce e quando scade.", "accounts", "Aggiungi il primo strumento")}
+  <div class="banner warn">Non scrivere password o codici: chiunque abbia il link della pagina potrebbe leggerli. Usate un gestore di password condiviso.</div>
+  </div>`;
+};
 V.links = () => {
   const cats = LCAT.filter(c => S.data.links.some(l => (l.category || "Altro") === c));
   return `<div class="wrap">
