@@ -220,6 +220,28 @@ blockquote::before { content: "“"; font-family: var(--fd); color: var(--orange
 .gallery img { width: 100%; border-radius: var(--r-sm); border: 1px solid var(--line); cursor: zoom-in; display: block; background: var(--beige); min-height: 60px; }
 .meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 10px 16px; font-size: 14px; }
 .meta div span { display: block; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; }
+.pinfo { display: grid; gap: 4px; }
+.pi { display: flex; gap: 10px; font-size: 13.5px; align-items: baseline; }
+.pi > span { flex: 0 0 96px; color: var(--muted); font-size: 12.5px; }
+.pi > div { min-width: 0; overflow-wrap: anywhere; }
+.pi a { color: var(--navy); text-decoration: underline; text-underline-offset: 2px; }
+.ico { width: 14px; height: 14px; flex: none; }
+.tchip, .kchip { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; padding: 3px 10px 3px 8px; border-radius: var(--pill); white-space: nowrap; text-transform: none; letter-spacing: 0; }
+.tchip { background: var(--ts); color: var(--tc); }
+.kchip { background: #fff; color: var(--kc); border: 1.5px solid var(--kc); padding: 1.5px 9px 1.5px 7px; }
+.icard { border-left: 5px solid var(--tc); }
+.ichips { gap: 6px; }
+.ikey { font-size: 12.5px; color: var(--tc); font-weight: 600; }
+.isum { gap: 6px 8px; align-items: center; }
+.isum b { margin-right: 6px; font-size: 13px; }
+.fchip.tf, .fchip.kf { display: inline-flex; align-items: center; gap: 5px; }
+.fchip.tf { border-color: var(--tc); color: var(--tc); background: var(--ts); }
+.fchip.tf.on { background: var(--tc); color: #fff; }
+.fchip.kf { border-color: var(--kc); color: var(--kc); }
+.fchip.kf.on { background: var(--kc); color: #fff; }
+.col-h.tcol { color: var(--tc); border-bottom: 3px solid var(--tc); padding-bottom: 6px; }
+.col-h.tcol span:first-child { display: inline-flex; align-items: center; gap: 6px; }
+.fld[hidden] { display: none; }
 .comment { background: var(--white); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 10px 12px; font-size: 14px; }
 .big-img { width: 100%; border-radius: var(--r-sm); }
 
@@ -269,7 +291,57 @@ img { max-width: 100%; }
 /* ================= costanti ================= */
 const LOGO = "logo-white.png";
 const AREE = ["Dispense e quiz", "Tools", "Mentor", "Community", "Social e marketing", "Partnership e B2B", "Prodotto e tech", "Monetizzazione", "Organizzazione"];
-const IDEA_ST = ["Nuova", "Da valutare", "Approvata", "In sviluppo", "Fatta", "Archiviata"];
+const IDEA_ST = ["Nuova", "Approvata", "In sviluppo", "Fatta", "Archiviata"];
+/* Tipo = di che cosa parla l'idea (colore + icona). Natura = che genere di intervento è. */
+const _ic = {
+  prod: '<path d="M12 3 3 7.5 12 12l9-4.5L12 3Z"/><path d="M3 7.5v9L12 21l9-4.5v-9M12 12v9"/>',
+  cont: '<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2V5Z"/><path d="M8 7h7"/>',
+  evt: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  mkt: '<path d="M3 11v3l12 5V6L3 11Z"/><path d="M18 9a4 4 0 0 1 0 6"/>',
+  par: '<circle cx="9" cy="12" r="5"/><circle cx="15" cy="12" r="5"/>',
+  mon: '<circle cx="12" cy="12" r="9"/><path d="M15.5 9a4 4 0 1 0 0 6M7.5 11h6M7.5 13.5h6"/>',
+  org: '<rect x="3" y="4" width="18" height="6" rx="1.5"/><rect x="3" y="14" width="8" height="6" rx="1.5"/><path d="M15 15h6M15 19h6"/>',
+  none: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/>',
+  nov: '<path d="M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2L12 3Z"/>',
+  mig: '<path d="M12 19V5M6 11l6-6 6 6"/>',
+  gra: '<path d="M12 3a9 9 0 1 0 0 18c1.5 0 2-1 1.5-2-.6-1.2 0-2.5 1.5-2.5H17a4 4 0 0 0 4-4C21 6.5 17 3 12 3Z"/><circle cx="8" cy="11" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="16" cy="11" r="1"/>',
+  alt: '<circle cx="6" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18" cy="12" r="1.3"/>',
+};
+const T = { prod: "Prodotto / funzione", cont: "Contenuto", evt: "Evento / community", mkt: "Marketing e social", par: "Partnership", mon: "Monetizzazione", org: "Organizzazione" };
+const TIPI = [
+  { id: T.prod, c: "#172554", s: "#e3e7f2", ic: _ic.prod, area: "Prodotto e tech", from: ["Tools", "Prodotto e tech"] },
+  { id: T.cont, c: "#1a453c", s: "#dcebe6", ic: _ic.cont, area: "Dispense e quiz", from: ["Dispense e quiz", "Mentor"] },
+  { id: T.evt, c: "#914809", s: "#f6e6d6", ic: _ic.evt, area: "Community", from: ["Community"] },
+  { id: T.mkt, c: "#9d174d", s: "#fbe3ee", ic: _ic.mkt, area: "Social e marketing", from: ["Social e marketing"] },
+  { id: T.par, c: "#0f5f6b", s: "#d9eef1", ic: _ic.par, area: "Partnership e B2B", from: ["Partnership e B2B"] },
+  { id: T.mon, c: "#7a5a00", s: "#fbefc8", ic: _ic.mon, area: "Monetizzazione", from: ["Monetizzazione"] },
+  { id: T.org, c: "#475569", s: "#e6e9ee", ic: _ic.org, area: "Organizzazione", from: ["Organizzazione"] },
+];
+const TIPO_NONE = { id: "Da classificare", c: "#5f5b53", s: "#e9e5dd", ic: _ic.none, area: AREE[0], from: [] };
+const IKIND = [
+  { id: "Novità", c: "#1a6b3c", ic: _ic.nov }, { id: "Miglioramento", c: "#1d4ed8", ic: _ic.mig },
+  { id: "Aggiornamento grafico", c: "#6d28d9", ic: _ic.gra }, { id: "Altro", c: "#5f5b53", ic: _ic.alt },
+];
+/* campi che compaiono solo per un certo tipo di idea */
+const IDEA_SPEC = [
+  { k: "p_for", l: "Per chi", only: [T.prod], ph: "Es. matricole di Economia" },
+  { k: "p_mvp", l: "Versione minima da provare", t: "textarea", rows: 2, wide: 1, only: [T.prod], ph: "La cosa più piccola che possiamo fare per capire se funziona" },
+  { k: "c_subject", l: "Esame / materia", only: [T.cont] }, { k: "c_format", l: "Formato", t: "select", o: ["Dispensa", "Quiz", "Video", "Schema / mappa", "Altro"], only: [T.cont] },
+  { k: "c_producer", l: "Chi lo produce", t: "person", only: [T.cont] }, { k: "c_freq", l: "Frequenza", only: [T.cont], ph: "Es. una a settimana" },
+  { k: "e_date", l: "Data", t: "date", only: [T.evt] }, { k: "e_place", l: "Luogo", only: [T.evt] },
+  { k: "e_budget", l: "Budget (€)", t: "number", only: [T.evt] }, { k: "e_people", l: "Persone attese", t: "number", only: [T.evt] },
+  { k: "e_needs", l: "Chi o cosa serve", wide: 1, only: [T.evt] },
+  { k: "m_channel", l: "Canale", t: "select", o: ["Instagram", "TikTok", "LinkedIn", "WhatsApp / Telegram", "Email", "Sito", "Altro"], only: [T.mkt] },
+  { k: "m_format", l: "Formato", t: "select", o: ["Post", "Reel / video", "Storia", "Carosello", "Newsletter", "Altro"], only: [T.mkt] },
+  { k: "m_caption", l: "Caption / testo del post", t: "textarea", rows: 4, wide: 1, only: [T.mkt], ph: "Scrivi qui il testo così com'è, pronto da copiare" },
+  { k: "m_cta", l: "Call to action", only: [T.mkt], ph: "Es. Iscriviti al gruppo" }, { k: "m_metric", l: "Cosa vogliamo muovere", only: [T.mkt], ph: "Es. 100 iscritti" },
+  { k: "pa_who", l: "Con chi", only: [T.par] }, { k: "pa_first", l: "Primo passo", only: [T.par] },
+  { k: "pa_offer", l: "Cosa offriamo", t: "textarea", rows: 2, only: [T.par] }, { k: "pa_ask", l: "Cosa chiediamo", t: "textarea", rows: 2, only: [T.par] },
+  { k: "mo_who", l: "A chi si rivolge", only: [T.mon] }, { k: "mo_price", l: "Prezzo", only: [T.mon], ph: "Es. 5 € al mese" },
+  { k: "mo_revenue", l: "Stima ricavi (€)", t: "number", only: [T.mon] }, { k: "mo_risk", l: "Rischio principale", only: [T.mon] },
+  { k: "o_who", l: "Chi coinvolge", t: "person", only: [T.org] }, { k: "o_due", l: "Entro quando", t: "date", only: [T.org] },
+  { k: "o_change", l: "Cosa cambia", t: "textarea", rows: 2, wide: 1, only: [T.org] },
+];
 const TASK_ST = ["Da fare", "In corso", "Bloccato", "Fatto"];
 const PIPE = ["Da contattare", "Contattato", "In trattativa", "Accordo attivo", "Non interessato"];
 const PTYPES = ["Associazione studentesca", "Azienda", "Business school / Master", "Docente / Ateneo", "Sponsor", "Media / Creator", "Altro"];
@@ -284,9 +356,13 @@ const curQ = () => { const d = new Date(); return `T${Math.floor(d.getMonth() / 
 
 const SCHEMA = {
   ideas: { one: "idea", fields: [
-    { k: "title", l: "Titolo", req: 1, wide: 1, ph: "Es. Simulazioni d'esame cronometrate per Microeconomia" },
-    { k: "body", l: "Descrizione", t: "textarea", rows: 5, wide: 1, ph: "Che problema risolve, per quali studenti, come funzionerebbe, cosa serve per provarla…" },
-    { k: "area", l: "Area", t: "select", o: AREE }, { k: "status", l: "Stato", t: "select", o: IDEA_ST, d: "Nuova" },
+    { k: "title", l: "Titolo", req: 1, wide: 1, ph: "Es. Creare simulazioni d'esame cronometrate per Microeconomia", help: "Inizia con un verbo: si capisce subito cosa faremmo." },
+    { k: "type", l: "Tipo di idea", t: "select", o: TIPI.map(t => t.id), help: "Di cosa parla: i campi qui sotto cambiano in base alla scelta." },
+    { k: "kind", l: "Natura", t: "select", o: IKIND.map(k => k.id), d: "Novità", help: "Novità = non esiste ancora · Miglioramento = rendere migliore qualcosa che c'è · Aggiornamento grafico = solo look e layout." },
+    { k: "problem", l: "Il problema, in una riga", wide: 1, ph: "Cosa non funziona o cosa manca oggi, e per chi" },
+    { k: "body", l: "L'idea", t: "textarea", rows: 4, wide: 1, ph: "Come funzionerebbe, cosa cambia, cosa serve per provarla…" },
+    ...IDEA_SPEC,
+    { k: "status", l: "Stato", t: "select", o: IDEA_ST, d: "Nuova" },
     { k: "impact", l: "Impatto sugli studenti", t: "scale", d: "3" }, { k: "effort", l: "Sforzo per realizzarla", t: "scale", d: "3" },
     { k: "url", l: "Link di riferimento", t: "url", wide: 1, ph: "Un esempio, un competitor, un documento" },
     { k: "images", l: "Immagini, schizzi, screenshot", t: "images", wide: 1 } ] },
@@ -334,8 +410,15 @@ const SCHEMA = {
     { k: "title", l: "Nome", req: 1, ph: "Es. Cartella Drive dispense" }, { k: "category", l: "Categoria", t: "select", o: LCAT },
     { k: "url", l: "Link", t: "url", req: 1, wide: 1 }, { k: "note", l: "Nota", wide: 1 } ] },
   team: { one: "persona", fields: [
-    { k: "name", l: "Nome", req: 1 }, { k: "role", l: "Ruolo", ph: "Es. Contenuti e dispense" },
-    { k: "focus", l: "Di cosa è responsabile", t: "textarea", rows: 3, wide: 1 }, { k: "contact", l: "Contatto", ph: "Telefono o email" } ] },
+    { k: "name", l: "Nome e cognome", req: 1 }, { k: "role", l: "Ruolo", ph: "Es. Contenuti e dispense" },
+    { k: "email", l: "Email", ph: "nome@esempio.it" }, { k: "phone", l: "Telefono / WhatsApp", ph: "+39 …" },
+    { k: "linkedin", l: "LinkedIn o profilo", t: "url", ph: "linkedin.com/in/…" }, { k: "city", l: "Città", ph: "Es. Firenze" },
+    { k: "focus", l: "Di cosa è responsabile", t: "textarea", rows: 3, wide: 1 },
+    { k: "skills", l: "Competenze e strumenti", ph: "Es. Design, Notion, SEO" },
+    { k: "availability", l: "Disponibilità", ph: "Es. Lun–Ven dopo le 17" },
+    { k: "since", l: "Nel team dal", t: "date" }, { k: "birthday", l: "Compleanno", t: "date" },
+    { k: "equity", l: "Quota societaria (%)", t: "number" }, { k: "contact", l: "Altri contatti", ph: "Instagram, indirizzo, contatto di emergenza…" },
+    { k: "notes", l: "Note interne", t: "textarea", rows: 3, wide: 1 } ] },
 };
 Object.values(SCHEMA).forEach(sc => sc.fields.push({ k: "files", l: "Allegati", t: "files", wide: 1 }));
 const COLS = ["ideas", "feedback", "okrs", "tasks", "metrics", "mvalues", "partners", "finance", "meetings", "decisions", "links", "team", "google", "sfiles"];
@@ -345,7 +428,7 @@ const NAV = [
   { g: "Idee e ascolto", items: [["ideas", "Idee"], ["feedback", "Voce degli studenti"]] },
   { g: "Pianificazione", items: [["okrs", "Obiettivi"], ["tasks", "Scadenze e task"]] },
   { g: "Crescita", items: [["metrics", "Metriche"], ["web", "Sito e Google"], ["partners", "Partner e contatti"], ["finance", "Finanze"]] },
-  { g: "Team", items: [["meetings", "Meeting"], ["decisions", "Decisioni"], ["links", "Team e risorse"]] },
+  { g: "Team", items: [["meetings", "Meeting"], ["decisions", "Decisioni"], ["team", "Persone"], ["links", "Team e risorse"]] },
 ];
 
 /* ================= stato ================= */
@@ -371,7 +454,28 @@ const IC = {
   tick: '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.2 5 8.6 9.6 3.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>',
 };
 
-function toast(msg) { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => t.hidden = true, 2800); }
+function toast(msg, ms = 2800) { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => t.hidden = true, ms); }
+const svgI = p => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+const ideaSt = i => !i.status || i.status === "Da valutare" ? "Nuova" : i.status; /* "Da valutare" è stato unito a "Nuova" */
+const tipoOf = i => TIPI.find(t => t.id === i.type) || TIPI.find(t => t.from.includes(i.area)) || TIPO_NONE;
+const kindOf = i => IKIND.find(k => k.id === i.kind);
+const tipoChip = t => `<span class="tchip" style="--tc:${t.c};--ts:${t.s}">${svgI(t.ic)}${esc(t.id)}</span>`;
+const kindChip = k => k ? `<span class="kchip" style="--kc:${k.c}">${svgI(k.ic)}${esc(k.id)}</span>` : "";
+const specVal = (f, v) => f.t === "date" ? fmtD(v, 1) : f.k === "e_budget" || f.k === "mo_revenue" ? "€ " + Number(v).toLocaleString("it-IT") : String(v);
+const specOf = (i, t) => IDEA_SPEC.filter(f => f.only.includes(t.id) && i[f.k] !== "" && i[f.k] != null);
+function ideaKey(i, t) {
+  const g = k => i[k] !== "" && i[k] != null ? i[k] : "";
+  const j = a => a.filter(Boolean).join(" · ");
+  if (t.id === T.prod) return g("p_for") && "Per: " + g("p_for");
+  if (t.id === T.cont) return j([g("c_subject"), g("c_format")]);
+  if (t.id === T.evt) return j([g("e_date") && fmtD(g("e_date")), g("e_place")]);
+  if (t.id === T.mkt) return j([g("m_channel"), g("m_format")]);
+  if (t.id === T.par) return g("pa_who");
+  if (t.id === T.mon) return j([g("mo_price"), g("mo_revenue") !== "" && "~€ " + Number(g("mo_revenue")).toLocaleString("it-IT")]);
+  if (t.id === T.org) return j([g("o_who"), g("o_due") && "entro " + fmtD(g("o_due"))]);
+  return "";
+}
+function syncOnly() { const ty = document.getElementById("f_type") && document.getElementById("f_type").value; $$("#frm [data-only]").forEach(el => { el.hidden = !el.dataset.only.split("|").includes(ty); }); }
 function chip(text, cls = "") { return text ? `<span class="chip ${cls}">${esc(text)}</span>` : ""; }
 function stChip(s) { const m = { "Nuova": "navy", "Da valutare": "yl", "Approvata": "gr", "In sviluppo": "or", "Fatta": "gr", "Archiviata": "", "Da fare": "navy", "In corso": "or", "Bloccato": "rd", "Fatto": "gr", "Problema": "rd", "Richiesta": "or", "Apprezzamento": "gr", "Critica": "yl", "Presa": "gr", "Da rivedere": "yl", "Superata": "", "Alta": "rd", "Bassa": "" }; return chip(s, m[s] || ""); }
 function whenCls(s) { const n = daysFrom(s); return n < 0 ? "late" : n <= 3 ? "soon" : ""; }
@@ -446,7 +550,7 @@ function money() {
 /* ================= sidebar ================= */
 function counts() {
   return {
-    ideas: S.data.ideas.filter(i => i.status === "Nuova" || i.status === "Da valutare").length,
+    ideas: S.data.ideas.filter(i => ideaSt(i) === "Nuova").length,
     tasks: lateTasks().length, tasksOpen: openTasks().length,
     web: (gdoc()?.index?.missing || []).length,
     partners: S.data.partners.filter(p => p.nextDate && daysFrom(p.nextDate) < 0 && !["Accordo attivo", "Non interessato"].includes(p.status)).length,
@@ -456,7 +560,7 @@ function renderSide() {
   const c = counts();
   const badge = id => {
     if (id === "tasks") return c.tasks ? `<span class="cnt alert num" title="In ritardo">${c.tasks}</span>` : c.tasksOpen ? `<span class="cnt num">${c.tasksOpen}</span>` : "";
-    if (id === "ideas" && c.ideas) return `<span class="cnt num" title="Da valutare">${c.ideas}</span>`;
+    if (id === "ideas" && c.ideas) return `<span class="cnt num" title="Nuove, da valutare">${c.ideas}</span>`;
     if (id === "web" && c.web) return `<span class="cnt alert num" title="Pagine non indicizzate">${c.web}</span>`;
     if (id === "partners" && c.partners) return `<span class="cnt alert num" title="Follow-up scaduti">${c.partners}</span>`;
     return "";
@@ -522,7 +626,7 @@ V.home = () => {
       ${okrs.length ? okrs.map(o => { const p = okrPct(o); return `<div class="stack" style="gap:6px"><div class="row between"><span class="t" style="font-weight:500">${esc(o.title)}</span><span class="num small">${p}%</span></div><div class="bar ${p >= 60 ? "gr" : ""}"><i style="width:${p}%"></i></div></div>`; }).join("") : `<p class="muted">Nessun obiettivo per questo trimestre.</p>${addBtn("okrs", "Fissa un obiettivo", "")}`}
     </section>
     <section class="card panel"><div class="panel-h"><h2>Idee più votate</h2><button class="linkbtn" data-nav="ideas">Bacheca</button></div>
-      ${topIdeas.length ? `<div>${topIdeas.map(i => `<div class="li"><div class="grow" data-idea="${i.id}" style="cursor:pointer"><div class="t">${esc(i.title)}</div><div class="row">${stChip(i.status)}${chip(i.area)}</div></div><button class="vote ${voted(i) ? "on" : ""}" data-vote="${i.id}">${IC.up}<span class="num">${votes(i)}</span></button></div>`).join("")}</div>` : `<p class="muted">Ancora nessuna idea.</p>`}
+      ${topIdeas.length ? `<div>${topIdeas.map(i => `<div class="li"><div class="grow" data-idea="${i.id}" style="cursor:pointer"><div class="t">${esc(i.title)}</div><div class="row">${tipoChip(tipoOf(i))}${kindChip(kindOf(i))}${stChip(ideaSt(i))}</div></div><button class="vote ${voted(i) ? "on" : ""}" data-vote="${i.id}">${IC.up}<span class="num">${votes(i)}</span></button></div>`).join("")}</div>` : `<p class="muted">Ancora nessuna idea.</p>`}
     </section>
     <section class="card panel"><div class="panel-h"><h2>Voce degli studenti</h2><button class="linkbtn" data-nav="feedback">Tutti</button></div>
       ${fb.length ? fb.map(f => `<div class="stack" style="gap:4px"><blockquote>${esc(f.text)}</blockquote><div class="row small muted">${stChip(f.kind)}${esc(f.who || "")}${f.date ? " · " + fmtD(f.date) : ""}</div></div>`).join("") : `<p class="muted">Annota qui quello che vi dicono gli studenti: è la fonte migliore di idee.</p>${addBtn("feedback", "Aggiungi feedback", "")}`}
@@ -536,25 +640,36 @@ V.home = () => {
 };
 
 V.ideas = () => {
-  const showArch = S.f.ideaArch;
-  const list = S.data.ideas.filter(i => (!S.f.ideaArea || i.area === S.f.ideaArea) && match(i, "ideas", ["title", "body", "area"]));
-  const cols = IDEA_ST.filter(s => s !== "Archiviata" || showArch);
-  const card = i => {
-    const imgs = i.images || [];
+  const showArch = S.f.ideaArch, byTipo = S.f.ideaView === "tipo";
+  const list = S.data.ideas.filter(i => (!S.f.ideaTipo || tipoOf(i).id === S.f.ideaTipo) && (!S.f.ideaKind || i.kind === S.f.ideaKind) && (showArch || i.status !== "Archiviata") && match(i, "ideas", ["title", "body", "problem", "type", "kind", "area"]));
+  const card = (i, showSt) => {
+    const imgs = i.images || [], t = tipoOf(i), key = ideaKey(i, t);
     const qw = Number(i.impact) >= 4 && Number(i.effort) <= 2;
-    return `<article class="card click" data-idea="${i.id}">
+    return `<article class="card click icard" data-idea="${i.id}" style="--tc:${t.c};--ts:${t.s}">
+      <div class="row ichips">${tipoChip(t)}${kindChip(kindOf(i))}</div>
       ${imgs[0] ? `<img class="thumb" data-img="${esc(imgs[0])}" alt="">` : ""}
       <h3>${esc(i.title)}</h3>
-      ${i.body ? `<div class="excerpt">${esc(i.body)}</div>` : ""}
-      <div class="row">${chip(i.area)}${qw ? chip("Quick win", "gr") : ""}${attChip(i)}${imgs.length > 1 ? chip(`${imgs.length} immagini`) : ""}</div>
+      ${i.problem ? `<div class="excerpt">${esc(i.problem)}</div>` : i.body ? `<div class="excerpt">${esc(i.body)}</div>` : ""}
+      ${key ? `<div class="ikey">${esc(key)}</div>` : ""}
+      <div class="row">${showSt ? stChip(ideaSt(i)) : ""}${qw ? chip("Quick win", "gr") : ""}${attChip(i)}${imgs.length > 1 ? chip(`${imgs.length} immagini`) : ""}</div>
       <div class="row between"><button class="vote ${voted(i) ? "on" : ""}" data-vote="${i.id}" title="Vota questa idea">${IC.up}<span class="num">${votes(i)}</span></button><span class="small muted">${(i.comments || []).length ? `${(i.comments || []).length} commenti · ` : ""}${author(i)}</span></div>
     </article>`;
   };
+  const tipi = TIPI.concat(S.data.ideas.some(i => tipoOf(i) === TIPO_NONE) ? [TIPO_NONE] : []);
+  const live = S.data.ideas.filter(i => i.status !== "Archiviata");
+  const sum = tipi.map(t => [t, live.filter(i => tipoOf(i) === t).length]).filter(x => x[1]);
+  const cols = byTipo ? tipi.map(t => [t.id, list.filter(i => tipoOf(i) === t), t]) : IDEA_ST.filter(st => st !== "Archiviata" || showArch).map(st => [st, list.filter(i => ideaSt(i) === st), null]);
+  const tf = `<button class="fchip ${!S.f.ideaTipo ? "on" : ""}" data-f="ideaTipo" data-v="">Tutti i tipi</button>` + tipi.map(t => `<button class="fchip tf ${S.f.ideaTipo === t.id ? "on" : ""}" data-f="ideaTipo" data-v="${esc(t.id)}" style="--tc:${t.c};--ts:${t.s}">${svgI(t.ic)}${esc(t.id)}</button>`).join("");
+  const kf = `<button class="fchip ${!S.f.ideaKind ? "on" : ""}" data-f="ideaKind" data-v="">Tutte le nature</button>` + IKIND.map(k => `<button class="fchip kf ${S.f.ideaKind === k.id ? "on" : ""}" data-f="ideaKind" data-v="${esc(k.id)}" style="--kc:${k.c}">${svgI(k.ic)}${esc(k.id)}</button>`).join("");
   return `<div class="wrap">
-  ${head("Idee e ascolto", "Idee", "Tutto quello che ci viene in mente per UniLink, con testo e immagini. Votatele, commentatele e spostatele di stato quando le decidete.", addBtn("ideas", "Nuova idea", "acc"))}
-  <div class="filters">${searchBox("ideas", "Cerca un'idea")}${fchips("ideaArea", AREE)}<button class="fchip ${showArch ? "on" : ""}" data-toggle="ideaArch">Mostra archiviate</button></div>
-  ${S.data.ideas.length ? `<div class="board-wrap"><div class="board">${cols.map(s => { const items = list.filter(i => (i.status || "Nuova") === s).sort((a, b) => votes(b) - votes(a)); return `<div class="col"><div class="col-h"><span>${s}</span><span class="num muted">${items.length}</span></div>${items.map(card).join("")}</div>`; }).join("")}</div></div>
-  <p class="small muted">Impatto alto e sforzo basso = <b>Quick win</b>: di solito conviene partire da lì.</p>` : emptyBox("La bacheca è vuota", "Aggiungi la prima idea: una nuova dispensa, un tool, un evento, un modo per guadagnare. Puoi allegare schizzi o screenshot.", "ideas", "Aggiungi la prima idea")}
+  ${head("Idee e ascolto", "Idee", "Ogni idea ha un tipo (di cosa parla) e una natura (novità, miglioramento, grafica…): si capisce a colpo d'occhio. Votatele, commentatele e spostatele di stato quando le decidete.", addBtn("ideas", "Nuova idea", "acc"))}
+  ${sum.length ? `<div class="row isum">${sum.map(([t, n]) => `${tipoChip(t)}<b class="num">${n}</b>`).join("")}</div>` : ""}
+  <div class="filters">${searchBox("ideas", "Cerca un'idea")}<button class="fchip ${showArch ? "on" : ""}" data-toggle="ideaArch">Mostra archiviate</button></div>
+  <div class="filters">${tf}</div>
+  <div class="filters">${kf}</div>
+  <div class="filters"><span class="small muted">Organizza per</span><button class="fchip ${!byTipo ? "on" : ""}" data-f="ideaView" data-v="">Stato</button><button class="fchip ${byTipo ? "on" : ""}" data-f="ideaView" data-v="tipo">Tipo</button></div>
+  ${S.data.ideas.length ? `<div class="board-wrap"><div class="board">${cols.map(([name, items, t]) => `<div class="col" ${t ? `style="--tc:${t.c};--ts:${t.s}"` : ""}><div class="col-h ${t ? "tcol" : ""}"><span>${t ? svgI(t.ic) : ""}${esc(name)}</span><span class="num muted">${items.length}</span></div>${items.sort((x, y) => votes(y) - votes(x)).map(i => card(i, byTipo)).join("")}</div>`).join("")}</div></div>
+  <p class="small muted">Impatto alto e sforzo basso = <b>Quick win</b>: di solito conviene partire da lì.</p>` : emptyBox("La bacheca è vuota", "Aggiungi la prima idea: una nuova dispensa, una funzione, un evento, un post, un modo per guadagnare. Puoi allegare schizzi o screenshot.", "ideas", "Aggiungi la prima idea")}
   </div>`;
 };
 
@@ -741,6 +856,43 @@ V.decisions = () => {
   </div>`;
 };
 
+V.team = () => {
+  const q = (S.f.q_team || "").toLowerCase();
+  const list = S.data.team.filter(t => !q || ["name", "role", "email", "phone", "city", "skills", "focus"].some(k => String(t[k] || "").toLowerCase().includes(q))).sort((a, b) => String(a.name || "").localeCompare(String(b.name || "")));
+  const emails = S.data.team.map(t => (t.email || "").trim()).filter(Boolean);
+  const nextBd = d => { if (!d) return null; const m = String(d).slice(5, 10), y = new Date().getFullYear(); let t = `${y}-${m}`; if (daysFrom(t) < 0) t = `${y + 1}-${m}`; return t; };
+  const row = (l, v) => v ? `<div class="pi"><span>${l}</span><div>${v}</div></div>` : "";
+  const card = t => {
+    const mine = openTasks().filter(x => x.owner === t.name).sort(byDate("due"));
+    const late = mine.filter(x => x.due && daysFrom(x.due) < 0).length;
+    const ideas = S.data.ideas.filter(x => x.by === t.name).length;
+    const partners = S.data.partners.filter(x => x.owner === t.name).length;
+    const okrs = S.data.okrs.filter(x => x.owner === t.name).length;
+    const bd = nextBd(t.birthday);
+    const tel = String(t.phone || "").replace(/[^\d+]/g, "");
+    const info = `${row("Email", t.email ? `<a href="mailto:${esc(t.email)}">${esc(t.email)}</a>` : "")}
+        ${row("Telefono", t.phone ? `<a href="tel:${esc(tel)}">${esc(t.phone)}</a>` : "")}
+        ${row("Profilo", t.linkedin ? `<a href="${esc(safeUrl(t.linkedin))}" target="_blank" rel="noopener">${esc(String(t.linkedin).replace(/^https?:\/\/(www\.)?/i, ""))}</a>` : "")}
+        ${row("Città", esc(t.city || ""))}${row("Disponibilità", esc(t.availability || ""))}${row("Competenze", esc(t.skills || ""))}
+        ${row("Nel team dal", t.since ? fmtD(t.since, 1) : "")}${row("Compleanno", bd ? `${fmtD(bd)} (${rel(bd)})` : "")}
+        ${row("Quota", t.equity !== "" && t.equity != null ? esc(t.equity) + "%" : "")}${row("Altro", esc(t.contact || ""))}`.replace(/\s+$/,"").trim();
+    return `<article class="card click stack" data-edit="team:${t.id}" style="gap:10px">
+      <div><h3>${esc(t.name)}</h3>${t.role ? `<div class="eyebrow">${esc(t.role)}</div>` : ""}</div>
+      ${t.focus ? `<p class="small pre">${esc(t.focus)}</p>` : ""}
+      ${info ? `<div class="pinfo">${info}</div>` : ""}
+      ${t.notes ? `<p class="small muted pre">${esc(t.notes)}</p>` : ""}
+      <div class="row small">${chip(`${mine.length} task aperti`, mine.length ? "navy" : "")}${late ? chip(`${late} in ritardo`, "rd") : ""}${ideas ? chip(`${ideas} idee`) : ""}${partners ? chip(`${partners} contatti seguiti`) : ""}${okrs ? chip(`${okrs} obiettivi`) : ""}</div>
+      ${mine[0] ? `<div class="small muted">Prossimo: ${esc(mine[0].title)}${mine[0].due ? " · " + rel(mine[0].due) : ""}</div>` : ""}
+      ${attChip(t)}</article>`;
+  };
+  return `<div class="wrap">
+  ${head("Team", "Persone", "Rubrica dei founder: contatti, ruolo, disponibilità e carico di lavoro di ciascuno.", `${emails.length ? `<button class="btn" data-copy="${esc(emails.join(", "))}">Copia tutte le email</button><a class="btn" href="mailto:${esc(emails.join(","))}">Scrivi a tutti</a>` : ""}${addBtn("team", "Aggiungi persona", "acc")}`)}
+  ${S.data.team.length ? `<div class="filters">${searchBox("team", "Cerca per nome, ruolo, città…")}</div>` : ""}
+  ${list.length ? `<div class="grid">${list.map(card).join("")}</div>` : S.data.team.length ? `<p class="muted">Nessuna persona corrisponde alla ricerca.</p>` : emptyBox("Aggiungi i founder", "Nome, ruolo, email e telefono di ciascuno. I nomi compariranno come responsabili di task, obiettivi e contatti.", "team", "Aggiungi una persona")}
+  ${emails.length < S.data.team.length ? `<p class="small muted">Mancano le email di ${S.data.team.filter(t => !(t.email || "").trim()).map(t => esc(t.name)).join(", ")}: apri la scheda per completarle.</p>` : ""}
+  </div>`;
+};
+
 V.links = () => {
   const cats = LCAT.filter(c => S.data.links.some(l => (l.category || "Altro") === c));
   return `<div class="wrap">
@@ -797,7 +949,7 @@ function fieldHTML(f, v) {
     case "krs": return `<div class="fld wide"><span>${f.l}</span><div class="stack" id="krs" style="gap:6px"></div>${f.help ? `<small>${f.help}</small>` : ""}</div>`;
     default: inp = `<input id="${id}" type="text" value="${esc(v || "")}"${ph}>`;
   }
-  return `<label class="fld ${f.wide ? "wide" : ""}"><span>${f.l}${f.req ? " *" : ""}</span>${inp}${f.help ? `<small>${f.help}</small>` : ""}</label>`;
+  return `<label class="fld ${f.wide ? "wide" : ""}"${f.only ? ` data-only="${esc(f.only.join("|"))}"` : ""}><span>${f.l}${f.req ? " *" : ""}</span>${inp}${f.help ? `<small>${f.help}</small>` : ""}</label>`;
 }
 function defVal(f) { if (f.d === "@today") return localISO(); if (f.d === "@q") return curQ(); if (f.d != null) return f.d; if (f.t === "select") return f.o[0]; return ""; }
 
@@ -805,13 +957,14 @@ function openForm(col, id, preset) {
   if (!S.canWrite) return;
   const sc = SCHEMA[col]; const doc = id ? S.data[col].find(d => d.id === id) : null;
   const vals = Object.assign({}, ...sc.fields.map(f => ({ [f.k]: doc ? doc[f.k] : defVal(f) })), preset || {});
-  S.form = { col, id, imgs: (vals.images || []).map(x => ({ id: x })), removed: [], files: (vals.files || []).map(x => ({ ...x })), removedFiles: [], krs: (vals.krs && vals.krs.length ? vals.krs : [{ label: "", current: 0, target: "", unit: "" }]).map(k => ({ ...k })) };
+  if (col === "ideas" && doc) { if (!doc.type) vals.type = tipoOf(doc).id; vals.status = ideaSt(doc); }
+  S.form = { col, id, imgs: (vals.images || []).map(x => ({ id: x })), removed: [], files: (vals.files || []).map(x => ({ ...x })), removedFiles: [], krs: (vals.krs && vals.krs.length ? vals.krs : [{ label: "", current: 0, target: "", unit: "" }]).map(k => ({ ...k })), extra: preset && preset.ideaId ? { ideaId: preset.ideaId } : {} };
   openModal(`${sheetHead(doc ? "Modifica" : "Aggiungi", doc ? esc(doc.title || doc.name || doc.desc || sc.one) : "")}
     <form class="form" id="frm" novalidate>${sc.fields.map(f => fieldHTML(f, vals[f.k])).join("")}
     <div class="form-foot fld wide"><div class="row">${doc ? `<button type="button" class="btn danger" data-del="${col}:${id}">Elimina</button>` : ""}</div><div class="row"><button type="button" class="btn" data-close>Annulla</button><button type="submit" class="btn pri">${doc ? "Salva" : "Aggiungi"}</button></div></div></form>`);
   // titolo "Nuova/Nuovo" corretto
   const h = $(".sheet h2"); if (!doc) h.textContent = (["obiettivo", "task", "feedback", "contatto", "movimento", "meeting"].includes(sc.one) ? "Nuovo " : "Nuova ") + sc.one;
-  drawImgs(); drawKrs(); drawFiles();
+  drawImgs(); drawKrs(); drawFiles(); syncOnly();
   const first = $("#frm input, #frm textarea"); if (first) first.focus();
 }
 function drawFiles() {
@@ -852,6 +1005,7 @@ function readForm(sc) {
   for (const f of sc.fields) {
     if (f.t === "images" || f.t === "krs" || f.t === "files") continue;
     const el = document.getElementById("f_" + f.k); if (!el) continue;
+    if (f.only) { const ty = document.getElementById("f_type"); if (!ty || !f.only.includes(ty.value)) { o[f.k] = ""; continue; } }
     if (f.t === "check") o[f.k] = el.checked;
     else if (f.t === "number") o[f.k] = el.value === "" ? "" : Number(el.value);
     else o[f.k] = el.value.trim();
@@ -864,12 +1018,12 @@ async function guard(fn) {
   try { return await fn(); }
   catch (e) {
     const code = e && e.code;
-    if (code === "invalid_argument" && /permission|level|denied|write/i.test(e.message || "")) { S.canWrite = false; render(); toast("Non hai i permessi per modificare questa pagina."); }
-    else if (code === "invalid_argument") { toast("Non sono riuscito a salvare: " + (e.message || "dato non valido") + "."); if (!S.canWrite) render(); }
+    if (code === "session_expired") { toast("Sessione scaduta: rientra con la password, poi premi di nuovo Salva.", 6000); showLogin("Sessione scaduta: rientra con la tua password. Quello che hai scritto non va perso."); }
+    else if (code === "invalid_argument") toast("Non sono riuscito a salvare: " + (e.message || "dato non valido") + ".", 6000);
     else if (code === "file_error") toast(e.message);
     else if (code === "quota_exceeded") toast("Spazio esaurito: elimina qualche immagine o elemento vecchio.");
     else if (code === "unavailable") toast("Connessione instabile: riprova tra un attimo.");
-    else toast("Non sono riuscito a salvare. Riprova.");
+    else toast("Non sono riuscito a salvare. Riprova." + (e && e.message ? " (" + e.message + ")" : ""), 6000);
     throw e;
   }
 }
@@ -895,7 +1049,7 @@ async function submitForm(e) {
       if (sc.fields.some(f => f.t === "krs")) o.krs = F.krs.filter(k => (k.label || "").trim()).map(k => ({ label: k.label.trim(), current: Number(k.current) || 0, target: Number(k.target) || 0, unit: (k.unit || "").trim() }));
       if (F.col === "tasks" && o.status === "Fatto") o.doneAt = localISO();
       if (F.id) await S.db.collection(F.col).doc(F.id).update(o);
-      else await S.db.collection(F.col).doc().set({ ...o, by: S.uid || "", createdAt: new Date().toISOString() });
+      else await S.db.collection(F.col).doc().set({ ...o, ...(F.extra || {}), by: S.uid || "", createdAt: new Date().toISOString() });
       for (const rid of F.removed) await S.db.doc("images/" + rid).delete().catch(() => {});
       if (hasFiles() && F.removedFiles.length) await HQ_FILES.remove(F.removedFiles).catch(() => {});
     });
@@ -920,14 +1074,20 @@ async function del(col, id, btn) {
 /* ---- dettaglio idea ---- */
 function openIdea(id) {
   const i = S.data.ideas.find(x => x.id === id); if (!i) { closeModal(); return; }
-  const imgs = i.images || [];
-  openModal(`${sheetHead(esc(i.area || "Idea"), esc(i.title))}
+  const imgs = i.images || [], t = tipoOf(i), k = kindOf(i);
+  const spec = specOf(i, t), longs = spec.filter(f => f.t === "textarea"), shorts = spec.filter(f => f.t !== "textarea");
+  const linked = S.data.tasks.filter(x => x.ideaId === i.id).sort(byDate("due"));
+  openModal(`${sheetHead(`${tipoChip(t)} ${kindChip(k)}`, esc(i.title))}
     ${imgs.length ? `<div class="gallery">${imgs.map(m => `<img data-img="${esc(m)}" data-zoom="${esc(m)}" alt="">`).join("")}</div>` : ""}
-    ${i.body ? `<p class="pre">${esc(i.body)}</p>` : ""}
+    ${i.problem ? `<section class="stack" style="gap:4px"><h3>Il problema</h3><p class="pre">${esc(i.problem)}</p></section>` : ""}
+    ${i.body ? `<section class="stack" style="gap:4px">${i.problem ? "<h3>L'idea</h3>" : ""}<p class="pre">${esc(i.body)}</p></section>` : ""}
+    ${shorts.length ? `<div class="meta">${shorts.map(f => `<div><span>${esc(f.l)}</span>${esc(specVal(f, i[f.k]))}</div>`).join("")}</div>` : ""}
+    ${longs.map(f => f.k === "m_caption" ? `<section class="stack" style="gap:6px"><div class="row between"><h3>${esc(f.l)}</h3><button class="btn sm" data-copy="${esc(i[f.k])}">Copia testo</button></div><div class="comment pre">${esc(i[f.k])}</div></section>` : `<section class="stack" style="gap:4px"><h3>${esc(f.l)}</h3><p class="pre">${esc(i[f.k])}</p></section>`).join("")}
     ${filesBlock(i)}
-    <div class="meta"><div><span>Stato</span>${S.canWrite ? `<select class="mini-sel" data-move="ideas:${i.id}">${IDEA_ST.map(s => `<option ${s === (i.status || "Nuova") ? "selected" : ""}>${s}</option>`).join("")}</select>` : esc(i.status)}</div><div><span>Impatto</span>${esc(i.impact || "—")} / 5</div><div><span>Sforzo</span>${esc(i.effort || "—")} / 5</div><div><span>Proposta da</span>${author(i) || "—"}${i.createdAt ? " · " + fmtD(i.createdAt.slice(0, 10)) : ""}</div></div>
+    <div class="meta"><div><span>Stato</span>${S.canWrite ? `<select class="mini-sel" data-move="ideas:${i.id}">${IDEA_ST.map(s => `<option ${s === ideaSt(i) ? "selected" : ""}>${s}</option>`).join("")}</select>` : esc(ideaSt(i))}</div><div><span>Impatto</span>${esc(i.impact || "—")} / 5</div><div><span>Sforzo</span>${esc(i.effort || "—")} / 5</div><div><span>Proposta da</span>${author(i) || "—"}${i.createdAt ? " · " + fmtD(i.createdAt.slice(0, 10)) : ""}</div></div>
     ${i.url ? `<a href="${esc(safeUrl(i.url))}" target="_blank" rel="noopener" class="small" style="overflow-wrap:anywhere">${esc(i.url)}</a>` : ""}
     <div class="row"><button class="vote ${voted(i) ? "on" : ""}" data-vote="${i.id}">${IC.up}<span class="num">${votes(i)}</span> ${voted(i) ? "Hai votato" : "Vota"}</button>${S.canWrite ? `<button class="btn sm" data-edit="ideas:${i.id}">Modifica</button><button class="btn sm" data-ideatask="${i.id}">Crea un task</button>` : ""}</div>
+    ${linked.length ? `<section class="stack"><h3>Task collegati</h3><div>${linked.map(x => `<div class="li"><div class="grow" data-edit="tasks:${x.id}" style="cursor:pointer"><div class="t">${esc(x.title)}</div><div class="row small muted">${stChip(x.status || "Da fare")}${x.owner ? `<span>${esc(x.owner)}</span>` : ""}${x.due ? `<span class="when ${x.status === "Fatto" ? "" : whenCls(x.due)}">${rel(x.due)}</span>` : ""}</div></div></div>`).join("")}</div></section>` : ""}
     <section class="stack"><h3>Discussione</h3>${(i.comments || []).map(c => `<div class="comment"><div class="small muted">${author(c)} · ${fmtD((c.at || "").slice(0, 10))}</div><div class="pre">${esc(c.text)}</div></div>`).join("") || `<p class="small muted">Nessun commento. Pro, contro, dubbi: scriveteli qui.</p>`}
     ${S.canWrite ? `<form class="row" id="cmt" style="flex-wrap:nowrap"><input class="inp" id="cmt_in" placeholder="Scrivi un commento" style="flex:1;min-width:0"><button class="btn pri">Invia</button></form>` : ""}</section>`);
   S.form = null; S.ideaOpen = id;
@@ -1006,9 +1166,9 @@ document.addEventListener("click", async e => {
   if (ds.rmkr != null) { S.form.krs.splice(+ds.rmkr, 1); drawKrs(); return; }
   if (ds.f) { S.f[ds.f] = ds.v; render(); return; }
   if (ds.toggle) { S.f[ds.toggle] = !S.f[ds.toggle]; render(); return; }
-  if (ds.copy) { try { await navigator.clipboard.writeText(ds.copy); toast("Link copiato"); } catch (er) { toast(ds.copy); } return; }
-  if (ds.toidea) { e.stopPropagation(); const f = S.data.feedback.find(x => x.id === ds.toidea); openForm("ideas", null, { title: "", body: `Dal feedback di ${f.who || "uno studente"}: “${f.text}”`, area: f.area || AREE[0] }); return; }
-  if (ds.ideatask) { const i = S.data.ideas.find(x => x.id === ds.ideatask); closeModal(); openForm("tasks", null, { title: "Idea: " + i.title, area: i.area || AREE[0] }); return; }
+  if (ds.copy) { try { await navigator.clipboard.writeText(ds.copy); toast("Copiato"); } catch (er) { toast(ds.copy); } return; }
+  if (ds.toidea) { e.stopPropagation(); const f = S.data.feedback.find(x => x.id === ds.toidea); openForm("ideas", null, { title: "", body: `Dal feedback di ${f.who || "uno studente"}: “${f.text}”`, type: (TIPI.find(t => t.from.includes(f.area)) || TIPI[0]).id }); return; }
+  if (ds.ideatask) { const i = S.data.ideas.find(x => x.id === ds.ideatask); closeModal(); openForm("tasks", null, { title: "Idea: " + i.title, area: i.area || tipoOf(i).area, ideaId: i.id }); return; }
   if (ds.acts) {
     const m = S.data.meetings.find(x => x.id === ds.acts); const acts = (m.actions || "").split("\n").map(x => x.trim()).filter(Boolean);
     t.disabled = true;
@@ -1016,6 +1176,7 @@ document.addEventListener("click", async e => {
     return;
   }
 });
+document.addEventListener("change", e => { if (e.target.id === "f_type") syncOnly(); });
 document.addEventListener("change", async e => {
   const t = e.target;
   if (t.id === "f_attach" && S.form) {
@@ -1036,11 +1197,14 @@ document.addEventListener("submit", async e => {
   if (e.target.id === "frm") return submitForm(e);
   e.preventDefault();
   if (e.target.id === "cmt") {
-    const inp = $("#cmt_in"); const text = inp.value.trim(); if (!text) return;
-    const i = S.data.ideas.find(x => x.id === S.ideaOpen);
-    inp.value = "";
+    const inp = $("#cmt_in"); const text = inp.value.trim(); if (!text || S.cmtSending) return;
+    const i = S.data.ideas.find(x => x.id === S.ideaOpen); if (!i) return;
+    S.cmtSending = true; let failed = false;
+    e.target.reset(); inp.value = ""; inp.blur();
     try { await guard(() => S.db.collection("ideas").doc(i.id).update({ comments: [...(i.comments || []), { by: S.uid || "", at: new Date().toISOString(), text }] })); }
-    catch (er) { const ni = $("#cmt_in"); if (ni && !ni.value) ni.value = text; }
+    catch (er) { failed = true; const ni = $("#cmt_in"); if (ni && !ni.value) ni.value = text; }
+    S.cmtSending = false;
+    if (!failed) { const ni = $("#cmt_in"); if (ni) ni.value = ""; toast("Commento inviato"); }
   }
   if (e.target.id === "mval") {
     const v = $("#mv_val").value; if (v === "") { toast("Scrivi un valore."); return; }
@@ -1071,7 +1235,7 @@ function go(v) {
 function refreshOpen(col) {
   if ($("#modal").hidden || S.form) return;
   const h = $(".sheet [data-close]"); if (!h) return;
-  if (col === "ideas" && S.ideaOpen && $("#cmt, .sheet [data-vote]")) { const had = document.activeElement && document.activeElement.id === "cmt_in"; const val = $("#cmt_in")?.value; openIdea(S.ideaOpen); const ni = $("#cmt_in"); if (ni) { if (val) ni.value = val; if (had) ni.focus(); } }
+  if ((col === "ideas" || col === "tasks") && S.ideaOpen && $("#cmt, .sheet [data-vote]")) { const had = document.activeElement && document.activeElement.id === "cmt_in"; const val = S.cmtSending ? "" : $("#cmt_in")?.value; openIdea(S.ideaOpen); const ni = $("#cmt_in"); if (ni) { if (val) ni.value = val; if (had) ni.focus(); } }
   else if ((col === "mvalues" || col === "metrics") && $("#mval")) openMetric($("#mval").dataset.mid);
 }
 
@@ -1100,6 +1264,27 @@ async function loadAll() {
   const cols = new Set([...Object.keys(LOCAL), ...Object.keys(fresh)]);
   cols.forEach(c => { LOCAL[c] = fresh[c] || new Map(); notify(c); });
 }
+const sessErr = () => ({ code: "session_expired", message: "Sessione scaduta" });
+/* prima di scrivere: rinnova la sessione se serve e, se il database rifiuta, riprova una volta con una sessione nuova */
+async function renew() {
+  const { data } = await SB.auth.getSession();
+  if (data && data.session) return "ok";
+  const r = await SB.auth.refreshSession();
+  if (r.data && r.data.session) return "ok";
+  return r.error && /fetch|network|timeout|load failed/i.test(r.error.message || "") ? "offline" : "expired";
+}
+async function authed(fn) {
+  const st = await renew();
+  if (st === "offline") throw { code: "unavailable", message: "offline" };
+  if (st === "expired") throw sessErr();
+  try { return await fn(); }
+  catch (e) {
+    if (!e || e.code !== "invalid_argument") throw e;
+    const r = await SB.auth.refreshSession();
+    if (!r.data || !r.data.session) throw sessErr();
+    try { return await fn(); } catch (e2) { throw e2 && e2.code === "invalid_argument" ? sessErr() : e2; }
+  }
+}
 const DB = {
   collection(col) {
     return {
@@ -1123,9 +1308,11 @@ const DB = {
         return { exists: !!data, data: () => body };
       },
       async set(d) {
-        const { error } = isImg ? await SB.from("images").upsert({ id, data: d.data, by: d.by || "" })
-          : await SB.from("docs").upsert({ col, id, data: d, updated_at: new Date().toISOString() });
-        if (error) throw wrapErr(error);
+        await authed(async () => {
+          const { error } = isImg ? await SB.from("images").upsert({ id, data: d.data, by: d.by || "" })
+            : await SB.from("docs").upsert({ col, id, data: d, updated_at: new Date().toISOString() });
+          if (error) throw wrapErr(error);
+        });
         if (!isImg) applyLocal(col, id, d);
       },
       async update(p) {
@@ -1134,8 +1321,10 @@ const DB = {
         await this.set(deepMerge(cur, p));
       },
       async delete() {
-        const { error } = isImg ? await SB.from("images").delete().eq("id", id) : await SB.from("docs").delete().eq("col", col).eq("id", id);
-        if (error) throw wrapErr(error);
+        await authed(async () => {
+          const { error } = isImg ? await SB.from("images").delete().eq("id", id) : await SB.from("docs").delete().eq("col", col).eq("id", id);
+          if (error) throw wrapErr(error);
+        });
         if (!isImg) applyLocal(col, id, null);
       },
     };
@@ -1203,7 +1392,7 @@ document.addEventListener("submit", async e => {
   const { error } = await SB.auth.signInWithPassword({ email: HQ_CONFIG.teamEmail, password: pass });
   if (error) { showLogin(/invalid/i.test(error.message) ? "Password sbagliata." : "Accesso non riuscito: controlla la connessione e riprova."); return; }
   try { localStorage.setItem("ulhq_name", name); } catch (er) {}
-  $("#login").hidden = true; enter(name);
+  $("#login").hidden = true; if (S.ready) toast("Accesso rinnovato: riprova a salvare."); else enter(name);
 }, true);
 async function logout() { await SB.auth.signOut(); location.reload(); }
 
