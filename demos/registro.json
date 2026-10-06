@@ -4,6 +4,19 @@
    "id": "landing",
    "versioni": [
     {
+     "n": 2,
+     "tag": "landing-v2",
+     "data": "2026-10-06T15:07+00:00",
+     "autore": "Claude",
+     "nota": "Landing v2: Prima/Durante/Dopo, strumenti dentro la demo, anteprima area personale, Da decidere, tablet",
+     "commit": "951c44d",
+     "impronta": "3a6e73e679c4d03f",
+     "kb": 5901,
+     "file": "UniLink_landing_v2_2026-10-06.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v2/UniLink_landing_v2_2026-10-06.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v2/demo-landing"
+    },
+    {
      "n": 1,
      "tag": "landing-v1",
      "data": "2026-10-06T14:15+00:00",
@@ -19,7 +32,7 @@
    ],
    "titolo": "Landing",
    "cartella": "demo-landing",
-   "descrizione": "Demo navigabile della nuova landing (riferimento per Framer).",
+   "descrizione": "Landing v2: Prima · Durante · Dopo, strumenti, anteprima area personale, Da decidere (riferimento per Framer).",
    "architettura": "UniLink_Architettura_Landing.pdf",
    "url": "https://matteprune04.github.io/unilink-hq/demo-landing/"
   },
@@ -60,5 +73,5 @@
    "url": "https://matteprune04.github.io/unilink-hq/demo-webapp/"
   }
  ],
- "aggiornato": "2026-10-06T14:51+00:00"
+ "aggiornato": "2026-10-06T15:07+00:00"
 }
