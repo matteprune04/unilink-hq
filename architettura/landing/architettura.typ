@@ -18,7 +18,7 @@
 #set par(leading: 0.62em, justify: false)
 #show strong: set text(fill: navy)
 
-#let versione = "v2 · 6 ottobre 2026"
+#let versione = "v3 · 6 ottobre 2026"
 
 #set page(paper: "a4", margin: (x: 18mm, top: 20mm, bottom: 18mm),
   header: context { if counter(page).get().first() > 1 [
@@ -57,20 +57,20 @@
   #v(1fr)
   #text(size: 8pt, fill: arancio, tracking: 0.16em)[ARCHITETTURA DI DESIGN · LANDING]
   #v(10pt)
-  #text(size: 40pt)[La landing \ di UniLink, v2.]
+  #text(size: 40pt)[La landing \ di UniLink, v3.]
   #v(14pt)
-  #text(size: 11pt)[Prima · Durante · Dopo. \ Strumenti dentro la demo, anteprima dell'area personale, \ una sezione «Da decidere» per ogni idea aperta, versione tablet. \ Pensato per essere usato come contesto: ogni pagina, card e componente ha un codice.]
+  #text(size: 11pt)[Prima · Durante · Dopo. \ Strumenti dentro la demo, schermate reali dell'area personale, \ nove schede «Da decidere» con architettura completa, \ commenti del team, accessibilità verificata, versione tablet. \ Pensato per essere usato come contesto: ogni pagina, card e componente ha un codice.]
   #v(1fr)
   #set text(size: 8pt)
   #grid(columns: (1fr, 1fr, 1fr), gutter: 10pt,
-    [Versione 2 \ 6 ottobre 2026], [Per i founder \ Matteo, Cosimo, Niccolò, Gianmarco], [Demo e backup \ repository unilink-hq · demo-landing/])
+    [Versione 3 \ 6 ottobre 2026], [Per i founder \ Matteo, Cosimo, Niccolò, Gianmarco], [Demo e backup \ repository unilink-hq · demo-landing/])
 ]
 
 // ---------------------------------------------------------------- in breve
 #block(below: 4pt, text(size: 21pt)[In breve])
 #block(below: 12pt, spaziato("cosa trovi in questo documento"))
 
-Questo PDF è la mappa completa della landing v2: cosa contiene, perché è fatta così, come si trasforma in Framer e *come si chiede una modifica alla demo*. È il gemello del PDF della web app: stessi colori, stesso font, stesso principio «tutto da dati».
+Questo PDF è la mappa completa della landing v2: cosa contiene, perché è fatta così, come si trasforma in Framer e *come si chiede una modifica alla demo*. È il gemello del PDF della web app (e dei PDF «Schede Da decidere» e «Commenti»): stessi colori, stesso font, stesso principio «tutto da dati».
 
 #sub[Come usarlo come contesto]
 Quando chiedi una modifica alla demo, nomina il *codice* (pagina S01…, sezione H04…, card L01…, componente LP/…) e il *tipo* di richiesta (cap. 13). Così è chiaro dove va, come si fa e perché. Lo stesso contenuto, in forma compatta per l'AI, è in `architettura/CONTESTO_DEMO.md`.
@@ -82,8 +82,10 @@ Quando chiedi una modifica alla demo, nomina il *codice* (pagina S01…, sezione
   [Navigazione], [Hub ▾ · Prima ▾ · Durante ▾ · Dopo ▾ · Strumenti · Community, più la pillola arancio «Da decidere» e il pulsante «Area personale». Niente «Dispense», niente «Chi siamo» in barra.],
   [Dispense], [Tolte dalla barra e dalle pagine: vivono nell'*area personale*. In home resta il carosello di anteprima, che apre l'area (non più il sito attuale).],
   [Strumenti], [Dentro la demo, funzionanti, per hub. *Nessun link al sito attuale.* Rapidi in landing, completi (salvati nel profilo) nell'area personale.],
-  [Area personale], [Anteprima in home e pagina dedicata con la *web app vera* dentro un riquadro desktop / tablet / telefono.],
-  [Da decidere], [Una voce arancio in barra: 9 card (L01–L09), ognuna con problema, proposta, mini demo, consiglio e domande.],
+  [Area personale], [Anteprima in home e pagina dedicata con una *galleria di 17 schermate reali* della web app, in desktop / tablet / telefono. Solo da guardare (con ingrandimento): nessun riquadro vivo, nessun dato che si modifica.],
+  [Da decidere], [Una voce arancio in barra: 9 card (L01–L09). Ognuna ha l'*architettura completa*: pagine intere annotate, dati e campi, regole e stati, testi, misure, manutenzione, piano di lavoro con stime, rischi, prompt per l'AI (cap. 9 e PDF «Schede Da decidere»).],
+  [Commenti], [Pulsante «Commenti» su ogni pagina: si commenta la pagina o una sezione; i commenti restano salvati e si scaricano in *PDF, Markdown o JSON* da dare all'AI (cap. 16).],
+  [Ottimizzazione], [Accessibilità verificata con axe (da 292 problemi a 0), immagini alleggerite (loghi da 3,4 MB a 40 KB), primo accesso più chiaro: rassicurazioni, briciole, spiegazione di «hub», barra con un solo pulsante su telefono (cap. 17).],
   [Dispositivi], [Desktop, *tablet (701–1100 px)* e telefono (≤ 700 px), tutti disegnati e verificati.],
   [Listino], [Si cambia da un punto solo (`UL_CFG.prezzi`); la pagina Prezzi non è in barra finché non è deciso.],
   [Demo e backup], [GitHub Pages `/demo-landing/` e `/demo-webapp/`; a ogni push ZIP + Release + riga nel registro; in HQ, Laboratorio AI → DEMO.],
@@ -99,7 +101,9 @@ Quando chiedi una modifica alla demo, nomina il *codice* (pagina S01…, sezione
   [10–12 · Design system, configurazione, demo e backup], [Token, componenti, `config.js`, passaggio a Framer, dove sta tutto.],
   [13 · Come chiedere modifiche], [Il vocabolario: cosa dici, cosa succede.],
   [14–15 · Roadmap e osservazioni], [Breve / medio / lungo termine con i punti da cui ripartire; cosa tenere, cosa è superfluo, cosa manca.],
-  [16 · Demo grafiche], [Render desktop, tablet e telefono.],
+  [16 · Commenti del team], [Come si commenta, cosa viene salvato, come si scarica e si passa all'AI.],
+  [17 · Ottimizzazione e prima visita], [Cosa è stato misurato e cosa è cambiato; come ripetere le verifiche.],
+  [18 · Demo grafiche], [Render desktop, tablet e telefono, commenti e schede.],
 )
 
 // ---------------------------------------------------------------- 1
@@ -185,10 +189,11 @@ Nessun materiale né studente nel team per Giurisprudenza e Medicina; listino no
   [S07], [Dopo], [dopo.html], [#sicura], [Tesi, magistrali, carriera (rimandi L06, L03).],
   [S08], [Tesi e laurea], [tesi.html], [#sicura], [Checklist in 6 passi + voto di laurea.],
   [S09], [Strumenti], [tools.html], [#sicura], [Elenco per hub + pannello; «solo area» bloccati.],
-  [S10], [Area personale], [area.html], [#sicura], [Web app vera in riquadro desktop / tablet / telefono.],
+  [S10], [Area personale], [area.html], [#sicura], [Galleria di 17 schermate reali della web app in tre formati, solo da guardare.],
   [S11], [Community], [community.html], [#sicura], [Gruppo per anno, ambassador, idee L01 e L03.],
   [S12], [Prezzi (esempio)], [prezzi.html], [#decid], [Letto da `UL_CFG.prezzi`; fuori dalla barra (L07).],
-  [S90], [Da decidere], [decidere.html], [#decid], [Indice delle card; dettaglio con \#L01…L09.],
+  [S13], [Commenti del team], [commenti.html], [#decid], [Rapporto di tutti i commenti, con esportazione. Solo demo.],
+  [S90], [Da decidere], [decidere.html], [#decid], [Indice delle card; dettaglio con \#L01…L09 (architettura completa).],
 )
 
 // ---------------------------------------------------------------- 5
@@ -290,18 +295,20 @@ Regola: *prima gli strumenti con regole certe*; quelli con regole da verificare 
 )
 
 // ---------------------------------------------------------------- 8
-#cap("8", "Anteprima dell'area personale", "la web app vera, dentro la landing")
+#cap("8", "L'area personale, in schermate reali", "una galleria da guardare, non una app da usare")
 
-La sezione H06b della home mostra tre foto sovrapposte; la pagina S10 mostra la *web app demo in un riquadro* con due selettori: *dispositivo* (Desktop · Tablet · Telefono) e *sezione* (Oggi · Il mio piano · I miei esami · Materiali: le rotte della web app).
+La sezione H06b della home mostra tre foto sovrapposte dell'area; la pagina S10 mostra una *galleria di 17 schermate reali* della web app demo, scattate dalla web app vera con gli account demo. Sono immagini: non si può modificare niente e non c'è nessun riquadro vivo. Tocca la schermata per ingrandirla.
 
-#tab((28%, 72%),
+#tab((24%, 76%),
   [Parte], [Come funziona],
-  [Riquadro], [Un iframe che carica `../demo-webapp/\#/oggi` (o la sezione scelta) a 1280, 820 o 390 px e lo scala alla larghezza della pagina. È la app vera, non uno screenshot, e *entra da sola con l'account demo Giulia* (stessa origine): cambia sezione, aggiungi un esame, spunta gli argomenti. Con un altro account (Elena = Giurisprudenza in arrivo) si vede lo stato vero di oggi.],
-  [Sempre aggiornata], [Quando la web app cambia, l'anteprima cambia con lei: niente immagini da rifare per la pagina S10.],
-  [Foto di H06b], [Tre screenshot (`img/area-desktop.jpg`, `-tablet`, `-phone`): si rigenerano con le demo in esecuzione.],
-  [Dati], [Esempio (Giulia Rossi, Economia). Restano solo nel browser.],
-  [Limite], [Funziona se `demo-webapp/` sta accanto a `demo-landing/` (GitHub Pages, ZIP completo). Un ZIP della sola landing mostrerebbe il riquadro vuoto.],
+  [Selettori], [Quattro gruppi (*Studio · Durante*, *Test Prep · Prima*, *Futuro · Dopo*, *Piano e accesso*), l'elenco delle schermate del gruppo e tre dispositivi (Desktop · Tablet · Telefono).],
+  [Schermate], [17 schermate × 3 formati = 51 immagini WebP in `img/app/`. Ogni schermata ha titolo, account demo usato (es. Giulia · Economia · piano Gratuito) e una frase su cosa guardare.],
+  [Perché immagini], [La landing non dipende più dalla web app che cambia mentre la guardi; funziona anche nello ZIP della sola landing e si carica prima.],
+  [Indirizzo], [`area.html?dev=tab#futuro-career` apre direttamente quella schermata in quel formato: utile per condividere un punto preciso.],
+  [Nelle schede «Da decidere»], [Dove esiste una schermata vera (piano, test d'ingresso, listino, area in arrivo, carriera) la scheda la usa nel mockup (blocco `appshot`), con il suo ingrandimento.],
+  [Aggiornamento], [Quando la web app cambia: rifare gli screenshot e sostituire i file con gli stessi nomi (`<id>-desk.webp`, `-tab`, `-ph`). L'elenco in `UL_CFG.schermate` non cambia.],
 )
+#nota[*Corrispondenza dei nomi.* La galleria mostra le due nomenclature insieme: i percorsi della web app (Test Prep · Studio · Futuro) e le fasi della landing (Prima · Durante · Dopo). Sono le stesse idee: conviene sceglierne una sola (cap. 15).]
 
 #grid(columns: (1fr, 1fr, 1fr), gutter: 8pt,
   img("img/l_area_desk.jpg", didascalia: [Desktop]),
@@ -309,21 +316,25 @@ La sezione H06b della home mostra tre foto sovrapposte; la pagina S10 mostra la 
   img("img/l_area_ph.jpg", didascalia: [Telefono]),
 )
 
-// ---------------------------------------------------------------- 9
 #cap("9", "La sezione «Da decidere»", "tutte le idee aperte, ognuna con la sua architettura demo")
 
 È la pillola arancio in barra (con il numero di card) e la pagina S90. Dentro, card raggruppate per tema, con bordo *arancio tratteggiato*. Ogni card aperta ha sempre le stesse parti, così si confrontano a colpo d'occhio:
 
 #tab((24%, 76%),
   [Parte], [Cosa contiene],
-  [Il problema / La proposta], [Perché ci serve e cosa faremmo, in due righe.],
-  [Dove vivrebbe], [In quale pagina entrerebbe se decisa.],
-  [Il consiglio], [Il parere di Claude: da discutere, la decisione è del team.],
-  [Come risulterebbe], [La mini demo in un riquadro tratteggiato «Architettura demo · non decisa», con blocchi veri (a volte anche uno strumento funzionante).],
-  [Cosa serve / Da decidere], [Dati, persone, dipendenze; le domande per la call.],
-  [Nella web app], [Link alla card Dxx corrispondente (la parte dentro l'area personale).],
-  [Origine · Storico], [Da dove nasce; ogni richiesta con data.],
+  [Il problema / La proposta / Il consiglio], [Perché serve, cosa faremmo e il parere di Claude (da discutere: la decisione è del team).],
+  [Panoramica], [Obiettivo, per chi, quando serve, stima di lavoro; e tre elenchi: versione minima (MVP), dopo, non lo facciamo.],
+  [Pagine annotate], [Le pagine *intere* come sarebbero, in una finestra di browser. Ogni sezione ha un numero e una nota: *perché c'è* e *cosa puoi cambiare da solo*, con i componenti usati.],
+  [Dati e campi], [Tabelle o collezioni: campo, tipo, esempio; chi le aggiorna e ogni quanto.],
+  [Regole e stati], [Come si comporta la funzione e cosa vede lo studente in ogni situazione, con i testi.],
+  [Testi, misure, integrazioni], [Testi proposti; eventi da misurare; strumenti da collegare; cosa far verificare (legale e privacy).],
+  [Manutenzione], [Cosa tenere aggiornato dopo il lancio, da chi, ogni quanto, come.],
+  [Piano di lavoro], [Passi numerati con dove si lavora e giorni stimati; totale.],
+  [Rischi e successo], [Cosa può andare storto, come lo riduci, quali numeri dicono che funziona, regola di stop.],
+  [Prompt per l'AI], [Il testo da incollare per far costruire la scheda, scritto come richiesta di tipo C. Con un pulsante «Copia».],
+  [Azioni], [«Copia il prompt», «Scarica la scheda (.md)», «Stampa / salva PDF», barra interna per saltare tra le parti.],
 )
+#nota[*Dove stanno.* In demo: decidere.html, ogni card. Come documento: `architettura/UniLink_Schede_Da_Decidere.pdf` (69 pagine) e i file `architettura/schede/Lxx_*.md`, generati dagli *stessi dati* della demo (`demo-landing/decidere-arch.js`): se cambi una scheda, rigeneri tutto con `_src/build_schede.js`. Stime e soglie sono ipotesi; le note legali indicano cosa far verificare a un consulente, non sono pareri.]
 
 #sub[Le card di oggi e il consiglio in una riga]
 #tab((7%, 21%, 14%, 14%, 44%),
@@ -426,7 +437,11 @@ Un'idea che chiede qualcosa che i blocchi non sanno fare: si aggiunge un tipo di
   [app.js], [Navbar, footer, animazioni, strumenti, anteprima area, prezzi, Da decidere.],
   [ul.css], [Token e componenti; in fondo le aggiunte v2: tablet e telefono.],
   [data.js], [Le 34 dispense (stessa fonte del catalogo).],
-  [img/ · fonts/], [Foto, copertine, loghi, Croogla; `area-*.jpg` = anteprime dell'area.],
+  [decidere-arch.js], [Architettura completa delle 9 card (UL_ARCH): pagine annotate, dati, regole, stati, testi, misure, piano, rischi, prompt. Fonte unica per demo, PDF e Markdown.],
+  [commenti.js · commenti.css · commenti.html], [Il sistema di commenti del team e la pagina rapporto (cap. 16). Si spegne con `UL_CFG.commenti.attivi = false`.],
+  [img/ · fonts/], [Foto, copertine, loghi (leggeri: 256 px), Croogla; `area-*.jpg` = foto dell'area in home; `img/app/` = 51 schermate reali della web app.],
+  [`_src/verifica_landing.js`], [Verifica prima del push: errori, file mancanti, scorrimento laterale e accessibilità (axe) su tutte le pagine in tre formati (cap. 17).],
+  [`_src/build_schede.js`], [Genera immagini, Markdown e PDF delle schede dai dati di decidere-arch.js.],
 )
 
 #sub[Dalla demo a Framer: cosa diventa cosa]
@@ -485,6 +500,7 @@ Ogni richiesta ha un *tipo*. Nomina il codice della pagina (S01…), della sezio
   [H · Listino], [«Il pacchetto semestre costa € 27,99.»], [Cambio `UL_CFG.prezzi`.],
   [I · Ripristina], [«Riporta la landing alla v2.»], [Riporto la cartella al tag `landing-v2`, push, nuova versione.],
   [L · Rimuovi / archivia], [«Togli L04, non la facciamo.»], [La card esce; resta nel registro e nelle Decisioni dell'HQ.],
+  [M · Commenti], [Allegando il PDF o il Markdown scaricato dai commenti: «Applica i commenti aperti».], [Per ogni commento aperto: propongo la modifica minima (tipo D o E), dico quali file tocca, la applico se è chiara, altrimenti chiedo. I commenti risolti restano storico.],
 )
 
 #sub[Cosa succede dopo ogni richiesta]
@@ -500,7 +516,7 @@ Per ogni passo: *riparti da* = pagina, card o file da cui cominciare. I tempi so
 #sub[Breve termine · 0–2 mesi (ottobre–novembre 2026)]
 #tab((32%, 30%, 38%),
   [Cosa], [Riparti da], [Pronto quando],
-  [Approvare la v2 e decidere le prime card], [Cap. 9 · L02, L01, L08], [Call del team con decisioni scritte nello storico delle card.],
+  [Approvare la v3, commentarla e decidere le prime card], [Cap. 16 (commenti) · schede L02, L01, L08], [I founder commentano la demo, scaricano i commenti e li passano all'AI (tipo M); decisioni scritte nello storico delle card.],
   [Portare la landing su Framer], [Cap. 11 · S01–S11, `config.js`], [Home, hub, Prima / Durante / Dopo, Strumenti e Community online.],
   [Lista d'attesa unica (landing + app)], [S03, S04 · tabella `lista_attesa` (PDF web app, cap. 10)], [Il form salva davvero e conta gli iscritti per hub.],
   [Pagine legali e consenso cookie (GA4)], [Cap. 15], [Privacy, cookie, termini e banner attivi prima di raccogliere email.],
@@ -561,17 +577,98 @@ Per ogni passo: *riparti da* = pagina, card o file da cui cominciare. I tempi so
   [Banner di consenso (GA4)], [I numeri di Google sono un punto di forza: vanno raccolti nel rispetto del consenso.],
   [Foto proprie e diritti d'uso], [Le foto della v1 vengono dal sito attuale e dall'ateneo: verificare liberatorie.],
   [Pagina 404 e redirect dal sito attuale], [Non perdere il traffico organico quando cambia l'indirizzo.],
-  [SEO per pagina (titolo, descrizione, Open Graph)], [Ogni hub e fase è una pagina da trovare su Google; l'anteprima su WhatsApp è il canale principale.],
+  [SEO e anteprime social], [Titolo, descrizione e anteprima per WhatsApp sono già in ogni pagina della demo (con `noindex`). Mancano i testi definitivi, la sitemap e i redirect dal sito attuale.],
   [Backend della lista d'attesa], [Ora è simulata: serve un form Framer → webhook → tabella Supabase (`lista_attesa`).],
   [Responsabile degli aggiornamenti], [Scadenze, borse, regole degli strumenti e numeri cambiano ogni anno: serve un nome per ciascuno.],
   [Eventi di misura], [Almeno: clic su hub, uso degli strumenti, iscrizione lista d'attesa, accesso area personale.],
-  [Accessibilità], [Contrasto del testo arancio piccolo (usare `\#a95d1c`), focus visibile, menu da tastiera.],
+  [Accessibilità: prove reali], [La demo passa i controlli automatici (axe, WCAG AA, 0 problemi) in tre formati. Mancano le prove con screen reader veri e con persone: i controlli automatici trovano solo una parte dei problemi.],
   [Nomi allineati tra landing e web app], [La landing dice *Prima · Durante · Dopo* e *hub*; la web app dice *Test Prep · Studio · Futuro* e *area di studio*: sono le stesse idee con nomi diversi. Conviene sceglierne uno solo (il mio voto: Prima · Durante · Dopo e hub, che reggono anche Giurisprudenza e Medicina) e usarlo ovunque, nel menu, nei PDF e nei messaggi.],
   [Tablet nella web app], [La web app v2 passa dal desktop al telefono a 860 px: a 820 px riceve il layout del telefono. La landing ha già il layout tablet (701–1100 px); nel ramo `claude/landing-v2-completo` c'è una versione della web app con tablet da portare.],
 )
 
 // ---------------------------------------------------------------- 16
-#cap("16", "Demo grafiche", "render della demo v2 · dati di esempio")
+#cap("16", "Commenti del team", "commentare pagine e sezioni, salvarli, scaricarli per l'AI")
+
+Ogni pagina della demo ha in basso a destra il pulsante *Commenti*. Serve ai founder per segnare cosa migliorare, dove e perché; i commenti restano salvati e si scaricano in un file da dare all'AI.
+
+#tab((26%, 74%),
+  [Passo], [Cosa succede],
+  [1 · Apri], [Premi «Commenti». Scrivi il tuo nome una volta: si ricorda.],
+  [2 · Scegli dove], [«Commenta una sezione»: ogni sezione si evidenzia al passaggio (o al tocco, su tablet e telefono) con il suo codice; i link non si aprono mentre sei in questa modalità. Oppure «Tutta la pagina».],
+  [3 · Scrivi], [Scegli la categoria (Testo, Grafica, Struttura, Idea, Errore, Domanda) e scrivi cosa cambieresti e perché. Si salva subito.],
+  [4 · Ritrovalo], [Sulla sezione compare un numero; nel pannello vedi «Questa pagina» e «Tutte», filtri Aperti / Risolti, e puoi modificare, segnare risolto o eliminare. «Vai alla sezione» ti porta lì.],
+  [5 · Scarica], [PDF, Markdown o JSON dal pannello o dalla pagina «Commenti del team» (commenti.html).],
+)
+
+#sub[Cosa viene salvato con ogni commento]
+#tab((26%, 74%),
+  [Campo], [Esempio e perché],
+  [Pagina e sezione], [`durante.html` · S06.4 «Studiare con un piano»: il codice dice all'AI *dove* si trova. Per le card: `decidere.html\#L04` e la sezione.],
+  [Estratto], [Le prime righe del testo della sezione: l'AI capisce *cosa* si vedeva, anche se la pagina cambia.],
+  [Testo e categoria], [Quello che hai scritto e il tipo di commento.],
+  [Autore, data, stato], [Chi, quando, aperto o risolto.],
+  [Dispositivo e versione], [Desktop, tablet o telefono, e la versione della demo: un problema «solo su telefono» si riconosce subito.],
+)
+
+#sub[Esportare e unire]
+- *PDF*: un vero file scaricabile con un clic (non una finestra di stampa), con istruzioni per l'AI in testa.
+- *Markdown*: lo stesso contenuto con una nota «Per l'AI» e i titoli per pagina e sezione: il formato migliore da incollare in una chat.
+- *JSON*: serve a *unire* i commenti di più founder. Ognuno scarica il suo JSON; chi riceve lo importa (pulsante «Importa»): i commenti con lo stesso identificativo non si duplicano, se uno è stato modificato vince il più recente.
+
+#sub[Come passarli all'AI]
+Allega il file e scrivi: «Applica i commenti aperti della landing» (tipo M, cap. 13). L'AI usa i codici (S, H, L) e CONTESTO_DEMO.md, propone la modifica minima per ciascuno, applica quelli chiari e chiede degli altri.
+
+#sub[Limiti da conoscere]
+#tab((26%, 74%),
+  [Limite], [Cosa significa e cosa fare],
+  [Salvati nel browser], [I commenti stanno nel browser di chi li scrive (non su un server). Se si svuotano i dati del browser si perdono: scarica spesso il JSON.],
+  [Non condivisi in tempo reale], [Un founder non vede i commenti degli altri finché non importa il loro file.],
+  [Per condividerli davvero], [Serve una tabella su Supabase (con accesso solo al team, come l'HQ): circa 1–2 giorni di lavoro. Non è attiva: dimmi se la vuoi.],
+  [Solo in demo], [In produzione si spegne con `UL_CFG.commenti.attivi = false`: i visitatori non vedono né il pulsante né il link nel footer.],
+)
+
+#grid(columns: (1.4fr, 1fr), gutter: 10pt,
+  img("img/l_commenti_desk.jpg", didascalia: [Modalità «commenta»: la sezione sotto il cursore si evidenzia; il pannello elenca i commenti.]),
+  img("img/l_commenti_ph.jpg", didascalia: [Su telefono il pannello è un foglio dal basso.]),
+)
+#img("img/l_rapporto.jpg", didascalia: [Pagina «Commenti del team»: tutto raggruppato per pagina, con esportazione.])
+
+// ---------------------------------------------------------------- 17
+#cap("17", "Ottimizzazione e prima visita", "cosa è stato misurato, cosa è cambiato, come ripetere le verifiche")
+
+Le modifiche partono da *misure*, non da sensazioni. Sono tutte verificabili con `_src/verifica_landing.js`.
+
+#tab((22%, 30%, 48%),
+  [Area], [Prima], [Dopo e perché],
+  [Peso dei loghi], [2 immagini da 4000×4000 px, 3,4 MB, usate a 34 px su ogni pagina], [256 px, 40 KB in totale: la pagina si carica prima, soprattutto da telefono.],
+  [Nitidezza delle foto], [6 foto ingrandite oltre ×1,25 nel loro spazio (es. 576 px in un riquadro di 625×485)], [Foto sostituite o spazi ridotti: nessuna ingrandita su desktop; sui telefoni ad alta densità al massimo ×1,25.],
+  [Contrasto dei colori], [Testo bianco su arancio 3,37:1; etichette arancio 3,9:1 (minimo 4,5)], [Tre varianti dello stesso arancio *solo dove c'è testo* (`\#b05d19`, `\#c26a1e`, `\#9a5417`); l'arancio del brand resta per tutto ciò che è decorativo.],
+  [Accessibilità automatica (axe)], [292 elementi con problemi sulle pagine controllate], [*0 problemi* in 23 pagine × 3 formati, anche con il pannello commenti aperto.],
+  [Tastiera e screen reader], [Chip, scelte e domande non raggiungibili; menu senza stato; nessun «vai al contenuto»], [Tutto raggiungibile e attivabile da tastiera, con lo stato annunciato; menu e tendine con Esc e focus corretto; area principale, titoli e aree della pagina in ordine.],
+  [Intestazioni], [Senza descrizione e anteprima], [Descrizione, anteprima per WhatsApp e social, colore della barra, precaricamento del font; `noindex` finché è una demo.],
+  [Movimento], [—], [Animazioni ridotte per chi lo chiede; niente «hover» che resta appiccicato al tocco.],
+)
+
+#sub[Per chi arriva la prima volta]
+#tab((30%, 70%),
+  [Cosa], [Perché],
+  [Tre rassicurazioni sotto i pulsanti dell'hero], [«Gratis per iniziare · Senza account per esplorare · Fatto da studenti di UniFi»: tolgono le due paure principali (costo e registrazione).],
+  [Spiegazione di «hub»], [«Un hub è lo spazio di un corso di studi…»: «hub» è gergo per chi non è mai stato su UniLink.],
+  [Briciole di pane («Home › Durante › Strumenti»)], [Chi atterra da un link WhatsApp su una pagina interna capisce dove si trova e come tornare.],
+  [Barra con un solo pulsante (tablet e telefono)], [Dopo l'hero compare un'azione sola, pertinente alla pagina (es. «Trova la tua dispensa»); si chiude con ✕ e sparisce vicino al footer.],
+  [Un'azione sola per pagina], [Ogni pagina ha un pulsante principale; gli altri sono secondari.],
+  [Ordine e linguaggio], [Titoli semplici, frasi brevi, nessuna promessa non mantenibile.],
+)
+
+#sub[Come ripetere le verifiche]
++ `python -m http.server 8765` dalla radice del repository.
++ `npm i playwright axe-core` (una volta).
++ `node _src/verifica_landing.js` → deve scrivere «tutto ok». Se trova problemi li elenca per pagina e formato.
++ Fare questo prima di ogni push che tocca `demo-landing/`.
+
+#nota[*Cosa le verifiche automatiche non coprono:* prove con screen reader veri, con persone che non conoscono UniLink, su telefoni reali e con connessione lenta. Conviene farne una con 5 persone prima del lancio in Framer.]
+
+#cap("18", "Demo grafiche", "render della demo v3 · dati di esempio")
 
 #img("img/l_home_hero.jpg", didascalia: [S01 · Home (desktop): hero con nastro e collage; barra con Hub, Prima, Durante, Dopo, Strumenti, Community, «Da decidere» e «Area personale».])
 #img("img/l_home_hub.jpg", didascalia: [H04 · Hub: Economia attivo; Giurisprudenza e Medicina in arrivo.])
