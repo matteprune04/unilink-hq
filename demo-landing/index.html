@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UniLink · Studia, orientati, scegli</title>
+<meta name="description" content="Demo navigabile della nuova landing UniLink: appunti, mappe e quiz per gli esami di Economia UniFi.">
+<link rel="icon" href="img/logo-blu.png">
+<link rel="stylesheet" href="ul.css">
+<style>
+  .bg2 { background: var(--crema2); } .bgn { background: var(--nvt); }
+  .f1 { left: 0; top: 26%; width: 22%; height: 46%; transform: rotate(-7deg); }
+  .f2 { left: 33%; top: 4%; width: 34%; height: 88%; transform: rotate(2.5deg); z-index: 2; }
+  .f3 { left: 77%; top: 0; width: 21%; height: 56%; transform: rotate(6deg); }
+  .f4 { left: 72%; top: 58%; width: 17%; height: 36%; transform: rotate(-4deg); z-index: 3; }
+  .s1 { left: 20%; top: 66%; } .s2 { left: 60%; top: 8%; }
+  @media (max-width: 700px) {
+    .f1 { left: -4%; top: 30%; width: 34%; height: 40%; }
+    .f2 { left: 26%; width: 50%; height: 80%; }
+    .f3 { left: 74%; width: 32%; height: 46%; }
+    .f4 { display: none; }
+    .s1 { left: 2%; top: 74%; font-size: 12px; padding: 8px 11px; } .s1 b { font-size: 17px; }
+    .s2 { display: none; }
+  }
+</style>
+</head>
+<body data-page="home">
+
+<div id="ul-nav"></div>
+
+<!-- 02 HERO -->
+<section class="hero">
+  <div class="wrap">
+    <span class="badge">Da studenti, per studenti · Economia UniFi</span>
+    <h1 class="display" style="margin-top:24px">Studia, orientati,<br><span class="acc">scegli.<svg class="u" viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M3 13 C 55 4, 130 3, 197 9" stroke="#cf7527" stroke-width="4.5" fill="none" stroke-linecap="round"/><path d="M25 18 C 85 12, 145 12, 182 15" stroke="#cf7527" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".55"/></svg><svg class="s" viewBox="0 0 20 20"><path d="M3 17 L7 8 M10 18 L16 11 M12 5 L15 1" stroke="#cf7527" stroke-width="2.4" stroke-linecap="round"/></svg></span></h1>
+    <p class="lead">Appunti, mappe e quiz per gli esami di Economia UniFi, scritti da chi li ha appena dati. Poi Erasmus, magistrali e quello che viene dopo.</p>
+    <div class="cta"><a class="btn btn-p" href="#catalogo">Trova la tua dispensa <span class="freccia">→</span></a><a class="btn btn-s" href="#hub">Scegli il tuo hub</a></div>
+    <div class="collage">
+      <svg class="ribbon" viewBox="0 0 1500 240"><path id="rp" d="M-20 175 C 260 60, 470 40, 760 125 S 1260 215, 1530 70" stroke="#172554" stroke-width="54" fill="none"/><text font-family="Croogla" font-size="21" fill="#f4f1ea" dy="7" letter-spacing="1"><textPath href="#rp">Appunti · Mappe · Quiz · Erasmus · Magistrali · Voto di laurea · Appunti · Mappe · Quiz · Erasmus · Magistrali · Voto di laurea · Appunti · Mappe · Quiz · Erasmus</textPath></text></svg>
+      <div class="foto f1"><img src="img/studenti-gruppo.jpg" alt=""></div>
+      <div class="foto f2"><img src="img/render-dispense.jpg" alt=""></div>
+      <div class="foto f3"><img src="img/novoli-insegna.jpg" alt=""></div>
+      <div class="foto f4"><img src="img/biblioteca.jpg" alt=""></div>
+      <div class="sticker s1"><b>34 esami</b>con la dispensa completa</div>
+      <div class="sticker s2"><span class="badge on">Aggiornata il 3 ottobre</span></div>
+    </div>
+  </div>
+</section>
+<svg class="onda" viewBox="0 0 1440 70" preserveAspectRatio="none" style="background:var(--crema)"><path fill="#ebe4d5" d="M0 70 L0 42 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 L1440 70 Z"/></svg>
+
+<!-- 03 NUMERI REALI -->
+<section class="bg2" style="padding-top:60px">
+  <div class="wrap numeri">
+    <div class="cardnum">
+      <div class="riganum"><span class="v">876</span><span class="l">persone hanno usato il sito nell'ultimo mese</span></div>
+      <div class="riganum"><span class="v">7.855</span><span class="l">pagine consultate in 28 giorni</span></div>
+      <div class="riganum"><span class="v">34</span><span class="l">esami di Economia con la dispensa</span></div>
+      <span class="fonte">Google Analytics 4 e catalogo · 8 set – 5 ott 2026</span>
+    </div>
+    <div class="fotonum"><img src="img/atrio.jpg" alt=""></div>
+  </div>
+</section>
+
+<!-- 04 HUB -->
+<section id="hub">
+  <div class="wrap">
+    <div class="testa">
+      <div><span class="eyebrow">Le scuole</span><h2 style="margin-top:10px">Scegli il tuo <span class="acc">hub<svg class="u" viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M3 13 C 55 4, 130 3, 197 9" stroke="#cf7527" stroke-width="5" fill="none" stroke-linecap="round"/></svg><svg class="s" viewBox="0 0 20 20"><path d="M3 17 L7 8 M10 18 L16 11 M12 5 L15 1" stroke="#cf7527" stroke-width="2.4" stroke-linecap="round"/></svg></span></h2></div>
+      <p>Partiamo da Economia. Giurisprudenza e Medicina sono le prossime: lascia la tua email e costruiscile con noi.</p>
+    </div>
+    <div class="hubs">
+      <a class="hub eco" href="hub-economia.html"><span class="badge on">Attivo</span><div class="ico">€</div><h3>Economia</h3><p>34 esami di EA ed EC con appunti, mappe e quiz. Tool per Erasmus, media e magistrali.</p><div class="fasi"><span>Matricole</span><span>Esami</span><span>Dopo la laurea</span></div><div class="img"><img src="img/novoli-piazza.jpg" alt=""><div class="avv">Entra nell'hub <span class="btn btn-p">Entra →</span></div></div></a>
+      <a class="hub giu arrivo" href="hub-giurisprudenza.html"><span class="badge">In arrivo</span><div class="ico">§</div><h3>Giurisprudenza</h3><p>Lo stesso metodo, per un ciclo unico di cinque anni. Lo costruiamo con chi studia lì.</p><div class="fasi"><span>Primo anno</span><span>Esami</span><span>Professioni legali</span></div><div class="img"><img src="img/palazzo.jpg" alt=""><div class="avv">Ti scriviamo quando parte <span class="btn btn-a">Avvisami</span></div></div></a>
+      <a class="hub med arrivo" href="hub-medicina.html"><span class="badge">In arrivo</span><div class="ico">+</div><h3>Medicina</h3><p>Dal semestre filtro (Fisica, Chimica, Biologia) agli esami del corso. Stiamo raccogliendo interesse.</p><div class="fasi"><span>Semestre filtro</span><span>Esami</span><span>Tirocini</span></div><div class="img"><img src="img/aula.jpg" alt=""><div class="avv">Ti scriviamo quando parte <span class="btn btn-a">Avvisami</span></div></div></a>
+    </div>
+    <p class="altra">La tua scuola non c'è? <a href="https://chat.whatsapp.com/KdA4r1POh6MAiBbLmmES0L" target="_blank" rel="noopener"><u>Scrivici</u></a>, contiamo anche te.</p>
+  </div>
+</section>
+
+<!-- 05 PARTI DA DOVE SEI (interattivo) -->
+<section class="bg2">
+  <div class="wrap">
+    <div class="testa">
+      <div><span class="eyebrow">Il tuo momento</span><h2 style="margin-top:10px">Parti da dove <span class="acc">sei<svg class="u" viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M3 13 C 55 4, 130 3, 197 9" stroke="#cf7527" stroke-width="5" fill="none" stroke-linecap="round"/></svg></span></h2></div>
+      <p>Ogni fase ha domande diverse. Scegli la tua: ti mostriamo solo quello che ti serve adesso.</p>
+    </div>
+    <div class="livelli">
+      <div class="liv sel" data-fase="matricola"><div class="ico">✎</div><div><h3>Sono una matricola</h3><p>Come funzionano esami, appelli e piano di studi.</p></div><span class="go">→</span></div>
+      <div class="liv" data-fase="esame"><div class="ico">❏</div><div><h3>Preparo un esame</h3><p>Appunti, mappe e quiz del tuo corso.</p></div><span class="go">→</span></div>
+      <div class="liv" data-fase="erasmus"><div class="ico">✈</div><div><h3>Penso all'Erasmus</h3><p>Punteggio, mete e Learning Agreement.</p></div><span class="go">→</span></div>
+      <div class="liv" data-fase="dopo"><div class="ico">⚑</div><div><h3>Penso al dopo</h3><p>Magistrali, master e primi passi di carriera.</p></div><span class="go">→</span></div>
+    </div>
+    <div class="risposta" id="risposta">
+      <div><span class="eyebrow" style="color:#f0b37c">Per le matricole</span><h3 style="margin-top:6px">Tre cose da fare nel primo mese</h3></div>
+      <div class="r"><small>Guida</small>Come leggere il piano di studi</div>
+      <div class="r"><small>Dispense del I anno</small>Economia Aziendale, Diritto Pubblico…</div>
+      <div class="r"><small>Community</small>Il gruppo WhatsApp del tuo anno</div>
+    </div>
+  </div>
+</section>
+
+<!-- 06 TROVA LA TUA DISPENSA (interattivo) -->
+<section id="catalogo">
+  <div class="wrap">
+    <div class="testa">
+      <div><span class="eyebrow">Catalogo</span><h2 style="margin-top:10px">Trova la tua <span class="acc">dispensa<svg class="u" viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M3 13 C 55 4, 130 3, 197 9" stroke="#cf7527" stroke-width="5" fill="none" stroke-linecap="round"/></svg></span></h2></div>
+      <div class="frecce"><span aria-label="Indietro">←</span><span class="on" aria-label="Avanti">→</span></div>
+    </div>
+    <form class="cerca"><span class="lente">⌕</span><input type="search" placeholder="Cerca un esame, es. Microeconomia" aria-label="Cerca un esame"><button class="btn btn-p">Cerca</button></form>
+    <div class="chips"><span class="chip on" data-anno="Tutti">Tutti</span><span class="chip" data-anno="I">I anno</span><span class="chip" data-anno="II">II anno</span><span class="chip" data-anno="III">III anno</span><span class="chip" data-area="Diritto">Diritto</span><span class="chip" data-area="Matematica e statistica">Matematica e statistica</span></div>
+    <div class="scroller"></div>
+    <p class="altra"><span class="conta" style="margin:0"></span> · le card aprono la scheda sul sito attuale · <a href="dispense.html"><u>Catalogo completo</u></a></p>
+  </div>
+</section>
+
+<!-- 07 COME FUNZIONA -->
+<section class="bg2">
+  <div class="wrap">
+    <div class="come">
+      <div>
+        <span class="eyebrow">In tre passi</span><h2 style="margin-top:10px">Come <span class="acc">funziona<svg class="u" viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M3 13 C 55 4, 130 3, 197 9" stroke="#cf7527" stroke-width="5" fill="none" stroke-linecap="round"/></svg><svg class="s" viewBox="0 0 20 20"><path d="M3 17 L7 8 M10 18 L16 11 M12 5 L15 1" stroke="#cf7527" stroke-width="2.4" stroke-linecap="round"/></svg></span></h2>
+        <p class="lead" style="margin-top:14px">Dal programma ufficiale del corso al giorno dell'appello, senza perdere tempo a cercare.</p>
+        <div class="ft"><img src="img/mani-appunti.jpg" alt=""></div>
+      </div>
+      <div>
+        <div class="step"><span class="n">01</span><div><h3>Scegli il tuo esame <i>· 30 secondi</i></h3><p>Cerca per nome, anno o area. Vedi subito modalità d'esame e consigli.</p></div></div>
+        <div class="step"><span class="n">02</span><div><h3>Leggi l'anteprima <i>· gratis</i></h3><p>Indice, prime pagine e data dell'ultimo aggiornamento, prima di decidere.</p></div></div>
+        <div class="step"><span class="n">03</span><div><h3>Studia con metodo <i>· fino all'appello</i></h3><p>Appunti completi, mappe per ripassare, quiz per allenarti al formato dell'esame.</p></div></div>
+      </div>
+    </div>
+    <div class="garanzie">
+      <div>Dal programma ufficiale<small>Ogni dispensa segue il syllabus UniFi.</small></div>
+      <div>Sempre datate<small>"Aggiornata il" su ogni scheda.</small></div>
+      <div>Fatte da studenti<small>Chi le scrive ha dato l'esame.</small></div>
+      <div>Onesti sui limiti<small>Diciamo cosa c'è e cosa no.</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- 08 TOOL + CALCOLATORE (interattivo) -->
+<section>
+  <div class="wrap">
+    <div class="testa"><div><span class="eyebrow">Gratis, per tutti</span><h2 style="margin-top:10px">Tool che fanno i <span class="acc">conti<svg class="u" viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M3 13 C 55 4, 130 3, 197 9" stroke="#cf7527" stroke-width="5" fill="none" stroke-linecap="round"/></svg></span> per te</h2></div><p>Muovi gli slider: il calcolo usa le regole del calcolatore del sito.</p></div>
+    <div class="tools">
+      <div class="tlist">
+        <div class="tool sel" data-sel="calc"><div class="ico">110</div><div><h3>Voto di laurea</h3><p>Dalla media ponderata al voto di partenza.</p></div><span class="go">→</span></div>
+        <a class="tool" href="https://www.unilinkfirenze.it/tools/calcolatore-erasmus" target="_blank" rel="noopener"><div class="ico">✈</div><div><h3>Calcolatore Erasmus</h3><p>Il tuo punteggio per il bando.</p></div><span class="go">↗</span></a>
+        <a class="tool" href="https://www.unilinkfirenze.it/tools/master-magistrale" target="_blank" rel="noopener"><div class="ico">⚑</div><div><h3>Master e magistrali</h3><p>Confronta i percorsi dopo la triennale.</p></div><span class="go">↗</span></a>
+        <a class="tool" href="https://www.unilinkfirenze.it/tools/destinazioni-erasmus" target="_blank" rel="noopener"><div class="ico">⌖</div><div><h3>Destinazioni Erasmus</h3><p>Le mete, con informazioni ordinate.</p></div><span class="go">↗</span></a>
+      </div>
+      <div class="calc" data-live id="calcolatore">
+        <span class="eyebrow" style="color:#f0b37c">Prova · voto di laurea</span>
+        <h3 style="margin-top:8px">Quanto parti alla discussione?</h3>
+        <div class="riga"><div class="lab">Media ponderata <b id="v-media">27,4</b></div><input type="range" id="r-media" min="18" max="30" step="0.1" value="27.4" aria-label="Media ponderata"></div>
+        <div class="riga"><div class="lab">Lodi <b id="v-lodi">2</b></div><input type="range" id="r-lodi" min="0" max="10" step="1" value="2" aria-label="Numero di lodi"></div>
+        <div class="riga"><div class="lab">Tesi</div><div class="cscelte" data-k="tesi"><span data-v="1">Sufficiente</span><span data-v="2" class="on">Buono</span><span data-v="3">Ottimo</span></div></div>
+        <div class="riga"><div class="lab">Quando ti laurei</div><div class="cscelte" data-k="corso"><span data-v="2" class="on">In corso</span><span data-v="1">Semestre dopo</span><span data-v="0">Più tardi</span></div></div>
+        <div class="esito"><div>Voto di presentazione<b id="v-pres">101,1</b></div><div class="big">Voto finale stimato<b id="v-fin">105</b></div></div>
+        <p class="small" id="v-nota" style="color:rgba(244,241,234,.7);margin-top:14px"></p>
+        <p class="small" style="color:rgba(244,241,234,.5);margin-top:4px">Regole della Scuola di Economia (versione compatta del calcolatore del sito).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 09 CHI C'È DIETRO -->
+<section class="bgn" id="chi-siamo">
+  <div class="wrap">
+    <div class="testa"><div><span class="eyebrow">Chi c'è dietro</span><h2 style="margin-top:10px">Studenti, come <span class="acc">te<svg class="u" viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M3 13 C 55 4, 130 3, 197 9" stroke="#cf7527" stroke-width="5" fill="none" stroke-linecap="round"/></svg></span></h2></div><p>Siamo quattro studenti di Economia UniFi. Abbiamo costruito quello che avremmo voluto trovare al primo anno.</p></div>
+    <div class="team">
+      <div class="persona p1"><h3>Matteo</h3><p>Founder · Economia UniFi</p><div class="av">M</div><p>Sito, prodotto e strumenti.</p></div>
+      <div class="persona p2"><h3>Cosimo</h3><p>Founder · Economia UniFi</p><div class="av">C</div><p>Strategia e nuovi hub.</p></div>
+      <div class="persona p3"><h3>Niccolò</h3><p>Founder · Economia UniFi</p><div class="av">N</div><p>Dispense e materiali.</p></div>
+      <div class="persona p4"><h3>Gianmarco</h3><p>Founder · Economia UniFi</p><div class="av">G</div><p>Community e ambassador.</p></div>
+    </div>
+    <p class="altra">Vuoi portare UniLink nel tuo corso? <a href="https://www.unilinkfirenze.it/mentorship/become-mentor" target="_blank" rel="noopener"><u>Diventa ambassador</u></a></p>
+  </div>
+</section>
+
+<!-- 10 VOCI DEGLI STUDENTI (solo con feedback reali) -->
+<section>
+  <span class="demo-tag">ESEMPIO · SOLO CON FEEDBACK REALI</span>
+  <div class="wrap">
+    <div style="text-align:center;margin-bottom:50px"><h2>Cosa dicono gli <span class="acc">studenti<svg class="u" viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M3 13 C 55 4, 130 3, 197 9" stroke="#cf7527" stroke-width="5" fill="none" stroke-linecap="round"/></svg></span></h2></div>
+    <div class="voci">
+      <div class="voce v1"><span class="star">★</span>"Testo di esempio: qui va un feedback vero raccolto con il form sulle dispense."<div class="chi"><span>A</span><div>Nome Cognome<small>II anno · EA</small></div></div></div>
+      <div class="voce v2"><span class="star">★</span>"Testo di esempio: cosa ha aiutato davvero, in una o due frasi."<div class="chi"><span>B</span><div>Nome Cognome<small>I anno · EC</small></div></div></div>
+      <div class="voce v3"><span class="star">★</span>"Testo di esempio: la sezione resta spenta finché non ci sono almeno tre voci reali."<div class="chi"><span>C</span><div>Nome Cognome<small>III anno · EA</small></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 FAQ -->
+<section class="bg2" id="faq">
+  <div class="wrap faq">
+    <div><span class="eyebrow">Domande frequenti</span><h2 style="margin-top:10px">Le cose da <span class="acc">sapere<svg class="u" viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M3 13 C 55 4, 130 3, 197 9" stroke="#cf7527" stroke-width="5" fill="none" stroke-linecap="round"/></svg></span></h2><p class="lead" style="margin-top:14px">Non trovi la risposta? Scrivici sul gruppo WhatsApp: rispondiamo noi, non un bot.</p></div>
+    <div>
+      <div class="qa open"><div class="d">UniLink è solo per Economia?<span>−</span></div><div class="r">Oggi sì: i materiali ci sono per Economia Aziendale ed Economia e Commercio di UniFi. Giurisprudenza e Medicina sono i prossimi hub.</div></div>
+      <div class="qa"><div class="d">Chi fa le dispense?<span>+</span></div><div class="r">Studenti di Economia UniFi, partendo dai programmi ufficiali dei corsi. Ogni dispensa indica quando è stata aggiornata.</div></div>
+      <div class="qa"><div class="d">Serve un account per esplorare?<span>+</span></div><div class="r">No. Catalogo, informazioni sugli esami e tool si vedono senza account.</div></div>
+      <div class="qa"><div class="d">UniLink è affiliato all'Università di Firenze?<span>+</span></div><div class="r">No, è un progetto indipendente fatto da studenti.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 12 CHIAMATA FINALE -->
+<section>
+  <div class="wrap">
+    <div class="finale">
+      <div class="l"><img src="img/render-guida.jpg" alt=""></div>
+      <div class="r2"><img src="img/render-dispense.jpg" alt=""></div>
+      <span class="badge neutro">Gratis per iniziare</span>
+      <h2 style="font-size:64px;margin-top:18px">Il prossimo esame<br>parte da <span class="acc">qui.<svg class="u" viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M3 13 C 55 4, 130 3, 197 9" stroke="#cf7527" stroke-width="5" fill="none" stroke-linecap="round"/></svg><svg class="s" viewBox="0 0 20 20"><path d="M3 17 L7 8 M10 18 L16 11 M12 5 L15 1" stroke="#cf7527" stroke-width="2.4" stroke-linecap="round"/></svg></span></h2>
+      <p class="lead">Entra nel gruppo del tuo anno: novità, dispense nuove e domande, tutto in un posto.</p>
+      <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap"><a class="btn btn-a" href="https://chat.whatsapp.com/KdA4r1POh6MAiBbLmmES0L" target="_blank" rel="noopener">Entra nel gruppo WhatsApp</a><a class="btn btn-s" href="#catalogo">Trova la tua dispensa</a></div>
+    </div>
+  </div>
+</section>
+
+<div id="ul-foot"></div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
