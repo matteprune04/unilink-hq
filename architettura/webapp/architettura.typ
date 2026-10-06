@@ -1,5 +1,5 @@
 // UniLink · Architettura della web app (area personale) — sorgente Typst
-// Compilare dalla radice del repository:  python -c "import typst; typst.compile('architettura/webapp/architettura.typ', output='architettura/UniLink_Architettura_WebApp.pdf', font_paths=['.'])"
+// Compilare dalla radice del repository:  python -c "import typst; typst.compile('architettura/webapp/architettura.typ', output='architettura/UniLink_Architettura_WebApp.pdf', root='.', font_paths=['.'])"
 
 #let navy = rgb("#172554")
 #let crema = rgb("#f4f1ea")
@@ -16,7 +16,7 @@
 #set par(leading: 0.62em, justify: false)
 #show strong: set text(fill: navy)
 
-#let versione = "v1 · 6 ottobre 2026"
+#let versione = "v2 · 6 ottobre 2026"
 
 #set page(paper: "a4", margin: (x: 18mm, top: 20mm, bottom: 18mm),
   header: context { if counter(page).get().first() > 1 [
@@ -58,18 +58,18 @@
   #v(10pt)
   #text(size: 40pt)[L'area personale \ di UniLink.]
   #v(14pt)
-  #text(size: 11pt)[Le sezioni decise, come saranno davvero. \ Una sezione «Da decidere» per tutte le idee aperte. \ Giurisprudenza e Medicina già previste, senza promettere niente. \ Con gli strumenti per farla funzionare e il modo di chiedere modifiche.]
+  #text(size: 11pt)[Le sezioni decise, come saranno davvero. \ Una sezione «Da decidere» per tutte le idee aperte. \ Giurisprudenza e Medicina già previste, senza promettere niente. \ Strumenti dentro la app, versione tablet, roadmap e il modo di chiedere modifiche.]
   #v(1fr)
   #set text(size: 8pt)
   #grid(columns: (1fr, 1fr, 1fr), gutter: 10pt,
-    [Versione 1 \ 6 ottobre 2026], [Per i founder \ Matteo, Cosimo, Niccolò, Gianmarco], [Demo e backup \ repository unilink-hq · demo-webapp/])
+    [Versione 2 \ 6 ottobre 2026], [Per i founder \ Matteo, Cosimo, Niccolò, Gianmarco], [Demo e backup \ repository unilink-hq · demo-webapp/])
 ]
 
 // ---------------------------------------------------------------- in breve
 #block(below: 4pt, text(size: 21pt)[In breve])
 #block(below: 12pt, spaziato("cosa trovi in questo documento"))
 
-Questo PDF è la mappa completa dell'area personale (web app) di UniLink: cosa contiene, perché è fatta così, come si costruisce davvero e *come si chiede una modifica alla demo* in modo che sia chiaro dove va e perché. È il gemello del PDF della landing: stessi colori, stesso font, stesso principio «tutto da dati».
+Questo PDF è la mappa completa dell'area personale (web app) di UniLink: cosa contiene, perché è fatta così, come si costruisce davvero e *come si chiede una modifica alla demo* in modo che sia chiaro dove va e perché. È il gemello del PDF della landing (v2): stessi colori, stesso font, stesso principio «tutto da dati». Si usa come *contesto*: ogni pagina (P), card (D) e componente (WA/) ha un codice che non cambia; la versione compatta per l'AI è in `architettura/CONTESTO_DEMO.md`.
 
 #sub[Le decisioni prese (6/10/2026)]
 #tab((28%, 72%),
@@ -79,8 +79,10 @@ Questo PDF è la mappa completa dell'area personale (web app) di UniLink: cosa c
   [Da decidere], [Tutto ciò che non è deciso vive in una voce separata, *arancio*, «Da decidere»: card con codice (D01…) che si aprono sull'architettura demo.],
   [Hub], [Economia attivo. Giurisprudenza e Medicina *in arrivo*: lo studente si registra, vede la lista d'attesa e gli strumenti per tutti. L'hub attivo è già disegnato in D01 e D02.],
   [Font e colori], [Croogla 4F ovunque. Navy \#172554, crema \#f4f1ea, arancio \#cf7527. Gli stessi token della landing.],
-  [Strumenti], [Landing su Framer (invariata). Web app su *Next.js + Supabase + Vercel* all'indirizzo app.unilinkfirenze.it. Pagamenti (Stripe) e lettore protetto solo se decisi.],
-  [Demo], [Pubblicata su GitHub Pages accanto alla landing: matteprune04.github.io/unilink-hq/demo-webapp/],
+  [Tecnologia], [Landing su Framer. Web app su *Next.js + Supabase + Vercel* all'indirizzo app.unilinkfirenze.it. Pagamenti (Stripe) e lettore protetto solo se decisi.],
+  [Strumenti], [*Dentro la app*, funzionanti, filtrati per hub (file `tools.js`, condiviso con la landing). Nessun link al sito attuale. Giurisprudenza e Medicina hanno strumenti di esempio; i «solo area» rimandano alle card Dxx.],
+  [Dispositivi], [Desktop, *tablet (701–1100 px)* e telefono (≤ 700 px). La barra in basso vale solo sul telefono; sul tablet resta la sidebar, più stretta.],
+  [Demo], [Pubblicata su GitHub Pages accanto alla landing: matteprune04.github.io/unilink-hq/demo-webapp/. La landing ne mostra l'anteprima in un riquadro desktop / tablet / telefono (pagina «Area personale»).],
   [Backup], [Automatico: ogni modifica alle demo crea uno ZIP e una versione nello storico. L'HQ (Laboratorio AI → DEMO) mostra anteprima, download e storico, senza caricare nulla a mano.],
 )
 
@@ -93,7 +95,8 @@ Questo PDF è la mappa completa dell'area personale (web app) di UniLink: cosa c
   [10–12 · Farla funzionare davvero], [Strumenti, dati, sicurezza, misure, fasi di sviluppo.],
   [13 · Demo, backup e HQ], [Dove sono le demo, come si salvano le versioni, come si torna indietro.],
   [14 · Come chiedere modifiche], [Il «vocabolario» per chiedere un'idea in demo: cosa dici, cosa succede.],
-  [15–16 · Checklist e demo grafiche], [Decisioni aperte e render della demo.],
+  [15 · Roadmap e osservazioni], [Breve / medio / lungo termine con i punti da cui ripartire; cosa tenere, cosa è superfluo, cosa manca.],
+  [16–17 · Checklist e demo grafiche], [Decisioni aperte e render desktop, tablet e telefono.],
 )
 
 // ---------------------------------------------------------------- 1
@@ -103,8 +106,8 @@ Questo PDF è la mappa completa dell'area personale (web app) di UniLink: cosa c
 - *34 dispense* di Economia (EA ed EC), con copertina, codice, anno, semestre e modalità d'esame (catalogo del sito).
 - *Landing* in rifacimento su Framer, con l'architettura v2 già decisa e la sua demo navigabile.
 - *HQ online* (GitHub Pages + Supabase): il team usa già Supabase per login e dati, quindi la web app non introduce uno strumento nuovo.
-- *Strumenti* già sul sito: calcolatore voto di laurea (regole v5), calcolatore Erasmus, destinazioni Erasmus, master e magistrali, guide.
-- *Sette demo* dell'area personale, in realtà tre famiglie (cap. 2).
+- *Strumenti*: nella v2 vivono *dentro la demo* (calcolatore voto di laurea con regole v5, media e voto obiettivo, piano per l'appello, e di esempio Erasmus, ciclo unico, semestre filtro). Il sito attuale non viene più linkato.
+- *Sette demo* dell'area personale, in realtà tre famiglie (cap. 2), e la *landing v2* (PDF gemello) con l'anteprima di questa app.
 
 #sub[Cosa ci dicono i numeri (dal PDF della landing, GA4)]
 - *Tre visitatori su quattro arrivano da smartphone*, quasi sempre da un link su WhatsApp: la web app si disegna prima a 390 px, con la barra in basso.
@@ -135,7 +138,7 @@ Nessun backend per la web app, nessun account studente reale, listino non deciso
 
 #grid(columns: (1fr, 1fr), gutter: 10pt,
   box-crema[*1 · Da studenti a studenti.* Frasi brevi, tu al singolo. Diciamo cosa c'è, cosa arriva e cosa no («Non abbiamo ancora materiali per Giurisprudenza»).],
-  box-crema[*2 · Prima il telefono.* Si disegna a 390 px: barra in basso con le cinque voci, pulsanti alti almeno 44 px, testo almeno 14 px.],
+  box-crema[*2 · Prima il telefono, poi il tablet.* Si disegna a 390 px (barra in basso con le cinque voci), poi 820 px (sidebar stretta, griglie a due colonne), poi desktop. Pulsanti alti almeno 44 px, testo almeno 14 px.],
   box-crema[*3 · Un prossimo passo.* Ogni giorno «Oggi» dice una sola cosa da fare, con un pulsante. Il resto è un clic più in là.],
   box-crema[*4 · Massimo sei voci.* Il «Tuo spazio» ha cinque voci sicure. Una nuova entra solo se è decisa, e se sono già sei ne esce un'altra.],
   box-crema[*5 · Deciso / da decidere.* Ciò che è deciso appare come sarà. Ciò che non è deciso vive solo nella sezione arancio, sempre etichettato.],
@@ -146,13 +149,14 @@ Nessun backend per la web app, nessun account studente reale, listino non deciso
 #cap("4", "Struttura dell'app", "il guscio e la mappa delle pagine")
 
 #sub[Il guscio (uguale per ogni hub e ogni pagina)]
-#tab((22%, 39%, 39%),
-  [Parte], [Desktop], [Telefono (≤ 860 px)],
-  [Sidebar], [Navy a tutta altezza: logo · selettore hub · «Il tuo spazio» (5 voci) · «Sezione di lavoro» (Da decidere, arancio) · utente · versione della demo.], [Si apre dal pulsante menu (cassetto da sinistra).],
-  [Testata], [Percorso («Il tuo spazio / Oggi»), data, link al sito pubblico, etichetta DEMO.], [Menu · logo · pulsante arancio «Da decidere» · DEMO.],
-  [Barra in basso], [—], [Oggi · Esami · Dispense · Strumenti · Profilo. È la navigazione principale su telefono.],
-  [Contenuto], [Fondo crema, massimo 1180 px, card bianche.], [Margini 16 px, una colonna.],
+#tab((16%, 28%, 28%, 28%),
+  [Parte], [Desktop (≥ 1101 px)], [Tablet (701–1100 px)], [Telefono (≤ 700 px)],
+  [Sidebar], [Navy a tutta altezza (268 px): logo · selettore hub · «Il tuo spazio» (5 voci) · «Sezione di lavoro» (Da decidere, arancio) · utente · versione.], [*Stessa sidebar, più stretta (216 px)*: selettore hub e «Da decidere» restano visibili.], [Si apre dal pulsante menu (cassetto da sinistra).],
+  [Testata], [Percorso, data, «Landing (demo)», etichetta DEMO.], [Senza percorso e data.], [Menu · logo · pulsante arancio «Da decidere» · DEMO.],
+  [Barra in basso], [—], [— (resta la sidebar)], [Oggi · Esami · Dispense · Strumenti · Profilo: navigazione principale.],
+  [Contenuto], [Fondo crema, massimo 1180 px, card bianche, 2–4 colonne.], [Margini 24 px, card su *due colonne* (una sotto 780 px).], [Margini 16 px, una colonna.],
 )
+#nota[*Perché il tablet è un caso a parte.* Prima la barra in basso valeva fino a 860 px: un tablet in verticale (820 px) riceveva il layout del telefono, stirato. Ora la soglia è 700 px: da lì in su c'è sempre la sidebar, con griglie a due colonne. Lo stesso criterio vale per la landing (suo PDF, cap. 6).]
 
 #sub[Mappa delle pagine (i codici non cambiano: usali per chiedere modifiche)]
 #tab((10%, 22%, 26%, 14%, 28%),
@@ -185,10 +189,10 @@ Nessun backend per la web app, nessun account studente reale, listino non deciso
 Per ogni esame: cerchio di avanzamento, data dell'appello (inserita dallo studente: «controllala sempre sulla pagina ufficiale»), voto obiettivo, argomenti come pulsanti da spuntare, link alla dispensa. «Aggiungi esame» apre un modulo: esame dal catalogo (o nome libero negli hub in arrivo), data, obiettivo, argomenti. In fondo: rimandi a *D04* (piano guidato) e *D08* (gruppi).
 
 #sub[P03 · Dispense e P03a · scheda]
-Libreria «Salvate» (segnalibro su ogni copertina) e catalogo completo con ricerca, filtro per anno e per area: gli stessi 34 esami e le stesse copertine della landing. La scheda mostra codice, anno, semestre, modalità d'esame, contenuto e tre azioni: *Apri la scheda sul sito* (oggi le dispense si aprono su unilinkfirenze.it), *Salva*, *Aggiungi ai miei esami*. Rimandi a *D06* (lettore) e *D05* (pacchetti).
+Libreria «Salvate» (segnalibro su ogni copertina) e catalogo completo con ricerca, filtro per anno e per area: gli stessi 34 esami e le stesse copertine della landing. La scheda mostra codice, anno, semestre, modalità d'esame, tre azioni (*Apri la dispensa*, *Salva*, *Aggiungi ai miei esami*) e «Cosa contiene» (Appunti · Mappe · Quiz, anteprima di esempio). In demo «Apri la dispensa» avvisa che il lettore è da decidere. Rimandi a *D06* (lettore) e *D05* (pacchetti). Le dispense vivono qui: la landing mostra solo un'anteprima del catalogo.
 
 #sub[P04 · Strumenti e P04a · calcolatore]
-Elenco filtrato per hub. Il calcolatore del voto di laurea funziona dentro la app con le regole di UniLinkVotoLaurea.v5 (media × 110/30, +0,333 per lode, tesi +0…+3, in corso +2, lode con presentazione ≥ 104,5 e tesi +3) e parte dalla media del profilo. Gli altri strumenti aprono le pagine attuali del sito.
+Elenco filtrato per hub; ogni riga apre lo strumento *dentro la app* (\#/strumenti/\[id\]), senza link al sito attuale. Strumenti: *voto di laurea* (regole v5: media × 110/30, +0,333 per lode, tesi, in corso +2, lode con presentazione ≥ 104,5 e tesi Ottima), *media e voto obiettivo*, *piano per l'appello*, e di esempio *punteggio Erasmus*, *voto ciclo unico* (Giurisprudenza) e *piano semestre filtro* (Medicina). Sotto, «In arrivo nell'area»: strumenti solo-area (Erasmus completo, CV, template tesi, borse) che rimandano alle card Dxx. Rimandi a *D14* e *D09*.
 
 #sub[P05 · Profilo]
 Nome, cognome, email (non modificabile), hub, corso, anno, media. Privacy e avvisi email (solo opt-in). Esci. Rimando a *D05* (acquisti).
@@ -203,7 +207,7 @@ Lo stesso guscio serve tutti gli hub. Il selettore in cima alla sidebar (nella a
   [P01 Oggi], [Prossimo passo, numeri, esami, dispense.], [«Ciao Giulia, *Giurisprudenza* sta arrivando»: cosa vorremmo fare (Inizia · Studia · Prosegui, tratteggiate), lista d'attesa con domanda e consenso, «Costruiscilo con noi», strumenti per tutti, rimando a D01/D02.],
   [P02 Esami], [Con link alle dispense.], [Funziona (nome libero), senza dispense.],
   [P03 Dispense], [Catalogo completo.], [Stato vuoto onesto + lista d'attesa.],
-  [P04 Strumenti], [Tutti.], [Solo quelli con Hub = «tutti» (magistrali, guide).],
+  [P04 Strumenti], [Quelli dell'hub e quelli per tutti.], [Quelli per tutti (media, piano) + quelli di esempio dell'hub (Giurisprudenza: voto ciclo unico; Medicina: piano semestre filtro).],
 )
 
 #sub[Lo stato vero (oggi) e l'architettura (domani)]
@@ -216,7 +220,7 @@ Lo stesso guscio serve tutti gli hub. Il selettore in cima alla sidebar (nella a
 // ---------------------------------------------------------------- 7
 #cap("7", "La sezione «Da decidere»", "tutte le idee aperte, ognuna con la sua architettura demo")
 
-È una voce separata della sidebar, *arancio* e con bordo tratteggiato, sotto «Sezione di lavoro». Dentro, card raggruppate per tema. Ogni card aperta mostra sempre le stesse otto parti, così si confrontano a colpo d'occhio:
+È una voce separata della sidebar, *arancio* e con bordo tratteggiato, sotto «Sezione di lavoro». Dentro, card raggruppate per tema. Ogni card aperta mostra sempre le stesse parti (più «Il consiglio», dove c'è il parere di Claude: da discutere, la decisione è del team):
 
 #tab((24%, 76%),
   [Parte], [Cosa contiene],
@@ -226,11 +230,12 @@ Lo stesso guscio serve tutti gli hub. Il selettore in cima alla sidebar (nella a
   [Come risulterebbe], [La mini demo: blocchi veri della app dentro un riquadro tratteggiato «Architettura demo · non decisa».],
   [Cosa serve], [Dati, strumenti, persone, dipendenze da altre card.],
   [Da decidere], [Le domande per la call.],
+  [Il consiglio], [Parere di Claude, quando c'è (D13, D14).],
   [Origine], [Da quale idea HQ, demo o nota nasce.],
   [Storico richieste], [Data e descrizione di ogni modifica chiesta (si allunga nel tempo).],
 )
 
-#sub[Le card di oggi]
+#sub[Le card di oggi (14)]
 #tab((8%, 32%, 18%, 14%, 28%),
   [Codice], [Titolo], [Gruppo], [Stato HQ], [Dove vivrebbe],
   [D01], [Hub Giurisprudenza attivo], [Nuovi hub], [In arrivo], [Tutte le sezioni, via selettore hub],
@@ -245,6 +250,8 @@ Lo stesso guscio serve tutti gli hub. Il selettore in cima alla sidebar (nella a
   [D10], [Borse di studio], [Orientamento], [Nuova], [Guida in Strumenti],
   [D11], [Guida tesi], [Dopo la laurea], [Nuova], [Guida in Strumenti],
   [D12], [Test d'ingresso (TOLC)], [Orientamento], [Nuova], [Hub o modalità dedicata],
+  [D13], [Mentoring tra pari], [Community], [Nuova], [Scheda Mentori dentro I miei esami],
+  [D14], [Strumenti per corso: quali costruire], [Strumenti], [Nuova], [Voce Strumenti, filtrata per hub],
 )
 
 #sub[Come una card diventa sicura (stessa scala della landing)]
@@ -272,7 +279,7 @@ Identici al cap. 13 della landing: navy \#172554 (testo, sidebar, card scure), c
 #sub[Componenti (nomi da usare nelle richieste)]
 #tab((26%, 46%, 28%),
   [Componente], [Cosa è], [Dove],
-  [WA/Sidebar], [Logo, selettore hub, voci, Da decidere, utente.], [Tutte le pagine],
+  [WA/Sidebar], [Logo, selettore hub, voci, Da decidere, utente. Più stretta su tablet.], [Tutte le pagine],
   [WA/TabBar], [Cinque voci in basso su telefono.], [Telefono],
   [WA/Testata], [Percorso, data, sito, DEMO.], [Tutte le pagine],
   [WA/Intestazione], [Etichetta + titolo con parola accento + sottotitolo.], [Inizio di ogni pagina],
@@ -281,7 +288,7 @@ Identici al cap. 13 della landing: navy \#172554 (testo, sidebar, card scure), c
   [WA/CardEsame], [Cerchio, data, obiettivo, argomenti spuntabili.], [P02],
   [WA/CardDispensa], [Copertina vera, anno, segnalibro, meta.], [P03],
   [WA/RigaStrumento], [Icona, nome, descrizione, freccia.], [P01, P04],
-  [WA/Calcolatore], [Cursori + risultato navy.], [P04a],
+  [WA/Strumento], [Riquadro navy con comandi (cursori, scelte, righe) e risultato arancio; stile in tools.css, condiviso con la landing.], [P04a],
   [WA/ListaAttesa], [Domanda, consenso, «Avvisami».], [P01 hub in arrivo],
   [WA/Vuoto], [Stato vuoto onesto con un'azione.], [Ovunque serva],
   [WA/Rimando], [Banda arancio tratteggiata verso una card Dxx.], [In fondo alle pagine sicure],
@@ -298,9 +305,10 @@ Identici al cap. 13 della landing: navy \#172554 (testo, sidebar, card scure), c
   [Blocco], [Campi], [Esempio di modifica],
   [UL_HUB], [slug, nome, stato (attivo/in_arrivo), tinta, ateneo, corsi, fasi (Inizia/Studia/Prosegui), domanda della lista d'attesa, card Da decidere collegata.], [Accendere Giurisprudenza: stato «attivo».],
   [UL_MODULI], [id, nome, icona, hub (tutti o slug), tab (in barra in basso).], [Aggiungere «Esercitazioni» quando D03 è decisa.],
-  [UL_STRUMENTI], [id, nome, desc, hub, tipo (interno/link), url.], [Un nuovo calcolatore per Giurisprudenza.],
+  [UL_LANDING], [Percorso della demo della landing (link «Landing (demo)» in testata).], [Cambiare se le cartelle si spostano.],
+  [tools.js], [Non è in config.js: `UL_TOOLS` (id, nome, desc, hub, stato live/demo, dove, icona) e una funzione per strumento in `IMPL`. File *condiviso* con la landing: si copia con `python _src/sync_shared.py`.], [Un nuovo strumento per Giurisprudenza: una voce + una funzione.],
   [UL_UTENTE], [Account demo: dati di esempio, esami, salvate.], [Cambiare l'esempio mostrato.],
-  [UL_DA_DECIDERE], [id, titolo, gruppo, stato, origine, impatto, sforzo, problema, proposta, dove, schermata, serve, domande, storico.], [Una nuova idea = un nuovo blocco D13.],
+  [UL_DA_DECIDERE], [id, titolo, gruppo, stato, origine, impatto, sforzo, problema, proposta, dove, consiglio (facoltativo), schermata, serve, domande, storico.], [Una nuova idea = un nuovo blocco D15.],
   [UL_VERSIONE], [Numero, data, nota.], [Si aggiorna a ogni versione.],
 )
 
@@ -329,8 +337,9 @@ Se un'idea ha bisogno di qualcosa che i blocchi non sanno fare, si aggiunge un t
   [index.html], [Il guscio vuoto: sidebar, testata, contenuto, barra in basso.],
   [config.js], [Tutto ciò che si può cambiare senza toccare il design (questo capitolo).],
   [app.js], [Le pagine (VISTE), i blocchi della mini demo (BLOCCHI), gli eventi.],
-  [app.css], [Token e componenti, sezione per sezione (1 token · 2 base · 3 guscio · 4 componenti · 5 Da decidere · 6 telefono).],
+  [app.css], [Token e componenti, sezione per sezione (1 token · 2 base · 3 guscio · 4 componenti · 5 Da decidere · 6 telefono · 7 tablet).],
   [dispense.js], [Le 34 dispense (stessa fonte della landing).],
+  [tools.js · tools.css], [Gli strumenti e il loro stile (identici nella landing).],
   [img/, fonts/], [Copertine vere, loghi, Croogla.],
   [LEGGIMI.md], [Istruzioni rapide per founder e AI.],
 )
@@ -424,7 +433,7 @@ Informativa chiara al primo accesso; email usata solo per l'accesso e per gli av
   [Sorgenti], [Repository GitHub matteprune04/unilink-hq, cartelle demo-webapp/ e demo-landing/],
   [Registro versioni], [demos/registro.json (scritto in automatico)],
   [Backup], [Release GitHub con tag webapp-vN e landing-vN, ognuna con lo ZIP allegato],
-  [In HQ], [Laboratorio AI → sezione *DEMO*: anteprima desktop/telefono, «Scarica l'ultima versione», storico con data, autore, nota e ZIP di ogni versione],
+  [In HQ], [Laboratorio AI → sezione *DEMO*: le due demo incorporate, anteprima *Desktop · Tablet · Telefono*, «Scarica l'ultima versione» e, sotto ciascuna, lo storico con data, autore, nota e ZIP di ogni versione (ogni versione è un backup)],
   [Questo documento], [architettura/UniLink_Architettura_WebApp.pdf (sorgente Typst accanto)],
 )
 
@@ -437,6 +446,8 @@ Informativa chiara al primo accesso; email usata solo per l'accesso e per gli av
 
 #sub[Come si torna a una versione]
 Dall'HQ: «Scarica ZIP» sulla versione voluta (si apre senza installare nulla: index.html). Oppure chiedi «ripristina la web app alla v3»: Claude riporta la cartella al tag webapp-v3 e fa push; la Action crea una nuova versione (la storia non si perde mai).
+
+#nota[GitHub non dice *chi ha scaricato* uno ZIP: l'«storico» mostra chi ha *modificato* la demo e quando. Ogni release ha solo un contatore di download.]
 
 #nota[La sezione DEMO sta nel file \_src/online.js dell'HQ, che la build inserisce in index.html: sopravvive quando si rigenera l'HQ dal sorgente locale.]
 
@@ -455,6 +466,7 @@ Ogni richiesta ha un *tipo*. Basta nominarlo con il codice della pagina (P01…)
   [F · Hub], [«Accendi Giurisprudenza» oppure «aggiungi l'hub Ingegneria in arrivo».], [Riga in UL_HUB (stato, fasi, domanda) e card D collegata.],
   [G · Ripristina], [«Riporta la web app alla v2.»], [Riporto la cartella al tag webapp-v2, push, nuova versione nello storico.],
   [H · Rimuovi / archivia], [«Togli D12, non la facciamo.»], [La card esce dalla sezione; resta nel registro e nell'HQ (Decisioni).],
+  [I · Strumento], [«Aggiungi uno strumento “Scadenze concorsi” per Giurisprudenza.»], [Voce in `UL_TOOLS` + funzione in `IMPL` (tools.js), sync con la landing, aggiorno cap. 5 e 9.],
 )
 
 #sub[Cosa succede dopo ogni richiesta]
@@ -463,7 +475,51 @@ Nuova versione della demo (numero in fondo alla sidebar) → backup automatico �
 #nota[Se un'idea è ambigua, ti chiedo prima il tipo: «la metto in Da decidere (A) o la vuoi già nella app (C)?». Senza decisione, un'idea va sempre in Da decidere.]
 
 // ---------------------------------------------------------------- 15
-#cap("15", "Checklist e decisioni aperte", "prima di passare alla fase 1")
+#cap("15", "Roadmap e osservazioni", "dove ripartire a breve, medio e lungo termine; cosa tenere, tagliare, aggiungere")
+
+Per ogni passo: *riparti da* = pagina, card o file da cui cominciare. I tempi sono indicativi. La roadmap della landing (suo PDF, cap. 14) e questa si leggono insieme.
+
+#sub[Breve termine · 0–2 mesi (ottobre–novembre 2026)]
+#tab((34%, 32%, 34%),
+  [Cosa], [Riparti da], [Pronto quando],
+  [Approvare la v2 e le prime card], [Cap. 7 · D03, D07, D14], [Decisioni scritte nello storico delle card.],
+  [Progetto Supabase e accesso via email], [Cap. 10 · P00], [Accesso provato su telefono.],
+  [I miei esami, Dispense (libreria), Profilo], [P02, P03, P05 · tabelle `esami_utente`, `salvate`], [10 studenti la usano una settimana senza aiuto.],
+  [Strumenti già pronti], [P04 · tools.js (voto, media, piano)], [Funzionano dentro la app Next.js (le funzioni si copiano).],
+  [Lista d'attesa unica con la landing], [Cap. 6 · tabella `lista_attesa`], [Iscritti per hub visibili all'HQ.],
+  [Eventi di misura], [Cap. 10], [Accessi, apertura dispense, uso strumenti registrati.],
+)
+
+#sub[Medio termine · 3–6 mesi (dicembre 2026–aprile 2027)]
+#tab((34%, 32%, 34%),
+  [Cosa], [Riparti da], [Pronto quando],
+  [Esercitazioni e ripasso errori], [D03 (6ª voce)], [Banca domande per i primi 3 esami.],
+  [Raccolta domande d'esame], [D07 (collegata a D03)], [Regola di ricompensa e flusso di revisione.],
+  [Piano guidato], [D04 · piano in tools.js], [Scheda Piano dentro I miei esami.],
+  [Pacchetti e lettore protetto], [D05 + D06], [Listino deciso, Stripe, filigrana.],
+  [Strumenti verificati per hub], [D14], [Regole ufficiali controllate: spariscono le etichette «Esempio».],
+  [Primo nuovo hub], [D01 o D02 · cap. 6], [Lista d'attesa con numeri e persone che lo costruiscono.],
+)
+
+#sub[Lungo termine · 6–18 mesi (da maggio 2027)]
+#tab((34%, 32%, 34%),
+  [Cosa], [Riparti da], [Pronto quando],
+  [Medicina (obiettivo 2027/28)], [D02], [Materiali e persone; date da fonti ufficiali.],
+  [Più atenei], [`UL_HUB` (campo ateneo)], [Livello sotto l'hub: una riga, non una pagina.],
+  [Career e opportunità], [D09], [Profili tipo; opportunità solo con partner reali.],
+  [Community e mentoring], [D08, D13], [La prova manuale ha funzionato.],
+  [Piano adattivo con AI], [D04 fase 2], [Dati di studio reali sufficienti.],
+  [Test d'ingresso], [D12], [Solo se ha ancora senso dopo i nuovi hub.],
+)
+
+#sub[Osservazioni]
+#tab((30%, 70%),
+  [Tenere], [Cinque voci e «Da decidere» separato; «Oggi» con un solo prossimo passo; strumenti per hub dentro la app; stesso guscio per ogni hub.],
+  [Ridurre], [Il numero di card in D (14 sono già molte: tenere in primo piano le prime tre per impatto/sforzo); dispense e strumenti mai duplicati tra landing e app (la landing mostra, l'app contiene).],
+  [Manca], [Informativa privacy e «elimina account» prima dell'accesso reale; responsabile degli aggiornamenti (date, regole degli strumenti); eventi di misura prima di costruire nuove card; piano di assistenza (chi risponde quando qualcosa non funziona).],
+)
+
+#cap("16", "Checklist e decisioni aperte", "prima di passare alla fase 1")
 
 #sub[Da decidere in call]
 #tab((32%, 68%),
@@ -485,29 +541,42 @@ Nuova versione della demo (numero in fondo alla sidebar) → backup automatico �
 - Eventi del cap. 10 registrati; lista d'attesa unica con la landing.
 
 // ---------------------------------------------------------------- 16
-#cap("16", "Demo grafiche", "render della demo v1 · dati di esempio")
+#cap("17", "Demo grafiche", "render della demo v2 · dati di esempio")
 
-#img("img/d_oggi.png", didascalia: [P01 · Oggi (desktop): prossimo passo, quattro numeri, sidebar con la voce arancio «Da decidere».])
-#img("img/d_esami.png", didascalia: [P02 · I miei esami: argomenti da spuntare e rimandi a D04 e D08.])
+#img("img/d_oggi.jpg", didascalia: [P01 · Oggi (desktop): prossimo passo, quattro numeri, sidebar con la voce arancio «Da decidere».])
+#img("img/d_esami.jpg", didascalia: [P02 · I miei esami: argomenti da spuntare e rimandi a D04 e D08.])
 #pagebreak()
-#img("img/d_dispense.png", didascalia: [P03 · Dispense: libreria e catalogo con le copertine vere.])
-#img("img/d_strumenti-voto.png", didascalia: [P04a · Calcolatore voto di laurea (regole v5).])
+#img("img/d_dispense.jpg", didascalia: [P03 · Dispense: libreria e catalogo con le copertine vere.])
+#img("img/d_scheda.jpg", didascalia: [P03a · scheda dispensa: «Apri la dispensa», «Cosa contiene» (esempio).])
 #pagebreak()
-#img("img/d_giuri-oggi.png", w: 82%, didascalia: [P01 con hub in arrivo (Giurisprudenza): stato vero di oggi + rimando a D01.])
+#img("img/d_strumenti.jpg", didascalia: [P04 · Strumenti: quelli dell'hub e, sotto, i «solo area» che rimandano alle card.])
+#img("img/d_strumenti_voto.jpg", didascalia: [P04a · Voto di laurea (regole v5), dentro la app.])
 #pagebreak()
-#img("img/d_decidere.png", didascalia: [P90 · Da decidere: card per gruppo, codice, stato e impatto.])
-#img("img/d_decidere-D03.png", didascalia: [D03 · dettaglio: le parti fisse e la mini demo nel riquadro tratteggiato.])
+#img("img/d_strumenti_piano.jpg", didascalia: [P04a · Piano per l'appello: ritmo e calendario a regole semplici.])
+#img("img/d_giuri_oggi.jpg", didascalia: [P01 con hub in arrivo (Giurisprudenza): stato vero di oggi + rimando a D01.])
 #pagebreak()
+#img("img/d_decidere.jpg", didascalia: [P90 · Da decidere: card per gruppo, codice, stato e impatto.])
+#img("img/d_decidere_D14.jpg", didascalia: [D14 · dettaglio: il consiglio e l'elenco degli strumenti per hub.])
+#pagebreak()
+#img("img/d_decidere_D03.jpg", didascalia: [D03 · dettaglio: le parti fisse e la mini demo nel riquadro tratteggiato.])
+#pagebreak()
+#block(below: 8pt, text(size: 13pt)[Tablet (820 px): stessa sidebar, più stretta, e griglie a due colonne])
 #grid(columns: (1fr, 1fr, 1fr), gutter: 10pt,
-  img("img/m_oggi.png", didascalia: [Telefono · Oggi]),
-  img("img/m_esami.png", didascalia: [Telefono · Esami]),
-  img("img/m_dispense-microeconomia.png", didascalia: [Telefono · scheda dispensa]),
+  img("img/w_t_oggi.jpg", didascalia: [Tablet · Oggi]),
+  img("img/w_t_esami.jpg", didascalia: [Tablet · Esami]),
+  img("img/w_t_strumenti.jpg", didascalia: [Tablet · Strumenti]),
+)
+#block(above: 14pt, below: 8pt, text(size: 13pt)[Telefono (390 px): barra in basso con cinque voci])
+#grid(columns: (1fr, 1fr, 1fr), gutter: 10pt,
+  img("img/m_oggi.jpg", didascalia: [Telefono · Oggi]),
+  img("img/m_esami.jpg", didascalia: [Telefono · Esami]),
+  img("img/m_dispense-microeconomia.jpg", didascalia: [Telefono · scheda dispensa]),
 )
 #grid(columns: (1fr, 1fr, 1fr), gutter: 10pt,
-  img("img/m_accedi.png", didascalia: [Telefono · Accesso]),
-  img("img/m_decidere.png", didascalia: [Telefono · Da decidere]),
+  img("img/m_strumenti.jpg", didascalia: [Telefono · Strumenti]),
+  img("img/m_decidere.jpg", didascalia: [Telefono · Da decidere]),
   [],
 )
 #pagebreak()
-#img("img/hq_lab_d.png", didascalia: [HQ · Laboratorio AI → DEMO: le due demo sempre all'ultima versione, con download.])
-#img("img/hq_demo_d.png", w: 80%, didascalia: [HQ · dettaglio demo: anteprima desktop/telefono e storico delle versioni (backup).])
+#img("img/hq_lab_d.png", didascalia: [HQ · Laboratorio AI → DEMO: le due demo sempre all'ultima versione, con download (render della v1: ora l'anteprima ha anche il tasto Tablet).])
+#img("img/hq_demo_d.png", w: 80%, didascalia: [HQ · dettaglio demo: anteprima e storico delle versioni (backup).])

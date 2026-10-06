@@ -27,10 +27,10 @@ PAGES = "https://matteprune04.github.io/unilink-hq/"
 # Le demo seguite. Per aggiungerne una: una riga qui + il percorso in demo-backup.yml.
 DEMO = [
     {"id": "landing", "titolo": "Landing", "cartella": "demo-landing",
-     "descrizione": "Demo navigabile della nuova landing (riferimento per Framer).",
+     "descrizione": "Landing v2: Prima · Durante · Dopo, strumenti, anteprima area personale, Da decidere (riferimento per Framer).",
      "architettura": "UniLink_Architettura_Landing.pdf"},
     {"id": "webapp", "titolo": "Web app · area personale", "cartella": "demo-webapp",
-     "descrizione": "Demo della web app: sezioni decise + sezione «Da decidere».",
+     "descrizione": "Web app v2: sezioni decise, strumenti per hub, tablet, sezione «Da decidere».",
      "architettura": "UniLink_Architettura_WebApp.pdf"},
 ]
 ESCLUDI = {".DS_Store", "Thumbs.db"}

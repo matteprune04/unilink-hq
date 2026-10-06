@@ -1,0 +1,32 @@
+/* UniLink · stile degli strumenti — FILE CONDIVISO (identico in demo-landing/ e demo-webapp/, vedi tools.js).
+   Usa solo i token dello stile (--navy, --crema, --arancio…): prende il tono della demo che lo ospita. */
+.tl-box { background: var(--navy); color: var(--crema); border-radius: 28px; padding: 30px; position: relative; }
+.tl-body { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+.tl-in { display: grid; gap: 18px; align-content: start; }
+.tl-r { display: grid; gap: 8px; }
+.tl-l { display: flex; justify-content: space-between; align-items: baseline; font-size: 14.5px; opacity: .88; }
+.tl-l b { font-weight: 400; font-size: 20px; color: #fff; }
+.tl-box input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; border-radius: 99px; background: linear-gradient(to right, var(--arancio) var(--p, 50%), rgba(244,241,234,.18) var(--p, 50%)); outline: none; }
+.tl-box input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%; background: var(--crema); border: 5px solid var(--arancio); cursor: pointer; }
+.tl-box input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--crema); border: 5px solid var(--arancio); cursor: pointer; }
+.tl-box input[type=date], .tl-box input[type=number] { font: inherit; font-size: 16px; color: var(--navy); background: var(--crema); border: 0; border-radius: 12px; padding: 11px 14px; min-height: 44px; width: 100%; }
+.tl-seg { display: flex; gap: 8px; flex-wrap: wrap; }
+.tl-seg button { font: inherit; font-size: 14px; color: var(--crema); background: transparent; border: 1.5px solid rgba(244,241,234,.3); border-radius: 99px; padding: 8px 14px; cursor: pointer; min-height: 40px; }
+.tl-seg button.on { background: var(--crema); color: var(--navy); border-color: var(--crema); }
+.tl-row { display: grid; grid-template-columns: 1fr 1fr 40px; gap: 8px; margin-top: 8px; }
+.tl-row button, .tl-add { font: inherit; color: var(--crema); background: rgba(244,241,234,.1); border: 0; border-radius: 12px; cursor: pointer; min-height: 44px; }
+.tl-add { padding: 0 16px; justify-self: start; font-size: 14px; }
+.tl-out { display: grid; gap: 12px; align-content: start; }
+.tl-k { background: rgba(244,241,234,.08); border-radius: 18px; padding: 16px 18px; font-size: 13.5px; }
+.tl-k b { display: block; font-weight: 400; font-size: 40px; line-height: 1.1; letter-spacing: -.02em; color: #fff; }
+.tl-k.big { background: var(--arancio); }
+.tl-nota { font-size: 13.5px; opacity: .75; }
+.tl-flag { font-size: 12.5px; background: rgba(207,117,39,.25); color: #f6e4d1; border: 1px dashed rgba(246,228,209,.6); border-radius: 12px; padding: 8px 12px; }
+.tl-plan { list-style: none; display: grid; gap: 6px; font-size: 14px; }
+.tl-plan li { background: rgba(244,241,234,.08); border-radius: 12px; padding: 8px 12px; }
+.tl-split { display: grid; gap: 8px; }
+.tl-split div { display: grid; grid-template-columns: 78px 1fr 52px; gap: 10px; align-items: center; font-size: 14px; }
+.tl-split i { display: block; height: 8px; border-radius: 99px; background: var(--arancio); }
+.tl-split b { font-weight: 400; text-align: right; }
+@media (max-width: 1100px) { .tl-body { grid-template-columns: 1fr; } .tl-box { padding: 24px; } }
+@media (max-width: 700px) { .tl-box { padding: 20px; border-radius: 22px; } .tl-k b { font-size: 32px; } }

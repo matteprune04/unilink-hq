@@ -372,3 +372,142 @@ html { scroll-behavior: smooth; }
   .tendina .pan { display: none !important; }
   .topbar { font-size: 11.5px; }
 }
+
+/* ======== v2 · aggiunte (le regole sopra restano quelle della v1) ======== */
+section[id] { scroll-margin-top: 96px; }
+.bg2 { background: var(--crema2); }
+
+/* navbar v2: Hub · Prima · Durante · Dopo · Strumenti · Community + pillola «Da decidere» */
+.nav { padding-right: 10px; gap: 14px; }
+.menu { gap: 22px; font-size: 15.5px; }
+.menu > a, .tendina > a { padding: 8px 0; }
+.tendina .pan { width: 270px; }
+.tendina:focus-within .pan { display: block; }
+.decpill { display: inline-flex; align-items: center; gap: 8px; background: var(--arancio); color: #fff; border-radius: 99px; padding: 8px 8px 8px 15px; font-size: 14px; border: 1.5px dashed rgba(255,255,255,.7); white-space: nowrap; transition: transform .15s; }
+.decpill span { background: rgba(255,255,255,.25); border-radius: 99px; padding: 1px 8px; font-size: 12px; }
+.decpill:hover { transform: translateY(-2px); }
+.decpill.att { background: var(--ar2); color: var(--ar3); border-color: var(--arancio); }
+.navcta { white-space: nowrap; }
+.mmenu { overflow-y: auto; }
+.mmenu a { font-size: 26px; }
+.mmenu a small { display: block; font-size: 13px; color: var(--nv2); margin-top: -2px; }
+.mmenu .mg { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--ar3); margin-top: 10px; }
+.mmenu a.mdec { background: var(--arancio); color: #fff; border: 1.5px dashed rgba(255,255,255,.7); border-radius: 16px; padding: 12px 16px; font-size: 20px; margin-top: 10px; }
+.mmenu .btn { margin-top: 14px; }
+
+/* componenti nuovi */
+.cds { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.cds.c2 { grid-template-columns: repeat(2, 1fr); } .cds.c4 { grid-template-columns: repeat(4, 1fr); }
+.cd { background: var(--bianco); border-radius: 24px; padding: 26px; display: flex; flex-direction: column; gap: 10px; box-shadow: var(--ombra); transition: transform .25s, box-shadow .25s; min-height: 220px; }
+.cd:hover { transform: translateY(-5px); box-shadow: 0 22px 44px rgba(23,37,84,.14); }
+.cd .ico { width: 46px; height: 46px; border-radius: 13px; background: var(--crema); display: grid; place-items: center; font-size: 21px; }
+.cd h3 { font-size: 23px; } .cd p { font-size: 15px; color: var(--nv2); }
+.cd .go { margin-top: auto; padding-top: 10px; font-size: 15px; } .cd .go::after { content: " →"; }
+.cd.nv { background: var(--navy); color: var(--crema); } .cd.nv p { color: rgba(244,241,234,.78); } .cd.nv .ico { background: rgba(244,241,234,.12); }
+.cd.ar { background: var(--ar2); } .cd.ar .ico { background: #fff; } .cd.nt { background: var(--nvt); } .cd.nt .ico { background: #fff; }
+.cd .badge { align-self: flex-start; font-size: 11.5px; padding: 3px 10px; }
+.hubhero.sm .display { font-size: 84px; }
+.fotoband { height: 400px; border-radius: 28px; overflow: hidden; border: 8px solid #fff; box-shadow: var(--ombra); }
+.fotoband img { width: 100%; height: 100%; object-fit: cover; }
+.dueco { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; }
+.ckl { display: grid; gap: 10px; } .ck { background: #fff; border-radius: 18px; padding: 16px 20px; display: flex; gap: 14px; align-items: center; cursor: pointer; border: 1.5px solid transparent; }
+.ck i { width: 24px; height: 24px; border-radius: 8px; border: 1.5px solid var(--navy); flex: none; display: grid; place-items: center; font-style: normal; font-size: 13px; color: transparent; }
+.ck.done i { background: var(--navy); color: var(--crema); } .ck.done .t { text-decoration: line-through; opacity: .55; }
+.ck small { display: block; color: var(--nv2); font-size: 13.5px; }
+.ckbar { height: 8px; background: var(--crema2); border-radius: 99px; overflow: hidden; margin: 8px 0 18px; } .ckbar i { display: block; height: 100%; background: var(--arancio); width: 0; transition: width .3s; }
+
+/* strumenti nella landing: elenco + pannello */
+.tpanel { background: var(--navy); color: var(--crema); border-radius: 28px; padding: 30px; }
+.tpanel .eyebrow { color: #f0b37c; } .tpanel h3 { font-size: 26px; color: #fff; }
+.tpanel .tl-box { background: transparent; padding: 0; border-radius: 0; }
+.tool.lock { background: transparent; border: 1.5px dashed rgba(23,37,84,.3); box-shadow: none; }
+.tool.lock .ico { background: var(--ar2); } .tool[data-id] { cursor: pointer; }
+
+/* anteprima dell'area personale: la web app vera dentro un dispositivo */
+.devprev { display: grid; gap: 22px; justify-items: center; }
+.devbar { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+.segm { display: inline-flex; background: #fff; border-radius: 99px; padding: 5px; gap: 4px; box-shadow: var(--ombra); }
+.segm button { font: inherit; font-size: 14.5px; padding: 9px 18px; border-radius: 99px; border: 0; background: transparent; color: var(--navy); cursor: pointer; }
+.segm button.on { background: var(--navy); color: var(--crema); }
+.devstage { width: 100%; display: flex; justify-content: center; align-items: flex-start; padding: 8px 0 4px; }
+.devshell { position: relative; overflow: hidden; background: #fff; border: 8px solid var(--navy); border-radius: 20px; box-shadow: 0 30px 60px rgba(23,37,84,.25); transition: width .35s, height .35s; }
+.devshell.tab { border-width: 12px; border-radius: 30px; } .devshell.ph { border-width: 10px; border-radius: 40px; }
+.devshell iframe { position: absolute; left: 0; top: 0; border: 0; transform-origin: 0 0; background: #fff; }
+
+/* DA DECIDERE — arancio, tratteggiato, sempre etichettato */
+.dec-banner { background: var(--ar2); border: 1.5px dashed var(--arancio); color: var(--ar3); border-radius: 18px; padding: 14px 18px; font-size: 14.5px; }
+.dec-banner b { font-weight: 400; color: var(--navy); }
+.dec-gruppo { margin: 30px 0 14px; } .dec-gruppo h2 { font-size: 24px; }
+.dcard { background: #fff; border-radius: 22px; padding: 22px; border: 1.5px dashed rgba(207,117,39,.6); display: flex; flex-direction: column; gap: 10px; transition: transform .2s, box-shadow .2s; }
+.dcard:hover { transform: translateY(-4px); box-shadow: var(--ombra); }
+.dcard .id { font-size: 12px; letter-spacing: .1em; color: var(--ar3); } .dcard h3 { font-size: 22px; } .dcard p { font-size: 14.5px; color: var(--nv2); }
+.dcard .piede { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 8px; font-size: 13px; color: var(--nv2); }
+.punti { display: inline-flex; gap: 3px; } .punti i { width: 7px; height: 7px; border-radius: 50%; background: var(--linea); } .punti i.on { background: var(--arancio); }
+.dec-top { margin: 14px 0 20px; }
+.deccard { background: #fff; border-radius: 26px; padding: 8px 32px; margin-top: 18px; border: 1px solid rgba(23,37,84,.06); }
+.dsez { display: grid; grid-template-columns: 170px 1fr; gap: 28px; padding: 24px 0; border-top: 1px solid var(--linea); } .deccard > .dsez:first-child { border-top: 0; }
+.dsez > .k { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--ar3); padding-top: 4px; }
+.dsez ul { padding-left: 18px; display: grid; gap: 6px; }
+.dsez.cons > div:last-child { background: var(--nvt); border-radius: 16px; padding: 16px 18px; }
+.link { text-decoration: underline; text-underline-offset: 3px; font-size: 15px; }
+.schermo { border: 2px dashed var(--arancio); border-radius: 24px; background: var(--crema); padding: 24px; position: relative; display: grid; gap: 16px; }
+.schermo::before { content: "ARCHITETTURA DEMO · NON DECISA"; position: absolute; top: -11px; left: 20px; background: var(--arancio); color: #fff; font-size: 10.5px; letter-spacing: .12em; padding: 3px 10px; border-radius: 99px; }
+.bk-hero h3 { font-size: 34px; margin: 6px 0; } .bk-h { font-weight: 400; font-size: 17px; margin-bottom: 8px; }
+.bk-g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.bk-card { background: #fff; border-radius: 18px; padding: 18px 20px; display: grid; gap: 6px; align-content: start; border: 1px solid var(--linea); } .bk-card.ev { border-color: var(--arancio); }
+.bk-card h3 { font-size: 19px; } .bk-stat b { font-weight: 400; font-size: 36px; line-height: 1.1; } .bk-p { font-weight: 400; font-size: 26px; color: var(--ar3); }
+.bk-row { display: flex; gap: 14px; align-items: center; padding: 11px 0; border-top: 1px solid var(--linea); font-size: 15.5px; } .bk-row:first-of-type { border-top: 0; }
+.bk-row .n { min-width: 34px; height: 34px; border-radius: 10px; background: var(--ar2); color: var(--ar3); display: grid; place-items: center; font-size: 14px; flex: none; padding: 0 6px; } .bk-row .g { flex: 1; }
+.storico { display: grid; gap: 8px; } .storico div { display: grid; grid-template-columns: 110px 1fr; gap: 12px; font-size: 14.5px; }
+.demo-tag { z-index: 3; }
+
+/* ======== tablet (701–1100 px): uguale al desktop nei contenuti, con griglie più strette ======== */
+@media (max-width: 1100px) {
+  .menu, .decpill, .navcta { display: none; }
+  .burger { display: grid; }
+  .nav { margin: 12px 16px 0; padding: 8px 8px 8px 20px; max-width: none; }
+}
+@media (min-width: 701px) and (max-width: 1100px) {
+  .wrap { padding: 0 28px; }
+  section { padding: 78px 0; }
+  .display { font-size: 74px; } h2 { font-size: 44px; }
+  .hero { padding-top: 58px; } .collage { height: 400px; }
+  .hubs { grid-template-columns: 1fr 1fr; } .hubs .hub:last-child { grid-column: 1 / -1; min-height: 0; } .hub { min-height: 0; } .hub .img { height: 190px; }
+  .numeri { grid-template-columns: 1.15fr 1fr; } .cardnum { padding: 28px 28px; } .riganum .v { font-size: 46px; } .fotonum { height: 380px; margin-left: -40px; }
+  .livelli { gap: 12px; } .liv { padding: 16px 18px; }
+  .risposta { grid-template-columns: 1fr 1fr; }
+  .dispense, .catgrid, .cds, .cds.c4 { grid-template-columns: repeat(2, 1fr); }
+  .cds.c4 { grid-template-columns: repeat(2, 1fr); }
+  .come, .tools, .faq, .hubhero, .costruisci, .dueco { grid-template-columns: 1fr; }
+  .hubhero { padding-top: 50px; gap: 34px; } .hubhero .display, .hubhero.sm .display { font-size: 76px; } .hubfoto { height: 400px; }
+  .come .ft { height: 300px; } .step:nth-child(2) { transform: rotate(-1deg) translateX(8px); }
+  .garanzie { grid-template-columns: 1fr 1fr; }
+  .team { grid-template-columns: repeat(2, 1fr); } .persona { min-height: 0; } .persona .av { height: 120px; }
+  .fasi3, .piani { grid-template-columns: 1fr 1fr 1fr; gap: 14px; } .fase, .piano { padding: 22px; } .piano .pz { font-size: 40px; } .piano.top { transform: none; }
+  .fgrid { grid-template-columns: 1fr 1fr 1fr; gap: 28px 24px; } .fgrid .fnl { grid-column: 1 / -1; }
+  .finale { padding: 70px 30px; } .finale .l, .finale .r2 { width: 190px; height: 190px; }
+  .testa p { max-width: 300px; }
+  .tpanel { padding: 26px; } .deccard { padding: 4px 24px; } .dsez { grid-template-columns: 1fr; gap: 8px; }
+  .bk-g3 { grid-template-columns: 1fr 1fr 1fr; }
+  .scroller { grid-auto-columns: calc((100% - 20px) / 2.3); }
+}
+
+/* ======== telefono: aggiunte v2 ======== */
+@media (max-width: 700px) {
+  .cds, .cds.c2, .cds.c4, .dueco, .bk-g3 { grid-template-columns: 1fr; }
+  .dsez { grid-template-columns: 1fr; gap: 8px; } .deccard { padding: 4px 18px; }
+  .hubhero.sm .display { font-size: 52px; } .fotoband { height: 240px; }
+  .tpanel { padding: 22px; border-radius: 22px; }
+  .devbar { gap: 10px; } .segm button { padding: 8px 12px; font-size: 13.5px; }
+  .storico div { grid-template-columns: 1fr; gap: 2px; }
+  .mmenu a { font-size: 24px; }
+}
+
+/* home: foto dell'area personale (tre dispositivi sovrapposti) */
+.areafoto { position: relative; height: 430px; }
+.areafoto img { position: absolute; border-radius: 16px; border: 6px solid #fff; box-shadow: 0 24px 50px rgba(0,0,0,.35); background: #fff; object-fit: cover; object-position: top; }
+.areafoto .a1 { left: 0; top: 30px; width: 86%; height: 300px; }
+.areafoto .a2 { right: 0; top: 0; width: 34%; height: 300px; border-radius: 22px; transform: rotate(3deg); }
+.areafoto .a3 { left: 12%; bottom: 0; width: 22%; height: 250px; border-radius: 24px; transform: rotate(-4deg); }
+@media (max-width: 700px) { .areafoto { height: 300px; } .areafoto .a1 { height: 190px; } .areafoto .a2 { height: 190px; } .areafoto .a3 { height: 160px; } }
+@media (min-width: 701px) and (max-width: 1100px) { .areafoto { height: 380px; } }

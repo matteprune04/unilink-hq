@@ -6,15 +6,15 @@
 //
 //   UL_HUB         → le aree di studio (stesso modello di hub.csv della landing)
 //   UL_MODULI      → le voci SICURE della sidebar (decise, mostrate come saranno)
-//   UL_STRUMENTI   → i tool (stesso modello di tools.csv della landing)
+//   (gli strumenti stanno in tools.js, file condiviso con la landing: una voce + una funzione)
 //   UL_UTENTE      → l'account demo (dati di esempio)
 //   UL_DA_DECIDERE → le card della sezione arancio "DA DECIDERE"
 //                    (ogni card = un'architettura demo, non ancora decisa)
 // -----------------------------------------------------------------------------
 
-window.UL_VERSIONE = { n: 1, data: "2026-10-06", nota: "Prima demo finale: guscio definitivo, 5 sezioni sicure, sezione DA DECIDERE con 12 architetture." };
+window.UL_VERSIONE = { n: 2, data: "2026-10-06", nota: "Web app v2: strumenti dentro la app (nessun link al sito attuale), strumenti per Giurisprudenza e Medicina, versione tablet, card D13 Mentoring e D14 Strumenti per corso." };
 
-window.UL_SITO = "https://www.unilinkfirenze.it";
+window.UL_LANDING = "../demo-landing/";   // la demo della landing (stesso repository, cartella accanto)
 window.UL_WA = "https://chat.whatsapp.com/KdA4r1POh6MAiBbLmmES0L";
 
 // Stato: "attivo" | "in_arrivo". Tinte derivate dalla palette (cap. 4 della landing).
@@ -38,15 +38,6 @@ window.UL_MODULI = [
   { id: "dispense", nome: "Dispense", icona: "libro", hub: ["economia"], tab: true },
   { id: "strumenti", nome: "Strumenti", icona: "attrezzi", hub: ["tutti"], tab: true },
   { id: "profilo", nome: "Profilo", icona: "utente", hub: ["tutti"], tab: true },
-];
-
-// Strumenti: "interno" = funziona dentro la app; "link" = apre la pagina del sito attuale.
-window.UL_STRUMENTI = [
-  { id: "voto", nome: "Calcolatore voto di laurea", desc: "Stima il voto finale dalla tua media.", hub: ["economia"], tipo: "interno" },
-  { id: "erasmus", nome: "Calcolatore Erasmus", desc: "Il tuo punteggio per il bando.", hub: ["economia"], tipo: "link", url: "/tools/calcolatore-erasmus" },
-  { id: "mete", nome: "Destinazioni Erasmus", desc: "Le mete con informazioni ordinate.", hub: ["economia"], tipo: "link", url: "/tools/destinazioni-erasmus" },
-  { id: "magistrali", nome: "Master e magistrali", desc: "Confronta i percorsi dopo la triennale.", hub: ["tutti"], tipo: "link", url: "/tools/master-magistrale" },
-  { id: "guida", nome: "Guide", desc: "Piano di studi, esami, Learning Agreement.", hub: ["tutti"], tipo: "link", url: "/guide" },
 ];
 
 // Account demo: dati di ESEMPIO (non reali). Le date d'esame le inserisce lo studente.
@@ -243,5 +234,37 @@ window.UL_DA_DECIDERE = [
     serve: ["Banca domande TOLC", "Decisione strategica"],
     domande: ["Ha senso prima dei nuovi hub?"],
     storico: [["2026-10-06", "Prima architettura."]],
+  },
+  {
+    id: "D13", titolo: "Mentoring tra pari", gruppo: "Community", stato: "Nuova", origine: "Nota Matteo 6/10 · landing L03",
+    impatto: 4, sforzo: 5,
+    problema: "Gli studenti più avanti sanno cose che i più giovani cercano, ma lo scambio non è organizzato.",
+    proposta: "Un mentore (studente avanzato o laureato) per esame o per percorso: una chiamata breve, domande ricorrenti, consigli. Si parte dagli ambassador.",
+    dove: "Scheda «Mentori» dentro «I miei esami», per esame; non una voce nuova.",
+    consiglio: "Non al lancio: è il più costoso da gestire (selezione, qualità, responsabilità). Prima una prova manuale con 5 ambassador e 20 studenti; se si ripete, si costruisce.",
+    schermata: [
+      { t: "list", titolo: "Mentori per Microeconomia (esempio)", items: [["Giulia · III anno EA", "Martedì e giovedì · 20 minuti", "Prenota"], ["Marco · laureato EC", "Sabato · tesi, Erasmus", "Prenota"]] },
+      { t: "nota", testo: "Da decidere prima: gratuito o a pagamento? chi garantisce la qualità? chi risponde se qualcosa va storto?" },
+    ],
+    serve: ["Criteri di selezione dei mentori", "Regole di comportamento e privacy", "Prenotazione (calendario)", "Decisione su gratuito / a pagamento"],
+    domande: ["Prova manuale prima di costruire?", "Per esame o per percorso?", "Gratuito, con crediti o a pagamento?"],
+    storico: [["2026-10-06", "Prima architettura: scheda Mentori dentro I miei esami."]],
+  },
+  {
+    id: "D14", titolo: "Strumenti per corso: quali costruire", gruppo: "Strumenti", stato: "Nuova", origine: "Nota Matteo 6/10 · stile «Sarfatti Prep» (Bocconi)",
+    impatto: 4, sforzo: 2,
+    problema: "Gli strumenti di Economia non servono a chi studia altro: ogni hub ha bisogno dei suoi, ma non tutti vale la pena costruirli.",
+    proposta: "Un registro strumenti in tools.js con il campo hub: aggiungerne uno = una voce + una funzione. Strumenti semplici e veloci in landing, versione completa (salvata nel profilo) nell'area personale.",
+    dove: "Voce «Strumenti» (P04): l'elenco si filtra da solo per l'hub dello studente.",
+    consiglio: "Costruisci prima gli strumenti con regole certe (media, voto di laurea, piano): sono credibili e portano traffico. Quelli con regole ufficiali da verificare (Erasmus, ciclo unico, semestre filtro) restano «di esempio» finché qualcuno non controlla il regolamento.",
+    schermata: [
+      { t: "list", titolo: "Per tutti", items: [["Media e voto obiettivo", "Regole certe · già in demo", "Pronto"], ["Piano per l'appello", "Regole semplici · già in demo", "Pronto"], ["Borse e scadenze", "Serve chi aggiorna i bandi", "Idea"]] },
+      { t: "list", titolo: "Economia", items: [["Voto di laurea", "Regole v5 · già in demo", "Pronto"], ["Erasmus completo", "Punteggio + mete nel profilo", "Idea"], ["Confronto magistrali", "Requisiti e scadenze", "Idea"]] },
+      { t: "list", titolo: "Giurisprudenza", items: [["Voto di laurea ciclo unico", "Regole di esempio da verificare", "Demo"], ["Piano di studio sul codice", "Articoli e istituti per giorno", "Idea"], ["Scadenze concorsi e pratica", "Fonti ufficiali", "Idea"]] },
+      { t: "list", titolo: "Medicina", items: [["Piano semestre filtro", "Ore per materia · esempio", "Demo"], ["Simulatore a tempo per materia", "Dipende dalla banca domande (D03)", "Idea"], ["Calendario appelli nazionali", "Fonti ufficiali", "Idea"]] },
+    ],
+    serve: ["Per ogni strumento: regole ufficiali verificate", "Un responsabile degli aggiornamenti annuali", "Evento di misura (usa_strumento)"],
+    domande: ["Quali tre strumenti per hub al lancio?", "Quelli con regole da verificare: pubblicarli come «esempio» o aspettare?"],
+    storico: [["2026-10-06", "Prima architettura: registro per hub, strumenti rapidi in landing e completi in area."]],
   },
 ];

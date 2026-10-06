@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>UniLink · Hub Giurisprudenza (in arrivo)</title>
-<link rel="icon" href="img/logo-blu.png"><link rel="stylesheet" href="ul.css">
+<link rel="icon" href="img/logo-blu.png"><link rel="stylesheet" href="ul.css"><link rel="stylesheet" href="tools.css">
 <style>.bg2{background:var(--crema2)} .medfoto{height:220px;border-radius:22px;overflow:hidden;margin-top:28px;border:7px solid #fff;box-shadow:var(--ombra);transform:rotate(-1.5deg)} .medfoto img{width:100%;height:100%;object-fit:cover;filter:grayscale(.4)}
 .count{display:flex;gap:10px;align-items:center;margin-top:18px;font-size:14px;color:var(--nv2)} .count .av{display:flex} .count .av span{width:30px;height:30px;border-radius:50%;border:2px solid #fff;margin-left:-8px;display:grid;place-items:center;font-size:12px;background:var(--nvt)} .count .av span:first-child{margin-left:0;background:var(--ar2)}
-.hubhero.medi{grid-template-columns:1.1fr .9fr} @media (max-width:700px){.hubhero.medi{grid-template-columns:1fr}}</style></head>
+.hubhero.medi{grid-template-columns:1.1fr .9fr} @media (max-width:1100px){.hubhero.medi{grid-template-columns:1fr}}@media (max-width:700px){.hubhero .display{font-size:43px}}</style></head>
 <body data-page="hub-giurisprudenza">
 <div id="ul-nav"></div>
 <section style="padding:0" id="lista">
@@ -44,7 +44,7 @@
 <section>
   <div class="wrap">
     <div class="costruisci">
-      <div><span class="eyebrow" style="color:#fff;opacity:.85">Costruiscilo con noi</span><h2 style="margin-top:10px">Studi Giurisprudenza a Firenze?</h2><p>Cerchiamo i primi studenti dell'hub. Ti diamo il metodo e gli strumenti che usiamo a Economia; tu ci dici cosa serve davvero.</p><div style="margin-top:22px"><a class="btn btn-s" href="https://chat.whatsapp.com/KdA4r1POh6MAiBbLmmES0L" target="_blank" rel="noopener">Scrivici</a></div></div>
+      <div><span class="eyebrow" style="color:#fff;opacity:.85">Costruiscilo con noi</span><h2 style="margin-top:10px">Studi Giurisprudenza a Firenze?</h2><p>Cerchiamo i primi studenti dell'hub. Ti diamo il metodo e gli strumenti che usiamo a Economia; tu ci dici cosa serve davvero.</p><div style="margin-top:22px"><a class="btn btn-s" href="https://chat.whatsapp.com/KdA4r1POh6MAiBbLmmES0L" target="_blank" rel="noopener">Scrivici</a> <a class="btn btn-s" href="community.html#ambassador">Diventa ambassador</a></div></div>
       <div class="ruoli"><div>Materiali · appunti e schemi dei tuoi esami</div><div>Idee · cosa manca oggi a chi studia Giurisprudenza</div><div>Ambassador · far conoscere l'hub nel tuo anno</div></div>
     </div>
   </div>
@@ -52,11 +52,13 @@
 
 <section class="bg2">
   <div class="wrap">
-    <div class="testa"><div><span class="eyebrow">Intanto, per tutti</span><h2 style="margin-top:10px">Già disponibili</h2></div></div>
-    <div class="tools" style="grid-template-columns:1fr 1fr"><a class="tool" href="https://www.unilinkfirenze.it/tools/master-magistrale" target="_blank" rel="noopener"><div class="ico">⚑</div><div><h3>Master e magistrali</h3><p>Confronta i percorsi dopo la laurea.</p></div><span class="go">↗</span></a><a class="tool" href="index.html#faq"><div class="ico">?</div><div><h3>FAQ UniLink</h3><p>Chi siamo, come lavoriamo, cosa arriva.</p></div><span class="go">→</span></a></div>
+    <div class="testa"><div><span class="eyebrow">Intanto, qui</span><h2 style="margin-top:10px">Strumenti in anteprima</h2></div></div>
+    <div class="tools" data-toolshell data-hub="giurisprudenza"><div class="tlist"></div><div class="tpanel"></div></div>
   </div>
 </section>
 <div id="ul-foot"></div>
+<script src="config.js"></script>
 <script src="data.js"></script>
+<script src="tools.js"></script>
 <script src="app.js"></script>
 </body></html>

@@ -1,6 +1,6 @@
-/* UniLink · Web app (area personale) — demo v1
+/* UniLink · Web app (area personale) — demo v2
    Stessi token della landing (demo-landing/ul.css, cap. 13 dell'architettura landing).
-   Struttura: 1 token · 2 base · 3 guscio (sidebar, testata, tab bar) · 4 componenti WA/ · 5 DA DECIDERE · 6 telefono */
+   Struttura: 1 token · 2 base · 3 guscio (sidebar, testata, tab bar) · 4 componenti WA/ · 5 DA DECIDERE · 6 telefono · 7 tablet */
 
 /* 1 · token */
 @font-face { font-family: Croogla; src: url(fonts/Croogla4F.ttf); font-display: swap; }
@@ -103,6 +103,7 @@ h3 { font-size: 19px; line-height: 1.3; font-weight: 400; }
 .g3 { grid-template-columns: repeat(3, 1fr); }
 .g4 { grid-template-columns: repeat(4, 1fr); }
 .g-main { grid-template-columns: 1.65fr 1fr; }
+.grid > *, .fld, .card { min-width: 0; }
 
 .passo { background: var(--navy); color: var(--crema); border-radius: 26px; padding: 30px; position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 14px; }
 .passo h2 { font-size: 32px; color: #fff; }
@@ -165,7 +166,7 @@ h3 { font-size: 19px; line-height: 1.3; font-weight: 400; }
 .seg button.on { background: var(--navy); color: var(--crema); }
 
 .fld { display: grid; gap: 6px; font-size: 14px; }
-.fld input, .fld select, .fld textarea { border: 1px solid var(--linea); border-radius: var(--r-sm); padding: 12px 14px; background: var(--bianco); font-size: 16px; min-height: 46px; }
+.fld input, .fld select, .fld textarea { width: 100%; min-width: 0; border: 1px solid var(--linea); border-radius: var(--r-sm); padding: 12px 14px; background: var(--bianco); font-size: 16px; min-height: 46px; }
 .chk { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--nv2); }
 .chk input { margin-top: 3px; accent-color: var(--navy); width: 18px; height: 18px; }
 
@@ -222,12 +223,12 @@ h3 { font-size: 19px; line-height: 1.3; font-weight: 400; }
 .storico { display: grid; gap: 8px; }
 .storico div { display: grid; grid-template-columns: 110px 1fr; gap: 12px; font-size: 14.5px; }
 
-/* 6 · telefono (si progetta prima a 390 px) */
+/* 6 · telefono (≤ 700 px: si progetta prima a 390 px, barra in basso) */
 @media (max-width: 980px) {
   .g4 { grid-template-columns: 1fr 1fr; }
   .g3, .g-main { grid-template-columns: 1fr; }
 }
-@media (max-width: 860px) {
+@media (max-width: 700px) {
   .app { grid-template-columns: 1fr; }
   .side { position: fixed; inset: 0 auto 0 0; width: min(86vw, 320px); z-index: 40; transform: translateX(-102%); transition: transform .25s; }
   body.menu .side { transform: none; box-shadow: 0 0 0 100vmax rgba(23,37,84,.4); }
@@ -263,3 +264,23 @@ h3 { font-size: 19px; line-height: 1.3; font-weight: 400; }
   .toast { bottom: 90px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* 7 · tablet (701–1100 px): stesso guscio del desktop, sidebar più stretta e griglie a due colonne */
+@media (min-width: 701px) and (max-width: 1100px) {
+  :root { --side: 216px; }
+  .side { padding: 18px 12px; gap: 16px; }
+  .side .logo { font-size: 23px; } .side .logo img { width: 30px; }
+  .navl a { padding: 10px 11px; font-size: 15px; }
+  .top { padding: 14px 24px; } .top .dx .data, .crumb { display: none; }
+  .page { padding: 26px 24px 64px; }
+  h1 { font-size: 36px; } h2 { font-size: 23px; }
+  .passo { padding: 26px; } .passo h2 { font-size: 27px; }
+  .g3, .g4 { grid-template-columns: 1fr 1fr; }
+  .g-main { grid-template-columns: 1fr; }
+  .scheda { grid-template-columns: 1fr; }
+  .dsez { grid-template-columns: 1fr; gap: 10px; }
+  .fasi { grid-template-columns: 1fr; }
+  .calc { grid-template-columns: 1fr; }
+  .login { grid-template-columns: 1fr; } .login .sx { padding: 36px; gap: 28px; } .login .sx h1 { font-size: 46px; }
+}
+@media (min-width: 701px) and (max-width: 780px) { .g2 { grid-template-columns: 1fr; } }

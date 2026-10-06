@@ -1,4 +1,4 @@
-/* UniLink · Web app (area personale) — demo v1
+/* UniLink · Web app (area personale) — demo v2
    Riferimento per lo sviluppo reale (Next.js + Supabase), non codice di produzione.
    Indice: 1 utilità · 2 stato · 3 guscio (sidebar, testata, tab bar) · 4 VISTE sicure · 5 DA DECIDERE · 6 avvio
    Ogni vista è una funzione in VISTE: per aggiungerne una → riga in UL_MODULI (config.js) + funzione qui. */
@@ -9,7 +9,7 @@
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const SITO = window.UL_SITO, WA = window.UL_WA, DISP = window.UL_DISPENSE || [];
+  const LANDING = window.UL_LANDING, WA = window.UL_WA, DISP = window.UL_DISPENSE || [];
   const OGGI = new Date("2026-10-06T09:00:00"); // data fissa: la demo racconta sempre lo stesso giorno
   const giorni = (iso) => Math.round((new Date(iso + "T09:00:00") - OGGI) / 864e5);
   const dataIt = (iso, opt = { day: "numeric", month: "short" }) => new Date(iso + "T09:00:00").toLocaleDateString("it-IT", opt);
@@ -72,7 +72,7 @@
       <a class="mlogo" href="#/oggi"><img src="img/logo-blu.png" alt="">unilink</a>
       <div class="crumb">Il tuo spazio / <b>${esc(nome)}</b></div>
       <div class="dx"><span class="data">${OGGI.toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" })}</span>
-        <a class="sito" href="${SITO}" target="_blank" rel="noopener">Sito pubblico</a>
+        <a class="sito" href="${LANDING}">Landing (demo)</a>
         <a class="mdec" href="#/decidere">Da decidere</a>
         <span class="demoflag" title="Dati di esempio">DEMO</span></div>`;
     $("#tabbar").innerHTML = window.UL_MODULI.filter((m) => m.tab).map((m) => `<a href="#/${m.id}" class="${sez === m.id ? "on" : ""}">${ico(m.icona)}<span>${esc(m.nome.replace("I miei esami", "Esami"))}</span></a>`).join("");
@@ -131,7 +131,7 @@
       </div>
       <div class="grid g2">
         <section class="card"><div class="card-h"><h2>Strumenti per te</h2><a class="link" href="#/strumenti">Tutti</a></div>
-          ${window.UL_STRUMENTI.filter(perHub).slice(0, 3).map(rigaTool).join("")}</section>
+          ${ULTools.lista(U().hub).slice(0, 3).map(rigaTool).join("")}</section>
         <section class="card" style="background:var(--navy);color:var(--crema)"><div class="eyebrow" style="color:var(--arancio)">Community</div><h2 style="color:#fff;margin:6px 0 8px">Il gruppo di Economia</h2><p style="opacity:.85">Avvisi su dispense nuove, domande e scadenze. È il nostro canale principale.</p><a class="btn btn-c" style="margin-top:16px" href="${WA}" target="_blank" rel="noopener">Apri il gruppo WhatsApp</a></section>
       </div>`;
   };
@@ -151,15 +151,15 @@
             <button class="btn btn-p" type="submit">Avvisami</button></form>`}</section>
         <section class="card" style="background:var(--ar2)"><div class="eyebrow">Costruiscilo con noi</div><h2 style="margin:6px 0 8px">Studi ${esc(h.nome)}?</h2><p class="muted">Cerchiamo i primi studenti dell'hub: materiali, idee, ambassador. Ogni hub parte quando c'è chi lo costruisce.</p><a class="btn btn-a" style="margin-top:16px" href="${WA}" target="_blank" rel="noopener">Scrivici</a></section>
       </div>
-      <section class="card"><div class="card-h"><h2>Intanto, per tutti</h2></div>
-        ${window.UL_STRUMENTI.filter((t) => t.hub.includes("tutti")).map(rigaTool).join("")}
+      <section class="card"><div class="card-h"><h2>Intanto, gli strumenti</h2></div>
+        ${ULTools.lista(U().hub).map(rigaTool).join("")}
         <div class="row"><span class="ini">${ico("calendario")}</span><div class="grow"><div class="t">I miei esami</div><div class="small">Funziona già per ogni corso: inserisci date e argomenti.</div></div><a class="btn btn-s btn-sm" href="#/esami">Apri</a></div></section>
       ${rimando(h.decidere, "Come sarebbe l'hub di " + h.nome + " una volta attivo")}`;
   }
 
+  // Riga di uno strumento: funziona dentro la app (nessun link al sito attuale)
   function rigaTool(t) {
-    const href = t.tipo === "interno" ? `#/strumenti/${t.id}` : SITO + t.url;
-    return `<a class="row tool" href="${href}" ${t.tipo === "link" ? 'target="_blank" rel="noopener"' : ""}><span class="ic">${ico(t.tipo === "interno" ? "attrezzi" : "link")}</span><div class="grow"><div class="t">${esc(t.nome)}</div><div class="small">${esc(t.desc)}${t.tipo === "link" ? " · sul sito" : ""}</div></div>${ico("freccia", "sr-no")}</a>`;
+    return `<a class="row tool" href="#/strumenti/${esc(t.id)}"><span class="ic">${ico("attrezzi")}</span><div class="grow"><div class="t">${esc(t.nome)}${t.stato === "demo" ? ' <span class="badge n plain" style="margin-left:6px">Esempio</span>' : ""}</div><div class="small">${esc(t.desc)}</div></div>${ico("freccia", "sr-no")}</a>`;
   }
 
   // P02 · I miei esami
@@ -224,43 +224,27 @@
           <div><div class="eyebrow">${esc(d.area)}</div><h1>${esc(d.nome)}</h1>
             ${[["Codice", d.codice], ["Anno", d.anno + " anno"], ["Semestre", d.sem], ["Esame", d.mod], ["Contiene", d.tipi.join(" · ")]].map((r) => `<div class="row"><span class="grow small">${r[0]}</span><span>${esc(r[1])}</span></div>`).join("")}</div></section>
         <section class="card" style="display:grid;gap:12px"><h2>Cosa vuoi fare?</h2>
-          <a class="btn btn-p" href="${SITO}/dispense/${encodeURIComponent(d.slug)}" target="_blank" rel="noopener">Apri la scheda sul sito ${ico("link")}</a>
+          <button class="btn btn-p" data-apri="${esc(d.slug)}">Apri la dispensa</button>
           <button class="btn btn-s" data-salva="${esc(d.slug)}">${sv ? "Salvata ✓" : "Salva nella libreria"}</button>
           ${inEsami ? `<a class="btn btn-s" href="#/esami">È nei tuoi esami →</a>` : `<button class="btn btn-s" data-aggiungi="${esc(d.slug)}">Aggiungi ai miei esami</button>`}
-          <p class="small">Oggi le dispense si aprono sul sito. Il lettore dentro la app è da decidere.</p></section></div>
+          <p class="small">Demo: il lettore dentro la app è da decidere (D06).</p></section></div>
+      <section class="card"><div class="card-h"><h2>Cosa contiene</h2><span class="small">Anteprima di esempio</span></div>
+        ${d.tipi.map((t) => `<div class="row"><span class="ini">${esc(t.slice(0, 1))}</span><div class="grow"><div class="t">${esc(t)}</div><div class="small">${esc({ Appunti: "Gli argomenti del corso, in ordine, dal programma ufficiale.", Mappe: "Schemi per ripassare in poco tempo.", Quiz: "Domande per allenarti al formato dell'appello." }[t] || "")}</div></div><span class="badge n plain">Incluso</span></div>`).join("")}</section>
       <div class="grid g2">${rimando("D06", "Lettore protetto dentro la app")}${rimando("D05", "Pacchetti e prezzi")}</div>`;
   }
 
-  // P04 · Strumenti (+ P04a calcolatore voto di laurea, regole di UniLinkVotoLaurea.v5)
+  // P04 · Strumenti (+ P04a: lo strumento aperto, da tools.js). Elenco filtrato per hub; i «solo area» rimandano alle card Dxx.
   VISTE.strumenti = (r) => {
-    if (r[1] === "voto" && attivo()) return calcolatore();
-    const l = window.UL_STRUMENTI.filter(perHub);
-    return `${testa("Scegliere", "I tuoi *strumenti*", attivo() ? "Calcolatori e guide per Erasmus, laurea e magistrali." : "Per " + esc(HUB().nome) + " oggi ci sono gli strumenti validi per tutti.")}
-      <section class="card">${l.map(rigaTool).join("")}</section>
-      <div class="grid g2">${rimando("D09", "Career: confronto del CV")}${rimando("D11", "Guida tesi")}</div>`;
+    const t = r[1] && ULTools.trova(r[1]);
+    if (t) return `<a class="link" href="#/strumenti">← Strumenti</a>
+      ${testa("Strumenti · " + HUB().nome, t.nome, esc(t.desc))}
+      <div id="tool-mount"></div>`;
+    const l = ULTools.lista(U().hub), ar = ULTools.area(U().hub);
+    return `${testa("Scegliere", "I tuoi *strumenti*", attivo() ? "Calcolatori e guide per esami, Erasmus e laurea. Funzionano dentro la app." : "Per " + esc(HUB().nome) + " gli strumenti sono di esempio: le regole vanno verificate prima del lancio.")}
+      <section class="card">${l.map(rigaTool).join("") || '<p class="small">Nessuno strumento per questo hub, ancora.</p>'}</section>
+      ${ar.length ? `<section class="card"><div class="card-h"><h2>In arrivo nell'area</h2><span class="small">Da decidere</span></div>${ar.map((t) => `<a class="row tool" href="#/decidere/${esc(t.decidere)}"><span class="ic">${ico("cantiere")}</span><div class="grow"><div class="t">${esc(t.nome)} <span class="badge plain" style="margin-left:6px">Da decidere · ${esc(t.decidere)}</span></div><div class="small">${esc(t.desc)}</div></div>${ico("freccia", "sr-no")}</a>`).join("")}</section>` : ""}
+      <div class="grid g2">${rimando("D14", "Quali strumenti costruire per ogni corso")}${rimando("D09", "Career: confronto del CV")}</div>`;
   };
-  function calcolatore() {
-    const st = S.calc || (S.calc = { media: U().media, lodi: U().lodi, tesi: 2, corso: 2 });
-    return `<a class="link" href="#/strumenti">← Strumenti</a>
-      ${testa("Strumenti · Economia", "Il tuo voto di *laurea*", "Stima indicativa con le regole della Scuola di Economia: decide sempre la commissione.")}
-      <section class="card calc" id="calc">
-        <div style="display:grid;gap:22px">
-          <label>Media ponderata: <b id="c-media" style="font-weight:400">${num(st.media)}</b><input type="range" min="18" max="30" step="0.1" value="${st.media}" data-c="media"></label>
-          <label>Lodi: <b id="c-lodi" style="font-weight:400">${st.lodi}</b><input type="range" min="0" max="10" step="1" value="${st.lodi}" data-c="lodi"></label>
-          <div class="fld">Punti tesi<div class="seg">${[0, 1, 2, 3].map((v) => `<button type="button" class="${st.tesi === v ? "on" : ""}" data-c="tesi" data-v="${v}">+${v}</button>`).join("")}</div></div>
-          <div class="fld">Laurea in corso<div class="seg">${[["Sì · +2", 2], ["No", 0]].map((o) => `<button type="button" class="${st.corso === o[1] ? "on" : ""}" data-c="corso" data-v="${o[1]}">${o[0]}</button>`).join("")}</div></div>
-        </div>
-        <div class="ris"><span class="small" style="color:rgba(244,241,234,.8)">Voto di presentazione <b id="c-pres" style="font-weight:400"></b></span><span class="v" id="c-fin"></span><span id="c-nota" class="small" style="color:rgba(244,241,234,.8)"></span></div>
-      </section>`;
-  }
-  function aggiornaCalc() {
-    const st = S.calc; if (!$("#calc")) return;
-    const pres = (st.media * 11) / 3 + st.lodi * 0.333, fin = Math.min(110, pres + st.tesi + st.corso);
-    const lode = Math.round(fin) >= 110 && pres >= 104.5 && st.tesi === 3;
-    $("#c-media").textContent = num(st.media); $("#c-lodi").textContent = st.lodi; $("#c-pres").textContent = num(pres);
-    $("#c-fin").textContent = Math.round(fin) + (lode ? " e lode" : "");
-    $("#c-nota").textContent = lode ? "Hai i requisiti per la lode." : Math.round(fin) >= 110 ? "110: per la lode servono presentazione ≥ 104,5 e tesi +3." : "Stima indicativa: decide la commissione.";
-  }
 
   // P05 · Profilo
   VISTE.profilo = () => `${testa("Account", "Il tuo *profilo*", "I dati servono a mostrarti le cose giuste. Non vendiamo e non mostriamo a nessuno cosa scarichi.")}
@@ -321,6 +305,7 @@
         ${sez("Il problema", `<p>${esc(x.problema)}</p>`)}
         ${sez("La proposta", `<p>${esc(x.proposta)}</p>`)}
         ${sez("Dove vivrebbe", `<p>${esc(x.dove)}</p>`)}
+        ${x.consiglio ? sez("Il consiglio", `<p>${esc(x.consiglio)}</p><p class="small" style="margin-top:8px">Parere di Claude per la discussione: la decisione è vostra.</p>`) : ""}
         ${sez("Come risulterebbe", `<div class="schermo">${x.schermata.map((b) => (BLOCCHI[b.t] ? BLOCCHI[b.t](b) : "")).join("")}</div>`)}
         ${sez("Cosa serve", lista(x.serve))}
         ${sez("Da decidere", lista(x.domande))}
@@ -342,13 +327,13 @@
     guscio(r);
     $("#page").innerHTML = VISTE[r[0]](r);
     document.title = "UniLink · " + ($(".ph h1") ? $(".ph h1").textContent : "Il tuo spazio");
-    catalogo(); aggiornaCalc();
+    catalogo(); const tm = $("#tool-mount"); if (tm) ULTools.monta(tm, r[1]);
     window.scrollTo(0, 0);
   }
   const ridisegna = () => { const y = window.scrollY; disegna(); window.scrollTo(0, y); };
 
   document.addEventListener("click", (e) => {
-    const t = e.target.closest("[data-menu],[data-fatto],[data-salva],[data-nuovo-esame],[data-rimuovi],[data-aggiungi],[data-anno],[data-c],[data-q],[data-chiudi],[data-entra],[data-esci],[data-reset],[data-esci-attesa]");
+    const t = e.target.closest("[data-menu],[data-fatto],[data-salva],[data-nuovo-esame],[data-rimuovi],[data-aggiungi],[data-anno],[data-q],[data-chiudi],[data-entra],[data-esci],[data-reset],[data-esci-attesa],[data-apri]");
     if (!t) { if (e.target.id === "modal") chiudi(); return; }
     const ds = t.dataset;
     if ("menu" in ds) { document.body.classList.toggle("menu"); return; }
@@ -358,7 +343,7 @@
     if ("aggiungi" in ds) { nuovoEsame(); const s = $("#frm-esame select[name=slug]"); s && (s.value = ds.aggiungi); return; }
     if ("rimuovi" in ds) { U().esami = U().esami.filter((x) => x.slug !== ds.rimuovi); salva(); toast("Esame rimosso"); ridisegna(); return; }
     if ("anno" in ds) { F.anno = ds.anno; $$("[data-anno]").forEach((b) => b.classList.toggle("on", b.dataset.anno === F.anno)); catalogo(); return; }
-    if ("c" in ds && ds.v != null) { S.calc[ds.c] = +ds.v; $$(`[data-c="${ds.c}"][data-v]`).forEach((b) => b.classList.toggle("on", b === t)); salva(); aggiornaCalc(); return; }
+    if ("apri" in ds) { toast("Demo: qui si aprirebbe il lettore (card D06)."); return; }
     if ("q" in ds) { const box = t.closest("[data-quiz]"), g = +box.dataset.quiz; $$("button", box).forEach((b) => b.classList.remove("giusta", "sbagliata")); t.classList.add(+ds.q === g ? "giusta" : "sbagliata"); if (+ds.q !== g) $$("button", box)[g].classList.add("giusta"); return; }
     if ("chiudi" in ds) { chiudi(); return; }
     if ("entra" in ds) { S.dentro = true; salva(); location.hash = "#/oggi"; return; }
@@ -368,7 +353,6 @@
   });
   document.addEventListener("input", (e) => {
     if (e.target.id === "q") { F.q = e.target.value; catalogo(); }
-    if (e.target.dataset.c && e.target.type === "range") { S.calc[e.target.dataset.c] = +e.target.value; salva(); aggiornaCalc(); }
   });
   document.addEventListener("change", (e) => {
     if (e.target.id === "hubsel") { U().hub = e.target.value; salva(); toast("Anteprima: hub " + HUB().nome); location.hash = "#/oggi"; disegna(); }
