@@ -96,7 +96,7 @@ Ogni scheda ha la stessa struttura, così si confrontano a colpo d'occhio e si d
 #cap("Indice", "Le nove schede", "una riga per scheda: stima, impatto e sforzo")
 #tab(("Cod.", "Scheda", "Gruppo", "Impatto / sforzo", "Stima di lavoro"), (8%, 30%, 16%, 14%, 32%), (("L01", "Gruppi di studio", "Community", "3 / 3", "8–10 giorni di lavoro (pilota con 5 esami)"), ("L02", "Metodo e piano di studio", "Metodo", "5 / 3", "10–14 giorni di lavoro (fase 1: piano a regole, senza AI)"), ("L03", "Mentoring tra pari", "Community", "4 / 5", "12–16 giorni, in gran parte lavoro umano (pilota di 4 settimane)"), ("L04", "Test d'ingresso (TOLC)", "Orientamento", "5 / 5", "15–20 giorni, di cui 6–8 per scrivere e verificare le domande"), ("L05", "Borse di studio e tasse", "Orientamento", "4 / 4", "6–8 giorni di lavoro, più una persona responsabile degli aggiornamenti"), ("L06", "Carriera e CV", "Dopo", "4 / 2", "7–10 giorni di lavoro (guida e controllo CV a checklist)"), ("L07", "Listino e pacchetti", "Monetizzazione", "3 / 3", "15–20 giorni di lavoro, più i tempi legali e amministrativi esterni"), ("L08", "Quale hub parte per primo", "Hub", "5 / 4", "5–6 giorni di lavoro per accendere un hub, dopo che i materiali esistono"), ("L09", "Voci degli studenti", "Fiducia", "3 / 1", "3–4 giorni di lavoro (form e sezione), poi la raccolta richiede settimane")))
 
-#scheda("L01", "Gruppi di studio", "Community · impatto 3/5 · sforzo 3/5 · web app D08")
+#scheda("L01", "Gruppi di studio", "Community · impatto 3/5 · sforzo 3/5")
 #box-crema[*Il problema.* #"Trovare compagni con lo stesso esame oggi passa solo da WhatsApp e dal passaparola." \ \ *La proposta.* #"Pagina «Studia insieme» nella Community: per ogni esame un gruppo (link WhatsApp) e, dopo l'accesso, «cerco un gruppo» come scelta esplicita. Niente social generalista."]
 #nota[*Il consiglio* (parere di Claude, da discutere: la decisione è vostra). #"Sì, ma piccolo: parti con un gruppo WhatsApp per esame, gestito dagli ambassador, e misura quanti entrano. Il matching dentro l'app solo se i gruppi funzionano. Un social network completo costa moderazione e privacy: non ora."]
 #sub[Panoramica]
@@ -252,7 +252,7 @@ Da incollare insieme a CONTESTO_DEMO.md.
 - #"Quando introdurre l'AI?"
 #text(size: 8pt, fill: nv2)[#"Origine: Nota Matteo 6/10 · riferimento «piano» stile TTP (GMAT)"]
 
-#scheda("L03", "Mentoring tra pari", "Community · impatto 4/5 · sforzo 5/5")
+#scheda("L03", "Mentoring tra pari", "Community · impatto 4/5 · sforzo 5/5 · web app D08")
 #box-crema[*Il problema.* #"Gli studenti più avanti sanno cose che i più giovani cercano, ma oggi lo scambio non è organizzato." \ \ *La proposta.* #"Un mentore (studente dell'ultimo anno o laureato) per ogni esame o per il percorso: una chiamata, domande ricorrenti, consigli. Si parte dagli ambassador che già avete."]
 #nota[*Il consiglio* (parere di Claude, da discutere: la decisione è vostra). #"Bello per la fiducia, ma è il più costoso da gestire (selezione, qualità, pagamenti, responsabilità). Non al lancio: fai una prova manuale con 5 ambassador e 20 studenti, misura se si ripete, poi decidi se costruirlo."]
 #sub[Panoramica]
@@ -337,16 +337,16 @@ Da incollare insieme a CONTESTO_DEMO.md.
 - #"Per esame o per percorso (tesi, Erasmus, magistrali)?"
 #text(size: 8pt, fill: nv2)[#"Origine: Nota Matteo 6/10 (con punto interrogativo) · ambassador attuali"]
 
-#scheda("L04", "Test d'ingresso (TOLC)", "Orientamento · impatto 5/5 · sforzo 5/5 · web app D12")
+#scheda("L04", "Test d'ingresso (TOLC)", "Orientamento · impatto 5/5 · sforzo 5/5 · web app D16")
 #box-crema[*Il problema.* #"Far conoscere UniLink ai futuri studenti prima dell'iscrizione: è il momento in cui scelgono come studiare." \ \ *La proposta.* #"Nella fase «Prima»: diagnostico gratuito di 20 domande e un percorso di preparazione per materia."]
 #nota[*Il consiglio* (parere di Claude, da discutere: la decisione è vostra). #"Settore competitivo e a Firenze molti corsi sono ad accesso libero. Valuta dopo i nuovi hub: per Medicina il semestre filtro è un'opportunità più concreta del TOLC."]
 #sub[Panoramica]
-#tab(("", ""), (22%, 78%), (("Obiettivo", "Far incontrare UniLink ai futuri studenti prima dell'iscrizione, con un diagnostico gratuito e un percorso di preparazione nell'area personale (percorso Test Prep)."), ("Per chi", "Studenti dell'ultimo anno di superiori e chi si iscrive a corsi con test d'ingresso o con semestre filtro."), ("Quando serve", "Dopo i nuovi hub (L08), o in parallelo solo per Medicina: il semestre filtro è l'occasione più concreta. Se e come il test è richiesto a UniFi va verificato sul bando."), ("Stima", "15–20 giorni, di cui 6–8 per scrivere e verificare le domande"), ("Dove vive", "Pagina «Prima» (sezione Test d'ingresso), con diagnostico dentro la landing e percorso nell'area personale.")))
+#tab(("", ""), (22%, 78%), (("Obiettivo", "Far incontrare UniLink ai futuri studenti prima dell'iscrizione, con un diagnostico gratuito e un percorso di preparazione nell'area personale (nella web app è la proposta D16 «Test d'ingresso e simulazioni»)."), ("Per chi", "Studenti dell'ultimo anno di superiori e chi si iscrive a corsi con test d'ingresso o con semestre filtro."), ("Quando serve", "Dopo i nuovi hub (L08), o in parallelo solo per Medicina: il semestre filtro è l'occasione più concreta. Se e come il test è richiesto a UniFi va verificato sul bando."), ("Stima", "15–20 giorni, di cui 6–8 per scrivere e verificare le domande"), ("Dove vive", "Pagina «Prima» (sezione Test d'ingresso), con diagnostico dentro la landing e percorso nell'area personale.")))
 #grid(columns: (1fr, 1fr, 1fr), gutter: 8pt,
   box-crema(fill: nvt)[*Versione minima (MVP)* \
 - #"Pagina «Test d'ingresso» nella fase Prima, con scelta del corso e rimando alla fonte ufficiale"
 - #"Diagnostico gratuito di 20 domande originali (logica e matematica), senza account"
-- #"Risultato con punti forti e deboli e invito al percorso Test Prep nell'area"
+- #"Risultato con punti forti e deboli e invito all'allenamento nell'area"
 - #"Banca iniziale di 80 domande originali, verificate da due persone"],
   box-crema(fill: ar2)[*Dopo* \
 - #"Simulazioni a tempo nel formato del test"
@@ -390,7 +390,7 @@ Le pagine come sarebbero, sezione per sezione. Ogni numero è seguito da: perch�
 #sub[Misure]
 #tab(("Evento", "Quando scatta", "Perché"), (28%, 36%, 36%), (("diagnostico_iniziato", "Prima risposta", "Quante persone provano"), ("diagnostico_completato", "Ultima domanda", "Quante arrivano in fondo"), ("diagnostico_punteggio", "Punteggio per materia", "Dove sono i punti deboli"), ("clic_verso_area", "Clic verso l'area personale", "Il passaggio al prodotto"), ("clic_fonte_ufficiale", "Clic al sito del test", "Interesse reale per il test")))
 #sub[Integrazioni]
-#tab(("Strumento", "Cosa fa", "Come si collega"), (24%, 30%, 46%), (("Banca domande", "Fonte delle domande", "Foglio CSV o tabella: il diagnostico ne estrae 20"), ("Logica del quiz (tools.js)", "Corregge e calcola", "Componente di codice in Framer"), ("Area personale (percorso Test Prep)", "Allenamento e registro errori", "Link con l'area di studio nei parametri"), ("Fonti ufficiali (CISIA, MUR, ateneo)", "Informazioni sul test", "Solo link e breve riepilogo, con data di controllo")))
+#tab(("Strumento", "Cosa fa", "Come si collega"), (24%, 30%, 46%), (("Banca domande", "Fonte delle domande", "Foglio CSV o tabella: il diagnostico ne estrae 20"), ("Logica del quiz (tools.js)", "Corregge e calcola", "Componente di codice in Framer"), ("Area personale (proposta D16 nella web app)", "Allenamento e registro errori", "Link con l'area di studio nei parametri"), ("Fonti ufficiali (CISIA, MUR, ateneo)", "Informazioni sul test", "Solo link e breve riepilogo, con data di controllo")))
 #sub[Da verificare (legale e privacy)]
 - #"Diritto d'autore: non riprodurre né parafrasare quesiti dei test ufficiali; chiedere un parere se si usano materiali pubblici."
 - #"Marchi (CISIA, TOLC): citarli solo per indicare il test, senza far credere a un'affiliazione; UniLink è indipendente."
@@ -403,7 +403,7 @@ Le pagine come sarebbero, sezione per sezione. Ogni numero è seguito da: perch�
 #sub[Rischi]
 #tab(("Rischio", "Come lo riduci"), (38%, 62%), (("Diritto d'autore sulle domande", "Solo domande originali e verificate; mai copiare."), ("Informazioni sul test sbagliate o vecchie", "Fonte e data di controllo visibili; se vecchie, si nascondono."), ("Settore competitivo", "Non competere sul volume: diagnostico gratuito e registro errori."), ("Utenti minorenni", "Nessun dato salvato senza consenso; verifica con un consulente."), ("Costo di scrittura delle domande", "Partire da 80 domande e crescere solo se il diagnostico viene usato.")))
 #sub[Come capisci se funziona]
-#tab(("Metrica", "Soglia (ipotesi)", "Entro"), (44%, 34%, 22%), (("Diagnostici completati", "Almeno 100", "8 settimane"), ("Passaggi verso Test Prep", "Almeno il 20% dei diagnostici", "8 settimane"), ("Iscritti all'area o alla lista d'attesa da questa pagina", "Almeno 30", "8 settimane")))
+#tab(("Metrica", "Soglia (ipotesi)", "Entro"), (44%, 34%, 22%), (("Diagnostici completati", "Almeno 100", "8 settimane"), ("Passaggi verso l'allenamento nell'area", "Almeno il 20% dei diagnostici", "8 settimane"), ("Iscritti all'area o alla lista d'attesa da questa pagina", "Almeno 30", "8 settimane")))
 #nota[*Regola di stop.* #"Se dopo 8 settimane i diagnostici completati sono meno di 40, fermarsi: il settore è competitivo e le risorse rendono di più sui nuovi hub (L08)."]
 #sub[Prompt per l'AI]
 Da incollare insieme a CONTESTO_DEMO.md.
@@ -415,7 +415,7 @@ Da incollare insieme a CONTESTO_DEMO.md.
 - #"Solo diagnostico gratuito o anche percorso?"
 #text(size: 8pt, fill: nv2)[#"Origine: HQ · TOLC"]
 
-#scheda("L05", "Borse di studio e tasse", "Orientamento · impatto 4/5 · sforzo 4/5 · web app D10")
+#scheda("L05", "Borse di studio e tasse", "Orientamento · impatto 4/5 · sforzo 4/5")
 #box-crema[*Il problema.* #"Molti studenti non sanno dove trovare bandi e scadenze (DSU e altri)." \ \ *La proposta.* #"Una guida nella fase «Prima» con le informazioni chiave del bando, le scadenze e i link alle fonti ufficiali. Promemoria nell'area personale."]
 #nota[*Il consiglio* (parere di Claude, da discutere: la decisione è vostra). #"Alto valore e poco sforzo di design, ma richiede qualcuno che aggiorni le scadenze ogni anno: senza responsabile, meglio non pubblicarla."]
 #sub[Panoramica]
@@ -486,7 +486,7 @@ Da incollare insieme a CONTESTO_DEMO.md.
 - #"Chi la mantiene?"
 #text(size: 8pt, fill: nv2)[#"Origine: HQ · BORSE DI STUDIO"]
 
-#scheda("L06", "Carriera e CV", "Dopo · impatto 4/5 · sforzo 2/5 · web app D09")
+#scheda("L06", "Carriera e CV", "Dopo · impatto 4/5 · sforzo 2/5 · web app D05")
 #box-crema[*Il problema.* #"Chi pensa a magistrali e stage non sa quanto il proprio CV sia vicino al profilo tipo." \ \ *La proposta.* #"Nella fase «Dopo»: guida breve (CV, colloquio, LinkedIn) e, nell'area personale, confronto del CV con un profilo tipo. Career Score e opportunità solo nella visione."]
 #nota[*Il consiglio* (parere di Claude, da discutere: la decisione è vostra). #"Quick win: parte da contenuti scritti dal team, costa poco e dà traffico organico. Evita le promesse sulle opportunità finché non hai partner reali."]
 #sub[Panoramica]
@@ -537,7 +537,7 @@ Le pagine come sarebbero, sezione per sezione. Ogni numero è seguito da: perch�
 #sub[Misure]
 #tab(("Evento", "Quando scatta", "Perché"), (28%, 36%, 36%), (("checklist_iniziata", "Prima spunta", "Chi prova"), ("checklist_completata", "Ultima spunta", "Chi arriva in fondo"), ("punteggio_cv", "Punteggio a fine checklist", "Dove sono i problemi tipici"), ("clic_profilo_tipo", "Clic su un profilo", "Quali carriere interessano"), ("clic_verso_area", "Clic verso l'area personale", "Il passaggio al prodotto")))
 #sub[Integrazioni]
-#tab(("Strumento", "Cosa fa", "Come si collega"), (24%, 30%, 46%), (("tools.js (checklist)", "Calcola il punteggio", "Componente di codice in Framer"), ("CMS «Profili tipo»", "Contenuti dei profili", "Collezione collegata alla pagina"), ("Area personale (percorso Futuro)", "Template e confronto del CV", "Link con l'area di studio nei parametri"), ("Partner (solo in futuro)", "Opportunità", "Accordo scritto prima di pubblicare qualsiasi offerta")))
+#tab(("Strumento", "Cosa fa", "Come si collega"), (24%, 30%, 46%), (("tools.js (checklist)", "Calcola il punteggio", "Componente di codice in Framer"), ("CMS «Profili tipo»", "Contenuti dei profili", "Collezione collegata alla pagina"), ("Area personale (modulo Career, proposta D05/D06 nella web app)", "Template e confronto del CV", "Link con l'area di studio nei parametri"), ("Partner (solo in futuro)", "Opportunità", "Accordo scritto prima di pubblicare qualsiasi offerta")))
 #sub[Da verificare (legale e privacy)]
 - #"Il CV contiene dati personali: nessun caricamento nella landing; nell'area solo con consenso, archivio privato e cancellazione."
 - #"Nessuna promessa di assunzione o di risultato."
@@ -561,7 +561,7 @@ Da incollare insieme a CONTESTO_DEMO.md.
 - #"Solo guida ora, Career Score dopo?"
 #text(size: 8pt, fill: nv2)[#"Origine: HQ · CURRICULUM (quick win) · Demo Versione C"]
 
-#scheda("L07", "Listino e pacchetti", "Monetizzazione · impatto 3/5 · sforzo 3/5 · web app D05")
+#scheda("L07", "Listino e pacchetti", "Monetizzazione · impatto 3/5 · sforzo 3/5")
 #box-crema[*Il problema.* #"Il listino non è deciso: appunti singoli, dispensa completa, bundle semestre/anno, Plus mensile sono ipotesi." \ \ *La proposta.* #"Una pagina Prezzi pronta ma fuori dalla navigazione, che legge il listino da UL_CFG.prezzi: quando il listino è deciso si cambiano i numeri qui e la pagina si ridisegna."]
 #nota[*Il consiglio* (parere di Claude, da discutere: la decisione è vostra). #"Tienila fuori dalla navbar: mostrare prezzi non decisi confonde. Se pensate a prezzi di lancio o sconti, indicate fino a quando valgono e fate verificare da un consulente le regole sugli annunci di riduzione di prezzo (Codice del Consumo) prima di pubblicarli."]
 #sub[Panoramica]

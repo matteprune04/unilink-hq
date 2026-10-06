@@ -1,6 +1,6 @@
 # L01 · Gruppi di studio
 
-Gruppo: Community · Stato: Da decidere · Impatto 3/5 · Sforzo 3/5 · Web app: D08
+Gruppo: Community · Stato: Da decidere · Impatto 3/5 · Sforzo 3/5
 
 ## Problema
 Trovare compagni con lo stesso esame oggi passa solo da WhatsApp e dal passaparola.

@@ -82,7 +82,7 @@ Quando chiedi una modifica alla demo, nomina il *codice* (pagina S01…, sezione
   [Navigazione], [Hub ▾ · Prima ▾ · Durante ▾ · Dopo ▾ · Strumenti · Community, più la pillola arancio «Da decidere» e il pulsante «Area personale». Niente «Dispense», niente «Chi siamo» in barra.],
   [Dispense], [Tolte dalla barra e dalle pagine: vivono nell'*area personale*. In home resta il carosello di anteprima, che apre l'area (non più il sito attuale).],
   [Strumenti], [Dentro la demo, funzionanti, per hub. *Nessun link al sito attuale.* Rapidi in landing, completi (salvati nel profilo) nell'area personale.],
-  [Area personale], [Anteprima in home e pagina dedicata con una *galleria di 17 schermate reali* della web app, in desktop / tablet / telefono. Solo da guardare (con ingrandimento): nessun riquadro vivo, nessun dato che si modifica.],
+  [Area personale], [Anteprima in home e pagina dedicata con una *galleria di 19 schermate reali* della web app, in desktop / tablet / telefono. Solo da guardare (con ingrandimento): nessun riquadro vivo, nessun dato che si modifica.],
   [Da decidere], [Una voce arancio in barra: 9 card (L01–L09). Ognuna ha l'*architettura completa*: pagine intere annotate, dati e campi, regole e stati, testi, misure, manutenzione, piano di lavoro con stime, rischi, prompt per l'AI (cap. 9 e PDF «Schede Da decidere»).],
   [Commenti], [Pulsante «Commenti» su ogni pagina: si commenta la pagina o una sezione; i commenti restano salvati e si scaricano in *PDF, Markdown o JSON* da dare all'AI (cap. 16).],
   [Ottimizzazione], [Accessibilità verificata con axe (da 292 problemi a 0), immagini alleggerite (loghi da 3,4 MB a 40 KB), primo accesso più chiaro: rassicurazioni, briciole, spiegazione di «hub», barra con un solo pulsante su telefono (cap. 17).],
@@ -189,7 +189,7 @@ Nessun materiale né studente nel team per Giurisprudenza e Medicina; listino no
   [S07], [Dopo], [dopo.html], [#sicura], [Tesi, magistrali, carriera (rimandi L06, L03).],
   [S08], [Tesi e laurea], [tesi.html], [#sicura], [Checklist in 6 passi + voto di laurea.],
   [S09], [Strumenti], [tools.html], [#sicura], [Elenco per hub + pannello; «solo area» bloccati.],
-  [S10], [Area personale], [area.html], [#sicura], [Galleria di 17 schermate reali della web app in tre formati, solo da guardare.],
+  [S10], [Area personale], [area.html], [#sicura], [Galleria di 19 schermate reali della web app in tre formati, solo da guardare.],
   [S11], [Community], [community.html], [#sicura], [Gruppo per anno, ambassador, idee L01 e L03.],
   [S12], [Prezzi (esempio)], [prezzi.html], [#decid], [Letto da `UL_CFG.prezzi`; fuori dalla barra (L07).],
   [S13], [Commenti del team], [commenti.html], [#decid], [Rapporto di tutti i commenti, con esportazione. Solo demo.],
@@ -207,7 +207,7 @@ Nessun materiale né studente nel team per Giurisprudenza e Medicina; listino no
   [H04], [Hub], [Tre card (Economia attivo; Giurisprudenza e Medicina in arrivo con «Avvisami»).], [`UL_CFG.hub`],
   [H05], [Parti da dove sei], [Quattro scelte (matricola · esame · Erasmus · dopo); la risposta si cambia al clic. Link a Prima / Durante / Dopo.], [`FASI` in app.js],
   [H06], [Trova la tua dispensa], [Ricerca, filtri e carosello di copertine vere: ogni card apre l'anteprima nell'area personale.], [dispense (data.js)],
-  [H06b], [La tua area personale], [Testo, quattro voci (Oggi, Il mio piano, I miei esami, Materiali), tre foto sovrapposte (desktop, tablet, telefono) generate dalla web app.], [img/area-\*.jpg],
+  [H06b], [La tua area personale], [Testo, quattro voci (Dashboard, Esercitazioni, I miei esami, Materiali), tre foto sovrapposte (desktop, tablet, telefono) generate dalla web app.], [img/area-\*.jpg],
   [H07], [Come funziona], [Tre passi e quattro garanzie.], [testi],
   [H08], [Strumenti], [Elenco + pannello funzionante (Economia, primi quattro).], [`UL_TOOLS`],
   [H09], [Chi c'è dietro], [Quattro founder.], [testi],
@@ -297,18 +297,18 @@ Regola: *prima gli strumenti con regole certe*; quelli con regole da verificare 
 // ---------------------------------------------------------------- 8
 #cap("8", "L'area personale, in schermate reali", "una galleria da guardare, non una app da usare")
 
-La sezione H06b della home mostra tre foto sovrapposte dell'area; la pagina S10 mostra una *galleria di 17 schermate reali* della web app demo, scattate dalla web app vera con gli account demo. Sono immagini: non si può modificare niente e non c'è nessun riquadro vivo. Tocca la schermata per ingrandirla.
+La sezione H06b della home mostra tre foto sovrapposte dell'area; la pagina S10 mostra una *galleria di 19 schermate reali* della web app demo (versione 3), scattate dalla web app vera con gli account demo. Sono immagini: non si può modificare niente e non c'è nessun riquadro vivo. Tocca la schermata per ingrandirla.
 
 #tab((24%, 76%),
   [Parte], [Come funziona],
-  [Selettori], [Quattro gruppi (*Studio · Durante*, *Test Prep · Prima*, *Futuro · Dopo*, *Piano e accesso*), l'elenco delle schermate del gruppo e tre dispositivi (Desktop · Tablet · Telefono).],
-  [Schermate], [17 schermate × 3 formati = 51 immagini WebP in `img/app/`. Ogni schermata ha titolo, account demo usato (es. Giulia · Economia · piano Gratuito) e una frase su cosa guardare.],
+  [Selettori], [Cinque gruppi (*Studio · Durante*, *Il mio percorso · Dopo*, *Piano e account*, *Moduli da decidere*, *Accesso e aree in arrivo*), l'elenco delle schermate del gruppo e tre dispositivi (Desktop · Tablet · Telefono).],
+  [Schermate], [19 schermate × 3 formati = 57 immagini WebP in `img/app/`. Ogni schermata ha titolo, account demo usato (es. Giulia · Economia · piano Gratuito, Luca · piano Plus) e una frase su cosa guardare.],
   [Perché immagini], [La landing non dipende più dalla web app che cambia mentre la guardi; funziona anche nello ZIP della sola landing e si carica prima.],
-  [Indirizzo], [`area.html?dev=tab#futuro-career` apre direttamente quella schermata in quel formato: utile per condividere un punto preciso.],
-  [Nelle schede «Da decidere»], [Dove esiste una schermata vera (piano, test d'ingresso, listino, area in arrivo, carriera) la scheda la usa nel mockup (blocco `appshot`), con il suo ingrandimento.],
-  [Aggiornamento], [Quando la web app cambia: rifare gli screenshot e sostituire i file con gli stessi nomi (`<id>-desk.webp`, `-tab`, `-ph`). L'elenco in `UL_CFG.schermate` non cambia.],
+  [Indirizzo], [`area.html?dev=tab#percorso-erasmus` apre direttamente quella schermata in quel formato: utile per condividere un punto preciso.],
+  [Nelle schede «Da decidere»], [Dove esiste una schermata vera (pagina dell'esame, quiz, abbonamento, area in arrivo, modulo Career) la scheda la usa nel mockup (blocco `appshot`), con il suo ingrandimento.],
+  [Aggiornamento], [Quando la web app cambia: `node _src/screenshot_webapp.js` e `python _src/png_to_webp.py` rifanno i file (`<id>-desk.webp`, `-tab`, `-ph`). Se cambiano rotte o account, vanno aggiornati anche l'elenco nello script e `UL_CFG.schermate`.],
 )
-#nota[*Corrispondenza dei nomi.* La galleria mostra le due nomenclature insieme: i percorsi della web app (Test Prep · Studio · Futuro) e le fasi della landing (Prima · Durante · Dopo). Sono le stesse idee: conviene sceglierne una sola (cap. 15).]
+#nota[*Corrispondenza dei nomi.* La galleria mostra le due nomenclature insieme: le sezioni della web app v3 (Studio · Il mio percorso) e le fasi della landing (Prima · Durante · Dopo). Sono idee vicine ma non uguali: conviene sceglierne una sola (cap. 15). Alcune cose che la landing racconta non ci sono ancora nella web app: percorso Test Prep, calendario del piano, template tesi, borse.]
 
 #grid(columns: (1fr, 1fr, 1fr), gutter: 8pt,
   img("img/l_area_desk.jpg", didascalia: [Desktop]),
@@ -582,7 +582,7 @@ Per ogni passo: *riparti da* = pagina, card o file da cui cominciare. I tempi so
   [Responsabile degli aggiornamenti], [Scadenze, borse, regole degli strumenti e numeri cambiano ogni anno: serve un nome per ciascuno.],
   [Eventi di misura], [Almeno: clic su hub, uso degli strumenti, iscrizione lista d'attesa, accesso area personale.],
   [Accessibilità: prove reali], [La demo passa i controlli automatici (axe, WCAG AA, 0 problemi) in tre formati. Mancano le prove con screen reader veri e con persone: i controlli automatici trovano solo una parte dei problemi.],
-  [Nomi allineati tra landing e web app], [La landing dice *Prima · Durante · Dopo* e *hub*; la web app dice *Test Prep · Studio · Futuro* e *area di studio*: sono le stesse idee con nomi diversi. Conviene sceglierne uno solo (il mio voto: Prima · Durante · Dopo e hub, che reggono anche Giurisprudenza e Medicina) e usarlo ovunque, nel menu, nei PDF e nei messaggi.],
+  [Nomi allineati tra landing e web app], [La landing dice *Prima · Durante · Dopo* e *hub*; la web app v3 dice *Studio · Dopo gli esami* e *area di studio*: sono idee vicine con nomi diversi. Conviene sceglierne uno solo (il mio voto: Prima · Durante · Dopo e hub, che reggono anche Giurisprudenza e Medicina) e usarlo ovunque, nel menu, nei PDF e nei messaggi.],
   [Tablet nella web app], [La web app v2 passa dal desktop al telefono a 860 px: a 820 px riceve il layout del telefono. La landing ha già il layout tablet (701–1100 px); nel ramo `claude/landing-v2-completo` c'è una versione della web app con tablet da portare.],
 )
 

@@ -30,10 +30,8 @@
   ];
   // Solo nell'area personale: nella landing sono vetrina (bloccate), nella app si aprono dalle card Dxx
   window.UL_TOOLS_AREA = [
-    { id: "erasmus-pro", nome: "Erasmus completo", desc: "Punteggio, mete e Learning Agreement salvati nel tuo profilo.", hub: ["economia"], href: "#/erasmus", icona: "✈" },
-    { id: "cv", nome: "Confronto CV", desc: "Il tuo CV contro un profilo tipo, con tre azioni.", hub: ["tutti"], href: "#/career", icona: "▤" },
-    { id: "tesi", nome: "Template e scadenze tesi", desc: "Modello già impaginato e calendario di consegna.", hub: ["tutti"], href: "#/decidere/D11", icona: "✎" },
-    { id: "borse", nome: "Borse e scadenze", desc: "Bandi e scadenze con promemoria.", hub: ["tutti"], href: "#/decidere/D10", icona: "€" },
+    { id: "erasmus-pro", nome: "Erasmus completo", desc: "Checklist di scadenze e destinazioni salvate nel tuo profilo.", hub: ["economia"], href: "#/app/percorso/erasmus", icona: "✈" },
+    { id: "libretto", nome: "Media e voto di laurea completo", desc: "Esami superati, media pesata e tre scenari di voto di laurea.", hub: ["economia"], href: "#/app/percorso/libretto", icona: "▤" },
   ];
 
   // ---------- piccoli mattoni ----------

@@ -153,7 +153,7 @@ Regole: non toccare altro; nessun dato inventato presentato come vero (esempi et
             perche: "Il piano funziona subito, senza account: chi lo prova capisce il valore in 20 secondi.", modifica: "Parametri (giorni di ripasso, massimo al giorno) in tools.js; l'aspetto è lo stesso di tutti gli strumenti.", comp: ["LP/Strumento"] },
           { nome: "Un esempio vero", codice: "M4", blocchi: [{ t: "testo", titolo: "Un esempio: *Microeconomia* in 4 settimane", par: ["Sette argomenti, un esame a novembre, un'ora al giorno. Ecco come si distribuiscono."] }, { t: "list", items: [["Settimana 1", "Domanda e offerta · Elasticità"], ["Settimana 2", "Scelte del consumatore · Costi di produzione"], ["Settimana 3", "Concorrenza perfetta · Monopolio"], ["Settimana 4", "Oligopolio · simulazione completa"]] }],
             perche: "Un esempio concreto convince più di una spiegazione.", modifica: "Si sostituisce con l'esame più cercato; gli argomenti vengono dalla collezione «Argomenti».", comp: ["LP/Card", "Lista"] },
-          { nome: "Dopo l'accesso", codice: "M5", blocchi: [{ t: "appshot", id: "studio-piano", dev: "desk", nota: "Nell'area personale il piano diventa un calendario settimanale che puoi modificare." }],
+          { nome: "Dopo l'accesso", codice: "M5", blocchi: [{ t: "appshot", id: "studio-esame", dev: "desk", nota: "Nell'area personale ogni esame ha già data dell'appello, voto obiettivo e argomenti da spuntare. Il calendario settimanale del piano, invece, non c'è ancora: è la parte da costruire." }],
             perche: "Mostra cosa succede dopo: il piano non resta una pagina, diventa un calendario.", modifica: "Lo screenshot si rifà dalla web app quando cambia.", comp: ["Schermata reale (img/app)"] },
           { nome: "Cosa è gratis", codice: "M6", blocchi: [{ t: "cards", items: [["✓", "Gratis", "Il piano per l'appello e il calendario base.", "", "ar"], ["★", "Plus (ipotesi)", "Piano guidato che si ricalcola e ripasso degli errori.", "", "nv", "Da decidere"], ["?", "Da decidere", "Dove passa il confine tra gratis e Plus: card L07 e D04.", "", "nt"]] }],
             perche: "Onestà sul prezzo: dice cosa c'è e cosa è ancora da decidere, senza inventare prezzi.", modifica: "Testi; quando L07 è decisa si sostituisce con il listino vero.", comp: ["LP/Card"] },
@@ -338,11 +338,11 @@ Regole: non toccare altro; nessun dato inventato presentato come vero (esempi et
     // =========================================================================================================
     L04: {
       stima: "15–20 giorni, di cui 6–8 per scrivere e verificare le domande",
-      obiettivo: "Far incontrare UniLink ai futuri studenti prima dell'iscrizione, con un diagnostico gratuito e un percorso di preparazione nell'area personale (percorso Test Prep).",
+      obiettivo: "Far incontrare UniLink ai futuri studenti prima dell'iscrizione, con un diagnostico gratuito e un percorso di preparazione nell'area personale (nella web app è la proposta D16 «Test d'ingresso e simulazioni»).",
       per: "Studenti dell'ultimo anno di superiori e chi si iscrive a corsi con test d'ingresso o con semestre filtro.",
       quando: "Dopo i nuovi hub (L08), o in parallelo solo per Medicina: il semestre filtro è l'occasione più concreta. Se e come il test è richiesto a UniFi va verificato sul bando.",
       ambito: {
-        mvp: ["Pagina «Test d'ingresso» nella fase Prima, con scelta del corso e rimando alla fonte ufficiale", "Diagnostico gratuito di 20 domande originali (logica e matematica), senza account", "Risultato con punti forti e deboli e invito al percorso Test Prep nell'area", "Banca iniziale di 80 domande originali, verificate da due persone"],
+        mvp: ["Pagina «Test d'ingresso» nella fase Prima, con scelta del corso e rimando alla fonte ufficiale", "Diagnostico gratuito di 20 domande originali (logica e matematica), senza account", "Risultato con punti forti e deboli e invito all'allenamento nell'area", "Banca iniziale di 80 domande originali, verificate da due persone"],
         dopo: ["Simulazioni a tempo nel formato del test", "Registro errori e ripasso (già visibile nella web app demo)", "Banca per le tre materie di Medicina (Fisica, Chimica, Biologia)", "Piani a pagamento (L07)"],
         fuori: ["Copiare o parafrasare quesiti ufficiali", "Promettere ammissione o punteggi", "Dichiarare regole di ammissione senza fonte"],
       },
@@ -358,7 +358,7 @@ Regole: non toccare altro; nessun dato inventato presentato come vero (esempi et
             perche: "Il quiz è il prodotto: una domanda per schermo, avanzamento sempre visibile, nessuna registrazione.", modifica: "Le domande vengono dalla banca; numero e mix per materia sono parametri.", comp: ["LP/Strumento (variante quiz)"] },
           { nome: "Il risultato", codice: "I4", blocchi: [{ t: "stats", items: [["14/20", "risposte giuste"], ["Logica", "punto di forza"], ["Matematica", "da rafforzare"]] }, { t: "cta", titolo: "Allenati sui punti *deboli*", testo: "Nell'area personale trovi allenamento e registro errori. Il risultato non viene salvato se non lo chiedi.", cta: ["Apri Test Prep", "Rifai il diagnostico"] }],
             perche: "Il risultato dà una direzione concreta e porta al prodotto, senza chiedere dati.", modifica: "Testi e soglie dei messaggi.", comp: ["LP/Finale"] },
-          { nome: "Dopo l'accesso", codice: "I5", blocchi: [{ t: "appshot", id: "test-test", dev: "desk", nota: "Il percorso Test Prep: il test da preparare e i giorni che mancano (data inserita dallo studente)." }, { t: "appshot", id: "test-allenamento", dev: "desk" }],
+          { nome: "Dopo l'accesso", codice: "I5", blocchi: [{ t: "appshot", id: "studio-quiz", dev: "desk", nota: "Oggi nell'area esistono quiz di prova, quiz rapido, ripasso errori e simulazione d'esame per gli esami di Economia. Il test d'ingresso userebbe lo stesso schema (il percorso Test Prep non è ancora nella web app)." }],
             perche: "Mostra cosa si ottiene dopo il diagnostico, con schermate vere della web app.", modifica: "Gli screenshot si rifanno dalla web app.", comp: ["Schermate reali (img/app)"] },
           { nome: "Cosa è gratis", codice: "I6", blocchi: [{ t: "cards", items: [["✓", "Gratis", "Diagnostico e quiz rapido (10 domande al giorno).", "", "ar"], ["★", "Plus (ipotesi)", "Simulazioni a tempo, registro errori, piano guidato.", "", "nv", "Da decidere"], ["?", "Da decidere", "Il confine tra gratis e Plus: card L07.", "", "nt"]] }],
             perche: "Onestà sul modello: niente prezzi inventati.", modifica: "Testi; il listino vero arriva con L07.", comp: ["LP/Card"] },
@@ -400,7 +400,7 @@ Regole: non toccare altro; nessun dato inventato presentato come vero (esempi et
       integrazioni: [
         ["Banca domande", "Fonte delle domande", "Foglio CSV o tabella: il diagnostico ne estrae 20"],
         ["Logica del quiz (tools.js)", "Corregge e calcola", "Componente di codice in Framer"],
-        ["Area personale (percorso Test Prep)", "Allenamento e registro errori", "Link con l'area di studio nei parametri"],
+        ["Area personale (proposta D16 nella web app)", "Allenamento e registro errori", "Link con l'area di studio nei parametri"],
         ["Fonti ufficiali (CISIA, MUR, ateneo)", "Informazioni sul test", "Solo link e breve riepilogo, con data di controllo"],
       ],
       legale: [
@@ -433,7 +433,7 @@ Regole: non toccare altro; nessun dato inventato presentato come vero (esempi et
         ["Utenti minorenni", "Nessun dato salvato senza consenso; verifica con un consulente."],
         ["Costo di scrittura delle domande", "Partire da 80 domande e crescere solo se il diagnostico viene usato."],
       ],
-      successo: [["Diagnostici completati", "Almeno 100", "8 settimane"], ["Passaggi verso Test Prep", "Almeno il 20% dei diagnostici", "8 settimane"], ["Iscritti all'area o alla lista d'attesa da questa pagina", "Almeno 30", "8 settimane"]],
+      successo: [["Diagnostici completati", "Almeno 100", "8 settimane"], ["Passaggi verso l'allenamento nell'area", "Almeno il 20% dei diagnostici", "8 settimane"], ["Iscritti all'area o alla lista d'attesa da questa pagina", "Almeno 30", "8 settimane"]],
       stop: "Se dopo 8 settimane i diagnostici completati sono meno di 40, fermarsi: il settore è competitivo e le risorse rendono di più sui nuovi hub (L08).",
       prompt: P("L04", "Test d'ingresso (TOLC)", "- Crea test-ingresso.html con le 7 sezioni della scheda; la scheda «Test d'ingresso» di prima.html diventa un rimando.\n- Aggiungi la logica del diagnostico (20 domande) in tools.js e la banca domande come CSV (solo domande originali, due verificatori).\n- Aggiungi le informazioni sul test per area con fonte e «ultimo controllo».\n- Nessun salvataggio del risultato senza consenso; nessuna promessa su ammissione o punteggio."),
     },
@@ -553,7 +553,7 @@ Regole: non toccare altro; nessun dato inventato presentato come vero (esempi et
             perche: "È lo strumento che fa tornare: dieci spunte, un punteggio, tre consigli. Tutto nel browser.", modifica: "I dieci punti e i consigli sono nella collezione «Checklist CV».", comp: ["LP/Checklist", "LP/Strumento"] },
           { nome: "Profili tipo", codice: "C4", blocchi: [{ t: "cards", c4: true, items: [["F", "Finance", "Basi di matematica finanziaria e contabilità, inglese solido.", "Vedi il profilo", "ar"], ["C", "Consulenza", "Ragionamento strutturato, presentazioni, esperienze di gruppo.", "Vedi il profilo", "nt"], ["M", "Marketing", "Dati, comunicazione, un progetto concreto da mostrare.", "Vedi il profilo", ""], ["I", "Impresa", "Visione d'insieme, organizzazione, iniziativa.", "Vedi il profilo", "ar"]] }],
             perche: "Il profilo tipo dà un riferimento, non un obbligo: descrive il «tipico», non il «requisito».", modifica: "Una riga della collezione «Profili tipo» per profilo.", comp: ["LP/Card"] },
-          { nome: "Nell'area personale", codice: "C5", blocchi: [{ t: "appshot", id: "futuro-career", dev: "desk", nota: "Dopo l'accesso: il percorso Futuro con carriera e CV." }],
+          { nome: "Nell'area personale", codice: "C5", blocchi: [{ t: "appshot", id: "decidere-career-opportunita", dev: "desk", nota: "Nella web app esiste già un modulo Career di prova (opportunità, profilo talento, track), con dati di esempio e non ancora deciso." }],
             perche: "Mostra il passo successivo con una schermata vera.", modifica: "Lo screenshot si rifà dalla web app.", comp: ["Schermata reale (img/app)"] },
           { nome: "Template del CV", codice: "C6", blocchi: [{ t: "cta", titolo: "Un *modello* già impaginato", testo: "Un template pulito in formato Word e PDF, disponibile nell'area personale.", cta: ["Scarica nell'area", "Come usarlo"] }],
             perche: "Una cosa concreta da portarsi via, che porta all'area.", modifica: "Testo e file (collezione «Template»).", comp: ["LP/Finale"] },
@@ -592,7 +592,7 @@ Regole: non toccare altro; nessun dato inventato presentato come vero (esempi et
       integrazioni: [
         ["tools.js (checklist)", "Calcola il punteggio", "Componente di codice in Framer"],
         ["CMS «Profili tipo»", "Contenuti dei profili", "Collezione collegata alla pagina"],
-        ["Area personale (percorso Futuro)", "Template e confronto del CV", "Link con l'area di studio nei parametri"],
+        ["Area personale (modulo Career, proposta D05/D06 nella web app)", "Template e confronto del CV", "Link con l'area di studio nei parametri"],
         ["Partner (solo in futuro)", "Opportunità", "Accordo scritto prima di pubblicare qualsiasi offerta"],
       ],
       legale: [
@@ -648,7 +648,7 @@ Regole: non toccare altro; nessun dato inventato presentato come vero (esempi et
             perche: "Tre piani al massimo, uno «il più scelto»: troppi piani paralizzano.", modifica: "Si cambiano i numeri nella collezione «Piani» (o in UL_CFG.prezzi): il design non si tocca.", comp: ["LP/Piano"] },
           { nome: "Confronto", codice: "P3", blocchi: [{ t: "table", cols: ["Cosa", "Gratuito", "Appunti", "Dispensa", "Semestre", "Plus"], righe: [["Estratti di ogni dispensa", "✓", "✓", "✓", "✓", "✓"], ["Appunti completi dell'esame", "una a scelta", "✓", "✓", "tutti del semestre", "✓"], ["Mappe e quiz illimitati", "10 quiz al giorno", "—", "✓", "✓", "✓"], ["Ripasso errori e simulazioni a tempo", "—", "—", "—", "—", "✓"], ["Piano guidato e confronto CV", "—", "—", "—", "—", "✓"]] }],
             perche: "Fa vedere cosa si ottiene salendo di piano: è dove si decide.", modifica: "Una riga per funzione; le colonne vengono dai piani.", comp: ["Tabella"] },
-          { nome: "Dopo l'acquisto", codice: "P4", blocchi: [{ t: "appshot", id: "altro-piano", dev: "desk", nota: "La pagina «Piano e acquisti» nell'area personale: cosa è sbloccato e cosa si può acquistare." }],
+          { nome: "Dopo l'acquisto", codice: "P4", blocchi: [{ t: "appshot", id: "account-abbonamento", dev: "desk", nota: "La pagina «Abbonamento» nell'area personale: piano attuale, cosa è sbloccato e cosa si può acquistare (pagamento simulato)." }],
             perche: "Mostra dove finisce ciò che si compra: dà fiducia.", modifica: "Lo screenshot si rifà dalla web app.", comp: ["Schermata reale (img/app)"] },
           { nome: "Cosa resta gratis", codice: "P5", blocchi: [{ t: "cards", items: [["✓", "Estratti e quiz rapido", "Sempre gratuiti, con l'account.", "", "ar"], ["✓", "Strumenti", "Voto di laurea, media, piano: senza account.", "", "ar"], ["✓", "Informazioni sugli esami", "Modalità d'esame e consigli.", "", "ar"]] }],
             perche: "Il gratuito è il motivo per cui la gente arriva: dirlo toglie la paura del «pay-wall».", modifica: "Tre testi.", comp: ["LP/Card"] },

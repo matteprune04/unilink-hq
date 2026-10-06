@@ -1,6 +1,6 @@
 # L07 · Listino e pacchetti
 
-Gruppo: Monetizzazione · Stato: Da decidere · Impatto 3/5 · Sforzo 3/5 · Web app: D05
+Gruppo: Monetizzazione · Stato: Da decidere · Impatto 3/5 · Sforzo 3/5
 
 ## Problema
 Il listino non è deciso: appunti singoli, dispensa completa, bundle semestre/anno, Plus mensile sono ipotesi.
@@ -55,7 +55,7 @@ Tienila fuori dalla navbar: mostrare prezzi non decisi confonde. Se pensate a pr
    - Si può cambiare: Una riga per funzione; le colonne vengono dai piani.
    - Componenti: Tabella
 4. **Dopo l'acquisto** (P4)
-   - Contenuto: [altro-piano]
+   - Contenuto: [account-abbonamento]
    - Perché: Mostra dove finisce ciò che si compra: dà fiducia.
    - Si può cambiare: Lo screenshot si rifà dalla web app.
    - Componenti: Schermata reale (img/app)

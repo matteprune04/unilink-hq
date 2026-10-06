@@ -13,7 +13,7 @@ Demo HTML statica della landing, costruita sull'architettura `architettura/UniLi
 | S05–S07 | `prima.html`, `durante.html`, `dopo.html` | Le tre fasi del percorso |
 | S08 | `tesi.html` | Checklist in 6 passi (si ricorda cosa spunti) + voto di laurea |
 | S09 | `tools.html` | Strumenti per hub, funzionanti |
-| S10 | `area.html` | Galleria di 17 schermate **reali** della web app in desktop / tablet / telefono (solo immagini, con ingrandimento) |
+| S10 | `area.html` | Galleria di 19 schermate **reali** della web app in desktop / tablet / telefono (solo immagini, con ingrandimento) |
 | S11 | `community.html` | Gruppi per anno, ambassador |
 | S12 | `prezzi.html` | Prezzi **di esempio**, dal listino in `config.js` (non in navbar) |
 | S13 | `commenti.html` | Rapporto dei commenti del team, con esportazione |

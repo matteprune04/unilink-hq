@@ -125,7 +125,7 @@
   // catalogo: le card aprono l'anteprima nell'area personale (le dispense vivono lì, non in landing)
   const SITOAPP = APP;
   const D = window.UL_DISPENSE || [];
-  const card = (d) => `<a class="disp" href="${SITOAPP}#/materiali?q=${encodeURIComponent(d.nome)}" title="Apri l'anteprima nell'area personale">
+  const card = (d) => `<a class="disp" href="${SITOAPP}#/app/materiali/catalogo" title="Apri il catalogo nell'area personale (si entra con un account demo)">
       <div class="cop"><img src="img/cop/${d.cop}" alt="Copertina ${esc(d.nome)}" loading="lazy"><span class="badge on">${d.anno} anno</span></div>
       <h3>${esc(d.nome)}</h3><div class="meta"><span>${d.sem} semestre</span>${d.mod ? `<span>· ${esc(d.mod.length > 22 ? d.mod.split(" ")[0] + "…" : d.mod)}</span>` : ""}</div>
       <div class="piede"><span class="tipi">${d.tipi.map((t) => `<span>${t}</span>`).join("")}</span><span>→</span></div></a>`;
@@ -331,7 +331,7 @@
           ${S("rischi", "Rischi e successo", `<h3 class="bk-h">Rischi</h3>${tab(["Rischio", "Come lo riduci"], a.rischi)}<h3 class="bk-h" style="margin-top:18px">Come capisci se funziona</h3>${tab(["Metrica", "Soglia (ipotesi)", "Entro"], a.successo)}<p style="margin-top:10px"><b style="font-weight:400">Regola di stop.</b> ${esc(a.stop)}</p>`)}
           ${S("prompt", "Prompt per l'AI", `<p class="small" style="margin-bottom:10px">Se decidete di farla: incollate questo testo (insieme a <code>CONTESTO_DEMO.md</code>). È già scritto come richiesta di tipo C.</p><pre class="mk-prompt" id="mk-prompt">${esc(a.prompt)}</pre>`, "")}
           ${S("serve", "Cosa serve", lista(x.serve))}${S("domande", "Da decidere", lista(x.domande))}
-          ${x.area ? S("webapp", "Nella web app", `<p>La parte dentro l'area personale è la card <b style="font-weight:400">${x.area}</b>. <a class="link" href="${APP}#/decidere/${x.area}">Apri la card nella web app →</a></p>`) : ""}
+          ${x.area ? S("webapp", "Nella web app", `<p>La parte dentro l'area personale è la card <b style="font-weight:400">${x.area}</b>. <a class="link" href="${APP}#/app/decidere/${x.area}">Apri la card nella web app →</a></p>`) : ""}
           ${S("origine", "Origine", `<p>${esc(x.origine)}</p>`)}
           ${S("storico", "Storico richieste", `<div class="storico">${x.storico.map((s) => `<div><span class="small">${new Date(s[0]).toLocaleDateString("it-IT", { day: "numeric", month: "short", year: "numeric" })}</span><span>${esc(s[1])}</span></div>`).join("")}</div>`)}
         </div>`;
@@ -362,7 +362,7 @@
         ${sez("Il consiglio", `<p>${esc(x.consiglio)}</p><p class="small" style="margin-top:8px">Parere di Claude per la discussione: la decisione è vostra.</p>`, "cons")}
         ${sez("Come risulterebbe", `<div class="schermo">${x.schermata.map((b) => (BLOCCHI[b.t] ? BLOCCHI[b.t](b) : "")).join("")}</div>`)}
         ${sez("Cosa serve", lista(x.serve))}${sez("Da decidere", lista(x.domande))}
-        ${x.area ? sez("Nella web app", `<p>La parte dentro l'area personale è la card <b style="font-weight:400">${x.area}</b>. <a class="link" href="${APP}#/decidere/${x.area}">Apri la card nella web app →</a></p>`) : ""}
+        ${x.area ? sez("Nella web app", `<p>La parte dentro l'area personale è la card <b style="font-weight:400">${x.area}</b>. <a class="link" href="${APP}#/app/decidere/${x.area}">Apri la card nella web app →</a></p>`) : ""}
         ${sez("Origine", `<p>${esc(x.origine)}</p>`)}
         ${sez("Storico richieste", `<div class="storico">${x.storico.map((s) => `<div><span class="small">${new Date(s[0]).toLocaleDateString("it-IT", { day: "numeric", month: "short", year: "numeric" })}</span><span>${esc(s[1])}</span></div>`).join("")}</div>`)}
       </div>`}`;

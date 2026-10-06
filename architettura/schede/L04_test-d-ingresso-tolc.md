@@ -1,6 +1,6 @@
 # L04 · Test d'ingresso (TOLC)
 
-Gruppo: Orientamento · Stato: Da decidere · Impatto 5/5 · Sforzo 5/5 · Web app: D12
+Gruppo: Orientamento · Stato: Da decidere · Impatto 5/5 · Sforzo 5/5 · Web app: D16
 
 ## Problema
 Far conoscere UniLink ai futuri studenti prima dell'iscrizione: è il momento in cui scelgono come studiare.
@@ -12,7 +12,7 @@ Nella fase «Prima»: diagnostico gratuito di 20 domande e un percorso di prepar
 Settore competitivo e a Firenze molti corsi sono ad accesso libero. Valuta dopo i nuovi hub: per Medicina il semestre filtro è un'opportunità più concreta del TOLC.
 
 ## Panoramica
-- **Obiettivo:** Far incontrare UniLink ai futuri studenti prima dell'iscrizione, con un diagnostico gratuito e un percorso di preparazione nell'area personale (percorso Test Prep).
+- **Obiettivo:** Far incontrare UniLink ai futuri studenti prima dell'iscrizione, con un diagnostico gratuito e un percorso di preparazione nell'area personale (nella web app è la proposta D16 «Test d'ingresso e simulazioni»).
 - **Per chi:** Studenti dell'ultimo anno di superiori e chi si iscrive a corsi con test d'ingresso o con semestre filtro.
 - **Quando serve:** Dopo i nuovi hub (L08), o in parallelo solo per Medicina: il semestre filtro è l'occasione più concreta. Se e come il test è richiesto a UniFi va verificato sul bando.
 - **Stima:** 15–20 giorni, di cui 6–8 per scrivere e verificare le domande
@@ -20,7 +20,7 @@ Settore competitivo e a Firenze molti corsi sono ad accesso libero. Valuta dopo 
 ### MVP
 - Pagina «Test d'ingresso» nella fase Prima, con scelta del corso e rimando alla fonte ufficiale
 - Diagnostico gratuito di 20 domande originali (logica e matematica), senza account
-- Risultato con punti forti e deboli e invito al percorso Test Prep nell'area
+- Risultato con punti forti e deboli e invito all'allenamento nell'area
 - Banca iniziale di 80 domande originali, verificate da due persone
 
 ### Dopo
@@ -60,7 +60,7 @@ Settore competitivo e a Firenze molti corsi sono ad accesso libero. Valuta dopo 
    - Si può cambiare: Testi e soglie dei messaggi.
    - Componenti: LP/Finale
 5. **Dopo l'accesso** (I5)
-   - Contenuto: [test-test] || [test-allenamento]
+   - Contenuto: [studio-quiz]
    - Perché: Mostra cosa si ottiene dopo il diagnostico, con schermate vere della web app.
    - Si può cambiare: Gli screenshot si rifanno dalla web app.
    - Componenti: Schermate reali (img/app)
@@ -155,7 +155,7 @@ Dove: Supabase, solo con consenso · Chi: Nessuno: servono solo per le statistic
 |---|---|---|
 | Banca domande | Fonte delle domande | Foglio CSV o tabella: il diagnostico ne estrae 20 |
 | Logica del quiz (tools.js) | Corregge e calcola | Componente di codice in Framer |
-| Area personale (percorso Test Prep) | Allenamento e registro errori | Link con l'area di studio nei parametri |
+| Area personale (proposta D16 nella web app) | Allenamento e registro errori | Link con l'area di studio nei parametri |
 | Fonti ufficiali (CISIA, MUR, ateneo) | Informazioni sul test | Solo link e breve riepilogo, con data di controllo |
 
 ## Da verificare (legale/privacy)
@@ -198,7 +198,7 @@ Dove: Supabase, solo con consenso · Chi: Nessuno: servono solo per le statistic
 | Metrica | Soglia | Entro |
 |---|---|---|
 | Diagnostici completati | Almeno 100 | 8 settimane |
-| Passaggi verso Test Prep | Almeno il 20% dei diagnostici | 8 settimane |
+| Passaggi verso l'allenamento nell'area | Almeno il 20% dei diagnostici | 8 settimane |
 | Iscritti all'area o alla lista d'attesa da questa pagina | Almeno 30 | 8 settimane |
 
 Regola di stop: Se dopo 8 settimane i diagnostici completati sono meno di 40, fermarsi: il settore è competitivo e le risorse rendono di più sui nuovi hub (L08).

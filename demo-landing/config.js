@@ -23,33 +23,36 @@ window.UL_CFG = {
   numeri: { utenti: "876", pagine: "7.855", esami: "34", fonte: "Google Analytics 4 e catalogo · 8 set – 5 ott 2026" },
 
   // SCHERMATE REALI della web app demo (immagini in img/app/, solo da guardare: nessuna interazione).
-  // Ogni schermata ha 3 file: img/app/<id>-desk.webp · -tab.webp · -ph.webp. Per aggiornarle: rifare gli screenshot
-  // dalla web app (vedi CONTESTO_DEMO.md) e sostituire i file, l'elenco resta uguale.
+  // Ogni schermata ha 3 file: img/app/<id>-desk.webp · -tab.webp · -ph.webp. Per aggiornarle: node _src/screenshot_webapp.js
+  // e python _src/png_to_webp.py (vedi CONTESTO_DEMO.md). Se la web app cambia, aggiornare anche questo elenco.
   schermate: {
     gruppi: [
-      { id: "studio", nome: "Studio", quando: "Durante", desc: "Esami, materiali, esercitazioni, libretto." },
-      { id: "test", nome: "Test Prep", quando: "Prima", desc: "Test d'ingresso, allenamento, errori, orientamento." },
-      { id: "futuro", nome: "Futuro", quando: "Dopo", desc: "Erasmus, magistrali, carriera." },
-      { id: "altro", nome: "Piano e accesso", quando: "Sempre", desc: "Piani, area in arrivo, accesso." },
+      { id: "studio", nome: "Studio", quando: "Durante", desc: "Dashboard, esami, materiali, esercitazioni." },
+      { id: "percorso", nome: "Il mio percorso", quando: "Dopo", desc: "Media e voto di laurea, Erasmus, magistrali, mentor." },
+      { id: "account", nome: "Piano e account", quando: "Sempre", desc: "Abbonamento e profilo." },
+      { id: "decidere", nome: "Moduli da decidere", quando: "In prova", desc: "Proposte già disegnate nella web app, non ancora decise." },
+      { id: "altro", nome: "Accesso e aree in arrivo", quando: "Sempre", desc: "Accesso e stato vero di Giurisprudenza." },
     ],
     lista: [
-      { id: "studio-oggi", gruppo: "studio", titolo: "Oggi", account: "Giulia · Economia · piano Gratuito", nota: "Il prossimo passo: ogni mattina una sola cosa da fare, con la data dell'appello e il tuo obiettivo." },
-      { id: "studio-piano", gruppo: "studio", titolo: "Il mio piano", account: "Giulia · Economia · piano Gratuito", nota: "Un calendario settimanale con le sessioni di studio. Il piano guidato è una funzione Plus ancora da decidere." },
-      { id: "studio-esami", gruppo: "studio", titolo: "I miei esami", account: "Giulia · Economia · piano Gratuito", nota: "Data dell'appello, voto obiettivo e argomenti da spuntare man mano che li ripassi." },
-      { id: "studio-materiali", gruppo: "studio", titolo: "Materiali", account: "Giulia · Economia · piano Gratuito", nota: "La biblioteca: gli estratti sono per tutti, una dispensa completa è gratis con l'account, le altre si sbloccano." },
-      { id: "studio-pratica", gruppo: "studio", titolo: "Esercitazioni", account: "Giulia · Economia · piano Gratuito", nota: "Quiz rapido e allenamento. Le domande sono scritte per la demo." },
-      { id: "studio-libretto", gruppo: "studio", titolo: "Libretto e obiettivi", account: "Giulia · Economia · piano Gratuito", nota: "Gli esami dati, la media e il voto obiettivo." },
-      { id: "test-oggi", gruppo: "test", titolo: "Oggi · Test Prep", account: "Pietro · Economia · piano Gratuito", nota: "Per chi prepara il test d'ingresso: lo stesso guscio, con contenuti diversi." },
-      { id: "test-test", gruppo: "test", titolo: "Il mio test", account: "Pietro · Economia · piano Gratuito", nota: "Il test da preparare, i giorni che mancano (data inserita dallo studente) e l'allenamento." },
-      { id: "test-allenamento", gruppo: "test", titolo: "Allenamento", account: "Pietro · Economia · piano Gratuito", nota: "Domande di esempio per materia, scritte per la demo." },
-      { id: "test-errori", gruppo: "test", titolo: "Registro errori", account: "Pietro · Economia · piano Gratuito", nota: "Le domande sbagliate, per ripassarle finché non le azzecchi." },
-      { id: "test-orientamento", gruppo: "test", titolo: "Orientamento", account: "Pietro · Economia · piano Gratuito", nota: "Scegliere il corso con più elementi. Le informazioni ufficiali vengono sempre dalla fonte." },
-      { id: "futuro-erasmus", gruppo: "futuro", titolo: "Erasmus", account: "Luca · Economia · piano Plus", nota: "Arrivare al bando preparato. Le regole valgono solo se prese dal bando ufficiale." },
-      { id: "futuro-magistrali", gruppo: "futuro", titolo: "Magistrali e MSc", account: "Luca · Economia · piano Plus", nota: "La shortlist e i requisiti da preparare. Programmi e scadenze solo dalle pagine ufficiali." },
-      { id: "futuro-career", gruppo: "futuro", titolo: "Carriere e CV", account: "Luca · Economia · piano Plus", nota: "Un CV in ordine e i primi passi verso stage e lavoro." },
-      { id: "altro-piano", gruppo: "altro", titolo: "Piano e acquisti", account: "Giulia · Economia · piano Gratuito", nota: "Gratuito, appunti, dispensa, semestre, Plus. I prezzi sono ipotesi, ancora da decidere." },
-      { id: "altro-in-arrivo", gruppo: "altro", titolo: "Area in arrivo (Giurisprudenza)", account: "Elena · Giurisprudenza", nota: "Lo stato vero di oggi: nessuna promessa, lista d'attesa e cosa vorremmo fare." },
-      { id: "altro-accesso", gruppo: "altro", titolo: "Accesso", account: "—", nota: "Link via email o un account demo; il primo accesso è in 7 passi." },
+      { id: "studio-dashboard", gruppo: "studio", titolo: "Dashboard", account: "Giulia · Economia · piano Gratuito", nota: "Cosa ti serve adesso: la prossima azione, gli esami che stai preparando e i giorni all'appello." },
+      { id: "studio-esami", gruppo: "studio", titolo: "I miei esami", account: "Giulia · Economia · piano Gratuito", nota: "Partizione, data dell'appello, voto obiettivo e avanzamento di ogni esame, filtrabili per stato." },
+      { id: "studio-esame", gruppo: "studio", titolo: "Pagina di un esame", account: "Giulia · Economia · piano Gratuito", nota: "Impostazioni dell'esame e avanzamento per argomento: gli argomenti si spuntano uno a uno." },
+      { id: "studio-materiali", gruppo: "studio", titolo: "Materiali · i miei pacchetti", account: "Marco · Economia · Pacchetto esame", nota: "I pacchetti che possiedi, sempre aggiornati. Con il Pacchetto esame compare la dispensa da scaricare." },
+      { id: "studio-catalogo", gruppo: "studio", titolo: "Materiali · catalogo", account: "Giulia · Economia · piano Gratuito", nota: "Il catalogo degli altri esami, per anno, con anteprima e prezzo (di esempio)." },
+      { id: "studio-esercitazioni", gruppo: "studio", titolo: "Esercitazioni", account: "Giulia · Economia · piano Gratuito", nota: "Gli esami con quiz, quante domande e a che punto sei. Le domande sono scritte per la demo." },
+      { id: "studio-quiz", gruppo: "studio", titolo: "Quiz di un esame", account: "Giulia · Economia · piano Gratuito", nota: "Quiz di prova, quiz rapido, ripasso errori e simulazione d'esame; sotto gli argomenti e lo storico delle sessioni." },
+      { id: "percorso-libretto", gruppo: "percorso", titolo: "Media e voto di laurea", account: "Luca · Economia · piano Plus", nota: "Esami superati, media pesata e scenari di voto di laurea con tre ipotesi." },
+      { id: "percorso-erasmus", gruppo: "percorso", titolo: "Erasmus", account: "Luca · Economia · piano Plus", nota: "Checklist di scadenze e destinazioni salvate. Le regole valgono solo se prese dal bando ufficiale." },
+      { id: "percorso-magistrali", gruppo: "percorso", titolo: "Magistrali", account: "Luca · Economia · piano Plus", nota: "Per ora leggero: rimanda allo strumento sulle magistrali. È una delle parti che si può far crescere." },
+      { id: "percorso-mentor", gruppo: "percorso", titolo: "Mentor", account: "Luca · Economia · piano Plus", nota: "Mentor di esempio e prenotazione di una sessione (pagamento simulato)." },
+      { id: "account-abbonamento", gruppo: "account", titolo: "Abbonamento", account: "Giulia · Economia · piano Gratuito", nota: "Gratuito, Pacchetto esame, Pacchetto semestre e Plus. I prezzi sono ipotesi e il pagamento è simulato." },
+      { id: "account-profilo", gruppo: "account", titolo: "Profilo e account", account: "Giulia · Economia · piano Gratuito", nota: "Dati personali, area di studio e ateneo, colore del profilo e gestione dei propri dati." },
+      { id: "decidere-elenco", gruppo: "decidere", titolo: "Tutte le proposte", account: "Giulia · Economia · piano Gratuito", nota: "L'elenco delle proposte ancora da decidere, ognuna con la sua scheda di architettura." },
+      { id: "decidere-career-piano", gruppo: "decidere", titolo: "Career · il mio piano", account: "Luca · Economia · piano Plus", nota: "Modulo proposto, non ancora deciso: punteggio di carriera e prossime azioni. Funziona con dati di esempio." },
+      { id: "decidere-career-opportunita", gruppo: "decidere", titolo: "Career · opportunità", account: "Luca · Economia · piano Plus", nota: "Modulo proposto: stage e graduate program con candidatura rapida. Aziende e annunci sono di esempio." },
+      { id: "decidere-network-home", gruppo: "decidere", titolo: "Network · home dell'ateneo", account: "Martina · Economia · UniPi", nota: "Modulo proposto: più atenei, ognuno con la sua home. Oggi UniLink è solo UniFi." },
+      { id: "altro-in-arrivo", gruppo: "altro", titolo: "Area in arrivo (Giurisprudenza)", account: "Elena · Giurisprudenza", nota: "Lo stato vero di oggi: nessuna promessa, lista d'attesa e una domanda su cosa serve a chi studia lì." },
+      { id: "altro-accesso", gruppo: "altro", titolo: "Accesso", account: "—", nota: "Accesso con email e password, oppure con un account demo (accesso rapido)." },
     ],
   },
 
@@ -104,7 +107,7 @@ window.UL_CFG = {
   // ---------------------------------------------------------------------------
   decidere: [
     {
-      id: "L01", titolo: "Gruppi di studio", gruppo: "Community", stato: "Da decidere", impatto: 3, sforzo: 3, area: "D08",
+      id: "L01", titolo: "Gruppi di studio", gruppo: "Community", stato: "Da decidere", impatto: 3, sforzo: 3, area: "",
       origine: "Nota Matteo 6/10 · HQ SOCIALNETWORK (Gianmarco)",
       problema: "Trovare compagni con lo stesso esame oggi passa solo da WhatsApp e dal passaparola.",
       proposta: "Pagina «Studia insieme» nella Community: per ogni esame un gruppo (link WhatsApp) e, dopo l'accesso, «cerco un gruppo» come scelta esplicita. Niente social generalista.",
@@ -136,7 +139,7 @@ window.UL_CFG = {
       storico: [["2026-10-06", "Prima architettura: pagina metodo + piano a regole semplici."]],
     },
     {
-      id: "L03", titolo: "Mentoring tra pari", gruppo: "Community", stato: "Da decidere", impatto: 4, sforzo: 5, area: "",
+      id: "L03", titolo: "Mentoring tra pari", gruppo: "Community", stato: "Da decidere", impatto: 4, sforzo: 5, area: "D08",
       origine: "Nota Matteo 6/10 (con punto interrogativo) · ambassador attuali",
       problema: "Gli studenti più avanti sanno cose che i più giovani cercano, ma oggi lo scambio non è organizzato.",
       proposta: "Un mentore (studente dell'ultimo anno o laureato) per ogni esame o per il percorso: una chiamata, domande ricorrenti, consigli. Si parte dagli ambassador che già avete.",
@@ -152,7 +155,7 @@ window.UL_CFG = {
       storico: [["2026-10-06", "Prima architettura: mentori per esame e per percorso. Consiglio: prova manuale."]],
     },
     {
-      id: "L04", titolo: "Test d'ingresso (TOLC)", gruppo: "Orientamento", stato: "Da decidere", impatto: 5, sforzo: 5, area: "D12",
+      id: "L04", titolo: "Test d'ingresso (TOLC)", gruppo: "Orientamento", stato: "Da decidere", impatto: 5, sforzo: 5, area: "D16",
       origine: "HQ · TOLC",
       problema: "Far conoscere UniLink ai futuri studenti prima dell'iscrizione: è il momento in cui scelgono come studiare.",
       proposta: "Nella fase «Prima»: diagnostico gratuito di 20 domande e un percorso di preparazione per materia.",
@@ -167,7 +170,7 @@ window.UL_CFG = {
       storico: [["2026-10-06", "Prima architettura."]],
     },
     {
-      id: "L05", titolo: "Borse di studio e tasse", gruppo: "Orientamento", stato: "Da decidere", impatto: 4, sforzo: 4, area: "D10",
+      id: "L05", titolo: "Borse di studio e tasse", gruppo: "Orientamento", stato: "Da decidere", impatto: 4, sforzo: 4, area: "",
       origine: "HQ · BORSE DI STUDIO",
       problema: "Molti studenti non sanno dove trovare bandi e scadenze (DSU e altri).",
       proposta: "Una guida nella fase «Prima» con le informazioni chiave del bando, le scadenze e i link alle fonti ufficiali. Promemoria nell'area personale.",
@@ -182,7 +185,7 @@ window.UL_CFG = {
       storico: [["2026-10-06", "Prima architettura."]],
     },
     {
-      id: "L06", titolo: "Carriera e CV", gruppo: "Dopo", stato: "Da decidere", impatto: 4, sforzo: 2, area: "D09",
+      id: "L06", titolo: "Carriera e CV", gruppo: "Dopo", stato: "Da decidere", impatto: 4, sforzo: 2, area: "D05",
       origine: "HQ · CURRICULUM (quick win) · Demo Versione C",
       problema: "Chi pensa a magistrali e stage non sa quanto il proprio CV sia vicino al profilo tipo.",
       proposta: "Nella fase «Dopo»: guida breve (CV, colloquio, LinkedIn) e, nell'area personale, confronto del CV con un profilo tipo. Career Score e opportunità solo nella visione.",
@@ -196,7 +199,7 @@ window.UL_CFG = {
       storico: [["2026-10-06", "Prima architettura."]],
     },
     {
-      id: "L07", titolo: "Listino e pacchetti", gruppo: "Monetizzazione", stato: "Da decidere", impatto: 3, sforzo: 3, area: "D05",
+      id: "L07", titolo: "Listino e pacchetti", gruppo: "Monetizzazione", stato: "Da decidere", impatto: 3, sforzo: 3, area: "",
       origine: "HQ · Prezzi & abbonamenti · Stripe",
       problema: "Il listino non è deciso: appunti singoli, dispensa completa, bundle semestre/anno, Plus mensile sono ipotesi.",
       proposta: "Una pagina Prezzi pronta ma fuori dalla navigazione, che legge il listino da UL_CFG.prezzi: quando il listino è deciso si cambiano i numeri qui e la pagina si ridisegna.",

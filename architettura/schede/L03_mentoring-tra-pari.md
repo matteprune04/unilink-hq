@@ -1,6 +1,6 @@
 # L03 · Mentoring tra pari
 
-Gruppo: Community · Stato: Da decidere · Impatto 4/5 · Sforzo 5/5
+Gruppo: Community · Stato: Da decidere · Impatto 4/5 · Sforzo 5/5 · Web app: D08
 
 ## Problema
 Gli studenti più avanti sanno cose che i più giovani cercano, ma oggi lo scambio non è organizzato.

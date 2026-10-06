@@ -1,6 +1,6 @@
 # L05 · Borse di studio e tasse
 
-Gruppo: Orientamento · Stato: Da decidere · Impatto 4/5 · Sforzo 4/5 · Web app: D10
+Gruppo: Orientamento · Stato: Da decidere · Impatto 4/5 · Sforzo 4/5
 
 ## Problema
 Molti studenti non sanno dove trovare bandi e scadenze (DSU e altri).

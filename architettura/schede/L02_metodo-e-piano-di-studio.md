@@ -61,7 +61,7 @@ Una pagina «Il metodo» che spiega come studiamo (capire → fissare → allena
    - Si può cambiare: Si sostituisce con l'esame più cercato; gli argomenti vengono dalla collezione «Argomenti».
    - Componenti: LP/Card, Lista
 5. **Dopo l'accesso** (M5)
-   - Contenuto: [studio-piano]
+   - Contenuto: [studio-esame]
    - Perché: Mostra cosa succede dopo: il piano non resta una pagina, diventa un calendario.
    - Si può cambiare: Lo screenshot si rifà dalla web app quando cambia.
    - Componenti: Schermata reale (img/app)

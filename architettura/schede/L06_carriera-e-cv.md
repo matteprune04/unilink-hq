@@ -1,6 +1,6 @@
 # L06 · Carriera e CV
 
-Gruppo: Dopo · Stato: Da decidere · Impatto 4/5 · Sforzo 2/5 · Web app: D09
+Gruppo: Dopo · Stato: Da decidere · Impatto 4/5 · Sforzo 2/5 · Web app: D05
 
 ## Problema
 Chi pensa a magistrali e stage non sa quanto il proprio CV sia vicino al profilo tipo.
@@ -59,7 +59,7 @@ Quick win: parte da contenuti scritti dal team, costa poco e dà traffico organi
    - Si può cambiare: Una riga della collezione «Profili tipo» per profilo.
    - Componenti: LP/Card
 5. **Nell'area personale** (C5)
-   - Contenuto: [futuro-career]
+   - Contenuto: [decidere-career-opportunita]
    - Perché: Mostra il passo successivo con una schermata vera.
    - Si può cambiare: Lo screenshot si rifà dalla web app.
    - Componenti: Schermata reale (img/app)
@@ -146,7 +146,7 @@ Dove: Area personale (file) · Chi: Team · Quando: Quando cambia il modello
 |---|---|---|
 | tools.js (checklist) | Calcola il punteggio | Componente di codice in Framer |
 | CMS «Profili tipo» | Contenuti dei profili | Collezione collegata alla pagina |
-| Area personale (percorso Futuro) | Template e confronto del CV | Link con l'area di studio nei parametri |
+| Area personale (modulo Career, proposta D05/D06 nella web app) | Template e confronto del CV | Link con l'area di studio nei parametri |
 | Partner (solo in futuro) | Opportunità | Accordo scritto prima di pubblicare qualsiasi offerta |
 
 ## Da verificare (legale/privacy)
