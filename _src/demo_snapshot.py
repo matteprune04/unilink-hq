@@ -30,7 +30,7 @@ DEMO = [
      "descrizione": "Landing v2: Prima · Durante · Dopo, strumenti, anteprima area personale, Da decidere (riferimento per Framer).",
      "architettura": "UniLink_Architettura_Landing.pdf"},
     {"id": "webapp", "titolo": "Web app · area personale", "cartella": "demo-webapp",
-     "descrizione": "Demo della web app: sezioni decise + sezione «Da decidere».",
+     "descrizione": "Web app v3: design demo A, parte decisa (Studio, Il mio percorso, Abbonamento), Da decidere con i moduli Career e Network, Visualizza come, commenti del team.",
      "architettura": "UniLink_Architettura_WebApp.pdf"},
 ]
 ESCLUDI = {".DS_Store", "Thumbs.db"}

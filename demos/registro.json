@@ -81,7 +81,7 @@
    ],
    "titolo": "Web app · area personale",
    "cartella": "demo-webapp",
-   "descrizione": "Demo della web app: sezioni decise + sezione «Da decidere».",
+   "descrizione": "Web app v3: design demo A, parte decisa (Studio, Il mio percorso, Abbonamento), Da decidere con i moduli Career e Network, Visualizza come, commenti del team.",
    "architettura": "UniLink_Architettura_WebApp.pdf",
    "url": "https://matteprune04.github.io/unilink-hq/demo-webapp/"
   }
