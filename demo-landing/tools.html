@@ -1,45 +1,24 @@
 <!doctype html>
 <html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>UniLink · Tools</title><link rel="icon" href="img/logo-blu.png"><link rel="stylesheet" href="ul.css"><style>.bg2{background:var(--crema2)}</style></head>
+<title>UniLink · Strumenti</title><link rel="icon" href="img/logo-blu.png"><link rel="stylesheet" href="ul.css"><link rel="stylesheet" href="tools.css"></head>
 <body data-page="tools">
 <div id="ul-nav"></div>
 <section style="padding-top:70px">
   <div class="wrap">
     <span class="badge on">Gratis, senza account</span>
-    <h1 class="display" style="font-size:72px;margin-top:18px">Tool che fanno i <span class="acc">conti<svg class="u" viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M3 13 C 55 4, 130 3, 197 9" stroke="#cf7527" stroke-width="5" fill="none" stroke-linecap="round"/></svg><svg class="s" viewBox="0 0 20 20"><path d="M3 17 L7 8 M10 18 L16 11 M12 5 L15 1" stroke="#cf7527" stroke-width="2.4" stroke-linecap="round"/></svg></span></h1>
-    <p class="lead" style="margin:18px 0 40px">Il calcolatore del voto qui sotto funziona davvero (versione compatta). Gli altri tool si aprono sul sito attuale.</p>
-    <div class="tools" id="calcolatore">
-      <div class="tlist">
-        <div class="tool sel" data-sel="calc"><div class="ico">110</div><div><h3>Voto di laurea</h3><p>Dalla media ponderata al voto finale.</p></div><span class="go">→</span></div>
-        <a class="tool" href="https://www.unilinkfirenze.it/tools/calcolatore-voto-di-laurea" target="_blank" rel="noopener"><div class="ico">⊕</div><div><h3>Voto di laurea, versione completa</h3><p>Con regolarità CFU, obiettivo e scenari.</p></div><span class="go">↗</span></a>
-        <a class="tool" href="https://www.unilinkfirenze.it/tools/calcolatore-erasmus" target="_blank" rel="noopener"><div class="ico">✈</div><div><h3>Calcolatore Erasmus</h3><p>Il tuo punteggio per il bando.</p></div><span class="go">↗</span></a>
-        <a class="tool" href="https://www.unilinkfirenze.it/tools/destinazioni-erasmus" target="_blank" rel="noopener"><div class="ico">⌖</div><div><h3>Destinazioni Erasmus</h3><p>Le mete, con informazioni ordinate.</p></div><span class="go">↗</span></a>
-        <a class="tool" href="https://www.unilinkfirenze.it/tools/master-magistrale" target="_blank" rel="noopener"><div class="ico">⚑</div><div><h3>Master e magistrali</h3><p>Confronta i percorsi dopo la triennale.</p></div><span class="go">↗</span></a>
-      </div>
-      <div class="calc" data-live id="calcolatore">
-        <span class="eyebrow" style="color:#f0b37c">Prova · voto di laurea</span>
-        <h3 style="margin-top:8px">Quanto parti alla discussione?</h3>
-        <div class="riga"><div class="lab">Media ponderata <b id="v-media">27,4</b></div><input type="range" id="r-media" min="18" max="30" step="0.1" value="27.4" aria-label="Media ponderata"></div>
-        <div class="riga"><div class="lab">Lodi <b id="v-lodi">2</b></div><input type="range" id="r-lodi" min="0" max="10" step="1" value="2" aria-label="Numero di lodi"></div>
-        <div class="riga"><div class="lab">Tesi</div><div class="cscelte" data-k="tesi"><span data-v="1">Sufficiente</span><span data-v="2" class="on">Buono</span><span data-v="3">Ottimo</span></div></div>
-        <div class="riga"><div class="lab">Quando ti laurei</div><div class="cscelte" data-k="corso"><span data-v="2" class="on">In corso</span><span data-v="1">Semestre dopo</span><span data-v="0">Più tardi</span></div></div>
-        <div class="esito"><div>Voto di presentazione<b id="v-pres">101,1</b></div><div class="big">Voto finale stimato<b id="v-fin">105</b></div></div>
-        <p class="small" id="v-nota" style="color:rgba(244,241,234,.7);margin-top:14px"></p>
-        <p class="small" style="color:rgba(244,241,234,.5);margin-top:4px">Regole della Scuola di Economia (versione compatta del calcolatore del sito).</p>
-      </div>
-    </div>
+    <h1 class="display" style="font-size:72px;margin-top:18px">Strumenti che fanno i <span class="acc" data-s>conti</span></h1>
+    <p class="lead" style="margin:18px 0 28px">Provali qui, senza lasciare la pagina. Quelli completi stanno nell'area personale. Scegli il tuo hub: per gli altri corsi gli strumenti sono di esempio.</p>
+    <div class="toggle" id="hubtabs" style="margin-bottom:28px"><span class="on" data-hub="economia">Economia</span><span data-hub="giurisprudenza">Giurisprudenza</span><span data-hub="medicina">Medicina</span></div>
+    <div class="tools" data-toolshell data-hub="economia" id="calcolatore"><div class="tlist"></div><div class="tpanel"></div></div>
   </div>
 </section>
-<section class="bg2">
-  <div class="wrap">
-    <div class="testa"><div><span class="eyebrow">In arrivo</span><h2 style="margin-top:10px">Nell'area personale</h2></div><p>Arrivano con l'account: li trovi qui quando sono pronti.</p></div>
-    <div class="tools" style="grid-template-columns:1fr 1fr">
-      <div class="tool"><div class="ico">◷</div><div><h3>Piano di studio <span class="badge" style="margin-left:6px">In arrivo</span></h3><p>Sessioni da 45 minuti fino all'esame.</p></div></div>
-      <div class="tool"><div class="ico">✓</div><div><h3>Simulatore d'esame <span class="badge" style="margin-left:6px">In arrivo</span></h3><p>Quiz a tempo con correzione.</p></div></div>
-    </div>
-  </div>
-</section>
+<section class="bg2"><div class="wrap">
+  <div class="testa"><div><span class="eyebrow">Altri corsi</span><h2 style="margin-top:10px">Uno strumento <span class="acc">per ogni corso</span></h2></div><p>Ogni hub può avere i suoi: si aggiungono in tools.js senza toccare il design.</p></div>
+  <div class="cds c2"><a class="cd" href="decidere.html#L08" style="background:transparent;border:2px dashed var(--arancio);box-shadow:none"><span class="badge">Da decidere · L08</span><h3>Quali strumenti per quale hub</h3><p>Elenco dei candidati per Giurisprudenza e Medicina, con impatto e sforzo.</p><span class="go">Apri la card</span></a><a class="cd ar" href="https://chat.whatsapp.com/KdA4r1POh6MAiBbLmmES0L"><div class="ico">+</div><h3>Hai un’idea?</h3><p>Scrivici nel gruppo: se manca uno strumento, lo mettiamo in Da decidere.</p><span class="go">Scrivici</span></a></div>
+</div></section>
 <div id="ul-foot"></div>
+<script src="config.js"></script>
 <script src="data.js"></script>
+<script src="tools.js"></script>
 <script src="app.js"></script>
 </body></html>
