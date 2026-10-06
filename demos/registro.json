@@ -1,0 +1,51 @@
+{
+ "demo": [
+  {
+   "id": "landing",
+   "versioni": [
+    {
+     "n": 1,
+     "tag": "landing-v1",
+     "data": "2026-10-06T14:15+00:00",
+     "autore": "Claude",
+     "nota": "Demo navigabile della nuova landing (architettura v2)",
+     "commit": "ed6600a",
+     "impronta": "c3c05c4a284ee1ab",
+     "kb": 5651,
+     "file": "UniLink_landing_v1_2026-10-06.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v1/UniLink_landing_v1_2026-10-06.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v1/demo-landing"
+    }
+   ],
+   "titolo": "Landing",
+   "cartella": "demo-landing",
+   "descrizione": "Demo navigabile della nuova landing (riferimento per Framer).",
+   "architettura": "UniLink_Architettura_Landing.pdf",
+   "url": "https://matteprune04.github.io/unilink-hq/demo-landing/"
+  },
+  {
+   "id": "webapp",
+   "versioni": [
+    {
+     "n": 1,
+     "tag": "webapp-v1",
+     "data": "2026-10-06T14:15+00:00",
+     "autore": "Claude",
+     "nota": "Web app demo v1: sezioni sicure, sezione Da decidere, hub in arrivo; backup automatico delle demo e sezione DEMO nell'HQ",
+     "commit": "82f8754",
+     "impronta": "4374d879f9d91224",
+     "kb": 1082,
+     "file": "UniLink_webapp_v1_2026-10-06.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/webapp-v1/UniLink_webapp_v1_2026-10-06.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v1/demo-webapp"
+    }
+   ],
+   "titolo": "Web app · area personale",
+   "cartella": "demo-webapp",
+   "descrizione": "Demo della web app: sezioni decise + sezione «Da decidere».",
+   "architettura": "UniLink_Architettura_WebApp.pdf",
+   "url": "https://matteprune04.github.io/unilink-hq/demo-webapp/"
+  }
+ ],
+ "aggiornato": "2026-10-06T14:15+00:00"
+}
