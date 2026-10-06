@@ -10,3 +10,9 @@ lo impediscono le regole del database (Row Level Security), non solo la pagina.
 - `sync/google_sync.py` + `.github/workflows/google-sync.yml` — ogni giorno legge Google Analytics e Search Console in sola lettura e aggiorna la sezione "Sito e Google".
 
 Segreti (solo in GitHub → Settings → Secrets, mai nel codice): `GOOGLE_KEY_JSON`, `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`.
+
+## Demo e backup
+- `demo-landing/` — demo navigabile della landing · `demo-webapp/` — demo della web app (area personale).
+- `.github/workflows/demo-backup.yml` + `_src/demo_snapshot.py` — a ogni modifica delle demo: ZIP, Release GitHub (`landing-vN`, `webapp-vN`) e riga in `demos/registro.json`.
+- In HQ, Laboratorio AI → sezione **DEMO** legge il registro (anteprima, download, storico). Il codice sta in `_src/online.js`, quindi resta dopo ogni build.
+- `architettura/` — PDF di architettura della web app (sorgente Typst in `architettura/webapp/`).

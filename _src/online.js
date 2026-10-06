@@ -173,3 +173,64 @@ async function boot() {
   let name = ""; try { name = localStorage.getItem("ulhq_name") || ""; } catch (e) {}
   if (data && data.session && name) enter(name); else showLogin();
 }
+
+/* ================= Laboratorio AI → DEMO (landing + web app) =================
+   Le demo vivono nel repository (demo-landing/, demo-webapp/) e si aggiornano con un push.
+   La GitHub Action "Backup demo" crea a ogni modifica uno ZIP (Release GitHub) e una riga in
+   demos/registro.json: qui si legge il registro e si mostrano anteprima, download e storico.
+   Nessun caricamento a mano. Questo blocco sta in _src/online.js, quindi sopravvive alle build. */
+const DEMO_REG = ["https://raw.githubusercontent.com/matteprune04/unilink-hq/main/demos/registro.json", "demos/registro.json"];
+const DEMO_BASE = [
+  { id: "landing", titolo: "Landing", cartella: "demo-landing", descrizione: "Demo navigabile della nuova landing (riferimento per Framer).", url: "demo-landing/", versioni: [] },
+  { id: "webapp", titolo: "Web app · area personale", cartella: "demo-webapp", descrizione: "Demo della web app: sezioni decise + sezione «Da decidere».", url: "demo-webapp/", versioni: [] },
+];
+const DM = { reg: null, err: "", busy: false, open: "", dev: "desk" };
+async function demoLoad(force) {
+  if (DM.busy || (DM.reg && !force)) return;
+  DM.busy = true; DM.err = "";
+  for (const u of DEMO_REG) {
+    try { const r = await fetch(u + "?t=" + Date.now(), { cache: "no-store" }); if (r.ok) { DM.reg = await r.json(); break; } } catch (e) {}
+  }
+  if (!DM.reg) DM.err = "Registro non ancora disponibile: si crea al primo backup automatico.";
+  DM.busy = false; if (S.view === "lab") render();
+}
+const demoList = () => DEMO_BASE.map(b => ({ ...b, ...((DM.reg && DM.reg.demo || []).find(x => x.id === b.id) || {}) }));
+const demoDate = s => s ? new Date(s).toLocaleString("it-IT", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "";
+function demoSection() {
+  demoLoad();
+  const card = d => { const v = (d.versioni || [])[0];
+    return `<article class="card click labcard" data-demoopen="${d.id}" style="--tc:#cf7527;--ts:#f6e4d1">
+      <div class="row">${chip("Demo live", "or")}${v ? `<span class="vbadge">v${v.n}</span><span class="muted small">${(d.versioni || []).length} ${(d.versioni || []).length === 1 ? "versione" : "versioni"}</span>` : ""}</div>
+      <h3>${esc(d.titolo)}</h3><div class="excerpt">${esc(d.descrizione)}</div>
+      <div class="small muted">${v ? `Ultima: ${esc(demoDate(v.data))} · ${esc(v.autore)} · «${esc(v.nota)}»` : "Storico in preparazione"}</div>
+      <div class="row">${v ? `<a class="btn sm pri" href="${esc(v.download)}" data-stop>Scarica v${v.n}</a>` : ""}<a class="btn sm" href="${esc(d.url)}" target="_blank" rel="noopener" data-stop>Apri in una scheda</a></div></article>`; };
+  return `<section class="stack" id="demo-sez"><div class="gh" style="--tc:#cf7527;--ts:#f6e4d1"><h2>DEMO</h2><span class="num muted">sempre all'ultima versione · backup automatico</span></div>
+    <div class="grid">${demoList().map(card).join("")}</div>${DM.err ? `<p class="small muted">${esc(DM.err)}</p>` : ""}</section>`;
+}
+function demoDetail(d) {
+  demoLoad();
+  const vs = d.versioni || [], v = vs[0];
+  return `<div class="wrap">
+    <div class="row between"><button class="btn sm" data-demoback>← Laboratorio AI</button><div class="row"><div class="seg">${[["desk", "Desktop"], ["mob", "Telefono"]].map(([m, l]) => `<button class="${DM.dev === m ? "on" : ""}" data-demodev="${m}">${l}</button>`).join("")}</div><a class="btn sm" href="${esc(d.url)}" target="_blank" rel="noopener">Schermo intero</a></div></div>
+    ${head("Laboratorio AI · DEMO", esc(d.titolo), esc(d.descrizione) + (d.architettura ? ` Architettura: <b>${esc(d.architettura)}</b>.` : ""), v ? `<a class="btn pri" href="${esc(v.download)}">Scarica l'ultima versione (v${v.n})</a>` : "")}
+    <div class="fr"><div class="fr-h"><b>${v ? "v" + v.n : "Dal vivo"}</b>${chip("attuale", "gr")}<span class="small muted">${esc(d.url)}</span></div><div class="fr-b ${DM.dev === "mob" ? "mob" : ""}"><iframe class="demo full" src="${esc(d.cartella)}/" title="${esc(d.titolo)}"></iframe></div></div>
+    <section class="card panel"><div class="panel-h"><h2>Storico delle versioni</h2><span class="small muted">ogni versione è un backup scaricabile</span></div>
+      ${vs.length ? vs.map((x, i) => `<div class="li"><div class="grow"><div class="t">v${x.n} ${i === 0 ? chip("attuale", "gr") : ""} <span class="small muted">· ${esc(demoDate(x.data))} · ${esc(x.autore)}</span></div><div class="small muted">${esc(x.nota)} · ${nf(x.kb)} KB · commit ${esc(x.commit || "")}</div></div><div class="row"><a class="btn sm" href="${esc(x.download)}">Scarica ZIP</a><a class="btn sm ghost" href="${esc(x.sorgente)}" target="_blank" rel="noopener">File su GitHub</a></div></div>`).join("")
+        : `<p class="muted small">Il primo backup compare qui pochi minuti dopo la prima pubblicazione.</p>`}
+      <p class="small muted" style="margin-top:10px">Per tornare a una versione: scarica lo ZIP, oppure chiedi a Claude «ripristina ${esc(d.id)} alla v…» (usa il tag <code>${esc(d.id)}-vN</code> su GitHub).</p></section>
+  </div>`;
+}
+const _labView = V.lab;
+V.lab = () => {
+  if (DM.open) { const d = demoList().find(x => x.id === DM.open); if (d) return demoDetail(d); }
+  const html = _labView();
+  if (S.labOpen) return html;
+  const i = html.indexOf("</header>");
+  return i < 0 ? html : html.slice(0, i + 9) + demoSection() + html.slice(i + 9);
+};
+document.addEventListener("click", e => {
+  if (e.target.closest("[data-stop]")) return;
+  const o = e.target.closest("[data-demoopen]"); if (o) { DM.open = o.dataset.demoopen; S.labOpen = null; window.scrollTo(0, 0); render(); return; }
+  if (e.target.closest("[data-demoback]") || (DM.open && e.target.closest('[data-nav="lab"]'))) { DM.open = ""; render(); return; }
+  const dv = e.target.closest("[data-demodev]"); if (dv) { DM.dev = dv.dataset.demodev; render(); }
+});

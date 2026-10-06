@@ -3,3 +3,4 @@ _sync/
 __pycache__/
 *.json.key
 unilink-lettura.json
+_dist/

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#172554">
+<meta name="robots" content="noindex">
+<title>UniLink · Il tuo spazio (demo)</title>
+<link rel="icon" href="img/logo-blu.png">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<!-- Demo della web app UniLink (area personale). Architettura: UniLink_Architettura_WebApp.pdf -->
+<div id="fuori" hidden></div>
+<div class="app" id="app">
+  <aside class="side" id="side" aria-label="Menu"></aside>
+  <div class="main">
+    <header class="top" id="top"></header>
+    <main class="page" id="page"></main>
+  </div>
+</div>
+<nav class="tabbar" id="tabbar" aria-label="Sezioni principali"></nav>
+<div class="modal" id="modal" hidden><div class="sheet" role="dialog" aria-modal="true"></div></div>
+<div class="toast" id="toast" role="status" hidden></div>
+<script src="config.js"></script>
+<script src="dispense.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

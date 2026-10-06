@@ -1,0 +1,43 @@
+name: Backup demo
+
+# A ogni modifica delle demo: ZIP + Release GitHub (tag <demo>-v<N>) + riga in demos/registro.json.
+# L'HQ (Laboratorio AI → DEMO) legge il registro: anteprima, download dell'ultima versione e storico.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "demo-landing/**"
+      - "demo-webapp/**"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write   # creare le release e salvare demos/registro.json
+
+concurrency:
+  group: demo-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 100
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Crea ZIP, release e registro
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python _src/demo_snapshot.py
+      - name: Salva il registro
+        run: |
+          git config user.name "hq-bot"
+          git config user.email "hq-bot@users.noreply.github.com"
+          git add demos/registro.json
+          if git diff --cached --quiet; then echo "Registro invariato"; exit 0; fi
+          git commit -m "Registro demo aggiornato"
+          for i in 1 2 3; do git pull --rebase origin main && git push origin HEAD:main && exit 0; sleep 5; done
+          exit 1
