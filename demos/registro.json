@@ -27,6 +27,19 @@
    "id": "webapp",
    "versioni": [
     {
+     "n": 2,
+     "tag": "webapp-v2",
+     "data": "2026-10-06T14:51+00:00",
+     "autore": "Claude",
+     "nota": "Web app demo v2: base grafica A, login A e primo accesso in 7 passi, aree x percorsi x piani, account demo per ogni abbonamento, Configurazione",
+     "commit": "fff4dea",
+     "impronta": "fe72d17eb1747180",
+     "kb": 1101,
+     "file": "UniLink_webapp_v2_2026-10-06.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/webapp-v2/UniLink_webapp_v2_2026-10-06.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v2/demo-webapp"
+    },
+    {
      "n": 1,
      "tag": "webapp-v1",
      "data": "2026-10-06T14:15+00:00",
@@ -47,5 +60,5 @@
    "url": "https://matteprune04.github.io/unilink-hq/demo-webapp/"
   }
  ],
- "aggiornato": "2026-10-06T14:15+00:00"
+ "aggiornato": "2026-10-06T14:51+00:00"
 }
