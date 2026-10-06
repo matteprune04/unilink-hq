@@ -40,6 +40,19 @@
    "id": "webapp",
    "versioni": [
     {
+     "n": 3,
+     "tag": "webapp-v3",
+     "data": "2026-10-06T15:24+00:00",
+     "autore": "Claude",
+     "nota": "Web app v3: design demo A, architettura mix B/C/D, Da decidere completo, commenti del team",
+     "commit": "00adfc0",
+     "impronta": "3fd33aec6373b687",
+     "kb": 266,
+     "file": "UniLink_webapp_v3_2026-10-06.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/webapp-v3/UniLink_webapp_v3_2026-10-06.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v3/demo-webapp"
+    },
+    {
      "n": 2,
      "tag": "webapp-v2",
      "data": "2026-10-06T14:51+00:00",
@@ -73,5 +86,5 @@
    "url": "https://matteprune04.github.io/unilink-hq/demo-webapp/"
   }
  ],
- "aggiornato": "2026-10-06T15:07+00:00"
+ "aggiornato": "2026-10-06T15:24+00:00"
 }
