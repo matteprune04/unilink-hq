@@ -7,15 +7,20 @@
 <meta name="robots" content="noindex">
 <title>UniLink · Il tuo spazio (demo)</title>
 <link rel="icon" href="img/logo-blu.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="app.css">
 </head>
 <body>
-<!-- Demo della web app UniLink (area personale). Architettura: UniLink_Architettura_WebApp.pdf -->
+<!-- Demo della web app UniLink (area personale) · v2 base grafica A. Architettura: architettura/UniLink_Architettura_WebApp.pdf -->
 <div id="fuori" hidden></div>
-<div class="app" id="app">
+<div id="app">
   <aside class="side" id="side" aria-label="Menu"></aside>
+  <div class="scrim" data-menu></div>
   <div class="main">
     <header class="top" id="top"></header>
+    <div class="sub" id="sub"></div>
     <main class="page" id="page"></main>
   </div>
 </div>

@@ -1,36 +1,28 @@
-# UniLink · demo della web app (area personale)
+# UniLink · demo della web app (area personale) · v2
 
-Demo HTML statica dell'area personale, costruita sull'architettura `architettura/UniLink_Architettura_WebApp.pdf`.
-È un **riferimento** per lo sviluppo vero (Next.js + Supabase), non il servizio reale: i dati sono di esempio.
+Demo HTML statica dell'area personale, costruita su `architettura/UniLink_Architettura_WebApp.pdf` (v2).
+Base grafica: demo **A** «Il tuo spazio» (Testing Version), con dettagli della demo C. È un riferimento per lo sviluppo vero (Next.js + Supabase): i dati sono di esempio.
 
 - Online: https://matteprune04.github.io/unilink-hq/demo-webapp/
-- In HQ: Laboratorio AI → sezione **DEMO** (anteprima, download, storico delle versioni)
+- In HQ: Laboratorio AI → sezione **DEMO** (anteprima, download, storico)
 
-## Cosa c'è
-| Codice | Pagina | Stato |
-|---|---|---|
-| P00 | Accesso (link via email) | sicura |
-| P01 | Oggi (prossimo passo, numeri, esami, dispense) | sicura |
-| P02 | I miei esami (date, obiettivo, argomenti) | sicura |
-| P03 | Dispense (libreria + catalogo 34 esami, scheda) | sicura |
-| P04 | Strumenti (calcolatore voto di laurea + link al sito) | sicura |
-| P05 | Profilo | sicura |
-| P90 | **Da decidere** (voce arancio): card D01–D12 con architettura demo | da decidere |
+## Il modello: tre livelli indipendenti
+1. **Area di studio** (Economia attiva · Giurisprudenza e Medicina in arrivo · altre): cosa studi.
+2. **Percorso** (Test Prep · Studio · Futuro): in che momento sei. Selettore in cima alla sidebar.
+3. **Piano** (Gratuito · Appunti · Dispensa · Semestre · Plus): cosa è sbloccato. Prezzi = ipotesi.
 
-Il selettore **Il tuo hub** in cima alla sidebar mostra Economia (attivo) e Giurisprudenza / Medicina (in arrivo).
+## Come provarla
+Dal login scegli un account demo: Giulia (gratuito), Marco (dispensa), Sara (semestre), Luca (Plus, Futuro), Elena (Giurisprudenza in arrivo), Pietro (Test Prep), oppure «Nuovo account» per il primo accesso in 7 passi. Il cerchio in alto a destra apre il menu (cambia account, rifai il primo accesso).
 
 ## Modificare
-- **Cosa c'è** (hub, voci, strumenti, card «Da decidere», account demo): `config.js`. È l'unico file da toccare per i contenuti.
-- **Pagine e mini demo**: `app.js` (VISTE = pagine, BLOCCHI = pezzi delle mini demo).
-- **Grafica**: `app.css` (token uguali alla landing; sezioni 1 token · 2 base · 3 guscio · 4 componenti · 5 Da decidere · 6 telefono).
-- **Dispense**: `dispense.js` (stessa fonte della landing).
-- Ogni modifica: aggiornare `UL_VERSIONE` in `config.js`, poi commit con una frase chiara (diventa la nota della versione) e push.
+- **Cosa c'è**: `config.js` (aree, percorsi, moduli, piani, strumenti, domande, account demo, card «Da decidere»).
+- **Regole dei piani**: `app.js` → `accesso()` (un solo punto).
+- **Pagine**: `app.js` → oggetto `P` (indice in testa al file). **Grafica**: `app.css`.
+- Ogni modifica: aggiornare `UL_VERSIONE` in `config.js`, commit con una frase chiara (diventa la nota della versione), push.
+- Sezione di lavoro: **Da decidere** (idee aperte) e **Configurazione** (tabelle di config.js).
 
 ## Versioni e backup
-A ogni push che tocca questa cartella la GitHub Action **Backup demo** crea uno ZIP, una Release (`webapp-vN`) e una riga in `demos/registro.json`. Per tornare indietro: scarica lo ZIP dall'HQ, oppure ripristina la cartella dal tag `webapp-vN`.
-
-## Come chiedere modifiche (cap. 14 del PDF)
-A nuova idea → card Dxx · B modifica una card · C promuovi una card a sicura · D modifica una pagina Pxx · E grafica WA/… · F hub · G ripristina · H rimuovi.
+A ogni push su questa cartella la GitHub Action **Backup demo** crea ZIP, Release (`webapp-vN`) e riga in `demos/registro.json`.
 
 ## Cosa è simulato
-Accesso (nessuna email inviata), dati dello studente, date d'esame, lista d'attesa (salvata solo nel browser). Le schede dispensa e gli strumenti «sul sito» aprono le pagine vere di unilinkfirenze.it.
+Accesso, email, pagamenti, lista d'attesa, estratti delle dispense, domande di quiz (scritte per la demo). Schede e strumenti «sul sito» aprono le pagine vere di unilinkfirenze.it.
