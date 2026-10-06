@@ -1,0 +1,150 @@
+/* js/boot.js */
+/* NAVIGAZIONE, ROTTE E AVVIO della web app v3.
+   UL.NAV.decise = sezioni decise (studente).  UL.NAV.dd = moduli DA DECIDERE (demo C e D), nel gruppo arancione.
+   Promuovere un modulo: spostare la sua voce da UL.NAV.dd a UL.NAV.decise e registrare la rotta senza U.dd().
+   soloAttiva = se l'area dell'utente è «in arrivo» la voce mostra «Presto» e la pagina «in arrivo». */
+(function () {
+  const UL = window.UL;
+  const B = UL.B, U = UL.U;
+  const { icon, esc } = UL.ui;
+
+  UL.NAV = {
+    decise: [
+      { g: "Studio", items: [
+        { k: "dashboard", l: "Dashboard", i: "home", to: "#/app/dashboard" },
+        { k: "esami", l: "I miei esami", i: "layers", to: "#/app/esami" },
+        { k: "materiali", l: "Materiali", i: "book", to: "#/app/materiali", soloAttiva: true },
+        { k: "esercitazioni", l: "Esercitazioni", i: "quiz", to: "#/app/esercitazioni", soloAttiva: true },
+      ] },
+      { g: "Dopo gli esami", items: [{ k: "percorso", l: "Il mio percorso", i: "cap", to: "#/app/percorso" }] },
+      { g: "Account", items: [
+        { k: "abbonamento", l: "Abbonamento", i: "euro", to: "#/app/abbonamento" },
+        { k: "account", l: "Profilo e account", i: "user", to: "#/app/account" },
+      ] },
+    ],
+    // k = rotta, v = vista originale del modulo (UL.views[v]); admin = solo team
+    dd: [
+      { modulo: "Career (demo C)", i: "brief", items: [
+        { k: "piano", l: "Il mio piano", i: "target", v: "pianoC" },
+        { k: "studio", l: "Studio con Plus", i: "book", v: "studioC" },
+        { k: "opportunita", l: "Opportunità", i: "brief", v: "opportunitaC" },
+        { k: "profilo", l: "Profilo talento", i: "user", v: "profiloC" },
+        { k: "track", l: "Track", i: "layers", v: "trackC" },
+        { k: "mentor", l: "Mentor", i: "users", v: "mentorC" },
+        { k: "master", l: "Master", i: "cap", v: "masterC" },
+        { k: "eventi", l: "Eventi", i: "calendar", v: "eventiC" },
+        { k: "plus", l: "Plus e inviti", i: "spark", v: "plusC" },
+        { k: "cockpit", l: "Business cockpit", i: "chart", v: "adminC", admin: true },
+      ] },
+      { modulo: "Network (demo D)", i: "globe", items: [
+        { k: "home", l: "Home dell'ateneo", i: "home", v: "homeD" },
+        { k: "dispense", l: "Dispense per ateneo", i: "book", v: "dispenseD" },
+        { k: "test", l: "Test e simulazioni", i: "quiz", v: "testD" },
+        { k: "ammissioni", l: "Ammissioni MSc", i: "cap", v: "ammissioniD" },
+        { k: "academy", l: "Academy", i: "spark", v: "academyD" },
+        { k: "club", l: "Club ed eventi", i: "users", v: "clubD" },
+        { k: "mercatino", l: "Mercatino", i: "bookmark", v: "mercatinoD" },
+        { k: "strumenti", l: "Calcolatori e guide", i: "calc", v: "strumentiD" },
+        { k: "pass", l: "Pass e crediti", i: "star", v: "passD" },
+        { k: "rete", l: "La rete", i: "shield", v: "adminD", admin: true },
+      ] },
+    ],
+  };
+
+  /* ---------- viste-cornice ---------- */
+  UL.views.materialiU = U.soloAttiva("materialiB", "Materiali");
+  UL.views.praticaU = U.soloAttiva("praticaB", "Esercitazioni");
+  UL.views.schedaU = U.soloAttiva("schedaB", "Scheda esame");
+  const ddRoutes = {};
+  UL.NAV.dd.forEach((g) => g.items.forEach((it) => {
+    UL.views["dd_" + it.k] = U.dd(it.k, it.v);
+    ddRoutes[it.k] = { view: "dd_" + it.k, admin: !!it.admin };
+  }));
+  // sotto-menu del modulo in cima a ogni sua pagina (così la sidebar resta corta)
+  U.ddTabs = (route, user) => {
+    const g = UL.NAV.dd.find((x) => x.items.some((i) => i.k === route));
+    if (!g) return "";
+    return `<div class="tabs" style="overflow-x:auto">${g.items.filter((i) => !i.admin || user.role === "admin").map((i) => `<a href="#/app/${i.k}" class="${i.k === route ? "on" : ""}">${icon(i.i)} ${esc(i.l)}</a>`).join("")}</div>`;
+  };
+
+  /* ---------- profilo (account.js della demo A): area, ateneo, corso, anno, colore del cerchio ---------- */
+  UL.CONFIG.skipCdsAtRegister = true; // corso, anno, area e piano si scelgono nel primo accesso
+  UL.CONFIG.accountFields = (user) => {
+    const p = user.profile;
+    const opt = (v, l, cur) => `<option value="${v}" ${String(cur) === String(v) ? "selected" : ""}>${esc(l)}</option>`;
+    return `
+    <div class="field"><label for="ac-area">Area di studio</label><select class="select" id="ac-area" name="area">${window.UL_AREE.map((a) => opt(a.slug, a.nome + (a.stato === "attiva" ? "" : a.stato === "in_arrivo" ? " (in arrivo)" : " (proposta)"), p.area)).join("")}</select></div>
+    <div class="field"><label for="ac-ateneo">Ateneo</label><select class="select" id="ac-ateneo" name="ateneo">${[["unifi", "Università di Firenze"]].concat((window.UL_D ? window.UL_D.unis : []).filter((u) => u.id !== "unifi").map((u) => [u.id, u.n || u.id])).map(([k, l]) => opt(k, l + (k === "unifi" ? "" : " (da decidere)"), p.ateneo || "unifi")).join("")}</select></div>
+    <div class="field"><label for="ac-cds">Corso di laurea</label><select class="select" id="ac-cds" name="cds">${[["EA", "Economia Aziendale"], ["EC", "Economia e Commercio"], ["", "Altro / nessuno"]].map(([k, l]) => opt(k, l, p.cds)).join("")}</select></div>
+    <div class="field"><label for="ac-anno">Anno</label><select class="select" id="ac-anno" name="anno">${[["1", "I anno"], ["2", "II anno"], ["3", "III anno"], ["FC", "Fuori corso"]].map(([k, l]) => opt(k, l, p.anno)).join("")}</select></div>
+    <div class="field span-2"><label>Colore del tuo cerchio (in alto a destra)</label><div class="row">${U.COLORI.map((c) => `<label style="cursor:pointer"><input type="radio" name="colore" value="${c}" ${p.colore === c ? "checked" : ""} class="sr-only"><span class="avatar" style="background:${c};color:#fff;outline:${p.colore === c ? "3px solid var(--navy)" : "0"};outline-offset:2px">${esc(UL.ui.initials(p))}</span></label>`).join("")}</div></div>`;
+  };
+
+  const soon = (user, it) => it.soloAttiva && !U.attiva(user);
+  // pagina corrente: la app usa sia «#/app/pagina» sia il token «#app.pagina» nell'URL
+  const curPage = () => (location.hash.replace(/^#\/?app[./]/, "").split(/[./]/)[0] || "dashboard");
+  UL.shell.start({
+    key: "ul_unilink_v3",
+    name: "UniLink",
+    tag: "Area Personale",
+    flag: "DEMO v3 · dati di esempio",
+    home: "#/app/dashboard",
+    homeKey: "dashboard",
+    onboarding: "onboardingU",
+    publicRoutes: { "": "login", login: "login", registrati: "register", recupero: "recover" },
+    appRoutes: Object.assign({
+      // parte decisa
+      dashboard: { view: "dashboardU" }, esami: { view: "esamiB" },
+      materiali: { view: "materialiU" }, esercitazioni: { view: "praticaU" }, scheda: { view: "schedaU" },
+      percorso: { view: "percorsoB" },
+      abbonamento: { view: "abbonamentoU" }, acquisti: { view: "abbonamentoU" }, account: { view: "account" },
+      // sezione di lavoro
+      decidere: { view: "decidereU" }, configurazione: { view: "configU" },
+      metriche: { view: "adminB", admin: true },
+    }, ddRoutes), // moduli da decidere: piano, studio, opportunita, …, home, dispense, test, …
+    nav(user) {
+      const err = Object.keys(window.UL_QUIZ).reduce((s, k) => s + B.errors(user, k).length, 0);
+      const badge = (it) => it.k === "esami" ? user.activity.exams.filter((e) => e.status !== "done").length || "" : it.k === "esercitazioni" ? err || "" : it.k === "abbonamento" && B.plus(user) ? "Plus" : "";
+      const toItem = (it) => Object.assign({}, it, { soon: soon(user, it), badge: soon(user, it) ? "" : badge(it) });
+      const g = UL.NAV.decise.map((x) => ({ g: x.g, items: x.items.map(toItem) }));
+      // gruppo arancione: una voce per modulo (attiva su tutte le sue pagine) + catalogo e configurazione
+      const cur = curPage();
+      const ddItems = [{ k: "decidere", l: "Tutte le proposte", i: "alert", to: "#/app/decidere", badge: String(window.UL_DA_DECIDERE.length) }]
+        .concat(UL.NAV.dd.map((m) => { const on = m.items.some((i) => i.k === cur); return { k: on ? cur : m.items[0].k, l: m.modulo, i: m.i, to: "#/app/" + m.items[0].k, badge: String(m.items.filter((i) => !i.admin).length) }; }))
+        .concat([{ k: "configurazione", l: "Configurazione", i: "settings", to: "#/app/configurazione" }])
+        .concat(user.role === "admin" ? [{ k: "metriche", l: "Metriche", i: "shield", to: "#/app/metriche" }] : []);
+      g.push({ g: "Da decidere", cls: "dd", items: ddItems });
+      return g;
+    },
+    userMenu(user) {
+      return [{ l: "Abbonamento", i: "euro", to: "#/app/abbonamento" }, { l: "Profilo e colore", i: "user", to: "#/app/account" }, { l: "Configurazione", i: "settings", to: "#/app/configurazione" }]
+        .concat(user.role === "admin" ? [{ l: "Metriche", i: "shield", to: "#/app/metriche" }] : []);
+    },
+    // riquadro in cima alla sidebar: area di studio e ateneo
+    sideHead(user) {
+      const a = U.area(user);
+      const ateneo = U.ateneoAttivo(user) ? "UniFi" : (window.UL_D && UL.D ? UL.D.myUni(user).s || user.profile.ateneo : user.profile.ateneo);
+      return `<div class="row between"><span class="sq-label">La tua area</span>${U.attiva(user) ? '<span class="badge badge-green">attiva</span>' : '<span class="badge badge-yellow">in arrivo</span>'}</div>
+        <p class="display" style="color:var(--navy);font-size:18px;margin-top:8px">${esc(a.nome)}</p>
+        <p class="tiny muted" style="margin-top:4px">${icon("globe")} ${esc(ateneo)}${U.ateneoAttivo(user) ? "" : " (da decidere)"} · <a href="#/app/account">cambia</a></p>`;
+    },
+    // card in fondo alla sidebar: il piano attuale e l'upgrade
+    sideFoot(user) {
+      const plus = B.plus(user);
+      const n = B.courses().filter((c) => B.owns(user, c.slug)).length;
+      return `<div class="row between"><span class="display small" style="color:var(--navy)">Il tuo piano</span><b class="display" style="color:var(--orange);font-weight:400">${esc(B.planName(user))}</b></div>
+        <p class="tiny muted" style="margin:6px 0 10px">${plus ? "Esercitazioni complete su tutti gli esami." : n ? `${n} esami sbloccati. Con Plus ti alleni su tutti.` : "Prova gratis, sblocchi solo ciò che ti serve."}</p>
+        <a href="#/app/abbonamento" class="small display" style="text-decoration:none">${plus ? "Gestisci il piano →" : "Passa a Plus →"}</a>`;
+    },
+    notifications(user) {
+      const out = [];
+      user.activity.exams.filter((e) => e.status !== "done" && e.appello).forEach((e) => {
+        const d = B.daysTo(e.appello);
+        if (d >= 0 && d <= 30 && B.course(e.slug)) out.push({ id: "app-" + e.slug + e.appello, t: `${B.course(e.slug).title}: appello tra ${d} giorni.`, to: "#/app/esami/" + e.slug });
+      });
+      Object.keys(window.UL_QUIZ).forEach((k) => { const n = B.errors(user, k).length; if (n) out.push({ id: "err-" + k + n, t: `${B.course(k).title}: ${n} domande da ripassare.`, to: `#/app/esercitazioni/${k}/errori` }); });
+      if (!U.attiva(user)) out.push({ id: "arrivo-" + user.profile.area, t: `${U.area(user).nome}: sei in lista d'attesa, ti avvisiamo quando parte.`, to: "#/app/dashboard" });
+      return out;
+    },
+  });
+})();

@@ -2,33 +2,57 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#172554">
-<meta name="robots" content="noindex">
-<title>UniLink · Il tuo spazio (demo)</title>
-<link rel="icon" href="img/logo-blu.png">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>UniLink · Area Personale (demo v3)</title>
+<link rel="icon" type="image/png" href="img/logo-blu.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="app.css">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Design: demo A «Area personale» (versioni B/C/D), invariato. Aggiunte minime in unilink.css. -->
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/unilink.css">
 </head>
 <body>
-<!-- Demo della web app UniLink (area personale) · v2 base grafica A. Architettura: architettura/UniLink_Architettura_WebApp.pdf -->
-<div id="fuori" hidden></div>
-<div id="app">
-  <aside class="side" id="side" aria-label="Menu"></aside>
-  <div class="scrim" data-menu></div>
-  <div class="main">
-    <header class="top" id="top"></header>
-    <div class="sub" id="sub"></div>
-    <main class="page" id="page"></main>
-  </div>
-</div>
-<nav class="tabbar" id="tabbar" aria-label="Sezioni principali"></nav>
-<div class="modal" id="modal" hidden><div class="sheet" role="dialog" aria-modal="true"></div></div>
-<div class="toast" id="toast" role="status" hidden></div>
-<script src="config.js"></script>
-<script src="dispense.js"></script>
-<script src="app.js"></script>
+<div id="app"><div class="empty" style="padding-top:30vh">Caricamento…</div></div>
+
+<!-- 1 · configurazione e dati -->
+<script src="js/config.js"></script>          <!-- piani, modello dati, testi del login -->
+<script src="js/unilink-dati.js"></script>    <!-- aree di studio + registro «Da decidere» -->
+<script src="js/data-dispense.js"></script>
+<script src="js/data-quiz.js"></script>
+<script src="js/data-programmi.js"></script>
+<!-- 2 · base condivisa della demo A -->
+<script src="js/ui.js"></script>
+<script src="js/store.js"></script>
+<script src="js/reco.js"></script>
+<script src="js/seed.js"></script>            <!-- account demo = tipologie di «Visualizza come» -->
+<script src="js/core.js"></script>            <!-- motore della parte decisa (UL.B) -->
+<script src="js/shell.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/account.js"></script>
+<!-- 3 · parte DECISA (viste della demo B) -->
+<script src="js/views/scheda.js"></script>
+<script src="js/views/area.js"></script>
+<script src="js/views/pratica.js"></script>
+<script src="js/views/percorso.js"></script>
+<!-- 4 · DA DECIDERE · modulo Career (demo C) — togliere questo blocco per rimuoverlo -->
+<script src="js/da-decidere/career/dati.js"></script>
+<script src="js/da-decidere/career/core.js"></script>
+<script src="js/da-decidere/career/viste-percorso.js"></script>
+<script src="js/da-decidere/career/viste-crescita.js"></script>
+<!-- 5 · DA DECIDERE · modulo Network (demo D) — togliere questo blocco per rimuoverlo -->
+<script src="js/da-decidere/network/dati.js"></script>
+<script src="js/da-decidere/network/core.js"></script>
+<script src="js/da-decidere/network/home-vista.js"></script>
+<script src="js/da-decidere/network/dispense-vista.js"></script>
+<script src="js/da-decidere/network/prep-vista.js"></script>
+<script src="js/da-decidere/network/community-vista.js"></script>
+<script src="js/da-decidere/network/admin-vista.js"></script>
+<!-- 6 · estensioni v3 e avvio -->
+<script src="js/views/unilink.js"></script>
+<script src="js/boot.js"></script>
+<!-- 7 · strumento del team: commenti su pagine e sezioni, export PDF / .md / JSON (togliere per rimuoverlo) -->
+<script src="js/commenti.js"></script>
 </body>
 </html>
