@@ -5,7 +5,7 @@
 //   python -m http.server 8765 &                         # serve il repository
 //   npm i playwright axe-core                            # una volta sola (e un browser Chromium)
 //   node _src/verifica_landing.js [http://localhost:8765/]
-// Esce con codice 1 se trova problemi. Le pagine sono quelle di demo-landing/*.html più le schede decidere.html#L01…L09.
+// Esce con codice 1 se trova problemi. Le pagine sono quelle di demo-landing/*.html più tutte le schede decidere.html#L01… (lette da config.js).
 const { chromium } = require("playwright");
 const fs = require("fs");
 const path = require("path");
@@ -18,7 +18,9 @@ try { AXE = fs.readFileSync(require.resolve("axe-core/axe.min.js"), "utf8"); } c
 
 (async () => {
   const pagine = fs.readdirSync(DIR).filter((f) => f.endsWith(".html")).sort();
-  const lista = [...pagine, ...Array.from({ length: 9 }, (_, i) => `decidere.html#L0${i + 1}`)];
+  // le card «Da decidere» (L01…) sono lette dalla config: ogni card nuova viene controllata senza toccare questo file
+  const codici = [...fs.readFileSync(path.join(DIR, "config.js"), "utf8").matchAll(/id: "(L\d+)"/g)].map((m) => m[1]);
+  const lista = [...pagine, ...codici.map((c) => `decidere.html#${c}`)];
   const br = await chromium.launch();
   let problemi = 0;
   for (const [vn, [w, h]] of Object.entries(VP)) {
