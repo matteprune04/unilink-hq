@@ -4,6 +4,19 @@
    "id": "landing",
    "versioni": [
     {
+     "n": 4,
+     "tag": "landing-v4",
+     "data": "2026-10-06T21:23+00:00",
+     "autore": "Claude",
+     "nota": "Da decidere: aggiunte le voci del report del 4 ottobre (landing L10-L26, web app D26-D44)",
+     "commit": "ab40db1",
+     "impronta": "a004be04c9843742",
+     "kb": 5311,
+     "file": "UniLink_landing_v4_2026-10-06.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v4/UniLink_landing_v4_2026-10-06.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v4/demo-landing"
+    },
+    {
      "n": 3,
      "tag": "landing-v3",
      "data": "2026-10-06T16:30+00:00",
@@ -53,6 +66,19 @@
    "id": "webapp",
    "versioni": [
     {
+     "n": 4,
+     "tag": "webapp-v4",
+     "data": "2026-10-06T21:23+00:00",
+     "autore": "Claude",
+     "nota": "Da decidere: aggiunte le voci del report del 4 ottobre (landing L10-L26, web app D26-D44)",
+     "commit": "ab40db1",
+     "impronta": "ac685027e2ec39af",
+     "kb": 278,
+     "file": "UniLink_webapp_v4_2026-10-06.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/webapp-v4/UniLink_webapp_v4_2026-10-06.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v4/demo-webapp"
+    },
+    {
      "n": 3,
      "tag": "webapp-v3",
      "data": "2026-10-06T15:24+00:00",
@@ -99,5 +125,5 @@
    "url": "https://matteprune04.github.io/unilink-hq/demo-webapp/"
   }
  ],
- "aggiornato": "2026-10-06T16:30+00:00"
+ "aggiornato": "2026-10-06T21:23+00:00"
 }
