@@ -1,6 +1,6 @@
 # UniLink · Contesto per modificare le demo (landing v3 + web app)
 
-Versione compatta dei PDF (`UniLink_Architettura_Landing.pdf`, `UniLink_Architettura_WebApp.pdf`, `UniLink_Schede_Da_Decidere.pdf`), pensata per essere **allegata a una richiesta**: dice cosa è deciso, dove vive ogni cosa, quali regole non si rompono e come si risponde a una richiesta. Se qualcosa qui contraddice i PDF, vale il PDF (e questo file va aggiornato). **Dettaglio completo della landing: questo file + PDF landing. Dettaglio della web app: `demo-webapp/LEGGIMI.md` + PDF web app** (qui solo i punti di contatto).
+Versione compatta dei PDF (`UniLink_Architettura_Landing.pdf`, `UniLink_Architettura_WebApp.pdf`, `UniLink_Schede_Da_Decidere.pdf`), pensata per essere **allegata a una richiesta**: dice cosa è deciso, dove vive ogni cosa, quali regole non si rompono e come si risponde a una richiesta. Se qualcosa qui contraddice i PDF, vale il PDF (e questo file va aggiornato). **Dettaglio completo della landing: questo file + PDF landing. Dettaglio della web app: `demo-webapp/LEGGIMI.md` + PDF web app** (qui solo i punti di contatto). **Per una visione unica (landing + web app + report del 4 ottobre, con le discordanze non risolte): `architettura/LINEA_GUIDA_UNILINK.md` (PDF: `UniLink_Linea_Guida.pdf`).**
 
 ## 1 · Dove sta cosa
 | Cosa | Dove |
@@ -14,11 +14,11 @@ Versione compatta dei PDF (`UniLink_Architettura_Landing.pdf`, `UniLink_Architet
 | Schede «Da decidere» complete | `demo-landing/decidere-arch.js` (fonte unica) → demo (`decidere.html#L01`…), `architettura/schede/Lxx_*.md`, `architettura/UniLink_Schede_Da_Decidere.pdf`. Si rigenerano con `node _src/build_schede.js` |
 | Commenti del team | `demo-landing/commenti.js/css/html` (salvati nel browser; si scaricano in PDF/Markdown/JSON) |
 | Verifica prima del push | `node _src/verifica_landing.js` (errori, 404, scorrimento laterale, accessibilità con axe, 23 pagine × 3 formati) |
-| Schermate reali della web app | `demo-landing/img/app/` (51 WebP). Si rifanno con `node _src/screenshot_webapp.js` + `python _src/png_to_webp.py` |
+| Schermate reali della web app | `demo-landing/img/app/` (57 WebP: 19 schermate × 3 formati). Si rifanno con `node _src/screenshot_webapp.js` + `python _src/png_to_webp.py` |
 
 ## 2 · Regole che non si rompono
 1. **Deciso / da decidere.** Ciò che è deciso appare come sarà davvero. Ciò che non lo è vive solo nella sezione arancio «Da decidere» (landing: card `L01…`, web app: card `D01…`), con bordo tratteggiato e etichetta. Una card esce solo quando è decisa (quattro domande: esiste davvero? per chi? cosa togliamo? come misuriamo?).
-2. **Nella landing, nessun link al sito attuale (unilinkfirenze.it).** Gli strumenti stanno dentro la demo; le dispense stanno nell'area personale (la landing ne mostra solo l'anteprima: il carosello apre `../demo-webapp/#/materiali?q=…`). **L'area personale si mostra con schermate reali (immagini, solo da guardare), non con un riquadro vivo.**
+2. **Nella landing, nessun link al sito attuale (unilinkfirenze.it).** Gli strumenti stanno dentro la demo; le dispense stanno nell'area personale (la landing ne mostra solo l'anteprima: il carosello apre `../demo-webapp/#/app/materiali/catalogo`). **L'area personale si mostra con schermate reali (immagini, solo da guardare), non con un riquadro vivo.**
 3. **Mai dati inventati come veri.** Numeri solo da fonte (Google Analytics 4: 876 persone nell'ultimo mese, 7.855 pagine in 28 giorni, 34 esami). Testi, date, prezzi, regole di esempio: etichetta «Esempio». Niente testimonianze finte (card L09).
 4. **Tutto da dati.** Landing: `demo-landing/config.js` (`UL_CFG`) e `tools.js`. Web app: `demo-webapp/config.js`. Cambiare un contenuto = una riga, non il design.
 5. **Grafica.** Solo Croogla 4F (un peso). Token: navy `#172554`, crema `#f4f1ea`, arancio `#cf7527`, crema scuro `#ebe4d5`, arancio chiaro `#f6e4d1`, arancio scuro `#a95d1c` (testo arancio piccolo), navy testo 2 `#4b5675`, linea `#e2dccf`, navy chiaro `#dfe4f1`. **Una parola accento per titolo** (`*parola*` → arancio con sottolineatura a mano).
@@ -37,11 +37,11 @@ Navbar: **Hub ▾ · Prima ▾ · Durante ▾ · Dopo ▾ · Strumenti · Commun
 | S05 / S06 / S07 | Prima / Durante / Dopo | `prima.html`, `durante.html`, `dopo.html` |
 | S08 | Tesi e laurea (checklist 6 passi che si ricorda) | `tesi.html` |
 | S09 | Strumenti (tab per hub + pannello funzionante) | `tools.html` |
-| S10 | Area personale: galleria di 19 schermate reali della web app in 3 formati, solo da guardare (`area.html?dev=tab#futuro-career`) | `area.html` |
+| S10 | Area personale: galleria di 19 schermate reali della web app in 3 formati, solo da guardare (`area.html?dev=tab#percorso-erasmus`) | `area.html` |
 | S11 | Community (gruppi WhatsApp per anno, ambassador) | `community.html` |
 | S12 | Prezzi (di esempio, **fuori dalla navbar**, letto da `UL_CFG.prezzi`) | `prezzi.html` |
 | S13 | Commenti del team (rapporto, esportazione) | `commenti.html` |
-| S90 | Da decidere (indice + scheda completa `#L01`…`#L09`) | `decidere.html` |
+| S90 | Da decidere (indice + schede `#L01`…`#L26`: L01–L09 con architettura completa, L10–L26 dal report) | `decidere.html` |
 
 `UL_CFG`: `versione` · `commenti` (`attivi`: true in demo, false in produzione) · `app` (percorso della web app) · `numeri` · `schermate` (gruppi e elenco delle 19 schermate reali) · `hub` (stato `attivo`/`in_arrivo`) · `fasi` (voci dei dropdown) · `prezzi` (listino + FAQ) · `decidere` (riassunto delle card L01–L09).
 Card landing: L01 Gruppi di studio · L02 Metodo e piano · L03 Mentoring tra pari · L04 Test d'ingresso (TOLC) · L05 Borse e tasse · L06 Carriera e CV · L07 Listino e pacchetti · L08 Quale hub parte per primo · L09 Voci degli studenti. Ogni card ha un campo `consiglio` (parere di Claude, da discutere) e `area` (card Dxx corrispondente).
@@ -49,13 +49,13 @@ Blocchi delle card: `hero, cards, steps, list, stats, chips, nota, piano, prezzi
 Componenti: `LP/Navbar, Hero, Sticker, CardHub, Livello+Risposta, CardDispensa, Card(.cd), Strumento, Dispositivo, Checklist, Fase, Finale, CardDecidere, Schermo, Bottone, Badge, Footer`.
 
 ## 4 · Web app (`demo-webapp/`): punti di contatto
-La web app è mantenuta a parte (vedi `demo-webapp/LEGGIMI.md`). **Versione 3** (6/10/2026): design della demo A; parte decisa = *Studio* (Dashboard, I miei esami, Materiali, Esercitazioni) + *Dopo gli esami* (Il mio percorso: media e voto di laurea, Erasmus, magistrali, mentor) + *Account* (Abbonamento, Profilo); parte da decidere = moduli completi *Career (demo C)* e *Network (demo D)* e la pagina «Tutte le proposte» (D01–D20, `#/app/decidere`). Area di studio: Economia attiva, Giurisprudenza e Medicina in arrivo. Piani: Gratuito · Pacchetto esame · Pacchetto semestre · Plus (prezzi = ipotesi). Si entra con «Accesso rapido» (`UL.DEMO` in `demo-webapp/js/seed.js`: Gratuito/Giulia, Pacchetto esame/Marco, Semestre/Sara, Plus/Luca, Area in arrivo/Elena, Altro ateneo/Martina, Admin). Rotte: `#/app/<dashboard|esami|materiali|esercitazioni|percorso|abbonamento|account|decidere|configurazione>` (con sotto-rotte, es. `#/app/percorso/erasmus`, `#/app/materiali/catalogo`).
+La web app è mantenuta a parte (vedi `demo-webapp/LEGGIMI.md`). **Versione 3** (6/10/2026): design della demo A; parte decisa = *Studio* (Dashboard, I miei esami, Materiali, Esercitazioni) + *Dopo gli esami* (Il mio percorso: media e voto di laurea, Erasmus, magistrali, mentor) + *Account* (Abbonamento, Profilo); parte da decidere = moduli completi *Career (demo C)* e *Network (demo D)* e la pagina «Tutte le proposte» (D01–D44, `#/app/decidere`). Area di studio: Economia attiva, Giurisprudenza e Medicina in arrivo. Piani: Gratuito · Pacchetto esame · Pacchetto semestre · Plus (prezzi = ipotesi). Si entra con «Accesso rapido» (`UL.DEMO` in `demo-webapp/js/seed.js`: Gratuito/Giulia, Pacchetto esame/Marco, Semestre/Sara, Plus/Luca, Area in arrivo/Elena, Altro ateneo/Martina, Admin). Rotte: `#/app/<dashboard|esami|materiali|esercitazioni|percorso|abbonamento|account|decidere|configurazione>` (con sotto-rotte, es. `#/app/percorso/erasmus`, `#/app/materiali/catalogo`).
 Cosa usa la landing: le *schermate* (19 × 3 formati, rifatte con `_src/screenshot_webapp.js`, che entra con gli account Giulia, Marco, Luca, Elena e Martina) e i link `#/app/materiali/catalogo` (carosello), `#/app/percorso/erasmus` e `#/app/percorso/libretto` (strumenti «solo area», `UL_TOOLS_AREA`) e `#/app/decidere/Dxx` (campo `area` delle card L01–L09 in `UL_CFG.decidere`). **Se una rotta, un account o la grafica della web app cambia: rifare le schermate e controllare questi link e l'elenco `UL_CFG.schermate`.** Cose che la landing presenta e la web app v3 NON ha ancora: percorso Test Prep, calendario del piano, template tesi, borse, gruppi di studio.
 Differenze di nome da allineare: landing *Prima · Durante · Dopo* e *hub* ↔ web app *Studio · Dopo gli esami* e *area*. La web app v3 non ha tablet dedicato (layout telefono fino a 860px).
 
 ## 5 · Strumenti (`tools.js`)
 `UL_TOOLS`: id, nome, desc, `hub` (`["tutti"]` o slug), `stato` (`live` = regole certe · `demo` = regole di ESEMPIO da verificare), `dove` (`landing` rapido / `area` completo), icona. Funzione omonima in `IMPL`. `UL_TOOLS_AREA` = voci «solo area» (bloccate in landing, rimandano alle card).
-Oggi: `voto` (Economia, regole v5) · `media` (tutti, esatto) · `piano` (tutti) · `erasmus` (demo) · `voto-lmg` (Giurisprudenza, demo) · `filtro` (Medicina, demo). Solo area (rimandano a pagine/card della web app tramite `href`): Erasmus completo, Confronto CV, Template tesi (D11), Borse (D10).
+Oggi: `voto` (Economia, regole v5) · `media` (tutti, esatto) · `piano` (tutti) · `erasmus` (demo) · `voto-lmg` (Giurisprudenza, demo) · `filtro` (Medicina, demo). Solo area (rimandano alla web app tramite `href`): Erasmus completo (`#/app/percorso/erasmus`) e Media e voto di laurea completo (`#/app/percorso/libretto`).
 **Aggiungere uno strumento** = voce in `UL_TOOLS` + funzione in `IMPL`. Non pubblicare come «vero» uno strumento `demo` finché le regole non sono verificate sul regolamento ufficiale.
 
 ## 6 · Come si risponde a una richiesta
