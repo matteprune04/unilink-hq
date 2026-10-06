@@ -31,8 +31,8 @@
   const tend = (label, href, items, on) => `<span class="tendina"><a class="tend ${att(on)}" href="${href}">${label}</a><div class="pan">${items}</div></span>`;
   const nDec = CFG.decidere.length;
   const navHTML = `
-    <div class="topbar">Demo navigabile v${CFG.versione.n} · contenuti in parte fittizi, nessun invio reale · <a href="area.html">anteprima area personale</a> · <a href="decidere.html">cosa è ancora da decidere</a></div>
-    <div class="navwrap"><div class="nav">
+    <div class="topbar" role="region" aria-label="Avviso demo">Demo navigabile v${CFG.versione.n} · contenuti in parte fittizi, nessun invio reale · <a href="area.html">anteprima area personale</a> · <a href="decidere.html">cosa è ancora da decidere</a>${CFG.commenti && CFG.commenti.attivi ? " · <b>commenta</b> con il pulsante in basso" : ""}</div>
+    <header class="navwrap"><div class="nav">
       <a class="logo" href="index.html"><img src="img/logo-blu.png" alt="">unilink</a>
       <div class="menu">
         ${tend("Hub", "#", CFG.hub.map((h) => `<a href="${h.href}">${h.nome}${badge(h)}</a>`).join(""), pagina.startsWith("hub"))}
@@ -43,7 +43,7 @@
       <a class="decpill ${att(pagina === "decidere")}" href="decidere.html" title="Idee ancora da decidere: solo in demo">Da decidere <span>${nDec}</span></a>
       <a class="btn btn-p navcta" href="area.html">Area personale</a>
       <button class="burger" aria-label="Apri il menu">≡</button>
-    </div></div>
+    </div></header>
     <div class="mmenu"><button class="x" aria-label="Chiudi">✕</button>
       <div class="mg">Hub</div>
       ${CFG.hub.map((h) => `<a href="${h.href}">${h.nome} ${badge(h)}</a>`).join("")}
@@ -55,16 +55,40 @@
   const onda = (c) => `<svg class="top" viewBox="0 0 1440 60" preserveAspectRatio="none"><path fill="${c}" d="M0 60 L0 32 ${"a40 28 0 0 1 80 0 ".repeat(18)}L1440 60 Z"/></svg>`;
   const footHTML = `<footer>${onda("#172554")}<div class="wrap"><div class="fgrid">
       <div><a class="logo w" href="index.html"><img src="img/logo-white.png" alt="">unilink</a><p style="opacity:.75;font-size:15px;margin-top:14px;max-width:300px">Da studenti, per studenti. Da Firenze, un passo alla volta.</p></div>
-      <div><h4>Hub</h4>${CFG.hub.map((h) => `<a href="${h.href}">${h.nome}${h.stato === "attivo" ? "" : " · in arrivo"}</a>`).join("")}</div>
-      <div><h4>Percorso</h4>${CFG.fasi.map((f) => `<a href="${f.href}">${f.titolo}</a>`).join("")}<a href="tools.html">Strumenti</a><a href="area.html">Area personale</a></div>
-      <div><h4>UniLink</h4><a href="community.html">Community</a><a href="index.html#chi-siamo">Chi siamo</a><a href="index.html#faq">FAQ</a><a href="prezzi.html">Prezzi (esempio)</a><a href="decidere.html">Da decidere</a></div>
-      <div class="fnl"><h4>Resta aggiornato</h4><p style="font-size:14.5px;opacity:.75">Una mail quando escono strumenti o hub nuovi. Niente spam.</p><form class="nl" id="nl"><input type="email" placeholder="La tua email" aria-label="La tua email" style="background:transparent;border:0;outline:0;color:#f4f1ea;font:inherit;flex:1;min-width:0"><button class="nlb" style="width:34px;height:34px;border-radius:50%;background:#cf7527;border:0;color:#fff;cursor:pointer">→</button></form></div>
+      <div><h2 class="fh">Hub</h2>${CFG.hub.map((h) => `<a href="${h.href}">${h.nome}${h.stato === "attivo" ? "" : " · in arrivo"}</a>`).join("")}</div>
+      <div><h2 class="fh">Percorso</h2>${CFG.fasi.map((f) => `<a href="${f.href}">${f.titolo}</a>`).join("")}<a href="tools.html">Strumenti</a><a href="area.html">Area personale</a></div>
+      <div><h2 class="fh">UniLink</h2><a href="community.html">Community</a><a href="index.html#chi-siamo">Chi siamo</a><a href="index.html#faq">FAQ</a><a href="prezzi.html">Prezzi (esempio)</a><a href="decidere.html">Da decidere</a>${CFG.commenti && CFG.commenti.attivi ? '<a href="commenti.html">Commenti del team</a>' : ""}</div>
+      <div class="fnl"><h2 class="fh">Resta aggiornato</h2><p style="font-size:14.5px;opacity:.75">Una mail quando escono strumenti o hub nuovi. Niente spam.</p><form class="nl" id="nl"><input type="email" placeholder="La tua email" aria-label="La tua email" style="background:transparent;border:0;outline:0;color:#f4f1ea;font:inherit;flex:1;min-width:0"><button class="nlb" style="width:34px;height:34px;border-radius:50%;background:#cf7527;border:0;color:#fff;cursor:pointer">→</button></form></div>
     </div><div class="fbase"><span>© 2026 UniLink Firenze · Progetto indipendente, non affiliato all'Università di Firenze</span><span>Demo v${CFG.versione.n} · ${new Date(CFG.versione.data).toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" })}</span></div></div></footer>
     <div class="toast" id="toast"></div>`;
   $("#ul-nav") && ($("#ul-nav").outerHTML = navHTML);
   $("#ul-foot") && ($("#ul-foot").outerHTML = footHTML);
-  $(".burger")?.addEventListener("click", () => $(".mmenu").classList.add("open"));
-  $(".mmenu .x")?.addEventListener("click", () => $(".mmenu").classList.remove("open"));
+  /* struttura: link «vai al contenuto», <main>, briciole di pane */
+  document.body.insertAdjacentHTML("afterbegin", '<a class="skip" href="#main">Vai al contenuto</a>');
+  const mmenu = $(".mmenu"), foot = $("footer");
+  if (mmenu && foot) { const main = document.createElement("main"); main.id = "main"; main.tabIndex = -1; let n = mmenu.nextElementSibling; while (n && n !== foot) { const nx = n.nextElementSibling; main.appendChild(n); n = nx; } mmenu.after(main); }
+  const CRUMB = { prima: [["Prima"]], durante: [["Durante"]], dopo: [["Dopo"]], tesi: [["Dopo", "dopo.html"], ["Tesi e laurea"]], tools: [["Strumenti"]], area: [["Area personale"]], community: [["Community"]], prezzi: [["Prezzi (esempio)"]], decidere: [["Da decidere"]], commenti: [["Commenti del team"]],
+    "hub-economia": [["Hub"], ["Economia"]], "hub-giurisprudenza": [["Hub"], ["Giurisprudenza"]], "hub-medicina": [["Hub"], ["Medicina"]] }[pagina];
+  if (CRUMB && $("#main")) { const it = [["Home", "index.html"], ...CRUMB]; $("#main").insertAdjacentHTML("afterbegin", `<nav class="crumbs" aria-label="Percorso"><div class="wrap">${it.map((c, i) => (i === it.length - 1 ? `<span aria-current="page">${esc(c[0])}</span>` : c[1] ? `<a href="${c[1]}">${esc(c[0])}</a>` : `<span>${esc(c[0])}</span>`)).join("<i>›</i>")}</div></nav>`); }
+  /* menu: tastiera, focus e blocco dello scorrimento */
+  const burger = $(".burger");
+  if (burger && mmenu) {
+    mmenu.id = "mmenu"; mmenu.setAttribute("role", "dialog"); mmenu.setAttribute("aria-modal", "true"); mmenu.setAttribute("aria-label", "Menu");
+    burger.setAttribute("aria-expanded", "false"); burger.setAttribute("aria-controls", "mmenu");
+    const apri = () => { mmenu.classList.add("open"); burger.setAttribute("aria-expanded", "true"); document.body.style.overflow = "hidden"; $(".x", mmenu).focus(); };
+    const chiudi = (torna) => { mmenu.classList.remove("open"); burger.setAttribute("aria-expanded", "false"); document.body.style.overflow = ""; if (torna) burger.focus(); };
+    burger.addEventListener("click", apri); $(".x", mmenu).addEventListener("click", () => chiudi(true));
+    mmenu.addEventListener("click", (e) => { if (e.target.closest("a")) chiudi(false); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && mmenu.classList.contains("open")) chiudi(true); });
+  }
+  /* tendine della barra: stato annunciato, Esc le chiude */
+  $$(".tendina").forEach((t) => {
+    const a = $(".tend", t), set = (v) => a.setAttribute("aria-expanded", v);
+    a.setAttribute("aria-haspopup", "true"); set("false");
+    t.addEventListener("mouseenter", () => set("true")); t.addEventListener("mouseleave", () => set("false")); t.addEventListener("focusin", () => set("true"));
+    t.addEventListener("focusout", (e) => { if (!t.contains(e.relatedTarget)) set("false"); });
+    t.addEventListener("keydown", (e) => { if (e.key === "Escape") { set("false"); t.classList.add("closed"); a.focus(); setTimeout(() => t.classList.remove("closed"), 400); } });
+  });
   $$(".tendina > a[href='#']").forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); a.parentElement.classList.toggle("open"); }));
   document.addEventListener("click", (e) => { if (!e.target.closest(".tendina")) $$(".tendina.open").forEach((t) => t.classList.remove("open")); });
   $("#nl")?.addEventListener("submit", (e) => { e.preventDefault(); const i = $("input", e.target); if (!/^\S+@\S+\.\S+$/.test(i.value)) { toast("Scrivi un'email valida"); return; } i.value = ""; toast("Demo: iscrizione simulata, nessuna email inviata."); });
@@ -141,8 +165,8 @@
     const draw = () => {
       const l = ULTools.lista(hub).slice(0, limit), ar = root.dataset.limit ? [] : ULTools.area(hub);
       if (!l.find((t) => t.id === sel)) sel = l[0] && l[0].id;
-      lista.innerHTML = l.map((t) => `<div class="tool ${t.id === sel ? "sel" : ""}" data-id="${t.id}" tabindex="0" role="button"><div class="ico">${esc(t.icona)}</div><div><h3>${esc(t.nome)}${t.stato === "demo" ? ' <span class="badge" style="font-size:11px;padding:2px 8px;margin-left:4px">Esempio</span>' : ""}</h3><p>${esc(t.desc)}</p></div><span class="go">→</span></div>`).join("")
-        + ar.map((t) => `<a class="tool lock" href="${APP}${t.href || ""}"><div class="ico">${esc(t.icona)}</div><div><h3>${esc(t.nome)} <span class="badge on" style="font-size:11px;padding:2px 8px;margin-left:4px">Nell'area</span></h3><p>${esc(t.desc)}</p></div><span class="go">↗</span></a>`).join("");
+      lista.innerHTML = l.map((t) => `<div class="tool ${t.id === sel ? "sel" : ""}" data-id="${t.id}" tabindex="0" role="button"><div class="ico">${esc(t.icona)}</div><div><h3 aria-level="${pagina === "tools" ? 2 : 3}">${esc(t.nome)}${t.stato === "demo" ? ' <span class="badge" style="font-size:11px;padding:2px 8px;margin-left:4px">Esempio</span>' : ""}</h3><p>${esc(t.desc)}</p></div><span class="go">→</span></div>`).join("")
+        + ar.map((t) => `<a class="tool lock" href="${APP}${t.href || ""}"><div class="ico">${esc(t.icona)}</div><div><h3 aria-level="${pagina === "tools" ? 2 : 3}">${esc(t.nome)} <span class="badge on" style="font-size:11px;padding:2px 8px;margin-left:4px">Nell'area</span></h3><p>${esc(t.desc)}</p></div><span class="go">↗</span></a>`).join("");
       const t = ULTools.trova(sel);
       pan.innerHTML = t ? `<span class="eyebrow">Provalo qui · ${esc(window.UL_HUB_NOMI[hub] || "")}</span><h3 style="margin:6px 0 16px">${esc(t.nome)}</h3><div class="tl-mount"></div>` : `<p class="small">Per questo hub gli strumenti arrivano con l'hub.</p>`;
       if (t) ULTools.monta($(".tl-mount", pan), t.id);
@@ -155,34 +179,46 @@
   });
   $$("[data-tool]").forEach((el) => ULTools.monta(el, el.dataset.tool));
 
-  /* ---------- 6 · area personale: anteprima in tre dispositivi (la app vera, in un riquadro) ---------- */
-  const dp = $("[data-devprev]");
-  if (dp) {
-    const DEV = { desk: [1280, 800, 1000, "Desktop"], tab: [820, 1080, 560, "Tablet"], ph: [390, 780, 290, "Telefono"] };
-    const SCH = [["oggi", "Oggi"], ["piano", "Il mio piano"], ["esami", "I miei esami"], ["materiali", "Materiali"]];   // rotte della web app
-    const st = { dev: new URLSearchParams(location.search).get("dev") || "desk", sch: (location.hash || "#oggi").slice(1) };
-    if (!SCH.find((s) => s[0] === st.sch)) st.sch = "oggi";
-    $("[data-devbtns]", dp).innerHTML = Object.entries(DEV).map(([k, v]) => `<button class="${st.dev === k ? "on" : ""}" data-dev="${k}">${v[3]}</button>`).join("");
-    $("[data-schbtns]", dp).innerHTML = SCH.map(([k, n]) => `<button class="${st.sch === k ? "on" : ""}" data-sch="${k}">${n}</button>`).join("");
-    const stage = $(".devstage", dp), fr = $("iframe", dp), shell = $(".devshell", dp);
-    const BEZEL = { desk: 8, tab: 12, ph: 10 };
-    const fit = () => {
-      const [w, h, fw] = DEV[st.dev], b = BEZEL[st.dev], W = Math.min(fw, stage.clientWidth - 8), k = (W - 2 * b) / w;
-      shell.className = "devshell " + st.dev; shell.style.width = W + "px"; shell.style.height = h * k + 2 * b + "px";
-      fr.style.width = w + "px"; fr.style.height = h + "px"; fr.style.transform = `scale(${k})`;
+  /* ---------- 6 · area personale: schermate reali della web app (immagini, solo da guardare) ---------- */
+  const DIM = { desk: [1280, 900, 1000, "Desktop"], tab: [820, 1080, 520, "Tablet"], ph: [780, 1560, 270, "Telefono"] };
+  const lightbox = (src, alt, gruppo, i) => {
+    const old = $(".lbx"); old && old.remove();
+    document.body.insertAdjacentHTML("beforeend", `<div class="lbx" role="dialog" aria-modal="true" aria-label="Schermata ingrandita"><button type="button" class="lbx-x" aria-label="Chiudi">✕</button><img src="${esc(src)}" alt="${esc(alt)}"></div>`);
+    const box = $(".lbx"), chiudi = () => { box.remove(); document.removeEventListener("keydown", key); }, key = (e) => { if (e.key === "Escape") chiudi(); };
+    box.addEventListener("click", chiudi); document.addEventListener("keydown", key); $(".lbx-x", box).focus();
+  };
+  const gal = $("[data-gallery]");
+  if (gal) {
+    const G = CFG.schermate, q = new URLSearchParams(location.search);
+    const st = { dev: DIM[q.get("dev")] ? q.get("dev") : "desk", id: (location.hash || "").slice(1) };
+    if (!G.lista.find((s) => s.id === st.id)) st.id = G.lista[0].id;
+    const cur = () => G.lista.find((s) => s.id === st.id);
+    const draw = () => {
+      const s = cur(), gr = s.gruppo, dd = DIM[st.dev];
+      $("[data-galgruppi]", gal).innerHTML = G.gruppi.map((g) => `<button type="button" role="tab" aria-selected="${g.id === gr}" data-g="${g.id}" class="${g.id === gr ? "on" : ""}">${esc(g.nome)}<small>${esc(g.quando)}</small></button>`).join("");
+      $("[data-galdev]", gal).innerHTML = Object.entries(DIM).map(([k, v]) => `<button type="button" aria-pressed="${k === st.dev}" data-d="${k}" class="${k === st.dev ? "on" : ""}">${v[3]}</button>`).join("");
+      $("[data-gallist]", gal).innerHTML = G.lista.filter((x) => x.gruppo === gr).map((x) => `<button type="button" class="${x.id === st.id ? "sel" : ""}" aria-current="${x.id === st.id}" data-s="${x.id}"><b>${esc(x.titolo)}</b><span>${esc(x.account)}</span></button>`).join("");
+      const sh = $("[data-galshell]", gal), im = $("img", sh);
+      sh.className = "devshell " + st.dev; sh.style.width = "min(" + dd[2] + "px, 100%)"; im.width = dd[0]; im.height = dd[1];
+      im.src = `img/app/${s.id}-${st.dev}.webp`; im.alt = `Schermata «${s.titolo}» della web app, formato ${dd[3].toLowerCase()}. ${s.nota}`;
+      $("[data-galtitolo]", gal).textContent = s.titolo; $("[data-galacc]", gal).textContent = "Account demo: " + s.account; $("[data-galnota]", gal).textContent = s.nota;
+      history.replaceState(null, "", location.pathname + (st.dev !== "desk" ? "?dev=" + st.dev : "") + "#" + s.id);
     };
-    // la web app parte dalla schermata di accesso: l'anteprima entra da sola con l'account demo (stessa origine)
-    const entra = () => { try { const d = fr.contentDocument; const b = d && d.querySelector('[data-persona="' + CFG.account + '"]'); if (b) b.click(); } catch (e) {} };
-    fr.addEventListener("load", () => { entra(); setTimeout(entra, 400); });
-    const load = () => { const u = APP + "#/" + st.sch; if (fr.dataset.u !== u) { fr.dataset.u = u; fr.src = u; setTimeout(() => { try { if (fr.contentWindow.location.hash !== "#/" + st.sch) fr.contentWindow.location.hash = "#/" + st.sch; } catch (e) {} }, 700); } };
-    dp.addEventListener("click", (e) => {
-      const b = e.target.closest("[data-dev],[data-sch]"); if (!b) return;
-      if (b.dataset.dev) { st.dev = b.dataset.dev; $$("[data-dev]", dp).forEach((x) => x.classList.toggle("on", x === b)); fit(); }
-      if (b.dataset.sch) { st.sch = b.dataset.sch; $$("[data-sch]", dp).forEach((x) => x.classList.toggle("on", x === b)); load(); }
+    const vai = (d) => { const i = G.lista.findIndex((s) => s.id === st.id); st.id = G.lista[(i + d + G.lista.length) % G.lista.length].id; draw(); };
+    gal.addEventListener("click", (e) => {
+      const g = e.target.closest("[data-g]"), d = e.target.closest("[data-d]"), s = e.target.closest("[data-s]");
+      if (g) { st.id = G.lista.find((x) => x.gruppo === g.dataset.g).id; draw(); }
+      if (d) { st.dev = d.dataset.d; draw(); }
+      if (s) { st.id = s.dataset.s; draw(); }
+      if (e.target.closest("[data-galprev]")) vai(-1);
+      if (e.target.closest("[data-galnext]")) vai(1);
+      if (e.target.closest("[data-galzoom]")) { const im = $("[data-galshell] img", gal); lightbox(im.src, im.alt); }
     });
-    window.addEventListener("resize", fit); fit(); load();
-    $$("[data-opendev]").forEach((a) => (a.href = APP));
+    draw();
   }
+  // schermate nelle schede «Da decidere»: tocca per ingrandire
+  document.addEventListener("click", (e) => { const im = e.target.closest(".bk-shot img"); if (im) lightbox(im.src, im.alt); });
+  $$("[data-opendev]").forEach((a) => (a.href = APP));
 
   /* ---------- 7 · lista d'attesa ---------- */
   const form = $("#lista-form");
@@ -227,26 +263,101 @@
   // I blocchi della mini demo: aggiungere un tipo = una riga qui + una riga nel PDF (cap. Blocchi)
   const BLOCCHI = {
     hero: (b) => `<div class="bk-hero"><span class="eyebrow">${esc(b.eyebrow || "")}</span><h3>${acc(b.titolo)}</h3>${b.testo ? `<p class="small">${esc(b.testo)}</p>` : ""}</div>`,
-    cards: (b) => `<div>${b.titolo ? `<h4 class="bk-h">${esc(b.titolo)}</h4>` : ""}<div class="bk-g3">${b.items.map((c) => `<div class="bk-card"><h3>${esc(c[0])}</h3><p class="small">${esc(c[1])}</p></div>`).join("")}</div></div>`,
-    steps: (b) => `<div class="bk-card">${b.titolo ? `<h4 class="bk-h">${esc(b.titolo)}</h4>` : ""}${b.items.map((r) => { const [n, ...t] = Array.isArray(r) ? r : [r]; return `<div class="bk-row"><span class="n">${esc(n)}</span><div>${esc(t.join(" · "))}</div></div>`; }).join("")}</div>`,
-    list: (b) => `<div class="bk-card">${b.titolo ? `<h4 class="bk-h">${esc(b.titolo)}</h4>` : ""}${b.items.map((r) => `<div class="bk-row"><div class="g"><div>${esc(r[0])}</div><div class="small">${esc(r[1])}</div></div><span class="badge">${esc(r[2])}</span></div>`).join("")}</div>`,
+    cards: (b) => `<div>${b.titolo ? `<h3 class="bk-h">${esc(b.titolo)}</h3>` : ""}<div class="bk-g3">${b.items.map((c) => `<div class="bk-card"><h3>${esc(c[0])}</h3><p class="small">${esc(c[1])}</p></div>`).join("")}</div></div>`,
+    steps: (b) => `<div class="bk-card">${b.titolo ? `<h3 class="bk-h">${esc(b.titolo)}</h3>` : ""}${b.items.map((r) => { const [n, ...t] = Array.isArray(r) ? r : [r]; return `<div class="bk-row"><span class="n">${esc(n)}</span><div>${esc(t.join(" · "))}</div></div>`; }).join("")}</div>`,
+    list: (b) => `<div class="bk-card">${b.titolo ? `<h3 class="bk-h">${esc(b.titolo)}</h3>` : ""}${b.items.map((r) => `<div class="bk-row"><div class="g"><div>${esc(r[0])}</div><div class="small">${esc(r[1])}</div></div><span class="badge">${esc(r[2])}</span></div>`).join("")}</div>`,
     stats: (b) => `<div class="bk-g3">${b.items.map((s) => `<div class="bk-card bk-stat"><b>${esc(s[0])}</b><span class="small">${esc(s[1])}</span></div>`).join("")}</div>`,
     chips: (b) => `<div class="chips" style="margin:0">${b.items.map((c) => `<span class="chip">${esc(c)}</span>`).join("")}</div>`,
     nota: (b) => `<div class="dec-banner">${esc(b.testo)}</div>`,
     piano: () => `<div data-tool="piano"></div>`,
+    // schermata REALE della web app (img/app/<id>-<dev>.webp): solo da guardare, tocca per ingrandire
+    appshot: (b) => { const s = (CFG.schermate.lista.find((x) => x.id === b.id) || {}); return `<figure class="bk-shot ${b.dev === "ph" ? "ph" : ""}"><img src="img/app/${esc(b.id)}-${esc(b.dev || "desk")}.webp" alt="Schermata reale: ${esc(s.titolo || b.id)}" loading="lazy" decoding="async"><figcaption><b>Web app · ${esc(s.titolo || b.id)}</b> ${esc(b.nota || s.nota || "")} <span class="small">Schermata reale, solo da guardare · ${esc(s.account || "")}</span></figcaption></figure>`; },
     prezzi: () => `<div class="bk-g3">${CFG.prezzi.modi.esame.piani.map((p) => `<div class="bk-card ${p.top ? "ev" : ""}"><h3>${esc(p.nome)}</h3><b class="bk-p">${esc(p.prezzo)}</b><span class="small">${esc(p.desc)}</span><span class="badge">Esempio</span></div>`).join("")}</div>`,
   };
   const dec = $("#decroot");
   if (dec) {
-    const sez = (k, h, cls = "") => `<div class="dsez ${cls}"><div class="k">${k}</div><div>${h}</div></div>`;
+    const sez = (k, h, cls = "") => `<div class="dsez ${cls}"><h2 class="k">${k}</h2><div>${h}</div></div>`;
     const lista = (l) => `<ul>${l.map((i) => `<li>${esc(i)}</li>`).join("")}</ul>`;
     const indice = () => { const gruppi = [...new Set(CFG.decidere.map((x) => x.gruppo))];
       return `<div class="dec-banner"><span><b>Regola.</b> Le cose decise sono già nelle pagine, come saranno davvero. Qui ogni card è una proposta con la sua architettura demo: si apre, si discute, si decide. Una card esce da qui solo quando è decisa. Ogni card ha un codice (L01…) che non cambia: usalo per chiedere modifiche.</span></div>`
-        + gruppi.map((g) => `<div class="dec-gruppo"><h2>${esc(g)}</h2></div><div class="cds">${CFG.decidere.filter((x) => x.gruppo === g).map((x) => `<a class="dcard" href="#${x.id}"><span class="id">${x.id}${x.area ? " · app " + x.area : ""}</span><h3>${esc(x.titolo)}</h3><p>${esc(x.problema)}</p><div class="piede"><span class="badge">${esc(x.stato)}</span><span>Impatto ${punti(x.impatto)}</span></div></a>`).join("")}</div>`).join(""); };
+        + gruppi.map((g) => `<div class="dec-gruppo"><h2>${esc(g)}</h2></div><div class="cds">${CFG.decidere.filter((x) => x.gruppo === g).map((x) => `<a class="dcard" href="#${x.id}"><span class="id">${x.id}${x.area ? " · app " + x.area : ""}</span><h3>${esc(x.titolo)}</h3><p>${esc(x.problema)}</p><div class="piede"><span class="badge">${esc(x.stato)}</span>${(window.UL_ARCH || {})[x.id] ? '<span class="badge on">Architettura completa</span>' : ""}<span>Impatto ${punti(x.impatto)}</span></div></a>`).join("")}</div>`).join(""); };
+    /* ---- architettura completa delle card (decidere-arch.js): pagine annotate, dati, regole, testi, misure, piano di lavoro ---- */
+    const A = window.UL_ARCH || {};
+    let nTab = 0;
+    const tab = (cols, righe, cls = "") => `<div class="tbw" tabindex="0" role="region" aria-label="Tabella ${++nTab}: ${esc(cols.join(", "))} (scorri di lato se serve)"><table class="tb ${cls}"><thead><tr>${cols.map((c) => `<th>${esc(c)}</th>`).join("")}</tr></thead><tbody>${righe.map((r) => `<tr>${r.map((c, i) => `<td${i === 0 ? ' class="first"' : ""}>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+    const tit = (b) => (b.titolo ? `<h3 class="bk-h">${esc(b.titolo)}</h3>` : "");
+    // blocchi per disegnare le pagine intere (stessi componenti della landing)
+    const MK = {
+      hero: (b) => `<div class="mk-hero"><div><span class="badge ${b.on ? "on" : ""}">${esc(b.badge || "")}</span><h3 class="mk-t">${acc(b.titolo)}</h3>${b.lead ? `<p class="lead">${esc(b.lead)}</p>` : ""}<div class="mk-cta">${(b.cta || []).map((c, i) => `<span class="btn ${i ? "btn-s" : "btn-p"}">${esc(c)}</span>`).join("")}</div></div>${b.img ? `<div class="mk-img"><img src="img/${esc(b.img)}" alt="" loading="lazy"></div>` : ""}</div>`,
+      testo: (b) => `<div class="mk-testo">${b.titolo ? `<h3>${acc(b.titolo)}</h3>` : ""}${(b.par || []).map((t) => `<p>${esc(t)}</p>`).join("")}</div>`,
+      cards: (b) => `${tit(b)}<div class="bk-g3 ${b.c4 ? "c4" : ""}">${b.items.map((c) => `<div class="cd ${c[4] || ""}"><div class="ico">${esc(c[0])}</div>${c[5] ? `<span class="badge">${esc(c[5])}</span>` : ""}<h3>${esc(c[1])}</h3><p>${esc(c[2])}</p>${c[3] ? `<span class="go">${esc(c[3])}</span>` : ""}</div>`).join("")}</div>`,
+      steps: (b) => `${tit(b)}<div class="bk-g3">${b.items.map((s, i) => `<div class="bk-card"><span class="mk-num">${i + 1}</span><h3>${esc(s[0])}</h3><p class="small">${esc(s[1])}</p></div>`).join("")}</div>`,
+      list: (b) => `<div class="bk-card">${tit(b)}${b.items.map((r) => `<div class="bk-row"><div class="g"><div>${esc(r[0])}</div><div class="small">${esc(r[1])}</div></div>${r[2] ? `<span class="badge ${r[3] === "on" ? "on" : ""}">${esc(r[2])}</span>` : ""}</div>`).join("")}</div>`,
+      stats: (b) => `<div class="bk-g3">${b.items.map((s) => `<div class="bk-card bk-stat"><b>${esc(s[0])}</b><span class="small">${esc(s[1])}</span></div>`).join("")}</div>`,
+      faq: (b) => `${tit(b)}<div class="mk-faq">${b.items.map((f) => `<div class="qa open"><div class="d">${esc(f[0])}<span>−</span></div><div class="r" style="display:block">${esc(f[1])}</div></div>`).join("")}</div>`,
+      form: (b) => `<div class="mk-form"><h3>${esc(b.titolo)}</h3>${(b.campi || []).map((c) => `<div class="mk-f"><span>${esc(c[0])}</span><span class="mk-in ${c[2] === "area" ? "area" : ""}">${esc(c[1] || "")}</span></div>`).join("")}${b.scelte ? `<div class="scelte">${b.scelte.map((s, i) => `<span class="${i === 0 ? "on" : ""}">${esc(s)}</span>`).join("")}</div>` : ""}${b.consenso ? `<div class="check"><i>✓</i>${esc(b.consenso)}</div>` : ""}<span class="btn btn-a">${esc(b.cta)}</span></div>`,
+      cta: (b) => `<div class="mk-cta2"><h3>${acc(b.titolo)}</h3><p>${esc(b.testo || "")}</p><div class="mk-cta">${(b.cta || []).map((c, i) => `<span class="btn ${i ? "btn-s" : "btn-a"}">${esc(c)}</span>`).join("")}</div></div>`,
+      profile: (b) => `${tit(b)}<div class="bk-g3">${b.items.map((p) => `<div class="bk-card mk-prof"><span class="av">${esc(p[0])}</span><h3>${esc(p[1])}</h3><p class="small">${esc(p[2])}</p><div class="chips" style="margin:6px 0">${(p[3] || []).map((t) => `<span class="chip">${esc(t)}</span>`).join("")}</div><span class="btn btn-s">${esc(p[4] || "Richiedi")}</span></div>`).join("")}</div>`,
+      table: (b) => `${tit(b)}${tab(b.cols, b.righe, "mk-tb")}`,
+      chips: (b) => `<div class="chips" style="margin:0">${b.items.map((c, i) => `<span class="chip ${i === 0 ? "on" : ""}">${esc(c)}</span>`).join("")}</div>`,
+      cerca: (b) => `<div class="cerca" style="max-width:none"><span class="lente">⌕</span><span style="flex:1;color:var(--nv2)">${esc(b.placeholder)}</span><span class="btn btn-p">Cerca</span></div>`,
+      tool: (b) => `<div class="tpanel"><span class="eyebrow">Provalo qui</span><div data-tool="${esc(b.id)}" style="margin-top:12px"></div></div>`,
+      appshot: (b) => BLOCCHI.appshot(b),
+      prezzi: () => BLOCCHI.prezzi(),
+    };
+    const NAV = [["panoramica", "Panoramica"], ["pagine", "Pagine annotate"], ["dati", "Dati e campi"], ["regole", "Regole e stati"], ["testi", "Testi"], ["misure", "Misure"], ["integrazioni", "Integrazioni"], ["manutenzione", "Manutenzione"], ["lavoro", "Piano di lavoro"], ["rischi", "Rischi e successo"], ["prompt", "Prompt per l'AI"]];
+    const lista2 = (l) => `<ul>${l.map((i) => `<li>${esc(i)}</li>`).join("")}</ul>`;
+    const completo = (x, a) => {
+      const S = (id, k, h, cls = "") => `<div class="dsez ${cls}" id="a-${id}"><h2 class="k">${k}</h2><div>${h}</div></div>`;
+      const pagine = a.pagine.map((p, pi) => `<div class="mk-wrap"><h3 class="mk-pt">${esc(p.titolo)}</h3><p class="small">${esc(p.nota || "")}</p>
+          <div class="schermo mk-page"><div class="mk-bar"><i></i><i></i><i></i><span>${esc(p.url)}</span></div><div class="mk-body">${p.sezioni.map((s, i) => `<div class="mk-sec"><span class="mk-n" aria-label="Sezione ${i + 1}">${i + 1}</span>${(s.blocchi || [s.blocco]).map((b) => (MK[b.t] || (() => ""))(b)).join('<div class="mk-gap"></div>')}</div>`).join("")}</div></div>
+          <ol class="mk-note">${p.sezioni.map((s, i) => `<li><span class="mk-n">${i + 1}</span><div><b>${esc(s.nome)}</b> <span class="small">${esc(s.codice || "")}</span><p><i>Perché c'è.</i> ${esc(s.perche)}</p><p><i>Cosa puoi cambiare da solo.</i> ${esc(s.modifica)}</p>${s.comp ? `<p class="small">Componenti: ${esc(s.comp.join(" · "))}</p>` : ""}</div></li>`).join("")}</ol></div>`).join("");
+      return `<nav class="dec-nav" aria-label="In questa scheda">${NAV.map(([id, n]) => `<a href="#" data-goto="a-${id}">${n}</a>`).join("")}</nav>
+        <div class="dec-azioni"><button type="button" class="btn btn-p" data-copia>Copia il prompt per l'AI</button><button type="button" class="btn btn-s" data-scheda-md="${x.id}">Scarica la scheda (.md)</button><button type="button" class="btn btn-s" data-stampa>Stampa / salva PDF</button></div>
+        <div class="deccard">
+          ${S("problema", "Il problema", `<p>${esc(x.problema)}</p>`)}${S("proposta", "La proposta", `<p>${esc(x.proposta)}</p>`)}
+          ${S("consiglio", "Il consiglio", `<p>${esc(x.consiglio)}</p><p class="small" style="margin-top:8px">Parere di Claude per la discussione: la decisione è vostra.</p>`, "cons")}
+          ${S("panoramica", "Panoramica", `<div class="mk-pan"><div><b>Obiettivo</b><p>${esc(a.obiettivo)}</p></div><div><b>Per chi</b><p>${esc(a.per)}</p></div><div><b>Quando serve</b><p>${esc(a.quando)}</p></div><div><b>Stima di lavoro</b><p>${esc(a.stima)}</p></div></div>
+            <div class="mk-scope"><div class="si"><h3>Versione minima (MVP)</h3>${lista2(a.ambito.mvp)}</div><div class="poi"><h3>Dopo</h3>${lista2(a.ambito.dopo)}</div><div class="no"><h3>Non lo facciamo</h3>${lista2(a.ambito.fuori)}</div></div>
+            <p class="small" style="margin-top:12px"><b style="font-weight:400">Dove vive nella landing:</b> ${esc(x.dove)}${x.area ? ` · <b style="font-weight:400">Nella web app:</b> card ${x.area}` : ""}</p>`)}
+          ${S("pagine", "Pagine annotate", `<p class="small" style="margin-bottom:14px">Le pagine come sarebbero, sezione per sezione. I numeri collegano il disegno alle note: perché la sezione c'è e cosa puoi cambiare senza rifare il design.</p>${pagine}`)}
+          ${S("dati", "Dati e campi", a.dati.map((d) => `<div class="mk-dato"><h3>${esc(d.nome)}</h3><p class="small">Dove: ${esc(d.dove)} · Chi lo aggiorna: ${esc(d.chi)} · Quando: ${esc(d.quando)}</p>${tab(["Campo", "Tipo", "Esempio / regola"], d.campi)}</div>`).join(""))}
+          ${S("regole", "Regole e stati", `<h3 class="bk-h">Regole</h3>${lista2(a.regole)}<h3 class="bk-h" style="margin-top:18px">Stati</h3>${tab(["Stato", "Cosa vede lo studente", "Testo"], a.stati)}`)}
+          ${S("testi", "Testi", `<p class="small" style="margin-bottom:10px">Testi proposti: si cambiano senza toccare il design.</p>${tab(["Elemento", "Testo proposto"], a.copy)}`)}
+          ${S("misure", "Misure", `<p class="small" style="margin-bottom:10px">Un evento per ogni cosa che vuoi sapere se funziona.</p>${tab(["Evento", "Quando scatta", "Perché lo misuriamo"], a.eventi)}`)}
+          ${S("integrazioni", "Integrazioni e note legali", `${tab(["Strumento", "Cosa fa", "Come si collega"], a.integrazioni)}<h3 class="bk-h" style="margin-top:18px">Da verificare (legale e privacy)</h3>${lista2(a.legale)}`)}
+          ${S("manutenzione", "Manutenzione", `<p class="small" style="margin-bottom:10px">Cosa va tenuto aggiornato dopo il lancio, da chi, ogni quanto.</p>${tab(["Cosa", "Chi", "Ogni quanto", "Come"], a.manutenzione)}`)}
+          ${S("lavoro", "Piano di lavoro", `${tab(["N.", "Passo", "Dove", "Giorni"], a.passi)}<p style="margin-top:10px"><b style="font-weight:400">Totale stimato:</b> ${esc(a.stima)}. Stime indicative di lavoro effettivo, con l'AI che scrive e un founder che controlla.</p>`)}
+          ${S("rischi", "Rischi e successo", `<h3 class="bk-h">Rischi</h3>${tab(["Rischio", "Come lo riduci"], a.rischi)}<h3 class="bk-h" style="margin-top:18px">Come capisci se funziona</h3>${tab(["Metrica", "Soglia (ipotesi)", "Entro"], a.successo)}<p style="margin-top:10px"><b style="font-weight:400">Regola di stop.</b> ${esc(a.stop)}</p>`)}
+          ${S("prompt", "Prompt per l'AI", `<p class="small" style="margin-bottom:10px">Se decidete di farla: incollate questo testo (insieme a <code>CONTESTO_DEMO.md</code>). È già scritto come richiesta di tipo C.</p><pre class="mk-prompt" id="mk-prompt">${esc(a.prompt)}</pre>`, "")}
+          ${S("serve", "Cosa serve", lista(x.serve))}${S("domande", "Da decidere", lista(x.domande))}
+          ${x.area ? S("webapp", "Nella web app", `<p>La parte dentro l'area personale è la card <b style="font-weight:400">${x.area}</b>. <a class="link" href="${APP}#/decidere/${x.area}">Apri la card nella web app →</a></p>`) : ""}
+          ${S("origine", "Origine", `<p>${esc(x.origine)}</p>`)}
+          ${S("storico", "Storico richieste", `<div class="storico">${x.storico.map((s) => `<div><span class="small">${new Date(s[0]).toLocaleDateString("it-IT", { day: "numeric", month: "short", year: "numeric" })}</span><span>${esc(s[1])}</span></div>`).join("")}</div>`)}
+        </div>`;
+    };
+    const schedaMd = (x, a) => {
+      const L = (l) => l.map((i) => `- ${i}`).join("\n"), T = (cols, r) => `| ${cols.join(" | ")} |\n|${cols.map(() => "---").join("|")}|\n${r.map((x2) => `| ${x2.map((c) => String(c).replace(/\|/g, "/")).join(" | ")} |`).join("\n")}`;
+      let m = `# ${x.id} · ${x.titolo}\n\nGruppo: ${x.gruppo} · Stato: ${x.stato} · Impatto ${x.impatto}/5 · Sforzo ${x.sforzo}/5${x.area ? ` · Web app: ${x.area}` : ""}\n\n## Problema\n${x.problema}\n\n## Proposta\n${x.proposta}\n\n## Consiglio (parere di Claude)\n${x.consiglio}\n\n`;
+      if (!a) return m + "## Cosa serve\n" + L(x.serve) + "\n\n## Da decidere\n" + L(x.domande) + "\n";
+      m += `## Panoramica\n- **Obiettivo:** ${a.obiettivo}\n- **Per chi:** ${a.per}\n- **Quando serve:** ${a.quando}\n- **Stima:** ${a.stima}\n\n### MVP\n${L(a.ambito.mvp)}\n\n### Dopo\n${L(a.ambito.dopo)}\n\n### Non lo facciamo\n${L(a.ambito.fuori)}\n\n## Pagine\n`;
+      a.pagine.forEach((p) => { m += `\n### ${p.titolo}\n\`${p.url}\` — ${p.nota || ""}\n\n`; p.sezioni.forEach((s, i) => { m += `${i + 1}. **${s.nome}** ${s.codice ? "(" + s.codice + ")" : ""}\n   - Contenuto: ${(s.blocchi || [s.blocco]).map(blocchiTesto).join(" || ")}\n   - Perché: ${s.perche}\n   - Si può cambiare: ${s.modifica}\n${s.comp ? "   - Componenti: " + s.comp.join(", ") + "\n" : ""}`; }); });
+      a.dati.forEach((d) => { m += `\n## Dati · ${d.nome}\nDove: ${d.dove} · Chi: ${d.chi} · Quando: ${d.quando}\n\n${T(["Campo", "Tipo", "Esempio / regola"], d.campi)}\n`; });
+      m += `\n## Regole\n${L(a.regole)}\n\n## Stati\n${T(["Stato", "Cosa vede", "Testo"], a.stati)}\n\n## Testi\n${T(["Elemento", "Testo"], a.copy)}\n\n## Misure\n${T(["Evento", "Quando", "Perché"], a.eventi)}\n\n## Integrazioni\n${T(["Strumento", "Cosa fa", "Come"], a.integrazioni)}\n\n## Da verificare (legale/privacy)\n${L(a.legale)}\n\n## Manutenzione\n${T(["Cosa", "Chi", "Ogni quanto", "Come"], a.manutenzione)}\n\n## Piano di lavoro (${a.stima})\n${T(["N.", "Passo", "Dove", "Giorni"], a.passi)}\n\n## Rischi\n${T(["Rischio", "Come lo riduci"], a.rischi)}\n\n## Successo\n${T(["Metrica", "Soglia", "Entro"], a.successo)}\n\nRegola di stop: ${a.stop}\n\n## Prompt per l'AI\n\n${a.prompt}\n`;
+      return m;
+    };
+    const blocchiTesto = (b) => [b.badge, b.titolo, b.lead, ...(b.par || []), ...(b.items || []).map((i) => (Array.isArray(i) ? i.filter((v) => typeof v === "string").join(" — ") : String(i))), ...(b.campi || []).map((c) => c[0] + ": " + (c[1] || "")), b.consenso, b.cta && (Array.isArray(b.cta) ? b.cta.join(" / ") : b.cta), b.testo, b.placeholder, b.id && "[" + b.id + "]"].filter(Boolean).join(" · ").replace(/\*/g, "");
+    window.UL_SCHEDA_MD = (id) => schedaMd(CFG.decidere.find((c) => c.id === id), A[id]);   // usata dallo script che genera i file delle schede
+    dec.addEventListener("click", (e) => {
+      const g = e.target.closest("[data-goto]"); if (g) { e.preventDefault(); const t = document.getElementById(g.dataset.goto); t && t.scrollIntoView({ behavior: "smooth", block: "start" }); }
+      if (e.target.closest("[data-stampa]")) window.print();
+      const m = e.target.closest("[data-scheda-md]"); if (m) { const x = CFG.decidere.find((c) => c.id === m.dataset.schedaMd), a = A[x.id]; const url = URL.createObjectURL(new Blob([schedaMd(x, a)], { type: "text/markdown" })); const l = document.createElement("a"); l.href = url; l.download = `UniLink_${x.id}_${x.titolo.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.md`; document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(url), 2000); }
+      if (e.target.closest("[data-copia]")) { const t = $("#mk-prompt").textContent; (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => toast("Prompt copiato: incollalo nella chat con l'AI."), () => { const r = document.createRange(); r.selectNodeContents($("#mk-prompt")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast("Selezionato: premi Ctrl/Cmd+C per copiarlo."); }); }
+    });
     const dettaglio = (x) => `<a class="link" href="#">← Tutte le card</a>
-      <div class="dec-top"><span class="eyebrow">${x.id} · ${esc(x.gruppo)}</span><h1 class="display" style="font-size:56px;margin-top:10px">${esc(x.titolo)}</h1><div style="margin-top:14px"><span class="badge">${esc(x.stato)}</span></div></div>
-      <div class="dec-banner"><span><b>Architettura demo, non decisa.</b> Serve a vedere come risulterebbe. Impatto ${punti(x.impatto)} · Sforzo ${punti(x.sforzo)}.</span></div>
-      <div class="deccard">
+      <div class="dec-top"><span class="eyebrow">${x.id} · ${esc(x.gruppo)}</span><h1 class="display" style="font-size:56px;margin-top:10px">${esc(x.titolo)}</h1><div style="margin-top:14px"><span class="badge">${esc(x.stato)}</span>${A[x.id] ? ' <span class="badge on">Architettura completa</span>' : ""}</div></div>
+      <div class="dec-banner"><span><b>Architettura demo, non decisa.</b> Serve a vedere come risulterebbe e, se la decidete, a costruirla. Impatto ${punti(x.impatto)} · Sforzo ${punti(x.sforzo)}.</span></div>
+      ${A[x.id] ? completo(x, A[x.id]) : `<div class="deccard">
         ${sez("Il problema", `<p>${esc(x.problema)}</p>`)}${sez("La proposta", `<p>${esc(x.proposta)}</p>`)}${sez("Dove vivrebbe", `<p>${esc(x.dove)}</p>`)}
         ${sez("Il consiglio", `<p>${esc(x.consiglio)}</p><p class="small" style="margin-top:8px">Parere di Claude per la discussione: la decisione è vostra.</p>`, "cons")}
         ${sez("Come risulterebbe", `<div class="schermo">${x.schermata.map((b) => (BLOCCHI[b.t] ? BLOCCHI[b.t](b) : "")).join("")}</div>`)}
@@ -254,21 +365,43 @@
         ${x.area ? sez("Nella web app", `<p>La parte dentro l'area personale è la card <b style="font-weight:400">${x.area}</b>. <a class="link" href="${APP}#/decidere/${x.area}">Apri la card nella web app →</a></p>`) : ""}
         ${sez("Origine", `<p>${esc(x.origine)}</p>`)}
         ${sez("Storico richieste", `<div class="storico">${x.storico.map((s) => `<div><span class="small">${new Date(s[0]).toLocaleDateString("it-IT", { day: "numeric", month: "short", year: "numeric" })}</span><span>${esc(s[1])}</span></div>`).join("")}</div>`)}
-      </div>`;
+      </div>`}`;
     const disegna = () => { const id = location.hash.replace("#", ""), x = CFG.decidere.find((c) => c.id === id); dec.innerHTML = x ? dettaglio(x) : indice(); $$("[data-tool]", dec).forEach((el) => ULTools.monta(el, el.dataset.tool)); $(".dec-lead") && ($(".dec-lead").style.display = x ? "none" : ""); window.scrollTo(0, 0); };
     window.addEventListener("hashchange", disegna); disegna();
   }
 
   /* ---------- 10 · piccole interazioni ---------- */
+  // elementi cliccabili che non sono <a>/<button>: raggiungibili e attivabili da tastiera, con lo stato annunciato
+  const PSEL = ".toggle span, .chip, .scelte span, .liv, .frecce span, .qa .d";
+  $$(PSEL).forEach((el) => {
+    if (el.closest(".schermo")) return;
+    el.tabIndex = 0; el.setAttribute("role", "button");
+    el.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); el.click(); } });
+  });
+  const syncP = () => $$(PSEL).forEach((el) => { if (el.closest(".schermo") || !el.hasAttribute("role")) return; if (el.matches(".qa .d")) el.setAttribute("aria-expanded", el.parentElement.classList.contains("open") ? "true" : "false"); else if (!el.matches(".frecce span")) el.setAttribute("aria-pressed", el.classList.contains("on") || el.classList.contains("sel") ? "true" : "false"); });
+  document.addEventListener("click", (e) => { if (e.target.closest(PSEL)) setTimeout(syncP, 0); });
+  syncP();
   // checklist (pagina Tesi): si ricorda cosa hai spuntato, solo in questo browser
   $$("[data-checklist]").forEach((box) => {
     const k = "check-" + box.dataset.checklist, fatti = new Set(store.get(k, [])), items = $$("[data-ck]", box), cnt = $("[data-ckn]", box);
-    const up = () => { items.forEach((i) => i.classList.toggle("done", fatti.has(i.dataset.ck))); cnt && (cnt.textContent = `${fatti.size}/${items.length}`); const b = $(".ckbar i", box); b && (b.style.width = (fatti.size / items.length) * 100 + "%"); };
+    items.forEach((i) => { i.tabIndex = 0; i.setAttribute("role", "checkbox"); i.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); i.click(); } }); });
+    const up = () => { items.forEach((i) => { i.classList.toggle("done", fatti.has(i.dataset.ck)); i.setAttribute("aria-checked", fatti.has(i.dataset.ck) ? "true" : "false"); }); cnt && (cnt.textContent = `${fatti.size}/${items.length}`); const b = $(".ckbar i", box); b && (b.style.width = (fatti.size / items.length) * 100 + "%"); };
     items.forEach((i) => i.addEventListener("click", () => { fatti.has(i.dataset.ck) ? fatti.delete(i.dataset.ck) : fatti.add(i.dataset.ck); store.set(k, [...fatti]); up(); }));
     up();
   });
   $$("[data-demo]").forEach((b) => { if (!pr) b.addEventListener("click", (e) => { e.preventDefault(); toast(b.dataset.demo); }); });
   $$("[data-avvisami]").forEach((b) => b.addEventListener("click", (e) => { e.preventDefault(); location.href = b.dataset.avvisami + "#lista"; }));
+  // barra con un solo pulsante: appare dopo l'hero su tablet e telefono, sparisce vicino al footer, si chiude con ✕
+  const cta = (document.body.dataset.cta || "").split("|");
+  let chiusa = false; try { chiusa = sessionStorage.getItem("ul-cta-chiusa") === "1"; } catch (e) {}
+  if (cta[1] && !chiusa) {
+    document.body.insertAdjacentHTML("beforeend", `<div class="stcta" role="complementary" aria-label="Azione suggerita"><span>${esc(cta[2] || "")}</span><a class="btn btn-p" href="${esc(cta[1])}">${esc(cta[0])}</a><button type="button" aria-label="Nascondi">✕</button></div>`);
+    const bar = $(".stcta"); let nascosta = false;
+    const agg = () => bar.classList.toggle("vis", !nascosta && window.scrollY > 650 && $("footer").getBoundingClientRect().top > window.innerHeight - 40);
+    window.addEventListener("scroll", agg, { passive: true }); window.addEventListener("resize", agg);
+    $("button", bar).addEventListener("click", () => { nascosta = true; bar.classList.remove("vis"); try { sessionStorage.setItem("ul-cta-chiusa", "1"); } catch (e) {} });
+    agg();
+  }
   // le dimensioni dei dispositivi cambiano al ridimensionamento: la pagina intera non deve scorrere di lato
   document.documentElement.style.overflowX = "hidden";
 })();

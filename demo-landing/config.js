@@ -12,13 +12,46 @@
 //   Gli strumenti stanno in tools.js (condiviso con la web app).
 // -----------------------------------------------------------------------------
 window.UL_CFG = {
-  versione: { n: 2, data: "2026-10-06", nota: "Landing v2: navigazione Prima · Durante · Dopo, strumenti dentro la demo, anteprima dell'area personale, sezione Da decidere, versione tablet." },
+  versione: { n: 3, data: "2026-10-06", nota: "Landing v3: commenti del team su pagine e sezioni, architettura completa delle card Da decidere, accessibilità e primo accesso ottimizzati." },
   wa: "https://chat.whatsapp.com/KdA4r1POh6MAiBbLmmES0L",
+  // Commenti del team sulle pagine e sulle sezioni (solo demo). Si salvano nel browser e si esportano in PDF/Markdown/JSON.
+  // In produzione (Framer): attivi: false.
+  commenti: { attivi: true, chiave: "ul-commenti-v1" },
   app: "../demo-webapp/",   // la demo della web app (stesso repository, cartella accanto)
-  account: "giulia",         // account demo con cui l'anteprima dell'area entra da sola (UL_PERSONE della web app)
 
   // Numeri REALI (Google Analytics 4 e catalogo): aggiornare a mano o con il sync giornaliero dell'HQ
   numeri: { utenti: "876", pagine: "7.855", esami: "34", fonte: "Google Analytics 4 e catalogo · 8 set – 5 ott 2026" },
+
+  // SCHERMATE REALI della web app demo (immagini in img/app/, solo da guardare: nessuna interazione).
+  // Ogni schermata ha 3 file: img/app/<id>-desk.webp · -tab.webp · -ph.webp. Per aggiornarle: rifare gli screenshot
+  // dalla web app (vedi CONTESTO_DEMO.md) e sostituire i file, l'elenco resta uguale.
+  schermate: {
+    gruppi: [
+      { id: "studio", nome: "Studio", quando: "Durante", desc: "Esami, materiali, esercitazioni, libretto." },
+      { id: "test", nome: "Test Prep", quando: "Prima", desc: "Test d'ingresso, allenamento, errori, orientamento." },
+      { id: "futuro", nome: "Futuro", quando: "Dopo", desc: "Erasmus, magistrali, carriera." },
+      { id: "altro", nome: "Piano e accesso", quando: "Sempre", desc: "Piani, area in arrivo, accesso." },
+    ],
+    lista: [
+      { id: "studio-oggi", gruppo: "studio", titolo: "Oggi", account: "Giulia · Economia · piano Gratuito", nota: "Il prossimo passo: ogni mattina una sola cosa da fare, con la data dell'appello e il tuo obiettivo." },
+      { id: "studio-piano", gruppo: "studio", titolo: "Il mio piano", account: "Giulia · Economia · piano Gratuito", nota: "Un calendario settimanale con le sessioni di studio. Il piano guidato è una funzione Plus ancora da decidere." },
+      { id: "studio-esami", gruppo: "studio", titolo: "I miei esami", account: "Giulia · Economia · piano Gratuito", nota: "Data dell'appello, voto obiettivo e argomenti da spuntare man mano che li ripassi." },
+      { id: "studio-materiali", gruppo: "studio", titolo: "Materiali", account: "Giulia · Economia · piano Gratuito", nota: "La biblioteca: gli estratti sono per tutti, una dispensa completa è gratis con l'account, le altre si sbloccano." },
+      { id: "studio-pratica", gruppo: "studio", titolo: "Esercitazioni", account: "Giulia · Economia · piano Gratuito", nota: "Quiz rapido e allenamento. Le domande sono scritte per la demo." },
+      { id: "studio-libretto", gruppo: "studio", titolo: "Libretto e obiettivi", account: "Giulia · Economia · piano Gratuito", nota: "Gli esami dati, la media e il voto obiettivo." },
+      { id: "test-oggi", gruppo: "test", titolo: "Oggi · Test Prep", account: "Pietro · Economia · piano Gratuito", nota: "Per chi prepara il test d'ingresso: lo stesso guscio, con contenuti diversi." },
+      { id: "test-test", gruppo: "test", titolo: "Il mio test", account: "Pietro · Economia · piano Gratuito", nota: "Il test da preparare, i giorni che mancano (data inserita dallo studente) e l'allenamento." },
+      { id: "test-allenamento", gruppo: "test", titolo: "Allenamento", account: "Pietro · Economia · piano Gratuito", nota: "Domande di esempio per materia, scritte per la demo." },
+      { id: "test-errori", gruppo: "test", titolo: "Registro errori", account: "Pietro · Economia · piano Gratuito", nota: "Le domande sbagliate, per ripassarle finché non le azzecchi." },
+      { id: "test-orientamento", gruppo: "test", titolo: "Orientamento", account: "Pietro · Economia · piano Gratuito", nota: "Scegliere il corso con più elementi. Le informazioni ufficiali vengono sempre dalla fonte." },
+      { id: "futuro-erasmus", gruppo: "futuro", titolo: "Erasmus", account: "Luca · Economia · piano Plus", nota: "Arrivare al bando preparato. Le regole valgono solo se prese dal bando ufficiale." },
+      { id: "futuro-magistrali", gruppo: "futuro", titolo: "Magistrali e MSc", account: "Luca · Economia · piano Plus", nota: "La shortlist e i requisiti da preparare. Programmi e scadenze solo dalle pagine ufficiali." },
+      { id: "futuro-career", gruppo: "futuro", titolo: "Carriere e CV", account: "Luca · Economia · piano Plus", nota: "Un CV in ordine e i primi passi verso stage e lavoro." },
+      { id: "altro-piano", gruppo: "altro", titolo: "Piano e acquisti", account: "Giulia · Economia · piano Gratuito", nota: "Gratuito, appunti, dispensa, semestre, Plus. I prezzi sono ipotesi, ancora da decidere." },
+      { id: "altro-in-arrivo", gruppo: "altro", titolo: "Area in arrivo (Giurisprudenza)", account: "Elena · Giurisprudenza", nota: "Lo stato vero di oggi: nessuna promessa, lista d'attesa e cosa vorremmo fare." },
+      { id: "altro-accesso", gruppo: "altro", titolo: "Accesso", account: "—", nota: "Link via email o un account demo; il primo accesso è in 7 passi." },
+    ],
+  },
 
   hub: [
     { slug: "economia", nome: "Economia", stato: "attivo", href: "hub-economia.html", ico: "€", cls: "eco", img: "novoli-piazza.jpg",
@@ -168,7 +201,7 @@ window.UL_CFG = {
       problema: "Il listino non è deciso: appunti singoli, dispensa completa, bundle semestre/anno, Plus mensile sono ipotesi.",
       proposta: "Una pagina Prezzi pronta ma fuori dalla navigazione, che legge il listino da UL_CFG.prezzi: quando il listino è deciso si cambiano i numeri qui e la pagina si ridisegna.",
       dove: "Footer (non in navbar) finché non è deciso; poi voce in navbar o dentro Area personale.",
-      consiglio: "Tienila fuori dalla navbar: mostrare prezzi non decisi confonde. Se usate prezzi di lancio: «prezzo di lancio fino al…, poi…», mai il prezzo barrato (art. 17-bis Codice del Consumo).",
+      consiglio: "Tienila fuori dalla navbar: mostrare prezzi non decisi confonde. Se pensate a prezzi di lancio o sconti, indicate fino a quando valgono e fate verificare da un consulente le regole sugli annunci di riduzione di prezzo (Codice del Consumo) prima di pubblicarli.",
       schermata: [
         { t: "prezzi" },
         { t: "nota", testo: "Prezzi di esempio: si cambiano in UL_CFG.prezzi." },

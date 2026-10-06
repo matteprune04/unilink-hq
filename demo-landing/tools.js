@@ -173,6 +173,10 @@
       const inner = document.createElement("div"); inner.className = "tl-body"; el.appendChild(inner);
       IMPL[id](inner);
       $$("input[type=range]", inner).forEach((r) => { paint(r); r.addEventListener("input", () => paint(r)); });
+      // accessibilità: i risultati si annunciano da soli e le scelte dicono quale è attiva
+      $$(".tl-out", inner).forEach((o) => { o.setAttribute("role", "status"); o.setAttribute("aria-live", "polite"); });
+      const sync = () => $$(".tl-seg button", inner).forEach((b) => b.setAttribute("aria-pressed", b.classList.contains("on") ? "true" : "false"));
+      sync(); inner.addEventListener("click", () => setTimeout(sync, 0));
     },
   };
 })();

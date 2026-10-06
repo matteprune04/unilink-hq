@@ -1,7 +1,13 @@
 <!doctype html>
 <html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>UniLink · Tesi e laurea</title><link rel="icon" href="img/logo-blu.png"><link rel="stylesheet" href="ul.css"><link rel="stylesheet" href="tools.css"></head>
-<body data-page="tesi">
+<title>UniLink · Tesi e laurea</title>
+<meta name="description" content="Sei passi dalla scelta dell'argomento alla discussione, con checklist e calcolatore del voto di laurea.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#172554">
+<meta property="og:type" content="website"><meta property="og:title" content="UniLink · Tesi e laurea"><meta property="og:description" content="Sei passi dalla scelta dell'argomento alla discussione, con checklist e calcolatore del voto di laurea."><meta property="og:image" content="img/render-dispense.jpg">
+<link rel="preload" href="fonts/Croogla4F.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="icon" href="img/logo-blu.png"><link rel="stylesheet" href="ul.css"><link rel="stylesheet" href="tools.css"><link rel="stylesheet" href="commenti.css"></head>
+<body data-page="tesi" data-cta="Calcola il voto|#voto-laurea|Con che voto ti presenti?">
 <div id="ul-nav"></div>
 <section style="padding:0">
   <div class="wrap hubhero sm">
@@ -35,7 +41,7 @@
     <div class="cds" style="grid-template-columns:1fr;margin-top:14px"><a class="cd nv" href="area.html"><div class="ico">▤</div><span class="badge">Nell’area</span><h3>Template e scadenze</h3><p>Modello già impaginato e calendario di consegna: nell’area personale.</p><span class="go">Nell’area</span></a></div>
   </div>
 </div></section>
-<section><div class="wrap">
+<section id="voto-laurea"><div class="wrap">
   <div class="testa"><div><span class="eyebrow">Strumento</span><h2 style="margin-top:10px">Con che voto <span class="acc">ti presenti</span></h2></div><p>Funziona senza account.</p></div>
   <div class="tpanel"><span class="eyebrow">Provalo qui</span><h3 style="margin:6px 0 16px">Voto di laurea</h3><div data-tool="voto"></div></div>
 </div></section>
@@ -44,4 +50,5 @@
 <script src="data.js"></script>
 <script src="tools.js"></script>
 <script src="app.js"></script>
+<script src="commenti.js"></script>
 </body></html>

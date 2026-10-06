@@ -19,7 +19,8 @@
 .tl-out { display: grid; gap: 12px; align-content: start; }
 .tl-k { background: rgba(244,241,234,.08); border-radius: 18px; padding: 16px 18px; font-size: 13.5px; }
 .tl-k b { display: block; font-weight: 400; font-size: 40px; line-height: 1.1; letter-spacing: -.02em; color: #fff; }
-.tl-k.big { background: var(--arancio); }
+.tl-k.big { background: var(--arancio-bt, var(--arancio)); color: #fff; }
+.tl-k.big span { color: #fff; }
 .tl-nota { font-size: 13.5px; opacity: .75; }
 .tl-flag { font-size: 12.5px; background: rgba(207,117,39,.25); color: #f6e4d1; border: 1px dashed rgba(246,228,209,.6); border-radius: 12px; padding: 8px 12px; }
 .tl-plan { list-style: none; display: grid; gap: 6px; font-size: 14px; }

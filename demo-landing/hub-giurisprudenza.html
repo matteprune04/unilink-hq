@@ -1,7 +1,13 @@
 <!doctype html>
 <html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>UniLink · Hub Giurisprudenza (in arrivo)</title>
-<link rel="icon" href="img/logo-blu.png"><link rel="stylesheet" href="ul.css"><link rel="stylesheet" href="tools.css">
+<meta name="description" content="Lo stesso metodo di UniLink per Giurisprudenza: lista d'attesa e anteprima dell'hub.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#172554">
+<meta property="og:type" content="website"><meta property="og:title" content="UniLink · Hub Giurisprudenza (in arrivo)"><meta property="og:description" content="Lo stesso metodo di UniLink per Giurisprudenza: lista d'attesa e anteprima dell'hub."><meta property="og:image" content="img/render-dispense.jpg">
+<link rel="preload" href="fonts/Croogla4F.ttf" as="font" type="font/ttf" crossorigin>
+
+<link rel="icon" href="img/logo-blu.png"><link rel="stylesheet" href="ul.css"><link rel="stylesheet" href="tools.css"><link rel="stylesheet" href="commenti.css">
 <style>.bg2{background:var(--crema2)} .medfoto{height:220px;border-radius:22px;overflow:hidden;margin-top:28px;border:7px solid #fff;box-shadow:var(--ombra);transform:rotate(-1.5deg)} .medfoto img{width:100%;height:100%;object-fit:cover;filter:grayscale(.4)}
 .count{display:flex;gap:10px;align-items:center;margin-top:18px;font-size:14px;color:var(--nv2)} .count .av{display:flex} .count .av span{width:30px;height:30px;border-radius:50%;border:2px solid #fff;margin-left:-8px;display:grid;place-items:center;font-size:12px;background:var(--nvt)} .count .av span:first-child{margin-left:0;background:var(--ar2)}
 .hubhero.medi{grid-template-columns:1.1fr .9fr} @media (max-width:1100px){.hubhero.medi{grid-template-columns:1fr}}@media (max-width:700px){.hubhero .display{font-size:43px}}</style></head>
@@ -17,7 +23,7 @@
     </div>
     <div class="form" id="lista-form" data-hub="giurisprudenza">
       <span class="eyebrow">Lista d'attesa</span>
-      <h3 style="margin-top:8px">Avvisami quando parte</h3>
+      <h3 aria-level="2" style="margin-top:8px">Avvisami quando parte</h3>
       <p class="small" style="margin-top:6px">Ti scriviamo solo quando l'hub di Giurisprudenza apre. Una mail, niente spam.</p>
       <label class="campo"><input type="email" placeholder="La tua email" aria-label="La tua email"><span>@</span></label>
       <p class="small" style="margin-top:16px">A che anno sei?</p>
@@ -44,7 +50,7 @@
 <section>
   <div class="wrap">
     <div class="costruisci">
-      <div><span class="eyebrow" style="color:#fff;opacity:.85">Costruiscilo con noi</span><h2 style="margin-top:10px">Studi Giurisprudenza a Firenze?</h2><p>Cerchiamo i primi studenti dell'hub. Ti diamo il metodo e gli strumenti che usiamo a Economia; tu ci dici cosa serve davvero.</p><div style="margin-top:22px"><a class="btn btn-s" href="https://chat.whatsapp.com/KdA4r1POh6MAiBbLmmES0L" target="_blank" rel="noopener">Scrivici</a> <a class="btn btn-s" href="community.html#ambassador">Diventa ambassador</a></div></div>
+      <div><span class="eyebrow" style="color:#fff">Costruiscilo con noi</span><h2 style="margin-top:10px">Studi Giurisprudenza a Firenze?</h2><p>Cerchiamo i primi studenti dell'hub. Ti diamo il metodo e gli strumenti che usiamo a Economia; tu ci dici cosa serve davvero.</p><div style="margin-top:22px"><a class="btn btn-s" href="https://chat.whatsapp.com/KdA4r1POh6MAiBbLmmES0L" target="_blank" rel="noopener">Scrivici</a> <a class="btn btn-s" href="community.html#ambassador">Diventa ambassador</a></div></div>
       <div class="ruoli"><div>Materiali · appunti e schemi dei tuoi esami</div><div>Idee · cosa manca oggi a chi studia Giurisprudenza</div><div>Ambassador · far conoscere l'hub nel tuo anno</div></div>
     </div>
   </div>
@@ -61,4 +67,5 @@
 <script src="data.js"></script>
 <script src="tools.js"></script>
 <script src="app.js"></script>
+<script src="commenti.js"></script>
 </body></html>

@@ -1,20 +1,33 @@
 <!doctype html>
 <html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>UniLink · La tua area personale</title><link rel="icon" href="img/logo-blu.png"><link rel="stylesheet" href="ul.css"><link rel="stylesheet" href="tools.css"></head>
+<title>UniLink · La tua area personale</title>
+<meta name="description" content="Dispense, esami e piano di studio in un posto solo: guarda la web app su computer, tablet e telefono.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#172554">
+<meta property="og:type" content="website"><meta property="og:title" content="UniLink · La tua area personale"><meta property="og:description" content="Dispense, esami e piano di studio in un posto solo: guarda la web app su computer, tablet e telefono."><meta property="og:image" content="img/render-dispense.jpg">
+<link rel="preload" href="fonts/Croogla4F.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="icon" href="img/logo-blu.png"><link rel="stylesheet" href="ul.css"><link rel="stylesheet" href="tools.css"><link rel="stylesheet" href="commenti.css"></head>
 <body data-page="area">
 <div id="ul-nav"></div>
 <section style="padding:70px 0 20px">
   <div class="wrap" style="text-align:center">
     <span class="badge on">Dopo l'accesso</span>
     <h1 class="display" style="font-size:76px;margin-top:20px">Il tuo spazio, <span class="acc" data-s>UniLink</span></h1>
-    <p class="lead" style="margin:20px auto 0;text-align:center">Dispense, esami e piano di studio in un posto solo. Quello che vedi qui sotto è la web app vera (demo, account Giulia): cambia dispositivo e sezione.</p>
+    <p class="lead" style="margin:20px auto 0;text-align:center">Dispense, esami e piano di studio in un posto solo. Qui sotto trovi le schermate reali della web app demo: scegli il percorso, la schermata e il dispositivo.</p>
   </div>
 </section>
-<section style="padding:20px 0 60px"><div class="wrap">
-  <div class="devprev" data-devprev>
-    <div class="devbar"><div class="segm" data-devbtns></div><div class="segm" data-schbtns></div></div>
-    <div class="devstage"><div class="devshell desk"><iframe title="Area personale (demo)" loading="lazy"></iframe></div></div>
-    <p class="small">Dati di esempio · <a class="link" data-opendev href="../demo-webapp/" target="_blank" rel="noopener">Apri la web app a schermo intero</a></p>
+<section style="padding:20px 0 60px" id="schermate"><div class="wrap">
+  <div class="gal" data-gallery>
+    <div class="devbar"><div class="segm" data-galgruppi role="tablist" aria-label="Percorso"></div><div class="segm" data-galdev aria-label="Dispositivo"></div></div>
+    <div class="galmain">
+      <nav class="gallist" data-gallist aria-label="Schermate"></nav>
+      <div class="galview">
+        <button type="button" class="galframe" data-galzoom aria-label="Ingrandisci la schermata"><span class="devshell desk" data-galshell><img alt="" decoding="async"></span></button>
+        <div class="galcap"><h3 aria-level="2" data-galtitolo></h3><p class="small" data-galacc></p><p data-galnota></p>
+          <div class="galnav"><button type="button" class="btn btn-s" data-galprev>← Precedente</button><button type="button" class="btn btn-s" data-galnext>Successiva →</button></div></div>
+      </div>
+    </div>
+    <p class="small galfoot">Schermate reali della web app demo, con dati di esempio. Sono solo da guardare: tocca la schermata per ingrandirla.</p>
   </div>
 </div></section>
 <section class="bg2"><div class="wrap">
@@ -37,4 +50,5 @@
 <script src="data.js"></script>
 <script src="tools.js"></script>
 <script src="app.js"></script>
+<script src="commenti.js"></script>
 </body></html>

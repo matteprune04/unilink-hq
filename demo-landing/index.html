@@ -3,9 +3,14 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>UniLink · Studia, orientati, scegli</title>
-<meta name="description" content="Demo navigabile della landing UniLink v2: appunti, mappe, quiz e strumenti per gli esami, da Economia UniFi a Giurisprudenza e Medicina.">
+<meta name="description" content="Appunti, mappe, quiz e strumenti per gli esami universitari, scritti da studenti. Parti da Economia UniFi: Giurisprudenza e Medicina in arrivo.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#172554">
+<meta property="og:type" content="website"><meta property="og:title" content="UniLink · Studia, orientati, scegli"><meta property="og:description" content="Appunti, mappe, quiz e strumenti per gli esami universitari, scritti da studenti. Parti da Economia UniFi: Giurisprudenza e Medicina in arrivo."><meta property="og:image" content="img/render-dispense.jpg">
+<link rel="preload" href="fonts/Croogla4F.ttf" as="font" type="font/ttf" crossorigin>
+
 <link rel="icon" href="img/logo-blu.png">
-<link rel="stylesheet" href="ul.css"><link rel="stylesheet" href="tools.css">
+<link rel="stylesheet" href="ul.css"><link rel="stylesheet" href="tools.css"><link rel="stylesheet" href="commenti.css">
 <style>
   .bg2 { background: var(--crema2); } .bgn { background: var(--nvt); }
   .f1 { left: 0; top: 26%; width: 22%; height: 46%; transform: rotate(-7deg); }
@@ -23,21 +28,22 @@
   }
 </style>
 </head>
-<body data-page="home">
+<body data-page="home" data-cta="Trova la tua dispensa|#catalogo|Cerca il tuo esame">
 
 <div id="ul-nav"></div>
 
 <!-- 02 HERO -->
-<section class="hero">
+<section data-code="H02" class="hero">
   <div class="wrap">
     <span class="badge">Da studenti, per studenti · Economia UniFi</span>
     <h1 class="display" style="margin-top:24px">Studia, orientati,<br><span class="acc">scegli.<svg class="u" viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M3 13 C 55 4, 130 3, 197 9" stroke="#cf7527" stroke-width="4.5" fill="none" stroke-linecap="round"/><path d="M25 18 C 85 12, 145 12, 182 15" stroke="#cf7527" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".55"/></svg><svg class="s" viewBox="0 0 20 20"><path d="M3 17 L7 8 M10 18 L16 11 M12 5 L15 1" stroke="#cf7527" stroke-width="2.4" stroke-linecap="round"/></svg></span></h1>
     <p class="lead">Appunti, mappe e quiz per gli esami di Economia UniFi, scritti da chi li ha appena dati. Poi Erasmus, magistrali e quello che viene dopo.</p>
     <div class="cta"><a class="btn btn-p" href="#catalogo">Trova la tua dispensa <span class="freccia">→</span></a><a class="btn btn-s" href="#hub">Scegli il tuo hub</a></div>
+    <ul class="rassic" aria-label="Cosa devi sapere"><li>Gratis per iniziare</li><li>Senza account per esplorare</li><li>Fatto da studenti di UniFi</li></ul>
     <div class="collage">
       <svg class="ribbon" viewBox="0 0 1500 240"><path id="rp" d="M-20 175 C 260 60, 470 40, 760 125 S 1260 215, 1530 70" stroke="#172554" stroke-width="54" fill="none"/><text font-family="Croogla" font-size="21" fill="#f4f1ea" dy="7" letter-spacing="1"><textPath href="#rp">Appunti · Mappe · Quiz · Erasmus · Magistrali · Voto di laurea · Appunti · Mappe · Quiz · Erasmus · Magistrali · Voto di laurea · Appunti · Mappe · Quiz · Erasmus</textPath></text></svg>
-      <div class="foto f1"><img src="img/studenti-gruppo.jpg" alt=""></div>
-      <div class="foto f2"><img src="img/render-dispense.jpg" alt=""></div>
+      <div class="foto f1"><img src="img/studenti-gruppo.jpg" alt="Un gruppo di studenti" decoding="async"></div>
+      <div class="foto f2"><img src="img/render-dispense.jpg" alt="Le dispense UniLink: appunti, mappe e quiz" fetchpriority="high" decoding="async"></div>
       <div class="foto f3"><img src="img/novoli-insegna.jpg" alt=""></div>
       <div class="foto f4"><img src="img/biblioteca.jpg" alt=""></div>
       <div class="sticker s1"><b>34 esami</b>con la dispensa completa</div>
@@ -48,7 +54,7 @@
 <svg class="onda" viewBox="0 0 1440 70" preserveAspectRatio="none" style="background:var(--crema)"><path fill="#ebe4d5" d="M0 70 L0 42 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 a40 30 0 0 1 80 0 L1440 70 Z"/></svg>
 
 <!-- 03 NUMERI REALI -->
-<section class="bg2" style="padding-top:60px">
+<section data-code="H03" class="bg2" style="padding-top:60px">
   <div class="wrap numeri">
     <div class="cardnum">
       <div class="riganum"><span class="v" data-n="utenti">876</span><span class="l">persone hanno usato il sito nell'ultimo mese</span></div>
@@ -56,16 +62,16 @@
       <div class="riganum"><span class="v" data-n="esami">34</span><span class="l">esami di Economia con la dispensa</span></div>
       <span class="fonte">Google Analytics 4 e catalogo · 8 set – 5 ott 2026</span>
     </div>
-    <div class="fotonum"><img src="img/atrio.jpg" alt=""></div>
+    <div class="fotonum"><img src="img/campus-totem.jpg" alt="Il campus di Novoli, Scuola di Economia e Management" loading="lazy" decoding="async"></div>
   </div>
 </section>
 
 <!-- 04 HUB -->
-<section id="hub">
+<section data-code="H04" id="hub">
   <div class="wrap">
     <div class="testa">
       <div><span class="eyebrow">Le scuole</span><h2 style="margin-top:10px">Scegli il tuo <span class="acc">hub<svg class="u" viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M3 13 C 55 4, 130 3, 197 9" stroke="#cf7527" stroke-width="5" fill="none" stroke-linecap="round"/></svg><svg class="s" viewBox="0 0 20 20"><path d="M3 17 L7 8 M10 18 L16 11 M12 5 L15 1" stroke="#cf7527" stroke-width="2.4" stroke-linecap="round"/></svg></span></h2></div>
-      <p>Partiamo da Economia. Giurisprudenza e Medicina sono le prossime: lascia la tua email e costruiscile con noi.</p>
+      <p>Un hub è lo spazio di un corso di studi: materiali, strumenti e community in un posto solo. Partiamo da Economia; Giurisprudenza e Medicina sono le prossime.</p>
     </div>
     <div class="hubs">
       <a class="hub eco" href="hub-economia.html"><span class="badge on">Attivo</span><div class="ico">€</div><h3>Economia</h3><p>34 esami di EA ed EC con appunti, mappe e quiz. Tool per Erasmus, media e magistrali.</p><div class="fasi"><span>Matricole</span><span>Esami</span><span>Dopo la laurea</span></div><div class="img"><img src="img/novoli-piazza.jpg" alt=""><div class="avv">Entra nell'hub <span class="btn btn-p">Entra →</span></div></div></a>
@@ -77,7 +83,7 @@
 </section>
 
 <!-- 05 PARTI DA DOVE SEI (interattivo) -->
-<section class="bg2">
+<section data-code="H05" class="bg2">
   <div class="wrap">
     <div class="testa">
       <div><span class="eyebrow">Il tuo momento</span><h2 style="margin-top:10px">Parti da dove <span class="acc">sei<svg class="u" viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M3 13 C 55 4, 130 3, 197 9" stroke="#cf7527" stroke-width="5" fill="none" stroke-linecap="round"/></svg></span></h2></div>
@@ -100,7 +106,7 @@
 </section>
 
 <!-- 06 TROVA LA TUA DISPENSA (interattivo) -->
-<section id="catalogo">
+<section data-code="H06" id="catalogo">
   <div class="wrap">
     <div class="testa">
       <div><span class="eyebrow">Catalogo</span><h2 style="margin-top:10px">Trova la tua <span class="acc">dispensa<svg class="u" viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M3 13 C 55 4, 130 3, 197 9" stroke="#cf7527" stroke-width="5" fill="none" stroke-linecap="round"/></svg></span></h2></div>
@@ -114,7 +120,7 @@
 </section>
 
 <!-- 06b LA TUA AREA PERSONALE (anteprima) -->
-<section class="bgn" id="area-anteprima">
+<section data-code="H06b" class="bgn" id="area-anteprima">
   <div class="wrap dueco">
     <div>
       <span class="eyebrow">Dopo l'accesso</span>
@@ -133,7 +139,7 @@
 </section>
 
 <!-- 07 COME FUNZIONA -->
-<section class="bg2">
+<section data-code="H07" class="bg2">
   <div class="wrap">
     <div class="come">
       <div>
@@ -157,7 +163,7 @@
 </section>
 
 <!-- 08 STRUMENTI (da tools.js, dentro la demo) -->
-<section>
+<section data-code="H08">
   <div class="wrap">
     <div class="testa"><div><span class="eyebrow">Gratis, per tutti</span><h2 style="margin-top:10px">Strumenti che fanno i <span class="acc">conti</span> per te</h2></div><p>Provali qui: funzionano davvero. Gli altri strumenti li trovi <a href="tools.html"><u>nella pagina Strumenti</u></a>.</p></div>
     <div class="tools" data-toolshell data-hub="economia" data-limit="4"><div class="tlist"></div><div class="tpanel"></div></div>
@@ -165,7 +171,7 @@
 </section>
 
 <!-- 09 CHI C'È DIETRO -->
-<section class="bgn" id="chi-siamo">
+<section data-code="H09" class="bgn" id="chi-siamo">
   <div class="wrap">
     <div class="testa"><div><span class="eyebrow">Chi c'è dietro</span><h2 style="margin-top:10px">Studenti, come <span class="acc">te<svg class="u" viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M3 13 C 55 4, 130 3, 197 9" stroke="#cf7527" stroke-width="5" fill="none" stroke-linecap="round"/></svg></span></h2></div><p>Siamo quattro studenti di Economia UniFi. Abbiamo costruito quello che avremmo voluto trovare al primo anno.</p></div>
     <div class="team">
@@ -179,7 +185,7 @@
 </section>
 
 <!-- 11 FAQ -->
-<section class="bg2" id="faq">
+<section data-code="H11" class="bg2" id="faq">
   <div class="wrap faq">
     <div><span class="eyebrow">Domande frequenti</span><h2 style="margin-top:10px">Le cose da <span class="acc">sapere<svg class="u" viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M3 13 C 55 4, 130 3, 197 9" stroke="#cf7527" stroke-width="5" fill="none" stroke-linecap="round"/></svg></span></h2><p class="lead" style="margin-top:14px">Non trovi la risposta? Scrivici sul gruppo WhatsApp: rispondiamo noi, non un bot.</p></div>
     <div>
@@ -193,7 +199,7 @@
 </section>
 
 <!-- 12 CHIAMATA FINALE -->
-<section>
+<section data-code="H12">
   <div class="wrap">
     <div class="finale">
       <div class="l"><img src="img/render-guida.jpg" alt=""></div>
@@ -211,5 +217,6 @@
 <script src="data.js"></script>
 <script src="tools.js"></script>
 <script src="app.js"></script>
+<script src="commenti.js"></script>
 </body>
 </html>
