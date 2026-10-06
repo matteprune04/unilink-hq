@@ -181,10 +181,12 @@ async function boot() {
    Nessun caricamento a mano. Questo blocco sta in _src/online.js, quindi sopravvive alle build. */
 const DEMO_REG = ["https://raw.githubusercontent.com/matteprune04/unilink-hq/main/demos/registro.json", "demos/registro.json"];
 const DEMO_BASE = [
-  { id: "landing", titolo: "Landing", cartella: "demo-landing", descrizione: "Demo navigabile della nuova landing (riferimento per Framer).", url: "demo-landing/", versioni: [] },
+  { id: "landing", titolo: "Landing", cartella: "demo-landing", descrizione: "Landing v2: Prima · Durante · Dopo, strumenti, anteprima area personale, Da decidere (riferimento per Framer).", url: "demo-landing/", versioni: [] },
   { id: "webapp", titolo: "Web app · area personale", cartella: "demo-webapp", descrizione: "Demo della web app: sezioni decise + sezione «Da decidere».", url: "demo-webapp/", versioni: [] },
 ];
 const DM = { reg: null, err: "", busy: false, open: "", dev: "desk" };
+// Anteprima tablet (820 px): lo stile del telefono è nel sorgente dell'HQ, questo si aggiunge da qui
+document.head.insertAdjacentHTML("beforeend", "<style>.fr-b.tab iframe { width: 820px; max-width: 100%; border-left: 1px solid var(--line); border-right: 1px solid var(--line); }</style>");
 async function demoLoad(force) {
   if (DM.busy || (DM.reg && !force)) return;
   DM.busy = true; DM.err = "";
@@ -211,9 +213,9 @@ function demoDetail(d) {
   demoLoad();
   const vs = d.versioni || [], v = vs[0];
   return `<div class="wrap">
-    <div class="row between"><button class="btn sm" data-demoback>← Laboratorio AI</button><div class="row"><div class="seg">${[["desk", "Desktop"], ["mob", "Telefono"]].map(([m, l]) => `<button class="${DM.dev === m ? "on" : ""}" data-demodev="${m}">${l}</button>`).join("")}</div><a class="btn sm" href="${esc(d.url)}" target="_blank" rel="noopener">Schermo intero</a></div></div>
+    <div class="row between"><button class="btn sm" data-demoback>← Laboratorio AI</button><div class="row"><div class="seg">${[["desk", "Desktop"], ["tab", "Tablet"], ["mob", "Telefono"]].map(([m, l]) => `<button class="${DM.dev === m ? "on" : ""}" data-demodev="${m}">${l}</button>`).join("")}</div><a class="btn sm" href="${esc(d.url)}" target="_blank" rel="noopener">Schermo intero</a></div></div>
     ${head("Laboratorio AI · DEMO", esc(d.titolo), esc(d.descrizione) + (d.architettura ? ` Architettura: <b>${esc(d.architettura)}</b>.` : ""), v ? `<a class="btn pri" href="${esc(v.download)}">Scarica l'ultima versione (v${v.n})</a>` : "")}
-    <div class="fr"><div class="fr-h"><b>${v ? "v" + v.n : "Dal vivo"}</b>${chip("attuale", "gr")}<span class="small muted">${esc(d.url)}</span></div><div class="fr-b ${DM.dev === "mob" ? "mob" : ""}"><iframe class="demo full" src="${esc(d.cartella)}/" title="${esc(d.titolo)}"></iframe></div></div>
+    <div class="fr"><div class="fr-h"><b>${v ? "v" + v.n : "Dal vivo"}</b>${chip("attuale", "gr")}<span class="small muted">${esc(d.url)}</span></div><div class="fr-b ${DM.dev === "mob" ? "mob" : DM.dev === "tab" ? "tab" : ""}"><iframe class="demo full" src="${esc(d.cartella)}/" title="${esc(d.titolo)}"></iframe></div></div>
     <section class="card panel"><div class="panel-h"><h2>Storico delle versioni</h2><span class="small muted">ogni versione è un backup scaricabile</span></div>
       ${vs.length ? vs.map((x, i) => `<div class="li"><div class="grow"><div class="t">v${x.n} ${i === 0 ? chip("attuale", "gr") : ""} <span class="small muted">· ${esc(demoDate(x.data))} · ${esc(x.autore)}</span></div><div class="small muted">${esc(x.nota)} · ${nf(x.kb)} KB · commit ${esc(x.commit || "")}</div></div><div class="row"><a class="btn sm" href="${esc(x.download)}">Scarica ZIP</a><a class="btn sm ghost" href="${esc(x.sorgente)}" target="_blank" rel="noopener">File su GitHub</a></div></div>`).join("")
         : `<p class="muted small">Il primo backup compare qui pochi minuti dopo la prima pubblicazione.</p>`}
