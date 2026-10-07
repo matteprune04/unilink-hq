@@ -10,8 +10,8 @@
      "autore": "Claude",
      "nota": "Web app v4: listino P2, sblocchi per piano, UniLink Planner, Guida, Tesi e CV",
      "commit": "efe20b5",
-     "demo_v": 6,
-     "demo_data": "2026-10-07",
+     "demo_v": null,
+     "demo_data": null,
      "impronta": "55ab2d5b5f3d32e2",
      "kb": 5355,
      "file": "UniLink_landing_demo-v6_backup8_2026-10-07.zip",
@@ -25,8 +25,8 @@
      "autore": "Claude",
      "nota": "Landing v5: prezzi con card pulite, «Cosa c'è dentro» e calcolatore del pacchetto con il consiglio",
      "commit": "23f222c",
-     "demo_v": 5,
-     "demo_data": "2026-10-07",
+     "demo_v": null,
+     "demo_data": null,
      "impronta": "3c521da0d561de33",
      "kb": 5355,
      "file": "UniLink_landing_demo-v5_backup7_2026-10-07.zip",
@@ -160,8 +160,8 @@
      "file": "UniLink_webapp_v4_2026-10-06.zip",
      "download": "https://github.com/matteprune04/unilink-hq/releases/download/webapp-v4/UniLink_webapp_v4_2026-10-06.zip",
      "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v4/demo-webapp",
-     "demo_v": null,
-     "demo_data": null
+     "demo_v": 3,
+     "demo_data": "2026-10-06"
     },
     {
      "n": 3,
@@ -175,8 +175,8 @@
      "file": "UniLink_webapp_v3_2026-10-06.zip",
      "download": "https://github.com/matteprune04/unilink-hq/releases/download/webapp-v3/UniLink_webapp_v3_2026-10-06.zip",
      "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v3/demo-webapp",
-     "demo_v": null,
-     "demo_data": null
+     "demo_v": 3,
+     "demo_data": "2026-10-06"
     },
     {
      "n": 2,

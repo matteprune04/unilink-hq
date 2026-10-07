@@ -55,7 +55,7 @@ def impronta(cartella):
 
 
 CONFIG = {"demo-landing": "demo-landing/config.js", "demo-webapp": "demo-webapp/js/config.js"}
-RE_VER = re.compile(r'versione:\s*\{\s*n:\s*(\d+),\s*data:\s*"([^"]+)"')
+RE_VER = re.compile(r'versione\s*[:=]\s*\{\s*n:\s*(\d+),\s*data:\s*"([^"]+)"', re.I)  # landing «versione: {…}», web app «UL.VERSIONE = {…}»
 
 
 def versione_demo(cartella, rev=None):
