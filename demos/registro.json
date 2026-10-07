@@ -4,6 +4,19 @@
    "id": "landing",
    "versioni": [
     {
+     "n": 6,
+     "tag": "landing-v6",
+     "data": "2026-10-07T11:29+00:00",
+     "autore": "Claude",
+     "nota": "Documentazione landing v4: pagine S14–S16, campi per Framer, modifiche A del 7 ottobre",
+     "commit": "b5dadd4",
+     "impronta": "27a143b3cc7f0730",
+     "kb": 5352,
+     "file": "UniLink_landing_v6_2026-10-07.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v6/UniLink_landing_v6_2026-10-07.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v6/demo-landing"
+    },
+    {
      "n": 5,
      "tag": "landing-v5",
      "data": "2026-10-07T10:03+00:00",
@@ -138,5 +151,5 @@
    "url": "https://matteprune04.github.io/unilink-hq/demo-webapp/"
   }
  ],
- "aggiornato": "2026-10-07T10:03+00:00"
+ "aggiornato": "2026-10-07T11:29+00:00"
 }
