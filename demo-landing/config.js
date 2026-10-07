@@ -12,7 +12,7 @@
 //   Gli strumenti stanno in tools.js (condiviso con la web app).
 // -----------------------------------------------------------------------------
 window.UL_CFG = {
-  versione: { n: 6, data: "2026-10-07", nota: "Landing v6: Planner nella tabella dei piani (piano personale con la Completa o con Plus, come nella web app v4). Prima, v5: prezzi con card pulite, «Cosa c'è dentro» e calcolatore del pacchetto con il consiglio. Prima, v4: barra Hub · Guida · Materiali · Strumenti · Community, menu Founder, Materiali e Anteprima (P2), Planner di esempio (P3), tab Scegliere (P4), Guida per facoltà, founder e FAQ da config." },
+  versione: { n: 7, data: "2026-10-07", nota: "Landing v7: pagamento con Stripe Checkout (simulato) da Plus, calcolatore e anteprima esame, sezione «Come si paga» con le commissioni sul listino P2. Prima, v6: Planner nella tabella dei piani (piano personale con la Completa o con Plus, come nella web app v4). Prima, v5: prezzi con card pulite, «Cosa c'è dentro» e calcolatore del pacchetto con il consiglio. Prima, v4: barra Hub · Guida · Materiali · Strumenti · Community, menu Founder, Materiali e Anteprima (P2), Planner di esempio (P3), tab Scegliere (P4), Guida per facoltà, founder e FAQ da config." },
   wa: "https://chat.whatsapp.com/KdA4r1POh6MAiBbLmmES0L",
   // Commenti del team sulle pagine e sulle sezioni (solo demo). Si salvano nel browser e si esportano in PDF/Markdown/JSON.
   // In produzione (Framer): attivi: false.
@@ -165,6 +165,7 @@ window.UL_CFG = {
     ["Cosa trovo gratis su UniLink?", "Anteprime, informazioni su ogni esame e gli strumenti. Con l'account, gratis, scegli anche una dispensa Appunti tra tre esami.", "Crea l'account gratis", "@app"],
     ["Perché la dispensa UniLink e non appunti presi qua e là?", "Segue il programma ufficiale di quest'anno, è datata e aggiornata, la scrive chi ha appena dato l'esame e ha mappe e quiz nel formato dell'appello.", "Guarda un'anteprima", "materiali.html"],
     ["Quanto costa?", "Dagli Appunti di un esame ai pacchetti per semestre e anno. Fuori sessione costa meno: conviene comprare prima. Prezzi in valutazione.", "Vedi i materiali", "materiali.html"],
+    ["Come pago?", "Con carta di credito o debito, Apple Pay, Google Pay o Klarna (3 rate), su Stripe: i dati della carta non passano da noi. Pagamento unico, senza rinnovi: appena paghi, la dispensa è nella tua area (entra con la stessa email).", "Come si paga", "materiali.html#pagamento"],
     ["Cosa c'è nell'area personale?", "I tuoi esami con data e obiettivo, le dispense che hai, le esercitazioni e UniLink Planner: il metodo standard per tutti, il piano personale con la dispensa completa o con Plus.", "Accedi", "@app"],
     ["Le dispense sono aggiornate?", "Ogni dispensa ha versione e data. Quando esce una nuova versione, chi l'ha comprata la riscarica gratis.", "Vedi i materiali", "materiali.html"],
     ["UniLink è solo per Economia?", "Oggi i materiali sono per Economia UniFi. Giurisprudenza e Medicina sono in arrivo: iscriviti alla lista d'attesa e sarai tra i primi.", "Scegli il tuo hub", "index.html#hub"],
@@ -220,7 +221,7 @@ window.UL_CFG = {
     faq: [
       ["C'è qualcosa di gratis?", "Sì: anteprime, informazioni sugli esami e gli strumenti rapidi restano gratuiti."],
       ["Posso passare da Appunti alla dispensa completa?", "Nell'ipotesi in valutazione sì: l'upgrade riconosce quanto hai già pagato."],
-      ["Come pago?", "Da decidere: l'ipotesi è carta, Apple Pay e Google Pay tramite un checkout sicuro."],
+      ["Come pago?", "Proposta: Stripe Checkout. Carta, Apple Pay, Google Pay e Klarna; 1,5% + 0,25 € a transazione, nessun canone. Lo sblocco arriva dal webhook di Stripe a Supabase."],
     ],
   },
 

@@ -7,7 +7,7 @@
    Caricato PRIMA di store.js: chiavi del database, MODELLO DATI (default di profilo e attività) e testi del login. */
 window.UL = window.UL || {};
 
-UL.VERSIONE = { n: 5, data: "2026-10-07", nota: "Commenti del 7/10: Croogla 4F ovunque, login con foto di Novoli sotto il blu, nuova sezione Community (Aula studio P1 e Mentor e ambassador, promossi dai moduli C e D), moduli C e D solo come card nelle proposte, commenti scaricati archiviati e condivisi nell'HQ." };
+UL.VERSIONE = { n: 6, data: "2026-10-07", nota: "Pagamento con Stripe Checkout (simulato): carta, Apple Pay, Google Pay, Klarna; sblocco dopo il webhook; netto dopo Stripe nelle metriche. Prima, v5: Commenti del 7/10: Croogla 4F ovunque, login con foto di Novoli sotto il blu, nuova sezione Community (Aula studio P1 e Mentor e ambassador, promossi dai moduli C e D), moduli C e D solo come card nelle proposte, commenti scaricati archiviati e condivisi nell'HQ." };
 
 /* PIANI — proposta P2 (7/10/2026), uguale alla landing v5 (demo-landing/config.js → listino). Prezzi NON decisi.
    Fuori sessione costa meno; i pacchetti costano uguale tutto l'anno. Cambiarli qui li cambia ovunque (B.PRICES punta qui).
@@ -87,7 +87,7 @@ UL.CONFIG = {
   },
 
   auth: {
-    flag: "Demo · UniLink v5",
+    flag: "Demo · UniLink v6",
     title: 'La tua <span class="accent">Area Personale</span> UniLink',
     sub: "Accedi per ritrovare le tue dispense, i tuoi esami e gli strumenti per scegliere. Da studenti, per studenti.",
     regTitle: 'Il tuo spazio, <span class="accent">gratis</span>',

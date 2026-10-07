@@ -15,19 +15,24 @@
         <div class="field"><label for="coupon">Codice sconto</label><input class="input" id="coupon" placeholder="es. BENVENUTO10"></div>
         <div style="text-align:right"><span class="small muted">Totale</span><div class="display" style="font-size:34px;color:var(--navy)" data-tot>${B.eur(item.price)}</div></div>
       </div>
-      <div class="banner" style="margin:18px 0 0">${icon("lock")}<span><b>Pagamento simulato.</b> Nella demo non vengono richiesti dati di carta e non avviene nessun addebito.</span></div>
-      <div class="row" style="justify-content:flex-end;margin-top:18px"><button class="btn btn-ghost" data-close>Annulla</button><button class="btn btn-orange btn-arrow" data-pay>Conferma acquisto <span class="arr">${icon("arrow")}</span></button></div>`, { width: 560 });
+      <div class="banner" style="margin:18px 0 0">${icon("lock")}<span><b>Si paga con Stripe:</b> carta, Apple Pay, Google Pay o Klarna. Nella demo il pagamento è simulato (carta di prova, nessun addebito).</span></div>
+      <div class="row" style="justify-content:flex-end;margin-top:18px"><button class="btn btn-ghost" data-close>Annulla</button><button class="btn btn-orange btn-arrow" data-pay>Vai al pagamento <span class="arr">${icon("arrow")}</span></button></div>`, { width: 560 });
     const cp = m.el.querySelector("#coupon");
     const tot = m.el.querySelector("[data-tot]");
     cp.addEventListener("input", () => {
       const d = B.COUPONS[cp.value.trim().toUpperCase()] || 0;
       tot.innerHTML = d ? `<s class="muted" style="font-size:18px">${B.eur(item.price)}</s> ${B.eur(Math.round(item.price * (1 - d) * 100) / 100)}` : B.eur(item.price);
     });
+    // v5: pagamento con Stripe Checkout (simulato, checkout-stripe.js). Lo sblocco avviene a pagamento riuscito (webhook).
     m.el.querySelector("[data-pay]").addEventListener("click", () => {
-      const p = B.buy(user, item, cp.value.trim());
+      const code = cp.value.trim(), d = B.COUPONS[code.toUpperCase()] || 0, prezzo = Math.round(item.price * (1 - d) * 100) / 100;
+      let p = null;
       m.close();
-      UL.ui.toast(`Acquisto completato: ${item.label}`);
-      onDone && onDone(p);
+      const fine = () => { UL.ui.toast(`Acquisto completato: ${item.label}`); onDone && onDone(p); };
+      if (!window.UL_CHECKOUT) { p = B.buy(user, item, code); return fine(); }
+      window.UL_CHECKOUT.apri({ voci: [{ id: item.type + (item.slug ? ":" + item.slug : ""), nome: item.label, nota: d ? `codice ${code.toUpperCase()} · prezzo pieno ${B.eur(item.price)}` : "", prezzo }],
+        email: user.email, cosa: item.label, dove: "webapp", dopo: "Torna all'area personale",
+        onPagato: (r) => { p = B.buy(user, item, code); p.pagamento = { via: "stripe", metodo: r.metodo, commissione: r.commissione }; UL.store.save(); }, onFatto: fine });
     });
   };
   /* ---------- v4 · articoli del listino P2 (prezzo fuori sessione / in sessione da core.js) ---------- */

@@ -175,6 +175,7 @@
       const buyers = users.filter((u) => u.activity.purchases.some((p) => p.type !== "mentor"));
       const all = users.flatMap((u) => u.activity.purchases.map((p) => ({ u, p })));
       const revenue = all.reduce((s, x) => s + x.p.price, 0);
+      const fee = all.filter((x) => x.p.price > 0).reduce((s, x) => s + x.p.price * B.FEE.pct + B.FEE.fixed, 0); // commissioni Stripe stimate
       const second = buyers.filter((u) => u.activity.purchases.length >= 2).length;
       const using = buyers.filter((u) => u.activity.quiz.sessions.length > 0).length;
       const practicers = users.filter((u) => u.activity.quiz.sessions.length);
@@ -196,6 +197,7 @@
         <p class="lead">Le registrazioni da sole non dimostrano che il modello funzioni: contano acquisti per esame, ritorno alle esercitazioni, secondo acquisto e margine.</p></div></div>
       <div class="stats" style="margin-bottom:20px">
         <div class="stat"><span class="k">${icon("euro")} Incassi</span><span class="v">${B.eur(Math.round(revenue))}</span><span class="s">${all.length} ordini · ${buyers.length} acquirenti</span></div>
+        <div class="stat"><span class="k">${icon("euro")} Netto dopo Stripe</span><span class="v">${B.eur(Math.round(revenue - fee))}</span><span class="s">commissioni ${B.eur(Math.round(fee * 100) / 100)} (1,5% + 0,25 € a ordine)</span></div>
         <div class="stat"><span class="k">${icon("user")} Spesa media per acquirente</span><span class="v">${buyers.length ? B.eur(Math.round(revenue / buyers.length)) : "—"}</span></div>
         <div class="stat"><span class="k">${icon("spark")} Secondo acquisto</span><span class="v">${buyers.length ? Math.round((second / buyers.length) * 100) : 0}<small>%</small></span><span class="s">${second} su ${buyers.length} acquirenti</span></div>
         <div class="stat"><span class="k">${icon("clock")} Ritorno alle esercitazioni</span><span class="v">${practicers.length ? Math.round((returning / practicers.length) * 100) : 0}<small>%</small></span><span class="s">si esercitano in ≥2 giorni diversi</span></div>

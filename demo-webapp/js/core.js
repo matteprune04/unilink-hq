@@ -9,7 +9,7 @@
   // prezzi da testare (ipotesi della conversazione: pacchetto esame €19–29, semestre €49–69)
   B.PRICES = UL.PIANI.prezzi; // ipotesi: config.js
   B.COUPONS = { BENVENUTO10: 0.1, MATRICOLA20: 0.2 };
-  B.FEE = { pct: 0.015, fixed: 0.25 }; // commissione di pagamento ipotetica
+  B.FEE = { pct: 0.015, fixed: 0.25 }; // Stripe Italia, carte UE standard / Apple Pay / Google Pay: 1,5% + 0,25 € a transazione, 0 € al mese (uguale in checkout-stripe.js)
 
   B.courses = () => (window.UL_DISPENSE || []).filter((d) => !d.soon);
   B.course = (slug) => (window.UL_DISPENSE || []).find((d) => d.slug === slug);

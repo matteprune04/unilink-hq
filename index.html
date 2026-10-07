@@ -363,7 +363,7 @@ img { max-width: 100%; }
 /* ================= costanti ================= */
 const LOGO = "logo-white.png";
 const AREE = ["Dispense e quiz", "Tools", "Mentor", "Community", "Social e marketing", "Partnership e B2B", "Prodotto e tech", "Monetizzazione", "Organizzazione"];
-const IDEA_ST = ["Nuova", "Approvata", "In sviluppo", "Fatta", "Archiviata"];
+const IDEA_ST = ["Nuova", "Stand-by", "In sviluppo", "Fatta", "Archiviata"];
 /* Tipo = di che cosa parla l'idea (colore + icona). Natura = che genere di intervento è. */
 const _ic = {
   prod: '<path d="M12 3 3 7.5 12 12l9-4.5L12 3Z"/><path d="M3 7.5v9L12 21l9-4.5v-9M12 12v9"/>',
@@ -537,7 +537,7 @@ const IC = {
 
 function toast(msg, ms = 2800) { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => t.hidden = true, ms); }
 const svgI = p => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
-const ideaSt = i => !i.status || i.status === "Da valutare" ? "Nuova" : i.status; /* "Da valutare" è stato unito a "Nuova" */
+const ideaSt = i => !i.status || i.status === "Da valutare" ? "Nuova" : i.status === "Approvata" ? "Stand-by" : i.status; /* "Da valutare" è unito a "Nuova"; "Approvata" è diventata "Stand-by" */
 const tipoOf = i => TIPI.find(t => t.id === i.type) || TIPI.find(t => t.from.includes(i.area)) || TIPO_NONE;
 const kindOf = i => IKIND.find(k => k.id === i.kind);
 const tipoChip = t => `<span class="tchip" style="--tc:${t.c};--ts:${t.s}">${svgI(t.ic)}${esc(t.id)}</span>`;
@@ -558,7 +558,7 @@ function ideaKey(i, t) {
 }
 function syncOnly() { const ty = document.getElementById("f_type") && document.getElementById("f_type").value; $$("#frm [data-only]").forEach(el => { el.hidden = !el.dataset.only.split("|").includes(ty); }); }
 function chip(text, cls = "") { return text ? `<span class="chip ${cls}">${esc(text)}</span>` : ""; }
-function stChip(s) { const m = { "Nuova": "navy", "Da valutare": "yl", "Approvata": "gr", "In sviluppo": "or", "Fatta": "gr", "Archiviata": "", "Da fare": "navy", "In corso": "or", "Bloccato": "rd", "Fatto": "gr", "Problema": "rd", "Richiesta": "or", "Apprezzamento": "gr", "Critica": "yl", "Presa": "gr", "Da rivedere": "yl", "Superata": "", "Alta": "rd", "Bassa": "" }; return chip(s, m[s] || ""); }
+function stChip(s) { const m = { "Nuova": "navy", "Da valutare": "yl", "Approvata": "yl", "Stand-by": "yl", "In sviluppo": "or", "Fatta": "gr", "Archiviata": "", "Da fare": "navy", "In corso": "or", "Bloccato": "rd", "Fatto": "gr", "Problema": "rd", "Richiesta": "or", "Apprezzamento": "gr", "Critica": "yl", "Presa": "gr", "Da rivedere": "yl", "Superata": "", "Alta": "rd", "Bassa": "" }; return chip(s, m[s] || ""); }
 function whenCls(s) { const n = daysFrom(s); return n < 0 ? "late" : n <= 3 ? "soon" : ""; }
 const hasFiles = () => !!window.HQ_FILES;
 const fsize = b => b > 1048576 ? (b / 1048576).toFixed(1).replace(".", ",") + " MB" : Math.max(1, Math.round((b || 0) / 1024)) + " KB";

@@ -32,7 +32,7 @@
         lv === "completa" ? `<a class="btn btn-sm btn-ghost" href="#/app/esercitazioni/${c.slug}">${icon("quiz")} Allenati</a>` : `<button class="btn btn-sm ${lv === "appunti" ? "btn-orange" : "btn-primary"}" data-v4k="completa">${lv === "appunti" ? "Passa alla completa" : "Scegli"}</button>`)
         : `<p class="tiny muted">Per questo esame ci sono gli Appunti: mappe e quiz non ancora.</p>`}
       ${sem.length >= 3 && lv !== "completa" ? `<p class="small" style="margin-top:4px">Nel <b>pacchetto semestre</b> (${eur(P.prezzi.semester)}) con altri ${sem.length - 1} esami. <a href="#/app/abbonamento/calcola">Calcola</a></p>` : ""}
-      <span class="lock">${icon("lock")} Pagamento simulato nella demo · ${esc(P.stato)}</span>`;
+      <span class="lock">${icon("lock")} Pagamento con Stripe · simulato nella demo · ${esc(P.stato)}</span>`;
   };
   U.bindBuyCard = (root, user, c) => root.querySelectorAll("[data-v4k]").forEach((b) => b.addEventListener("click", () => {
     const k = b.dataset.v4k;

@@ -206,12 +206,17 @@
   }
   // listino (proposta P2) · v5: card pulite (nome, prezzo, una riga, pulsante) + «Cosa c'è dentro» + «Quando conviene comprare».
   // Il contenuto dei piani NON sta nelle card: sta nella tabella di confronto (LIS.dentro in config). In home: solo card + mesi.
+  // v7 · pagamento con Stripe Checkout (simulato: checkout-stripe.js). Dalla landing (in Framer: il bottone «Acquista»)
+  // si paga senza account; il webhook registra l'ordine sull'email e lo studente lo trova sbloccato entrando con quella email.
+  const MESI = ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"];
+  const inSessione = () => { const m = ((LIS && LIS.mesi) || []).find((x) => x[0] === MESI[new Date().getMonth()]); return !!(m && m[1]); };
+  const paga = (voci, cosa) => window.UL_CHECKOUT ? window.UL_CHECKOUT.apri({ voci, cosa, dove: "landing", dopo: "Vai all'area personale", onFatto: () => { location.href = APP; } }) : (location.href = APP);
   const PIANI = () => { const P = LIS.prezzi; return [
     { id: "appunti", tipo: "Singolo esame", nome: "Appunti", p: P.appunti[0], ses: P.appunti[1], d: "Gli appunti completi di un esame, da tenere.", cta: ["Scegli l'esame", "materiali.html#collezione"] },
     { id: "completa", tipo: "Singolo esame", nome: "Dispensa completa", p: P.completa[0], ses: P.completa[1], d: `Tutto per un esame. Senza mappe: ${eur(P.completaSenzaMappe[0])}.`, cta: ["Scegli l'esame", "materiali.html#collezione"] },
     { id: "semestre", tipo: "Pacchetto", nome: "Pacchetto semestre", p: P.semestre, d: "Tutte le dispense complete del tuo semestre.", top: true, cta: ["Calcola il tuo pacchetto", "materiali.html#calcola"] },
     { id: "anno", tipo: "Pacchetto", nome: "Pacchetto anno", p: P.anno, d: "I due semestri, un solo acquisto.", cta: ["Calcola il tuo pacchetto", "materiali.html#calcola"] },
-    { id: "plus", tipo: "Il metodo", nome: "UniLink Plus", p: P.plus, d: `Una volta per sessione. Con un pacchetto: ${eur(P.plusConPacchetto)}.`, unaTantum: true, cta: ["Scopri Plus", "#dentro"] },
+    { id: "plus", tipo: "Il metodo", nome: "UniLink Plus", p: P.plus, d: `Una volta per sessione. Con un pacchetto: ${eur(P.plusConPacchetto)}.`, unaTantum: true, cta: ["Acquista Plus", "#dentro"], paga: true },
   ]; };
   const mesiHTML = () => `<div class="li-quando"><div><span class="eyebrow">Quando conviene comprare</span><p class="small" style="margin-top:6px">Gli esami singoli costano meno fuori sessione. I pacchetti costano uguale tutto l'anno.</p></div><div class="li-mesi" role="img" aria-label="Mesi di sessione e fuori sessione">${LIS.mesi.map(([m, ses]) => `<span class="${ses ? "s" : ""}"><i></i>${m}</span>`).join("")}</div><p class="small"><span class="badge ok">fuori sessione</span> costa meno · <span class="badge">in sessione</span> costa di più</p></div>`;
   const listinoHTML = (compatto) => { if (!LIS) return "";
@@ -220,15 +225,26 @@
       <div class="pz-prezzo"><b>${eur(x.p).replace(" €", "")}</b><span>€${x.unaTantum ? " una tantum" : ""}</span></div>
       <p class="pz-sotto">${x.ses ? `fuori sessione · in sessione ${eur(x.ses)}` : x.unaTantum ? "nessun abbonamento" : "stesso prezzo tutto l'anno"}</p>
       <p class="pz-d">${x.d}</p>
-      <a class="btn ${x.top ? "btn-a" : x.id === "plus" ? "btn-s" : "btn-s"}" href="${x.cta[1]}">${x.cta[0]}</a></div>`;
+      ${x.paga ? `<button type="button" class="btn btn-s" data-paga-piano="${x.id}">${x.cta[0]}</button>` : `<a class="btn ${x.top ? "btn-a" : "btn-s"}" href="${x.cta[1]}">${x.cta[0]}</a>`}</div>`;
     const P = PIANI(), D2 = LIS.dentro || [];
     const cella = (v) => v === 1 ? '<span class="ok" aria-label="incluso">✓</span>' : v === 0 ? '<span class="no" aria-label="non incluso">—</span>' : `<span class="pz-parz">${esc(v)}</span>`;
     const tabella = compatto || !D2.length ? "" : `<div class="pz-dentro" id="dentro"><div class="testa" style="margin:56px 0 22px"><div><span class="eyebrow">Le differenze</span><h2 style="margin-top:10px">Cosa c'è <span class="acc">dentro</span></h2></div><p>Le card dicono il prezzo; qui vedi cosa cambia da un piano all'altro.</p></div>
       <div class="pz-tab-wrap"><table class="pz-tabella"><thead><tr><th></th>${P.map((x) => `<th class="${x.top ? "ev" : ""}">${x.nome}<small>${eur(x.p)}</small></th>`).join("")}</tr></thead>
       <tbody>${D2.map(([gr, righe]) => `<tr class="gr"><td colspan="${P.length + 1}">${esc(gr)}</td></tr>` + righe.map(([nome, ...v]) => `<tr><th scope="row">${esc(nome)}</th>${v.map((c, k) => `<td class="${P[k].top ? "ev" : ""}">${cella(c)}</td>`).join("")}</tr>`).join("")).join("")}</tbody></table></div></div>`;
-    return `<div class="pz-grid">${P.map(card).join("")}</div>${mesiHTML()}${tabella}
+    const fee = (p) => window.UL_CHECKOUT ? window.UL_CHECKOUT.commissione(p) : Math.round((p * 0.015 + 0.25) * 100) / 100;
+    const pc = (p) => (fee(p) / p * 100).toFixed(1).replace(".", ",") + "%";
+    const LP = LIS.prezzi, righeFee = [["Appunti", LP.appunti[0]], ["Appunti in sessione", LP.appunti[1]], ["Dispensa completa", LP.completa[0]], ["Completa in sessione", LP.completa[1]], ["Pacchetto semestre", LP.semestre], ["Pacchetto anno", LP.anno], ["UniLink Plus", LP.plus], ["Plus con un pacchetto", LP.plusConPacchetto]];
+    const comeSiPaga = compatto ? "" : `<div class="pz-paga" id="pagamento"><div class="testa" style="margin:56px 0 22px"><div><span class="eyebrow">Pagamento</span><h2 style="margin-top:10px">Come si <span class="acc">paga</span></h2></div><p>Un clic su «Acquista», si paga su Stripe e la dispensa è subito nella tua area. Senza abbonamenti, senza rinnovi.</p></div>
+      <ol class="pz-passi"><li><b>1</b><h3>Clicchi «Acquista»</h3><p>Qui sul sito o dentro l'area personale.</p></li><li><b>2</b><h3>Paghi su Stripe</h3><p>Carta di credito o debito, Apple Pay, Google Pay, Klarna (3 rate). La carta non passa da noi.</p></li><li><b>3</b><h3>È già sbloccato</h3><p>Stripe ci avvisa in automatico e la dispensa compare sul tuo profilo: entra con la stessa email.</p></li></ol>
+      <div class="pz-metodi"><span>Visa</span><span>Mastercard</span><span>Maestro</span><span>Apple Pay</span><span>Google Pay</span><span>Klarna</span><button type="button" class="btn btn-s" data-paga-prova>Prova il pagamento</button></div>
+      <details class="pz-fee"><summary>Per i founder · commissioni Stripe sul listino P2 (1,5% + 0,25 € a transazione, 0 € al mese)</summary>
+        <div class="pz-tab-wrap"><table class="pz-tabella"><thead><tr><th>Prodotto</th><th>Prezzo</th><th>Commissione</th><th>Netto UniLink</th><th>Quota persa</th></tr></thead><tbody>${righeFee.map(([n, p]) => `<tr><th scope="row">${n}</th><td>${eur(p)}</td><td>${eur(fee(p))}</td><td>${eur(p - fee(p))}</td><td>${pc(p)}</td></tr>`).join("")}</tbody></table></div>
+        <p class="small">La quota fissa pesa di più sui prezzi bassi: sugli Appunti a ${eur(LP.appunti[0])} se ne va il ${pc(LP.appunti[0])}, sul Pacchetto anno l'${pc(LP.anno)}. Più esami nello stesso carrello pagano una sola quota fissa. Klarna, carte premium o aziendali e carte non UE hanno tariffe più alte (da verificare sul listino Stripe Italia).</p></details></div>`;
+    return `<div class="pz-grid">${P.map(card).join("")}</div>${mesiHTML()}${tabella}${comeSiPaga}
       <p class="small li-n"><b>Gratis:</b> ${esc(LIS.gratis)} · <span class="badge">${esc(LIS.stato)}</span>${compatto ? ' · <a href="materiali.html#dentro"><u>Cosa c\'è dentro ogni piano</u></a>' : ""}</p>`; };
   $$("[data-listino]").forEach((el) => (el.innerHTML = listinoHTML(el.dataset.listino === "compatto")));
+  $$("[data-paga-piano]").forEach((b) => (b.onclick = () => paga([{ id: "plus", nome: "UniLink Plus", nota: "fino a fine sessione · una tantum", prezzo: LIS.prezzi.plus }], "UniLink Plus su tutti i tuoi esami")));
+  $$("[data-paga-prova]").forEach((b) => (b.onclick = () => paga([{ id: "appunti:microeconomia", nome: "Appunti · Microeconomia", nota: inSessione() ? "prezzo in sessione" : "prezzo fuori sessione", prezzo: LIS.prezzi.appunti[inSessione() ? 1 : 0] }], "Appunti di Microeconomia")));
   // founder (H09): scheda personale con breve presentazione e LinkedIn (foto e testi: segnaposto da sostituire)
   $$("[data-team]").forEach((box) => {
     const T = CFG.team || [];
@@ -321,8 +337,9 @@
               <div class="cc-r ev"><span>${nomePac} · ${tutti.length} dispense complete${sc.plus ? " + Plus" : ""}</span><b>${eur(totP)}</b></div><div class="cc-bar ev"><i style="width:${pct(totP)}%"></i></div>
             </div>
             <div class="calc-cons ${forte ? "forte" : ""}"><span class="eyebrow">Il nostro consiglio</span><h3>${tit}</h3><p>${txt}</p>${extra.length ? `<ul>${extra.map((x) => `<li>${x}</li>`).join("")}</ul>` : ""}</div>
-            <a class="btn ${forte ? "btn-a" : "btn-p"}" href="${APP}" style="justify-content:center">${forte && presi.length ? `Prendi il ${nomePac}` : "Compra · accedi o crea l'account"}</a>
-            <p class="small">Prezzi ${sc.quando === "fuori" ? "fuori sessione" : "in sessione"} · ${esc(LIS.stato)}. Il pagamento nella demo è simulato.</p>
+            ${presi.length ? `<button type="button" class="btn ${forte ? "btn-a" : "btn-p"}" data-cpaga="${forte ? "pac" : "sing"}" style="justify-content:center">${forte ? `Acquista il ${nomePac} · ${eur(totP)}` : `Acquista ${presi.length === 1 ? "l'esame" : `i ${presi.length} esami`} · ${eur(totS)}`}</button>
+            <button type="button" class="btn btn-s" data-cpaga="${forte ? "sing" : "pac"}" style="justify-content:center">${forte ? `oppure i singoli · ${eur(totS)}` : `oppure il ${nomePac} · ${eur(totP)}`}</button>` : ""}
+            <p class="small">Prezzi ${sc.quando === "fuori" ? "fuori sessione" : "in sessione"} · ${esc(LIS.stato)}. Si paga con Stripe, tutto in un solo pagamento (simulato nella demo).</p>
           </div>`;
         $$("[data-ca]", cal).forEach((b) => (b.onclick = () => { sc.anno = b.dataset.ca; draw(); }));
         $$("[data-cs]", cal).forEach((b) => (b.onclick = () => { sc.sem = b.dataset.cs; draw(); }));
@@ -330,6 +347,10 @@
         $$("[data-ct]", cal).forEach((b) => (b.onclick = () => { tutti.forEach((d) => (sc.scelte[d.slug] = b.dataset.ct === "completa" && !completaDi(d) ? "appunti" : b.dataset.ct)); draw(); }));
         $$("[data-ce]", cal).forEach((b) => (b.onclick = () => { const [slug, t] = b.dataset.ce.split("|"); sc.scelte[slug] = t; draw(); }));
         $("[data-cp]", cal).onchange = (e) => { sc.plus = e.target.checked; draw(); };
+        const per = sc.sem === "entrambi" ? `${sc.anno} anno` : `${sc.sem} semestre del ${sc.anno} anno`, q = sc.quando === "fuori" ? "fuori sessione" : "in sessione";
+        const vociPac = [{ id: "pacchetto:" + sc.anno + sc.sem, nome: `${nomePac} · ${per}`, nota: `${tutti.length} dispense complete`, prezzo: pacchetto }].concat(sc.plus ? [{ id: "plus", nome: "UniLink Plus", nota: "con un pacchetto", prezzo: PR.plusConPacchetto }] : []);
+        const vociSing = presi.map((d) => ({ id: tipoDi(d) + ":" + d.slug, nome: `${tipoDi(d) === "completa" ? "Dispensa completa" : "Appunti"} · ${d.nome}`, nota: q, prezzo: prezzoDi(d, tipoDi(d), sc.quando) })).concat(sc.plus ? [{ id: "plus", nome: "UniLink Plus", nota: "fino a fine sessione", prezzo: PR.plus }] : []);
+        $$("[data-cpaga]", cal).forEach((b) => (b.onclick = () => b.dataset.cpaga === "pac" ? paga(vociPac, `${nomePac} (${per})`) : paga(vociSing, presi.map((d) => d.nome).join(", "))));
       };
       draw();
     }
@@ -354,8 +375,11 @@
         ${LIS ? `<div class="li-card"><div class="r"><span>Appunti</span><b>${eur(LIS.prezzi.appunti[0])}</b></div><span class="small">in sessione ${eur(LIS.prezzi.appunti[1])}</span></div>
         ${c ? `<div class="li-card ev"><div class="r"><span>Dispensa completa</span><b>${eur(c[0])}</b></div><span class="small">in sessione ${eur(c[1])}${d.tipi.includes("Mappe") ? "" : " · senza mappe per questo esame"}</span></div>` : `<p class="small">Per questo esame ci sono gli Appunti: mappe e quiz non ancora.</p>`}
         ${stessi.length >= 3 ? `<div class="li-card"><div class="r"><span>Nel pacchetto semestre</span><b>${eur(LIS.prezzi.semestre)}</b></div><span class="small">${stessi.length} esami del ${SEM[d.sem]} del ${d.anno} anno · <a href="materiali.html#calcola"><u>calcola</u></a></span></div>` : ""}
-        <a class="btn btn-p" href="${APP}" style="justify-content:center">Compra · accedi o crea l'account</a><p class="small">${esc(LIS.gratis)}</p><span class="badge">${esc(LIS.stato)}</span>` : ""}
+        <button type="button" class="btn btn-p" data-pv-paga="appunti" style="justify-content:center">Acquista gli Appunti · ${eur(LIS.prezzi.appunti[inSessione() ? 1 : 0])}</button>${c ? `<button type="button" class="btn btn-a" data-pv-paga="completa" style="justify-content:center;margin-top:8px">Acquista la Completa · ${eur(c[inSessione() ? 1 : 0])}</button>` : ""}
+        <p class="small">Paghi con carta, Apple Pay, Google Pay o Klarna su Stripe · prezzo ${inSessione() ? "in sessione" : "fuori sessione"}.</p><p class="small">${esc(LIS.gratis)}</p><span class="badge">${esc(LIS.stato)}</span>` : ""}
       </aside></div>`;
+    $$("[data-pv-paga]", prevRoot).forEach((b) => (b.onclick = () => { const k = b.dataset.pvPaga, i = inSessione() ? 1 : 0, nome = (k === "completa" ? "Dispensa completa" : "Appunti") + " · " + d.nome;
+      paga([{ id: k + ":" + d.slug, nome, nota: i ? "prezzo in sessione" : "prezzo fuori sessione", prezzo: k === "completa" ? c[i] : LIS.prezzi.appunti[i] }], nome); }));
   }
 
   // link verso l'accesso alla web app (H06b, H12): data-app="#/rotta" o vuoto

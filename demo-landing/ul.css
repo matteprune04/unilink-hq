@@ -1063,3 +1063,19 @@ a.g-tile:hover { transform: translateY(-3px) rotate(-.5deg); }
 @media (max-width: 1100px) { .pz-grid { grid-template-columns: repeat(3, 1fr); } .li-quando { grid-template-columns: 1fr; } .pz-nome { min-height: 0; } }
 @media (max-width: 700px) { .pz-grid { grid-template-columns: 1fr; gap: 18px; } .pz-prezzo b { font-size: 38px; } .calc-esami li { grid-template-columns: 1fr 64px; } .calc-esami li .seg-mini { grid-column: 1 / -1; justify-content: flex-start; } .calc-esami li b { grid-row: 1; grid-column: 2; } }
 @media (max-width: 700px) { .pz-tabella { min-width: 640px; } .pz-tabella tbody th, .pz-tabella thead th:first-child { position: sticky; left: 0; background: #fff; z-index: 1; min-width: 150px; box-shadow: 6px 0 8px -6px rgba(23,37,84,.15); } .pz-tabella tr.gr td { position: sticky; left: 0; } }
+
+/* v7 · pagamento con Stripe (sezione «Come si paga» nella pagina dei prezzi; il checkout è in checkout-stripe.js) */
+.pz-passi { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.pz-passi li { background: #fff; border-radius: var(--r); padding: 20px; box-shadow: var(--ombra); }
+.pz-passi b { display: inline-flex; width: 34px; height: 34px; border-radius: 50%; background: var(--arancio); color: #fff; align-items: center; justify-content: center; font-weight: 400; margin-bottom: 10px; }
+.pz-passi h3 { font-size: 18px; margin: 0 0 6px; }
+.pz-passi p { margin: 0; font-size: 14.5px; color: var(--nv2); }
+.pz-metodi { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 16px; }
+.pz-metodi span { background: #fff; border: 1px solid var(--linea); border-radius: 99px; padding: 6px 14px; font-size: 13.5px; }
+.pz-metodi .btn { margin-left: auto; }
+.pz-fee { margin-top: 18px; background: var(--crema2); border-radius: var(--r); padding: 14px 18px; }
+.pz-fee summary { cursor: pointer; font-size: 15px; }
+.pz-fee .pz-tab-wrap { margin: 12px 0 10px; }
+.pz-fee .pz-tabella { min-width: 560px; }
+.prev-buy .btn { width: 100%; }
+@media (max-width: 760px) { .pz-passi { grid-template-columns: 1fr; } .pz-metodi .btn { margin-left: 0; width: 100%; } }

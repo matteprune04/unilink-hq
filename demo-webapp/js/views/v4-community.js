@@ -153,15 +153,19 @@
           <div class="field"><label for="tp">Di cosa vuoi parlare?</label><input class="input" id="tp" placeholder="es. esercizi sul monopolio"></div>
           <p class="label" style="margin:16px 0 8px">Scegli il primo slot</p>
           <div class="slots">${days.flatMap((d) => ["17:00", "18:00"].map((h) => `<span class="chip" data-slot="${d.toISOString().slice(0, 10)}T${h}">${d.toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" })} · ${h}</span>`)).join("")}</div>
-          <div class="banner" style="margin:16px 0 0">${icon("lock")}<span>Pagamento simulato: nessun addebito reale. Il 75% va al mentor.</span></div>
-          <div class="row" style="justify-content:flex-end;margin-top:16px"><button class="btn btn-primary" data-ok disabled>Conferma prenotazione</button></div>`, { width: 560 });
+          <div class="banner" style="margin:16px 0 0">${icon("lock")}<span>Si paga con Stripe (simulato nella demo, nessun addebito). Il 75% va al mentor.</span></div>
+          <div class="row" style="justify-content:flex-end;margin-top:16px"><button class="btn btn-primary" data-ok disabled>Vai al pagamento</button></div>`, { width: 560 });
         md.el.querySelectorAll("[data-pac]").forEach((x) => x.addEventListener("click", () => { pac = x.dataset.pac === "1"; md.el.querySelectorAll("[data-pac]").forEach((y) => y.classList.toggle("on", y === x)); }));
         md.el.querySelectorAll("[data-slot]").forEach((s) => s.addEventListener("click", () => { md.el.querySelectorAll("[data-slot]").forEach((x) => x.classList.toggle("on", x === s)); slot = s.dataset.slot; md.el.querySelector("[data-ok]").disabled = false; }));
         md.el.querySelector("[data-ok]").addEventListener("click", () => {
           const prezzo = pac ? TUT.pacchetto : TUT.ora, topic = md.el.querySelector("#tp").value.trim() || "Sessione generale";
-          u.activity.bookings.push({ id: "b" + Date.now().toString(36), mentor: m.id, topic: topic + (pac ? ` · pacchetto ${TUT.ore} ore` : ""), when: slot, price: prezzo, at: new Date().toISOString() });
+          md.close();
+          const registra = () => { u.activity.bookings.push({ id: "b" + Date.now().toString(36), mentor: m.id, topic: topic + (pac ? ` · pacchetto ${TUT.ore} ore` : ""), when: slot, price: prezzo, at: new Date().toISOString() });
           u.activity.purchases.push({ id: "o" + Date.now().toString(36), type: "mentor", label: `Tutoring con ${m.n}${pac ? ` · ${TUT.ore} ore` : ""}`, price: prezzo, listPrice: prezzo, coupon: "", at: new Date().toISOString() });
-          UL.store.addLog(u, "mentor", `Prenotato tutoring con ${m.n}`); UL.store.save(); md.close(); UL.ui.toast("Sessione prenotata"); UL.app.refresh();
+          UL.store.addLog(u, "mentor", `Prenotato tutoring con ${m.n}`); UL.store.save(); };
+          const fine = () => { UL.ui.toast("Sessione prenotata"); UL.app.refresh(); };
+          if (!window.UL_CHECKOUT) { registra(); return fine(); }
+          window.UL_CHECKOUT.apri({ voci: [{ id: "tutoring:" + m.id, nome: `Tutoring con ${m.n}`, nota: (pac ? `pacchetto ${TUT.ore} ore · ` : "1 ora · ") + topic, prezzo }], email: u.email, cosa: `Sessione con ${m.n} (${fmtDate(slot, true)})`, dove: "webapp", dopo: "Torna alle sessioni", onPagato: registra, onFatto: fine });
         });
       }));
       root.querySelectorAll("[data-diventa]").forEach((b) => b.addEventListener("click", () => {
