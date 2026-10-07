@@ -4,6 +4,21 @@
    "id": "landing",
    "versioni": [
     {
+     "n": 8,
+     "tag": "landing-v8",
+     "data": "2026-10-07T12:11+00:00",
+     "autore": "Claude",
+     "nota": "Web app v4: listino P2, sblocchi per piano, UniLink Planner, Guida, Tesi e CV",
+     "commit": "efe20b5",
+     "demo_v": 6,
+     "demo_data": "2026-10-07",
+     "impronta": "55ab2d5b5f3d32e2",
+     "kb": 5355,
+     "file": "UniLink_landing_demo-v6_backup8_2026-10-07.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v8/UniLink_landing_demo-v6_backup8_2026-10-07.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v8/demo-landing"
+    },
+    {
      "n": 7,
      "tag": "landing-v7",
      "data": "2026-10-07T11:42+00:00",
@@ -119,6 +134,21 @@
    "id": "webapp",
    "versioni": [
     {
+     "n": 5,
+     "tag": "webapp-v5",
+     "data": "2026-10-07T12:11+00:00",
+     "autore": "Claude",
+     "nota": "Web app v4: listino P2, sblocchi per piano, UniLink Planner, Guida, Tesi e CV",
+     "commit": "efe20b5",
+     "demo_v": null,
+     "demo_data": null,
+     "impronta": "b6443605d99a1627",
+     "kb": 318,
+     "file": "UniLink_webapp_v5_2026-10-07.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/webapp-v5/UniLink_webapp_v5_2026-10-07.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v5/demo-webapp"
+    },
+    {
      "n": 4,
      "tag": "webapp-v4",
      "data": "2026-10-06T21:23+00:00",
@@ -181,10 +211,10 @@
    ],
    "titolo": "Web app · area personale",
    "cartella": "demo-webapp",
-   "descrizione": "Web app v3: design demo A, parte decisa (Studio, Il mio percorso, Abbonamento), Da decidere con i moduli Career e Network, Visualizza come, commenti del team.",
+   "descrizione": "Web app v4: listino P2 come la landing (Appunti, Completa, pacchetti, Plus una tantum), ogni sezione presente o da sbloccare secondo il piano, UniLink Planner (P3), Guida per facoltà, Tesi e CV; Da decidere con Career e Network.",
    "architettura": "UniLink_Architettura_WebApp.pdf",
    "url": "https://matteprune04.github.io/unilink-hq/demo-webapp/"
   }
  ],
- "aggiornato": "2026-10-07T11:42+00:00"
+ "aggiornato": "2026-10-07T12:11+00:00"
 }
