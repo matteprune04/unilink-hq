@@ -18,6 +18,11 @@
         { k: "planner", l: "Planner", i: "target", to: "#/app/planner", soloAttiva: true },
         { k: "guida", l: "Guida", i: "map", to: "#/app/guida" },
       ] },
+      // Community (7/10): Aula studio (P1) e Mentor e ambassador, promossi dai moduli C e D (v4-community.js)
+      { g: "Community", items: [
+        { k: "aula", l: "Aula studio", i: "users", to: "#/app/aula", soloAttiva: true },
+        { k: "mentoring", l: "Mentor e ambassador", i: "shield", to: "#/app/mentoring" },
+      ] },
       { g: "Dopo gli esami", items: [{ k: "percorso", l: "Il mio percorso", i: "cap", to: "#/app/percorso" }] },
       { g: "Account", items: [
         { k: "abbonamento", l: "Abbonamento", i: "euro", to: "#/app/abbonamento" },
@@ -89,7 +94,7 @@
     key: "ul_unilink_v4",
     name: "UniLink",
     tag: "Area Personale",
-    flag: "DEMO v4 · dati di esempio",
+    flag: "DEMO v5 · dati di esempio",
     home: "#/app/dashboard",
     homeKey: "dashboard",
     onboarding: "onboardingU",
@@ -99,6 +104,7 @@
       dashboard: { view: "dashboardU" }, esami: { view: "esamiB" },
       materiali: { view: "materialiU" }, esercitazioni: { view: "praticaU" }, scheda: { view: "schedaU" },
       percorso: { view: "percorsoB" }, planner: { view: "plannerU" }, guida: { view: "guidaU" },
+      aula: { view: "aulaU" }, mentoring: { view: "mentoringU" },
       abbonamento: { view: "abbonamentoU" }, acquisti: { view: "abbonamentoU" }, account: { view: "account" },
       // sezione di lavoro
       decidere: { view: "decidereU" }, configurazione: { view: "configU" },
@@ -109,10 +115,9 @@
       const badge = (it) => it.k === "esami" ? user.activity.exams.filter((e) => e.status !== "done").length || "" : it.k === "esercitazioni" ? err || "" : it.k === "abbonamento" && B.plus(user) ? "Plus" : "";
       const toItem = (it) => Object.assign({}, it, { soon: soon(user, it), badge: soon(user, it) ? "" : badge(it) });
       const g = UL.NAV.decise.map((x) => ({ g: x.g, items: x.items.map(toItem) }));
-      // gruppo arancione: una voce per modulo (attiva su tutte le sue pagine) + catalogo e configurazione
-      const cur = curPage();
-      const ddItems = [{ k: "decidere", l: "Tutte le proposte", i: "alert", to: "#/app/decidere", badge: String(window.UL_DA_DECIDERE.length) }]
-        .concat(UL.NAV.dd.map((m) => { const on = m.items.some((i) => i.k === cur); return { k: on ? cur : m.items[0].k, l: m.modulo, i: m.i, to: "#/app/" + m.items[0].k, badge: String(m.items.filter((i) => !i.admin).length) }; }))
+      // gruppo arancione: solo il catalogo delle proposte (i moduli C e D si aprono dalle card, non più dalla sidebar) + configurazione
+      const cur = curPage(), inModulo = UL.NAV.dd.some((m) => m.items.some((i) => i.k === cur));
+      const ddItems = [{ k: inModulo ? cur : "decidere", l: "Tutte le proposte", i: "alert", to: "#/app/decidere", badge: String(window.UL_DA_DECIDERE.length) }]
         .concat([{ k: "configurazione", l: "Configurazione", i: "settings", to: "#/app/configurazione" }])
         .concat(user.role === "admin" ? [{ k: "metriche", l: "Metriche", i: "shield", to: "#/app/metriche" }] : []);
       g.push({ g: "Da decidere", cls: "dd", items: ddItems });

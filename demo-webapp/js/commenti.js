@@ -4,14 +4,19 @@
              risolvi/riapri/elimina; download in PDF (stampa → «Salva come PDF»), in Markdown (da dare all'AI)
              e in JSON (per passarli a un altro membro del team, che li importa).
    Dove      I commenti stanno nel browser (localStorage, chiave KEY) e NON si cancellano con «Ripristina dati demo».
-             Per averli condivisi in tempo reale servirebbe un backend (es. la tabella Supabase dell'HQ): vedi PDF.
+   Archivio  [v4] Scaricandoli (PDF, .md o JSON) i commenti vengono ARCHIVIATI: escono dalle pagine e restano nella scheda
+             «Archivio» del pannello, da cui si riscaricano o si ripristinano. L'archivio va anche nell'HQ (js/archivio-commenti.js:
+             Supabase, tabella docs, col «demo_commenti») così chi accede all'HQ lo vede e lo scarica.
    Comment   { id, n, versione, rotta, pagina, sezione (titolo leggibile), path (posizione nel DOM), tipo, priorita,
              testo, autore, vista (account con cui si guardava), stato: aperto|risolto, at }
    Rimuovere togliere <script src="js/commenti.js"> da index.html. */
 (function () {
   const UL = window.UL;
   const { icon, esc } = UL.ui;
-  const KEY = "ul_unilink_commenti", AUT = "ul_unilink_commenti_autore";
+  const KEY = "ul_unilink_commenti", AUT = "ul_unilink_commenti_autore", STO = "ul_unilink_commenti_storico";
+  const ARC = window.UL_ARCHIVIO;
+  const storico = () => get(STO, []);
+  const saveSto = (l) => put(STO, l);
   const TIPI = ["Miglioramento", "Problema", "Domanda", "Idea"], PRIO = ["Alta", "Media", "Bassa"];
   // elementi che contano come «sezione» commentabile (classi del design A)
   const SEZ = ".page-head, .card, .plan, .mode, .stat, .exam-hero, .feature, .course, .banner, .tabs, .side-card, .side-foot, .topbar, .table-wrap, .soon-hero, .auth-side, .auth-form-wrap, [data-onb], .pricing, .modal";
@@ -124,11 +129,14 @@
   }
 
   /* ---------- pannello laterale ---------- */
-  let scope = "pagina";
+  let scope = "pagina", condivisi = null;
   function panel(focusId) {
     const m = UL.ui.modal("", { drawer: true, width: 560 });
     m.el.classList.add("comm-ui");
+    // carica nell'HQ le esportazioni rimaste solo nel browser e legge l'archivio condiviso
+    if (ARC) { const st = storico(); ARC.sincronizza(st, "webapp").then((n) => { if (n) saveSto(st); return ARC.elenco("webapp"); }).then((x) => { condivisi = x; if (scope === "archivio") draw(); }); }
     const draw = () => {
+      if (scope === "archivio") return drawArchivio();
       const l = all(), qui = l.filter((c) => c.rotta === rotta());
       const list = scope === "pagina" ? qui : l;
       const aperti = list.filter((c) => c.stato !== "risolto");
@@ -137,14 +145,14 @@
           <p class="small muted" style="margin-top:4px">${aperti.length} aperti · ${list.length - aperti.length} risolti · restano in questo browser</p></div>
           <button class="icon-btn" data-close aria-label="Chiudi">${icon("x")}</button></div>
         <div class="row" style="gap:8px"><button class="btn btn-sm btn-orange" data-pick>${icon("edit")} Commenta una sezione</button><button class="btn btn-sm btn-ghost" data-page>Commenta la pagina</button></div>
-        <div class="tabs" style="margin-top:16px"><a href="#" data-scope="pagina" class="${scope === "pagina" ? "on" : ""}">Questa pagina <span class="cnt">${qui.length}</span></a><a href="#" data-scope="tutti" class="${scope === "tutti" ? "on" : ""}">Tutti <span class="cnt">${l.length}</span></a></div>
+        <div class="tabs" style="margin-top:16px"><a href="#" data-scope="pagina" class="${scope === "pagina" ? "on" : ""}">Questa pagina <span class="cnt">${qui.length}</span></a><a href="#" data-scope="tutti" class="${scope === "tutti" ? "on" : ""}">Tutti <span class="cnt">${l.length}</span></a><a href="#" data-scope="archivio">Archivio <span class="cnt">${storico().length}</span></a></div>
         <ul class="feed">${list.slice().sort((a, b) => (a.stato === "risolto") - (b.stato === "risolto") || b.at.localeCompare(a.at)).map((c) => `
           <li class="${c.id === focusId ? "comm-focus" : ""}" style="${c.stato === "risolto" ? "opacity:.55" : ""};align-items:flex-start"><span class="comm-pin comm-pin-static">${c.n}</span><div style="flex:1;min-width:0">
             <div class="row" style="gap:6px;flex-wrap:wrap"><span class="badge ${c.tipo === "Problema" ? "badge-orange" : "badge-soft"}">${esc(c.tipo)}</span><span class="badge ${c.priorita === "Alta" ? "badge-yellow" : "badge-soft"}">${esc(c.priorita)}</span>${c.stato === "risolto" ? '<span class="badge badge-green">Risolto</span>' : ""}</div>
             <p style="margin:6px 0;white-space:pre-wrap">${esc(c.testo)}</p>
             <time>${scope === "tutti" ? `<a href="#/${esc(c.rotta.replace(/\./g, "/"))}">${esc(c.pagina)}</a> · ` : ""}${c.path ? "«" + esc(c.sezione) + "»" : "Tutta la pagina"} · ${esc(c.autore || "anonimo")} · ${when(c.at)} · ${esc(c.vista)}</time>
             <div class="row" style="gap:12px;margin-top:6px"><a href="#" class="small display" data-edit="${c.id}">Modifica</a><a href="#" class="small display" data-toggle="${c.id}">${c.stato === "risolto" ? "Riapri" : "Segna risolto"}</a><a href="#" class="small display" style="color:var(--red,#b42318)" data-del="${c.id}">Elimina</a></div></div></li>`).join("") || `<li class="small muted">Nessun commento${scope === "pagina" ? " su questa pagina" : ""}.</li>`}</ul>
-        <div class="card beige" style="margin-top:18px"><h3>Scarica e passali all'AI</h3><p class="small muted" style="margin:6px 0 12px">Il PDF e il file .md contengono pagina, rotta, sezione e testo di ogni commento, con le istruzioni per l'AI.</p>
+        <div class="card beige" style="margin-top:18px"><h3>Scarica e passali all'AI</h3><p class="small muted" style="margin:6px 0 12px">Il PDF e il file .md contengono pagina, rotta, sezione e testo di ogni commento, con le istruzioni per l'AI. <b>Scaricando, i commenti vengono archiviati</b>: escono dalle pagine e restano nella scheda «Archivio» ${ARC && ARC.collegato() ? "e nell'HQ, dove chiunque acceda li riscarica" : "(nell'HQ appena entri nell'HQ da questo browser)"}.</p>
           <div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn btn-sm btn-primary" data-pdf>${icon("download")} PDF</button><button class="btn btn-sm btn-ghost" data-md>${icon("file")} .md per l'AI</button><button class="btn btn-sm btn-ghost" data-json>Esporta JSON</button><label class="btn btn-sm btn-ghost" style="cursor:pointer">Importa JSON<input type="file" accept=".json" data-imp hidden></label></div>
           <label class="check small" style="margin-top:10px"><input type="checkbox" data-solo checked> Solo i commenti aperti</label></div>`;
       const q = (s) => m.el.querySelector(s);
@@ -156,13 +164,46 @@
       m.el.querySelectorAll("[data-del]").forEach((a) => a.addEventListener("click", async (e) => { e.preventDefault(); if (await UL.ui.confirmBox("Eliminare il commento?", "Non si può annullare.", "Elimina", true)) { saveAll(all().filter((x) => x.id !== a.dataset.del)); draw(); } }));
       m.el.querySelectorAll("[data-sel]").forEach((a) => a.addEventListener("click", () => m.close()));
       const scelti = () => all().filter((c) => !q("[data-solo]").checked || c.stato !== "risolto");
-      q("[data-pdf]").addEventListener("click", () => pdf(scelti()));
-      q("[data-md]").addEventListener("click", () => scarica("commenti-unilink-v" + UL.VERSIONE.n + ".md", markdown(scelti()), "text/markdown"));
-      q("[data-json]").addEventListener("click", () => scarica("commenti-unilink.json", JSON.stringify(all(), null, 2), "application/json"));
+      q("[data-pdf]").addEventListener("click", () => { const l = scelti(); if (!l.length) return UL.ui.toast("Nessun commento da scaricare", "err"); pdf(l); archivia(l, "pdf", nomeFile() + ".pdf"); draw(); });
+      q("[data-md]").addEventListener("click", () => { const l = scelti(); if (!l.length) return UL.ui.toast("Nessun commento da scaricare", "err"); scarica(nomeFile() + ".md", markdown(l), "text/markdown"); archivia(l, "md", nomeFile() + ".md"); draw(); });
+      q("[data-json]").addEventListener("click", () => { const l = scelti(); if (!l.length) return UL.ui.toast("Nessun commento da scaricare", "err"); scarica(nomeFile() + ".json", JSON.stringify(l, null, 2), "application/json"); archivia(l, "json", nomeFile() + ".json"); draw(); });
       q("[data-imp]").addEventListener("change", (e) => importa(e.target.files[0], draw));
       const f = m.el.querySelector(".comm-focus"); f && f.scrollIntoView({ block: "center" });
     };
+    // scheda Archivio: esportazioni di questo browser + quelle condivise nell'HQ (anche degli altri founder)
+    const drawArchivio = () => {
+      const loc = storico(), idLoc = new Set(loc.map((e) => e.id));
+      const lista = loc.map((e) => ({ ...e, locale: true })).concat((condivisi || []).filter((e) => !idLoc.has(e.id))).sort((a, b) => String(b.data).localeCompare(String(a.data)));
+      m.el.querySelector(".modal").innerHTML = `
+        <div class="modal-head"><div><span class="badge badge-orange">Commenti del team</span><h2 style="margin-top:10px">Archivio</h2>
+          <p class="small muted" style="margin-top:4px">${lista.length} esportazioni · ${ARC && ARC.collegato() ? (condivisi ? "condivise nell'HQ: le vede chi accede" : "collegamento all'HQ…") : "non collegato all'HQ: entra nell'HQ in questo browser per condividerle"}</p></div>
+          <button class="icon-btn" data-close aria-label="Chiudi">${icon("x")}</button></div>
+        <div class="tabs"><a href="#" data-scope="pagina">Questa pagina</a><a href="#" data-scope="tutti">Tutti <span class="cnt">${all().length}</span></a><a href="#" data-scope="archivio" class="on">Archivio <span class="cnt">${loc.length}</span></a></div>
+        <ul class="feed">${lista.map((e) => `<li style="align-items:flex-start"><span class="ic">${icon("file")}</span><div style="flex:1;min-width:0">
+            <div class="row" style="gap:6px;flex-wrap:wrap"><span class="badge badge-soft">${esc(String(e.formato || "").toUpperCase())}</span><span class="badge ${e.condiviso || !e.locale ? "badge-green" : "badge-yellow"}">${e.condiviso || !e.locale ? "nell'HQ" : "solo in questo browser"}</span></div>
+            <p style="margin:6px 0"><b class="display" style="font-weight:400">${(e.commenti || []).length} commenti</b> · web app v${esc(e.versione)} · ${when(e.data)} · ${esc(e.autore || "anonimo")}</p>
+            <details><summary class="small">Vedi i commenti</summary>${(e.commenti || []).map((c) => `<p class="small" style="margin:6px 0">#${c.n} · <b>${esc(c.pagina)}</b> · ${esc(c.testo)}</p>`).join("")}</details>
+            <div class="row" style="gap:12px;margin-top:6px"><a href="#" class="small display" data-ri="${e.id}" data-k="pdf">PDF</a><a href="#" class="small display" data-ri="${e.id}" data-k="md">.md</a><a href="#" class="small display" data-ri="${e.id}" data-k="json">JSON</a>${e.locale ? `<a href="#" class="small display" data-rp="${e.id}">Ripristina</a>` : ""}</div></div></li>`).join("") || '<li class="small muted">Nessuna esportazione ancora: scarica i commenti da «Tutti».</li>'}</ul>`;
+      const trova = (id) => lista.find((x) => x.id === id);
+      m.el.querySelectorAll("[data-scope]").forEach((a) => a.addEventListener("click", (ev) => { ev.preventDefault(); scope = a.dataset.scope; draw(); }));
+      m.el.querySelectorAll("[data-ri]").forEach((a) => a.addEventListener("click", (ev) => { ev.preventDefault(); const e = trova(a.dataset.ri); if (!e) return; const nome = (e.file || "commenti").replace(/\.\w+$/, "");
+        if (a.dataset.k === "pdf") pdf(e.commenti, e.data); else if (a.dataset.k === "md") scarica(nome + ".md", e.md || markdown(e.commenti), "text/markdown"); else scarica(nome + ".json", JSON.stringify(e.commenti, null, 2), "application/json"); }));
+      m.el.querySelectorAll("[data-rp]").forEach((a) => a.addEventListener("click", async (ev) => { ev.preventDefault();
+        if (!(await UL.ui.confirmBox("Ripristinare questi commenti?", "Tornano attivi sulle pagine e l'esportazione esce dall'archivio di questo browser (nell'HQ resta).", "Ripristina"))) return;
+        const st = storico(), e = st.find((x) => x.id === a.dataset.rp); if (!e) return; const l = all(), ids = new Set(l.map((c) => c.id));
+        e.commenti.forEach((c) => { if (!ids.has(c.id)) { const r = { ...c }; delete r.archiviato; l.push(r); } }); saveAll(l); saveSto(st.filter((x) => x.id !== e.id)); UL.ui.toast(`Ripristinati ${e.commenti.length} commenti`); draw(); }));
+    };
     draw();
+  }
+  // archivia i commenti appena scaricati: escono dalle pagine, restano nell'archivio (browser + HQ)
+  const nomeFile = () => `UniLink_commenti_webapp_v${UL.VERSIONE.n}_${new Date().toISOString().slice(0, 16).replace(/[-:T]/g, "")}`;
+  function archivia(lista, formato, file) {
+    const ora = new Date().toISOString(), ids = new Set(lista.map((c) => c.id));
+    const e = { id: "w" + Date.now().toString(36), demo: "webapp", data: ora, autore: get(AUT, "") || "", formato, file, versione: UL.VERSIONE.n, n: lista.length, commenti: lista.map((c) => ({ ...c, archiviato: ora })), md: markdown(lista), condiviso: false };
+    const st = storico(); st.unshift(e); saveSto(st);
+    saveAll(all().filter((c) => !ids.has(c.id)));
+    UL.ui.toast(`Scaricati e archiviati ${lista.length} commenti`);
+    if (ARC) ARC.salva(e).then((ok) => { if (ok) { const s2 = storico(), x = s2.find((y) => y.id === e.id); if (x) { x.condiviso = true; saveSto(s2); } UL.ui.toast("Archivio caricato nell'HQ: chi accede lo può scaricare"); } });
   }
 
   /* ---------- esportazioni ---------- */
@@ -173,14 +214,14 @@
     return `# Commenti sulla demo UniLink · web app v${UL.VERSIONE.n}\n\nEsportati il ${new Date().toLocaleString("it-IT")} · ${l.length} commenti\n\n> ${ISTR}\n\n` +
       Object.entries(g).map(([r, x]) => `## ${x.pagina} — \`${r}\`\n\n` + x.items.map((c) => `### #${c.n} · ${c.tipo} · priorità ${c.priorita}${c.stato === "risolto" ? " · RISOLTO" : ""}\n- **Sezione:** ${c.path ? c.sezione + " (posizione " + c.path + ")" : "tutta la pagina"}\n- **Autore:** ${c.autore || "anonimo"} · ${when(c.at)} · vista: ${c.vista} · ${c.versione}\n\n${c.testo}\n`).join("\n")).join("\n");
   }
-  function pdf(l) {
+  function pdf(l, quando) {
     if (!l.length) return UL.ui.toast("Nessun commento da scaricare", "err");
     const g = gruppi(l);
     const html = `<!doctype html><html lang="it"><head><meta charset="utf-8"><title>Commenti UniLink v${UL.VERSIONE.n}</title>
       <link rel="stylesheet" href="${new URL("css/style.css", location.href)}"><style>body{background:#fff;padding:28px;font-size:13px}h1{font-size:28px}h2{font-size:18px;margin:22px 0 8px;border-bottom:1px solid var(--line);padding-bottom:6px}
       .c{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:8px 0;break-inside:avoid}.m{color:#5b6476;font-size:11px;margin-top:6px}.n{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;margin-right:6px}
       .i{background:var(--orange-soft);border-radius:10px;padding:10px 12px;font-size:12px;margin-top:10px}p{white-space:pre-wrap;margin:6px 0 0}@page{margin:14mm}</style></head><body>
-      <h1>Commenti sulla demo UniLink · web app v${UL.VERSIONE.n}</h1><div class="m">Esportati il ${new Date().toLocaleString("it-IT")} · ${l.length} commenti</div><div class="i">${esc(ISTR)}</div>
+      <h1>Commenti sulla demo UniLink · web app v${UL.VERSIONE.n}</h1><div class="m">Esportati il ${new Date(quando || Date.now()).toLocaleString("it-IT")} · ${l.length} commenti</div><div class="i">${esc(ISTR)}</div>
       ${Object.entries(g).map(([r, x]) => `<h2>${esc(x.pagina)} <span class="m">${esc(r)}</span></h2>${x.items.map((c) => `<div class="c"><b><span class="n">${c.n}</span>${esc(c.tipo)} · priorità ${esc(c.priorita)}${c.stato === "risolto" ? " · risolto" : ""}</b>
         <div class="m">Sezione: ${c.path ? "«" + esc(c.sezione) + "» (" + esc(c.path) + ")" : "tutta la pagina"}</div><p>${esc(c.testo)}</p><div class="m">${esc(c.autore || "anonimo")} · ${when(c.at)} · vista: ${esc(c.vista)} · ${esc(c.versione)}</div></div>`).join("")}`).join("")}</body></html>`;
     // stampa da un iframe nascosto: nel dialogo scegliere «Salva come PDF»
@@ -202,7 +243,7 @@
     r.onload = () => {
       try {
         const nuovi = JSON.parse(r.result); if (!Array.isArray(nuovi)) throw new Error();
-        const l = all(), ids = new Set(l.map((c) => c.id));
+        const l = all(), ids = new Set(l.map((c) => c.id).concat(storico().flatMap((e) => e.commenti.map((c) => c.id))));
         let n = l.reduce((s, x) => Math.max(s, x.n || 0), 0), add = 0;
         nuovi.filter((c) => c && c.id && c.testo && !ids.has(c.id)).forEach((c) => { l.push(Object.assign({}, c, { n: ++n })); add++; });
         saveAll(l); UL.ui.toast(`Importati ${add} commenti`); done();

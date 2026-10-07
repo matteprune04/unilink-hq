@@ -34,8 +34,8 @@
   --red: #a4321f;
   --red-soft: #f6e0db;
 
-  --font-display: "Croogla", "Instrument Sans", system-ui, sans-serif;
-  --font-body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Croogla", system-ui, sans-serif;
+  --font-body: "Croogla", system-ui, -apple-system, "Segoe UI", sans-serif; /* v4: Croogla 4F ovunque (decisione del 6/10) */
 
   --r-sm: 8px;
   --r-md: 14px;

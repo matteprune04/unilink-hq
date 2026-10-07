@@ -5,7 +5,7 @@
   const B = UL.B;
   const { icon, esc, num, fmtDate, ago } = UL.ui;
 
-  const TABS = [["libretto", "Media e voto di laurea", "calc"], ["tesi", "Tesi", "file"], ["erasmus", "Erasmus", "plane"], ["magistrali", "Magistrali", "cap"], ["cv", "CV", "brief"], ["mentor", "Mentor", "users"]];
+  const TABS = [["libretto", "Media e voto di laurea", "calc"], ["tesi", "Tesi", "file"], ["erasmus", "Erasmus", "plane"], ["magistrali", "Magistrali", "cap"], ["cv", "CV", "brief"]]; // Mentor spostato in Community → «Mentor e ambassador» (v4-community.js)
   const ERASMUS_CHECK = [
     { k: "bando", t: "Leggere il bando Erasmus+ della Scuola di Economia", d: "dicembre" },
     { k: "dest", t: "Scegliere 3 destinazioni compatibili con il piano di studi", d: "gennaio" },

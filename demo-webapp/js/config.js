@@ -7,7 +7,7 @@
    Caricato PRIMA di store.js: chiavi del database, MODELLO DATI (default di profilo e attività) e testi del login. */
 window.UL = window.UL || {};
 
-UL.VERSIONE = { n: 4, data: "2026-10-07", nota: "Listino P2 come la landing v5 (Appunti, Completa, pacchetti semestre e anno, Plus una tantum), UniLink Planner (P3) solo con Plus e metodo standard per tutti, Guida per facoltà, regole di sblocco per livello." };
+UL.VERSIONE = { n: 5, data: "2026-10-07", nota: "Commenti del 7/10: Croogla 4F ovunque, login con foto di Novoli sotto il blu, nuova sezione Community (Aula studio P1 e Mentor e ambassador, promossi dai moduli C e D), moduli C e D solo come card nelle proposte, commenti scaricati archiviati e condivisi nell'HQ." };
 
 /* PIANI — proposta P2 (7/10/2026), uguale alla landing v5 (demo-landing/config.js → listino). Prezzi NON decisi.
    Fuori sessione costa meno; i pacchetti costano uguale tutto l'anno. Cambiarli qui li cambia ovunque (B.PRICES punta qui).

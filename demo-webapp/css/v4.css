@@ -114,3 +114,7 @@
 .v4-pt .ring { position: relative; width: 110px; height: 110px; } .v4-pt .ring .lbl { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; } .v4-pt .ring b { font-family: var(--font-display); font-weight: 400; font-size: 22px; color: var(--navy); }
 .v4-pt .stats { margin: 0; }
 @media (max-width: 700px) { .v4-pt { grid-template-columns: 1fr; justify-items: center; } .v4-pt .stats { width: 100%; } }
+
+/* Accesso: foto UniFi (insegna del campus di Novoli) sfumata di blu, al posto del blu pieno (commento 6/10) */
+.auth-art { --auth-img: url("../img/login-unifi.jpg"); }
+.auth-art::before { background: linear-gradient(160deg, rgba(23, 37, 84, .55) 0%, rgba(23, 37, 84, .82) 45%, rgba(23, 37, 84, .97) 100%), var(--auth-img) center / cover no-repeat; }

@@ -2086,6 +2086,29 @@ function demoSection() {
   return `<section class="stack" id="demo-sez"><div class="gh" style="--tc:#cf7527;--ts:#f6e4d1"><h2>DEMO</h2><span class="num muted">sempre all'ultima versione · backup automatico</span></div>
     <div class="grid">${demoList().map(card).join("")}</div>${DM.err ? `<p class="small muted">${esc(DM.err)}</p>` : ""}</section>`;
 }
+/* Commenti archiviati delle demo: le demo, quando si scaricano i commenti, li salvano qui (col «demo_commenti»,
+   archivio-commenti.js delle demo). Chi accede all'HQ li vede e li riscarica in .md (per l'AI), JSON o PDF (stampa). */
+function demoCommenti(d) {
+  const L = [...((LOCAL.demo_commenti || new Map()).values())].filter((e) => e && e.demo === d.id).sort((a, b) => String(b.data).localeCompare(String(a.data)));
+  return `<section class="card panel"><div class="panel-h"><h2>Commenti archiviati</h2><span class="small muted">${L.length} esportazioni · si archiviano quando un founder scarica i commenti dalla demo</span><button class="btn sm ghost" data-dcmagg>Aggiorna</button></div>
+    ${L.length ? L.map((e) => `<div class="li"><div class="grow"><div class="t">${(e.commenti || []).length} commenti · demo v${esc(e.versione)} <span class="small muted">· ${esc(new Date(e.data).toLocaleString("it-IT"))} · ${esc(e.autore || "anonimo")} · scaricati in ${esc(String(e.formato || "").toUpperCase())}</span></div>
+      <details><summary class="small muted">Vedi i commenti</summary>${(e.commenti || []).map((c) => `<p class="small" style="margin:6px 0"><b>${esc(c.pagina || "")}</b> · ${esc(c.testo || "")} <span class="muted">(${esc(c.autore || "anonimo")})</span></p>`).join("")}</details></div>
+      <div class="row"><button class="btn sm" data-dcm="${esc(e.id)}" data-k="md">.md per l'AI</button><button class="btn sm ghost" data-dcm="${esc(e.id)}" data-k="json">JSON</button><button class="btn sm ghost" data-dcm="${esc(e.id)}" data-k="pdf">PDF</button></div></div>`).join("")
+      : `<p class="muted small">Ancora nessun archivio. Nella demo: pulsante «Commenti» → scarica (PDF, .md o JSON): i commenti escono dalle pagine e arrivano qui.</p>`}</section>`;
+}
+function demoCommentoFile(id, k) {
+  const e = (LOCAL.demo_commenti || new Map()).get(id); if (!e) return;
+  const nome = String(e.file || "UniLink_commenti").replace(/\.\w+$/, "");
+  const giu = (testo, tipo, est) => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([testo], { type: tipo + ";charset=utf-8" })); a.download = nome + est; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 800); };
+  const md = e.md || (e.commenti || []).map((c) => `- ${c.pagina}: ${c.testo}`).join("\n");
+  if (k === "md") return giu(md, "text/markdown", ".md");
+  if (k === "json") return giu(JSON.stringify(e.commenti || [], null, 1), "application/json", ".json");
+  // PDF: versione stampabile del testo (dal dialogo di stampa → «Salva come PDF»)
+  const html = md.split("\n").map((r) => /^### /.test(r) ? `<h3>${esc(r.slice(4))}</h3>` : /^## /.test(r) ? `<h2>${esc(r.slice(3))}</h2>` : /^# /.test(r) ? `<h1>${esc(r.slice(2))}</h1>` : /^> /.test(r) ? `<blockquote>${esc(r.slice(2))}</blockquote>` : r.trim() ? `<p>${esc(r)}</p>` : "").join("");
+  const w = window.open("", "_blank"); if (!w) return toast("Consenti le finestre per stampare il PDF");
+  w.document.write(`<!doctype html><meta charset="utf-8"><title>${esc(nome)}</title><style>body{font:14px/1.5 system-ui,sans-serif;max-width:760px;margin:30px auto;color:#172554}h1{font-size:24px}h2{font-size:18px;border-bottom:1px solid #ddd;padding-bottom:4px;margin-top:24px}h3{font-size:15px;margin:14px 0 4px}blockquote{background:#f6e4d1;border-radius:8px;padding:8px 12px;margin:8px 0}p{margin:4px 0}</style>${html}<script>setTimeout(()=>print(),300)<\/script>`);
+  w.document.close();
+}
 function demoDetail(d) {
   demoLoad();
   const vs = d.versioni || [], v = vs[0];
@@ -2093,6 +2116,7 @@ function demoDetail(d) {
     <div class="row between"><button class="btn sm" data-demoback>← Laboratorio AI</button><div class="row"><div class="seg">${[["desk", "Desktop"], ["tab", "Tablet"], ["mob", "Telefono"]].map(([m, l]) => `<button class="${DM.dev === m ? "on" : ""}" data-demodev="${m}">${l}</button>`).join("")}</div><a class="btn sm" href="${esc(d.url)}" target="_blank" rel="noopener">Schermo intero</a></div></div>
     ${head("Laboratorio AI · DEMO", esc(d.titolo), esc(d.descrizione) + (d.architettura ? ` Architettura: <b>${esc(d.architettura)}</b>.` : ""), v ? `<a class="btn pri" href="${esc(v.download)}">Scarica l'ultima versione (${esc(demoVer(v))})</a>` : "")}
     <div class="fr"><div class="fr-h"><b>${v ? esc(demoVer(v)) : "Dal vivo"}</b>${chip("attuale", "gr")}<span class="small muted">${esc(d.url)}</span></div><div class="fr-b ${DM.dev === "mob" ? "mob" : DM.dev === "tab" ? "tab" : ""}"><iframe class="demo full" src="${esc(d.cartella)}/${v && v.commit ? "?v=" + esc(v.commit) : ""}" title="${esc(d.titolo)}"></iframe></div></div>
+    ${demoCommenti(d)}
     <section class="card panel"><div class="panel-h"><h2>Storico delle versioni</h2><span class="small muted">ogni versione è un backup scaricabile</span></div>
       ${vs.length ? vs.map((x, i) => `<div class="li"><div class="grow"><div class="t">${esc(demoVer(x))} ${i === 0 ? chip("attuale", "gr") : ""} <span class="small muted">· ${esc(demoDate(x.data))} · ${esc(x.autore)}</span></div><div class="small muted">${esc(x.nota)} · ${nf(x.kb)} KB · commit ${esc(x.commit || "")}</div></div><div class="row"><a class="btn sm" href="${esc(x.download)}">Scarica ZIP</a><a class="btn sm ghost" href="${esc(x.sorgente)}" target="_blank" rel="noopener">File su GitHub</a></div></div>`).join("")
         : `<p class="muted small">Il primo backup compare qui pochi minuti dopo la prima pubblicazione.</p>`}
@@ -2112,6 +2136,8 @@ document.addEventListener("click", e => {
   const o = e.target.closest("[data-demoopen]"); if (o) { DM.open = o.dataset.demoopen; S.labOpen = null; window.scrollTo(0, 0); render(); return; }
   if (e.target.closest("[data-demoback]") || (DM.open && e.target.closest('[data-nav="lab"]'))) { DM.open = ""; render(); return; }
   const dv = e.target.closest("[data-demodev]"); if (dv) { DM.dev = dv.dataset.demodev; render(); }
+  const dc = e.target.closest("[data-dcm]"); if (dc) { demoCommentoFile(dc.dataset.dcm, dc.dataset.k); return; }
+  if (e.target.closest("[data-dcmagg]")) { loadAll().then(render).catch(() => toast("Non riesco ad aggiornare: controlla la connessione")); return; }
 });
 
 window.addEventListener("hashchange", () => { const v = location.hash.slice(1); if (V[v] && v !== S.view) go(v); });
