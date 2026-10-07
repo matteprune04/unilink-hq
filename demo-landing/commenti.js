@@ -1,6 +1,8 @@
 // UniLink — commenti del team sulla demo della landing.
 // Si commenta una pagina intera o una singola sezione; i commenti restano salvati nel browser (localStorage),
 // si esportano in PDF / Markdown / JSON (il JSON si reimporta: i commenti dei founder si uniscono per id).
+// Allo scarico i commenti esportati vengono ARCHIVIATI: spariscono da pagine e pannello (i commenti nuovi valgono per la
+// versione successiva) ma restano nello «Storico esportazioni» della pagina Commenti, da cui si riscaricano o si ripristinano.
 // In produzione (Framer) si spegne con UL_CFG.commenti.attivi = false. Indice: 1 dati · 2 sezioni · 3 pannello
 // · 4 modalità «commenta» · 5 esportazione (PDF, Markdown, JSON) · 6 pagina rapporto (commenti.html)
 (function () {
@@ -20,7 +22,9 @@
   const toast = (t) => { const el = $("#toast"); if (!el) return alert(t); el.textContent = t; el.classList.add("vis"); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove("vis"), 3200); };
 
   /* ---------- 1 · dati ---------- */
-  const leggi = () => { try { const d = JSON.parse(localStorage.getItem(KEY)); return d && Array.isArray(d.commenti) ? d : { autore: "", commenti: [] }; } catch (e) { return { autore: "", commenti: [] }; } };
+  const leggi = () => { let d = null; try { d = JSON.parse(localStorage.getItem(KEY)); } catch (e) { d = null; } d = d && Array.isArray(d.commenti) ? d : { autore: "", commenti: [] }; if (!Array.isArray(d.storico)) d.storico = []; return d; };
+  // storico: [{ id, data, autore, formato, file, versione, commenti: [...] }] · i commenti archiviati non tornano più (neanche importando)
+  const archiviati = () => new Set(D.storico.flatMap((e) => e.commenti.map((c) => c.id)));
   let D = leggi();
   const salva = () => { try { localStorage.setItem(KEY, JSON.stringify(D)); } catch (e) { toast("Non riesco a salvare: lo spazio del browser è bloccato o pieno. Scarica i commenti adesso."); } };
   const uid = () => "c" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -64,7 +68,8 @@
       </div>
       <div class="cm-foot">
         <div class="cm-exp"><button type="button" class="cm-btn pri" data-e="pdf">Scarica PDF</button><button type="button" class="cm-btn" data-e="md">Markdown</button><button type="button" class="cm-btn" data-e="json">JSON</button><label class="cm-btn" tabindex="0">Importa<input type="file" id="cm-imp" accept=".json,application/json" hidden></label></div>
-        <a href="commenti.html">Apri il rapporto completo →</a>
+        <p class="small" id="cm-sto"></p>
+        <a href="commenti.html">Apri il rapporto e lo storico →</a>
       </div>
     </div>
     <div class="cm-tag cm-ui" id="cm-tag" hidden></div>`;
@@ -85,6 +90,7 @@
   }
   function disegna() {
     badge(); pins();
+    const st = $("#cm-sto"); if (st) st.textContent = D.storico.length ? `Scaricando, i commenti vengono archiviati. Storico: ${D.storico.length} esportazioni, ${D.storico.reduce((n, e) => n + e.commenti.length, 0)} commenti.` : "Scaricando, i commenti vengono archiviati nello storico (pagina Commenti).";
     const l = $("#cm-list"); if (!l) return;
     $$(".cm-tabs button").forEach((b) => { b.classList.toggle("on", b.dataset.t === tab); b.setAttribute("aria-selected", b.dataset.t === tab); $("b", b).textContent = b.dataset.t === "qui" ? qui().length : D.commenti.length; });
     $$(".cm-flt button").forEach((b) => b.classList.toggle("on", b.dataset.f === filtro));
@@ -116,27 +122,27 @@
   /* ---------- 5 · esportazione ---------- */
   const scarica = (nome, tipo, dati) => { const url = URL.createObjectURL(new Blob([dati], { type: tipo })); const a = document.createElement("a"); a.href = url; a.download = nome; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 2000); };
   const stamp = () => new Date().toISOString().slice(0, 10);
-  const raggruppa = () => { const m = new Map(); D.commenti.slice().sort((a, b) => a.pagina.localeCompare(b.pagina) || (a.sezione ? a.sezione.codice : "").localeCompare(b.sezione ? b.sezione.codice : "") || a.creato.localeCompare(b.creato)).forEach((c) => { if (!m.has(c.pagina)) m.set(c.pagina, []); m.get(c.pagina).push(c); }); return m; };
-  const aperti = () => D.commenti.filter((c) => c.stato === "aperto").length;
-  function markdown() {
-    let t = `# Commenti del team · landing UniLink v${CFG.versione.n}\n\nEsportati il ${new Date().toLocaleString("it-IT")} · ${D.commenti.length} commenti (${aperti()} aperti).\n\n`;
+  const raggruppa = (lista = D.commenti) => { const m = new Map(); lista.slice().sort((a, b) => a.pagina.localeCompare(b.pagina) || (a.sezione ? a.sezione.codice : "").localeCompare(b.sezione ? b.sezione.codice : "") || a.creato.localeCompare(b.creato)).forEach((c) => { if (!m.has(c.pagina)) m.set(c.pagina, []); m.get(c.pagina).push(c); }); return m; };
+  const aperti = (lista = D.commenti) => lista.filter((c) => c.stato === "aperto").length;
+  function markdown(lista = D.commenti, ora = new Date().toISOString()) {
+    let t = `# Commenti del team · landing UniLink v${CFG.versione.n}\n\nEsportati il ${new Date(ora).toLocaleString("it-IT")} · ${lista.length} commenti (${aperti(lista)} aperti).\n\n`;
     t += `> **Per l'AI.** Questi sono i commenti dei founder sulla demo della landing (https://matteprune04.github.io/unilink-hq/demo-landing/). Ogni voce indica pagina (S…), sezione (H…/S…n), estratto del testo e categoria. Usa \`architettura/CONTESTO_DEMO.md\` come contesto e il PDF di architettura per i codici. Per ogni commento *aperto*: proponi la modifica minima (tipo D/E del vocabolario), dì quali file tocca, e applicala solo se la richiesta è chiara; se è ambigua, chiedi. I commenti *risolti* sono solo storico.\n\n`;
-    raggruppa().forEach((l, k) => { const p = nomePag(k); t += `## ${p.codice} · ${p.nome}\n\nPagina: \`${k}\`\n\n`; l.forEach((c) => { t += `### ${c.sezione ? c.sezione.codice + " · " + c.sezione.etichetta : "Pagina intera"}  \`[${c.stato}]\` \`${TIPO[c.tipo] || c.tipo}\`\n\n`; if (c.sezione && c.sezione.estratto) t += `> Estratto: «${c.sezione.estratto}…»\n\n`; t += `${c.testo}\n\n— ${c.autore || "Anonimo"}, ${quando(c.creato)}, ${c.dispositivo || ""}, demo v${c.versione || "?"}\n\n`; }); });
+    raggruppa(lista).forEach((l, k) => { const p = nomePag(k); t += `## ${p.codice} · ${p.nome}\n\nPagina: \`${k}\`\n\n`; l.forEach((c) => { t += `### ${c.sezione ? c.sezione.codice + " · " + c.sezione.etichetta : "Pagina intera"}  \`[${c.stato}]\` \`${TIPO[c.tipo] || c.tipo}\`\n\n`; if (c.sezione && c.sezione.estratto) t += `> Estratto: «${c.sezione.estratto}…»\n\n`; t += `${c.testo}\n\n— ${c.autore || "Anonimo"}, ${quando(c.creato)}, ${c.dispositivo || ""}, demo v${c.versione || "?"}\n\n`; }); });
     return t;
   }
-  const json = () => JSON.stringify({ app: "UniLink landing", versione: CFG.versione, esportato: new Date().toISOString(), commenti: D.commenti }, null, 1);
+  const json = (lista = D.commenti, ora = new Date().toISOString()) => JSON.stringify({ app: "UniLink landing", versione: CFG.versione, esportato: ora, commenti: lista }, null, 1);
 
   // PDF vero, senza librerie: testo su A4 con Helvetica (il browser non apre finestre di stampa)
-  function pdf() {
+  function pdf(lista = D.commenti, ora = new Date().toISOString()) {
     const W = 595.28, H = 841.89, M = 50, MAXW = W - 2 * M; const pagine = [[]]; let y = H - M - 24;
     const STILE = { h1: [17, 24, 2], h2: [12.5, 18, 2], p: [10, 14, 1], m: [8.5, 12, 1], q: [9, 13, 1] };
     const wansi = (s) => s.replace(/[’‘]/g, "'").replace(/[“”«»]/g, '"').replace(/[–—]/g, "-").replace(/•/g, "-").replace(/→/g, "->").replace(/…/g, "...").replace(/€/g, "EUR").replace(/[^\x20-\x7E\xA0-\xFF]/g, "?");
     const wrap = (txt, size) => { const max = Math.floor(MAXW / (size * 0.53)); const out = []; txt.split("\n").forEach((par) => { let r = ""; par.split(" ").forEach((w) => { while (w.length > max) { if (r) { out.push(r); r = ""; } out.push(w.slice(0, max)); w = w.slice(max); } if ((r + " " + w).trim().length > max) { out.push(r); r = w; } else r = (r + " " + w).trim(); }); out.push(r); }); return out; };
     const riga = (tipo, txt, extra = 0) => { const [size, lead, font] = STILE[tipo]; wrap(wansi(txt), size).forEach((ln) => { if (y < M + 20) { pagine.push([]); y = H - M - 24; } pagine[pagine.length - 1].push({ x: M + extra, y, size, font, ln }); y -= lead; }); };
     const gap = (n) => { y -= n; };
-    riga("h1", `Commenti del team - landing UniLink v${CFG.versione.n}`); riga("m", `Esportati il ${new Date().toLocaleString("it-IT")} - ${D.commenti.length} commenti (${aperti()} aperti) - ${location.origin}${location.pathname.replace(/[^/]*$/, "")}`); gap(6);
+    riga("h1", `Commenti del team - landing UniLink v${CFG.versione.n}`); riga("m", `Esportati il ${new Date(ora).toLocaleString("it-IT")} - ${lista.length} commenti (${aperti(lista)} aperti) - ${location.origin}${location.pathname.replace(/[^/]*$/, "")}`); gap(6);
     riga("q", "Per l'AI: ogni voce indica pagina (S..), sezione e un estratto del testo. Usa CONTESTO_DEMO.md e il PDF di architettura per i codici. Applica solo le richieste chiare dei commenti aperti; se sono ambigue, chiedi."); gap(10);
-    raggruppa().forEach((l, k) => { const p = nomePag(k); if (y < M + 90) { pagine.push([]); y = H - M - 24; } gap(6); riga("h2", `${p.codice} - ${p.nome}  (${k})`); l.forEach((c) => { gap(2); riga("m", `${c.sezione ? c.sezione.codice + " - " + c.sezione.etichetta : "Pagina intera"}   [${c.stato}]  [${TIPO[c.tipo] || c.tipo}]`, 6); if (c.sezione && c.sezione.estratto) riga("q", `Estratto: "${c.sezione.estratto}..."`, 6); riga("p", c.testo, 6); riga("m", `${c.autore || "Anonimo"} - ${quando(c.creato)} - ${c.dispositivo || ""} - demo v${c.versione || "?"}`, 6); gap(5); }); });
+    raggruppa(lista).forEach((l, k) => { const p = nomePag(k); if (y < M + 90) { pagine.push([]); y = H - M - 24; } gap(6); riga("h2", `${p.codice} - ${p.nome}  (${k})`); l.forEach((c) => { gap(2); riga("m", `${c.sezione ? c.sezione.codice + " - " + c.sezione.etichetta : "Pagina intera"}   [${c.stato}]  [${TIPO[c.tipo] || c.tipo}]`, 6); if (c.sezione && c.sezione.estratto) riga("q", `Estratto: "${c.sezione.estratto}..."`, 6); riga("p", c.testo, 6); riga("m", `${c.autore || "Anonimo"} - ${quando(c.creato)} - ${c.dispositivo || ""} - demo v${c.versione || "?"}`, 6); gap(5); }); });
     // costruzione del file PDF
     const oggetti = []; const add = (s) => oggetti.push(s) && oggetti.length;
     add("<< /Type /Catalog /Pages 2 0 R >>"); add(""); add("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>"); add("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>");
@@ -154,17 +160,36 @@
     const b = new Uint8Array(out.length); for (let i = 0; i < out.length; i++) b[i] = out.charCodeAt(i) & 255;
     return b;
   }
+  // crea e scarica il file di una lista di commenti; restituisce il nome del file
+  const scaricaFile = (k, lista, ora, versione = CFG.versione.n) => {
+    const nome = `UniLink_commenti_landing_v${versione}_${ora.slice(0, 10)}_${ora.slice(11, 16).replace(":", "")}`;
+    if (k === "pdf") scarica(nome + ".pdf", "application/pdf", pdf(lista, ora));
+    if (k === "md") scarica(nome + ".md", "text/markdown", markdown(lista, ora));
+    if (k === "json") scarica(nome + ".json", "application/json", json(lista, ora));
+    return nome + "." + k;
+  };
+  // scarica i commenti attuali e li ARCHIVIA: escono da pagine e pannello, restano nello storico
   const esporta = (k) => {
-    if (!D.commenti.length) return toast("Non ci sono ancora commenti da scaricare.");
-    if (k === "pdf") scarica(`UniLink_commenti_landing_v${CFG.versione.n}_${stamp()}.pdf`, "application/pdf", pdf());
-    if (k === "md") scarica(`UniLink_commenti_landing_v${CFG.versione.n}_${stamp()}.md`, "text/markdown", markdown());
-    if (k === "json") scarica(`UniLink_commenti_landing_v${CFG.versione.n}_${stamp()}.json`, "application/json", json());
+    if (!D.commenti.length) return toast(D.storico.length ? "Nessun commento nuovo da scaricare. Le esportazioni passate sono nello storico (pagina Commenti)." : "Non ci sono ancora commenti da scaricare.");
+    const ora = new Date().toISOString(), lista = D.commenti.slice();
+    const file = scaricaFile(k, lista, ora);
+    D.storico.unshift({ id: "e" + Date.now().toString(36), data: ora, autore: D.autore || "", formato: k, file, versione: CFG.versione.n, commenti: lista.map((c) => ({ ...c, archiviato: ora })) });
+    D.commenti = []; salva(); disegna();
+    toast(`Scaricati ${lista.length} commenti e archiviati: da qui in poi i commenti valgono per la nuova versione. Lo storico è nella pagina Commenti.`);
+  };
+  // ripristina un'esportazione (per errore): i suoi commenti tornano attivi e la voce esce dallo storico
+  const ripristina = (id) => {
+    const e = D.storico.find((x) => x.id === id); if (!e) return;
+    const attivi = new Set(D.commenti.map((c) => c.id));
+    e.commenti.forEach((c) => { if (!attivi.has(c.id)) { const r = { ...c }; delete r.archiviato; D.commenti.push(r); } });
+    D.storico = D.storico.filter((x) => x.id !== id); salva(); disegna();
+    toast(`Ripristinati ${e.commenti.length} commenti.`);
   };
   function importa(file) {
     const r = new FileReader();
-    r.onload = () => { try { const j = JSON.parse(r.result); const nuovi = (j.commenti || []).filter((c) => c && c.id && c.testo && c.pagina); let agg = 0, agg2 = 0;
+    r.onload = () => { try { const j = JSON.parse(r.result); const arch = archiviati(); const tutti = (j.commenti || []).filter((c) => c && c.id && c.testo && c.pagina); const nuovi = tutti.filter((c) => !arch.has(c.id)); let agg = 0, agg2 = 0;
       nuovi.forEach((c) => { const e = D.commenti.find((x) => x.id === c.id); if (!e) { D.commenti.push(c); agg++; } else if ((c.modificato || c.creato) > (e.modificato || e.creato)) { Object.assign(e, c); agg2++; } });
-      salva(); disegna(); toast(`Importati: ${agg} nuovi, ${agg2} aggiornati.`); } catch (e) { toast("Il file non è un export di commenti valido."); } };
+      salva(); disegna(); toast(`Importati: ${agg} nuovi, ${agg2} aggiornati` + (tutti.length > nuovi.length ? `, ${tutti.length - nuovi.length} già archiviati (non tornano).` : ".")); } catch (e) { toast("Il file non è un export di commenti valido."); } };
     r.readAsText(file);
   }
 
@@ -173,10 +198,13 @@
     const root = $("#cm-rapporto"); if (!root) return;
     const draw = () => {
       const g = raggruppa();
-      root.innerHTML = `<div class="cm-rep-top"><p><b>${D.commenti.length}</b> commenti · <b>${aperti()}</b> aperti · salvati in questo browser. Per unire quelli dei founder: ognuno scarica il JSON e lo importa qui.</p>
+      root.innerHTML = `<div class="cm-rep-top"><p><b>${D.commenti.length}</b> commenti attivi · <b>${aperti()}</b> aperti · salvati in questo browser. Scaricando (PDF, Markdown o JSON) i commenti attivi vengono archiviati: escono dalle pagine e restano nello storico qui sotto. Per unire quelli dei founder: ognuno importa il JSON degli altri (i commenti già archiviati non tornano).</p>
         <div class="cm-exp"><button type="button" class="cm-btn pri" data-e="pdf">Scarica PDF</button><button type="button" class="cm-btn" data-e="md">Markdown</button><button type="button" class="cm-btn" data-e="json">JSON</button><label class="cm-btn" tabindex="0">Importa<input type="file" id="cm-imp2" accept=".json,application/json" hidden></label></div></div>`
-        + (g.size ? [...g].map(([k, l]) => { const p = nomePag(k); return `<section class="cm-rep"><h2>${esc(p.codice)} · ${esc(p.nome)}</h2><p class="small"><a href="${esc(k)}">${esc(k)}</a></p>${l.map((c) => `<article class="cm-c ${c.stato}"><div class="cm-m"><span class="cm-t">${esc(TIPO[c.tipo] || "")}</span><span>${esc(c.autore || "Anonimo")} · ${quando(c.creato)} · ${esc(c.dispositivo || "")}</span></div><div class="cm-w">${c.sezione ? esc(c.sezione.codice + " · " + c.sezione.etichetta) : "Pagina intera"} · ${c.stato}</div>${c.sezione && c.sezione.estratto ? `<blockquote>${esc(c.sezione.estratto)}…</blockquote>` : ""}<p class="cm-p">${esc(c.testo).replace(/\n/g, "<br>")}</p></article>`).join("")}</section>`; }).join("") : `<p class="cm-vuoto">Ancora nessun commento. Vai in una pagina, premi «Commenti» e tocca una sezione.</p>`);
-      $$("[data-e]", root).forEach((b) => (b.onclick = () => esporta(b.dataset.e)));
+        + (g.size ? [...g].map(([k, l]) => { const p = nomePag(k); return `<section class="cm-rep"><h2>${esc(p.codice)} · ${esc(p.nome)}</h2><p class="small"><a href="${esc(k)}">${esc(k)}</a></p>${l.map((c) => `<article class="cm-c ${c.stato}"><div class="cm-m"><span class="cm-t">${esc(TIPO[c.tipo] || "")}</span><span>${esc(c.autore || "Anonimo")} · ${quando(c.creato)} · ${esc(c.dispositivo || "")}</span></div><div class="cm-w">${c.sezione ? esc(c.sezione.codice + " · " + c.sezione.etichetta) : "Pagina intera"} · ${c.stato}</div>${c.sezione && c.sezione.estratto ? `<blockquote>${esc(c.sezione.estratto)}…</blockquote>` : ""}<p class="cm-p">${esc(c.testo).replace(/\n/g, "<br>")}</p></article>`).join("")}</section>`; }).join("") : `<p class="cm-vuoto">${D.storico.length ? "Nessun commento attivo: quelli scaricati sono nello storico qui sotto." : "Ancora nessun commento. Vai in una pagina, premi «Commenti» e tocca una sezione."}</p>`)
+        + `<section class="cm-rep cm-storico"><h2>Storico esportazioni</h2>${D.storico.length ? D.storico.map((e) => `<article class="cm-c"><div class="cm-m"><span class="cm-t">${esc(e.formato.toUpperCase())}</span><span>${new Date(e.data).toLocaleString("it-IT")} · ${esc(e.autore || "Anonimo")} · demo v${esc(e.versione)}</span></div><div class="cm-w">${e.commenti.length} commenti · file ${esc(e.file)}</div><div class="cm-r"><button type="button" data-ri="${e.id}" data-k="pdf">Riscarica PDF</button><button type="button" data-ri="${e.id}" data-k="md">Markdown</button><button type="button" data-ri="${e.id}" data-k="json">JSON</button><button type="button" data-rp="${e.id}">Ripristina</button></div><details><summary>Vedi i commenti</summary>${e.commenti.map((c) => `<p class="cm-p"><b>${esc(nomePag(c.pagina).codice)} ${c.sezione ? esc(c.sezione.codice) : "pagina"}</b> · ${esc(c.testo).replace(/\n/g, "<br>")} <span class="small">(${esc(c.autore || "Anonimo")}, ${quando(c.creato)})</span></p>`).join("")}</details></article>`).join("") : `<p class="cm-vuoto">Nessuna esportazione ancora.</p>`}</section>`;
+      $$("[data-e]", root).forEach((b) => (b.onclick = () => { esporta(b.dataset.e); draw(); }));
+      $$("[data-ri]", root).forEach((b) => (b.onclick = () => { const e = D.storico.find((x) => x.id === b.dataset.ri); if (e) scaricaFile(b.dataset.k, e.commenti, e.data, e.versione); }));
+      $$("[data-rp]", root).forEach((b) => (b.onclick = () => { if (confirm("Ripristinare questi commenti? Tornano attivi sulle pagine e la voce esce dallo storico.")) { ripristina(b.dataset.rp); draw(); } }));
       const f = $("#cm-imp2"); if (f) f.onchange = (e) => { if (e.target.files[0]) { importa(e.target.files[0]); setTimeout(draw, 200); } };
     };
     draw();

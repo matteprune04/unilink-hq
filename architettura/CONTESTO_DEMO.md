@@ -92,7 +92,7 @@ Se è ambiguo: «la metto in Da decidere (A) o già nelle pagine (C)?». **Senza
 - GitHub non dice chi ha scaricato uno ZIP: lo storico mostra chi ha *modificato* la demo; ogni release ha solo un contatore di download.
 
 ## 9 · Commenti e schede (come si usano)
-- **Commentare**: pulsante «Commenti» in basso a destra → «Commenta una sezione» (tocca la parte) o «Tutta la pagina». Ogni commento salva pagina, codice e titolo della sezione, estratto del testo, categoria, autore, data, stato, dispositivo e versione. Si scarica in **PDF, Markdown o JSON** (il JSON si reimporta e unisce i commenti di più persone senza duplicati).
+- **Commentare**: pulsante «Commenti» in basso a destra → «Commenta una sezione» (tocca la parte) o «Tutta la pagina». Ogni commento salva pagina, codice e titolo della sezione, estratto del testo, categoria, autore, data, stato, dispositivo e versione. Si scarica in **PDF, Markdown o JSON** (il JSON si reimporta e unisce i commenti di più persone senza duplicati). **Scaricando, i commenti esportati vengono archiviati**: escono da pagine e pannello (quelli nuovi valgono per la versione successiva) e restano nello «Storico esportazioni» di `commenti.html`, con «Riscarica» (PDF/MD/JSON) e «Ripristina». Un commento archiviato non torna neanche importando un JSON.
 - **Scheda «Da decidere» completa**: in `decidere.html#Lxx` ci sono pagine annotate, dati, regole, stati, testi, misure, integrazioni, manutenzione, piano di lavoro con stime, rischi, successo e un **prompt già pronto** (pulsante «Copia il prompt»). «Scarica la scheda (.md)» la esporta.
 - **Per far costruire una scheda**: allega `CONTESTO_DEMO.md` e il prompt copiato dalla scheda (richiesta di tipo C).
 
