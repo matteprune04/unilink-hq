@@ -204,16 +204,31 @@
     $$(".frecce span", catHome).forEach((f, i) => f.addEventListener("click", () => box.scrollBy({ left: (i ? 1 : -1) * box.clientWidth * 0.8, behavior: "smooth" })));
     draw(store.get("hub", "economia"));
   }
-  // listino (proposta P2): singoli · pacchetti · Plus, prezzo fuori sessione e in sessione. Usato in home e in Materiali.
-  const listinoHTML = () => { if (!LIS) return ""; const P = LIS.prezzi;
-    const due = (n, a) => `<div class="li-card ${a.top ? "ev" : ""}"><div class="r"><span>${n}</span><b>${eur(a.p[0])}</b></div><p class="small">${a.d}</p><div class="r"><span class="badge ok">prezzo fuori sessione</span><span class="small">in sessione ${eur(a.p[1])}</span></div></div>`;
-    return `<div class="listino">
-      <div><h3 class="li-h">Singoli esami</h3>${due("Appunti", { p: P.appunti, d: "Appunti/Sbobine di un esame, con filigrana personale." })}${due("Dispensa completa", { p: P.completa, d: "Appunti + mappe + quiz e simulazioni dell'appello.", top: true })}<p class="small li-n">Dove le mappe non ci sono, la completa costa ${eur(P.completaSenzaMappe[0])}: ogni esame dice cosa include.</p></div>
-      <div><h3 class="li-h">Pacchetti</h3><div class="li-card ev"><div class="r"><span>Pacchetto semestre <span class="badge">il più scelto</span></span><b>${eur(P.semestre)}</b></div><p class="small">Tutte le dispense complete del tuo semestre (3–4 esami). Comprate una per una: da ${eur(P.completa[0] * 3)} a ${eur(P.completa[0] * 4)}.</p></div><div class="li-card"><div class="r"><span>Pacchetto anno</span><b>${eur(P.anno)}</b></div><p class="small">I due semestri. Il momento giusto: settembre–ottobre.</p></div></div>
-      <div><h3 class="li-h">Il metodo</h3><div class="li-card plus"><div class="r"><span>UniLink Plus</span><b>${eur(P.plus)}</b></div><p class="small">Una volta per sessione, nessun abbonamento. Planner per tutti gli esami, simulazioni, registro errori, CV benchmark. Con un pacchetto: ${eur(P.plusConPacchetto)}.</p></div>
-        <div class="li-card"><span class="small">QUANDO CONVIENE COMPRARE</span><div class="li-mesi" role="img" aria-label="Mesi di sessione e fuori sessione">${LIS.mesi.map(([m, ses]) => `<span class="${ses ? "s" : ""}"><i></i>${m}</span>`).join("")}</div><p class="small"><span class="badge ok">fuori sessione</span> costa meno · <span class="badge">in sessione</span> costa di più</p></div></div>
-    </div><p class="small li-n"><b>Gratis:</b> ${esc(LIS.gratis)} · <span class="badge">${esc(LIS.stato)}</span></p>`; };
-  $$("[data-listino]").forEach((el) => (el.innerHTML = listinoHTML()));
+  // listino (proposta P2) · v5: card pulite (nome, prezzo, una riga, pulsante) + «Cosa c'è dentro» + «Quando conviene comprare».
+  // Il contenuto dei piani NON sta nelle card: sta nella tabella di confronto (LIS.dentro in config). In home: solo card + mesi.
+  const PIANI = () => { const P = LIS.prezzi; return [
+    { id: "appunti", tipo: "Singolo esame", nome: "Appunti", p: P.appunti[0], ses: P.appunti[1], d: "Gli appunti completi di un esame, da tenere.", cta: ["Scegli l'esame", "materiali.html#collezione"] },
+    { id: "completa", tipo: "Singolo esame", nome: "Dispensa completa", p: P.completa[0], ses: P.completa[1], d: `Tutto per un esame. Senza mappe: ${eur(P.completaSenzaMappe[0])}.`, cta: ["Scegli l'esame", "materiali.html#collezione"] },
+    { id: "semestre", tipo: "Pacchetto", nome: "Pacchetto semestre", p: P.semestre, d: "Tutte le dispense complete del tuo semestre.", top: true, cta: ["Calcola il tuo pacchetto", "materiali.html#calcola"] },
+    { id: "anno", tipo: "Pacchetto", nome: "Pacchetto anno", p: P.anno, d: "I due semestri, un solo acquisto.", cta: ["Calcola il tuo pacchetto", "materiali.html#calcola"] },
+    { id: "plus", tipo: "Il metodo", nome: "UniLink Plus", p: P.plus, d: `Una volta per sessione. Con un pacchetto: ${eur(P.plusConPacchetto)}.`, unaTantum: true, cta: ["Scopri Plus", "#dentro"] },
+  ]; };
+  const mesiHTML = () => `<div class="li-quando"><div><span class="eyebrow">Quando conviene comprare</span><p class="small" style="margin-top:6px">Gli esami singoli costano meno fuori sessione. I pacchetti costano uguale tutto l'anno.</p></div><div class="li-mesi" role="img" aria-label="Mesi di sessione e fuori sessione">${LIS.mesi.map(([m, ses]) => `<span class="${ses ? "s" : ""}"><i></i>${m}</span>`).join("")}</div><p class="small"><span class="badge ok">fuori sessione</span> costa meno · <span class="badge">in sessione</span> costa di più</p></div>`;
+  const listinoHTML = (compatto) => { if (!LIS) return "";
+    const card = (x) => `<div class="pz-card ${x.top ? "ev" : ""} ${x.id === "plus" ? "plus" : ""}">${x.top ? '<span class="pz-tab">Il più scelto</span>' : ""}
+      <span class="pz-tipo">${x.tipo}</span><h3 class="pz-nome">${x.nome}</h3>
+      <div class="pz-prezzo"><b>${eur(x.p).replace(" €", "")}</b><span>€${x.unaTantum ? " una tantum" : ""}</span></div>
+      <p class="pz-sotto">${x.ses ? `fuori sessione · in sessione ${eur(x.ses)}` : x.unaTantum ? "nessun abbonamento" : "stesso prezzo tutto l'anno"}</p>
+      <p class="pz-d">${x.d}</p>
+      <a class="btn ${x.top ? "btn-a" : x.id === "plus" ? "btn-s" : "btn-s"}" href="${x.cta[1]}">${x.cta[0]}</a></div>`;
+    const P = PIANI(), D2 = LIS.dentro || [];
+    const cella = (v) => v === 1 ? '<span class="ok" aria-label="incluso">✓</span>' : v === 0 ? '<span class="no" aria-label="non incluso">—</span>' : `<span class="pz-parz">${esc(v)}</span>`;
+    const tabella = compatto || !D2.length ? "" : `<div class="pz-dentro" id="dentro"><div class="testa" style="margin:56px 0 22px"><div><span class="eyebrow">Le differenze</span><h2 style="margin-top:10px">Cosa c'è <span class="acc">dentro</span></h2></div><p>Le card dicono il prezzo; qui vedi cosa cambia da un piano all'altro.</p></div>
+      <div class="pz-tab-wrap"><table class="pz-tabella"><thead><tr><th></th>${P.map((x) => `<th class="${x.top ? "ev" : ""}">${x.nome}<small>${eur(x.p)}</small></th>`).join("")}</tr></thead>
+      <tbody>${D2.map(([gr, righe]) => `<tr class="gr"><td colspan="${P.length + 1}">${esc(gr)}</td></tr>` + righe.map(([nome, ...v]) => `<tr><th scope="row">${esc(nome)}</th>${v.map((c, k) => `<td class="${P[k].top ? "ev" : ""}">${cella(c)}</td>`).join("")}</tr>`).join("")).join("")}</tbody></table></div></div>`;
+    return `<div class="pz-grid">${P.map(card).join("")}</div>${mesiHTML()}${tabella}
+      <p class="small li-n"><b>Gratis:</b> ${esc(LIS.gratis)} · <span class="badge">${esc(LIS.stato)}</span>${compatto ? ' · <a href="materiali.html#dentro"><u>Cosa c\'è dentro ogni piano</u></a>' : ""}</p>`; };
+  $$("[data-listino]").forEach((el) => (el.innerHTML = listinoHTML(el.dataset.listino === "compatto")));
   // founder (H09): scheda personale con breve presentazione e LinkedIn (foto e testi: segnaposto da sostituire)
   $$("[data-team]").forEach((box) => {
     const T = CFG.team || [];
@@ -258,15 +273,63 @@
     $$("[data-mat-anni] .chip").forEach((c) => c.addEventListener("click", () => { $$("[data-mat-anni] .chip").forEach((x) => x.classList.remove("on")); c.classList.add("on"); st.anno = c.dataset.anno; disegna(); }));
     // calcolatore del pacchetto semestre: esami del semestre con la loro Completa contro il prezzo del pacchetto
     const cal = $("[data-calcola]");
+    // v5: lo studente sceglie gli esami e cosa comprerebbe (Appunti o Completa); vede quanto spende uno per uno
+    // e un consiglio che gli fa «spendere meno» passando al pacchetto (per noi: un pacchetto venduto).
     if (cal && LIS) {
-      const sc = { anno: "I", sem: "II" };
+      const PR = LIS.prezzi;
+      const sc = { anno: "I", sem: "I", quando: "fuori", plus: false, scelte: {} };
+      const esamiDi = (anno, sem) => D.filter((d) => d.anno === anno && (sem === "entrambi" || d.sem === sem));
+      const prezzoDi = (d, tipo, q) => { const c = completaDi(d); const v = tipo === "completa" && c ? c : PR.appunti; return v[q === "fuori" ? 0 : 1]; };
+      const tipoDi = (d) => sc.scelte[d.slug] || (completaDi(d) ? "completa" : "appunti"); // "appunti" | "completa" | "no"
       const draw = () => {
-        const es = D.filter((d) => d.anno === sc.anno && d.sem === sc.sem), somma = es.reduce((n, d) => n + (completaDi(d) || LIS.prezzi.appunti)[0], 0), risp = somma - LIS.prezzi.semestre;
-        cal.innerHTML = `<div class="calc-sel"><div class="tl-l">Anno</div><div class="seg-cal">${["I", "II", "III"].map((a) => `<button type="button" data-ca="${a}" class="${a === sc.anno ? "on" : ""}" aria-pressed="${a === sc.anno}">${a} anno</button>`).join("")}</div><div class="tl-l">Semestre</div><div class="seg-cal">${["I", "II"].map((x) => `<button type="button" data-cs="${x}" class="${x === sc.sem ? "on" : ""}" aria-pressed="${x === sc.sem}">${x} semestre</button>`).join("")}</div></div>
-          <div class="calc-out"><ul>${es.map((d) => `<li><span>${esc(d.nome)}</span><b>${eur((completaDi(d) || LIS.prezzi.appunti)[0])}</b></li>`).join("")}</ul>
-          <div class="calc-tot"><span>Comprati uno per uno</span><b>${eur(somma)}</b></div><div class="calc-tot big"><span>Pacchetto semestre</span><b>${eur(LIS.prezzi.semestre)}</b></div>
-          <p class="small">${risp > 0 ? `Risparmi ${eur(risp)} su ${es.length} esami.` : `Con ${es.length} esami conviene comprarli singoli: il pacchetto conviene da 3 esami in su.`} Prezzi fuori sessione, in valutazione.</p></div>`;
-        $$("[data-ca]", cal).forEach((b) => (b.onclick = () => { sc.anno = b.dataset.ca; draw(); })); $$("[data-cs]", cal).forEach((b) => (b.onclick = () => { sc.sem = b.dataset.cs; draw(); }));
+        const tutti = esamiDi(sc.anno, sc.sem), presi = tutti.filter((d) => tipoDi(d) !== "no");
+        const singoli = presi.reduce((n, d) => n + prezzoDi(d, tipoDi(d), sc.quando), 0);
+        const valoreComplete = tutti.reduce((n, d) => n + prezzoDi(d, "completa", sc.quando), 0);
+        const pacchetto = sc.sem === "entrambi" ? PR.anno : PR.semestre, nomePac = sc.sem === "entrambi" ? "Pacchetto anno" : "Pacchetto semestre";
+        const plusSingoli = sc.plus ? PR.plus : 0, plusPac = sc.plus ? PR.plusConPacchetto : 0;
+        const totS = singoli + plusSingoli, totP = pacchetto + plusPac, diff = totS - totP;
+        const pct = (x) => Math.max(6, Math.round((x / Math.max(totS, totP, 1)) * 100));
+        // il consiglio
+        let tit, txt, forte = true;
+        if (!presi.length) { tit = "Scegli almeno un esame"; txt = "Tocca gli esami che pensi di preparare: ti diciamo come spendere meno."; forte = false; }
+        else if (diff >= 0) { tit = `Prendi il ${nomePac}: risparmi ${eur(diff)}`; const giaTutte = presi.length === tutti.length && presi.every((d) => tipoDi(d) === "completa" || !completaDi(d));
+          txt = giaTutte ? `Le stesse ${tutti.length} dispense complete${sc.sem === "entrambi" ? " dell'anno" : " del semestre"}, in un solo acquisto, a ${eur(pacchetto)} invece di ${eur(singoli)}.` : `Spendi meno di quanto spenderesti per ${presi.length === 1 ? "un solo esame" : `i ${presi.length} esami che hai scelto`}, e in più hai le dispense complete di tutti i ${tutti.length} esami${sc.sem === "entrambi" ? " dell'anno" : " del semestre"} (comprate una per una: ${eur(valoreComplete)}).`; }
+        else if (-diff <= 12 && valoreComplete > pacchetto) { tit = `Con ${eur(-diff)} in più hai ${sc.sem === "entrambi" ? "tutto l'anno" : "tutto il semestre"}`; txt = `Il ${nomePac} include le dispense complete di tutti i ${tutti.length} esami: comprate una per una costerebbero ${eur(valoreComplete)}. Se pensi di dare anche gli altri esami, è il modo più conveniente.`; }
+        else if (-diff <= 12) { tit = "Costano quasi uguale: scegli tu"; txt = `Qui il ${nomePac} non fa risparmiare sulle dispense (${tutti.length} complete a ${eur(valoreComplete)} contro ${eur(pacchetto)}), ma è un solo acquisto${sc.plus ? "" : ` e con un pacchetto Plus costa ${eur(PR.plus - PR.plusConPacchetto)} in meno`}.`; forte = false; }
+        else { tit = "Per questi esami ti bastano i singoli"; txt = `Se prepari solo ${presi.length === 1 ? "questo esame" : "questi esami"}, i singoli costano meno. Il ${nomePac} conviene se pensi di dare anche gli altri: ${tutti.length} dispense complete a ${eur(pacchetto)} invece di ${eur(valoreComplete)}.`; forte = false; }
+        const altroSem = sc.sem !== "entrambi" && esamiDi(sc.anno, sc.sem === "I" ? "II" : "I").length >= 3;
+        const extra = [
+          altroSem ? `Ti serve anche il ${sc.sem === "I" ? "II" : "I"} semestre? Il Pacchetto anno costa ${eur(PR.anno)} invece di ${eur(PR.semestre * 2)} per due semestri.` : "",
+          sc.quando === "in" && presi.length ? `In sessione i singoli costano di più: fuori sessione gli stessi esami costerebbero ${eur(presi.reduce((n, d) => n + prezzoDi(d, tipoDi(d), "fuori"), 0))}. Il pacchetto costa uguale.` : "",
+          sc.plus ? `Con un pacchetto Plus costa ${eur(PR.plusConPacchetto)} invece di ${eur(PR.plus)}.` : `Aggiungi Plus (planner e simulazioni): con un pacchetto costa solo ${eur(PR.plusConPacchetto)}.`,
+        ].filter(Boolean);
+        const seg = (k, v, t, on) => `<button type="button" data-${k}="${v}" class="${on ? "on" : ""}" aria-pressed="${on}">${t}</button>`;
+        cal.innerHTML = `<div class="calc-sel">
+            <div class="tl-l">Anno</div><div class="seg-cal">${["I", "II", "III"].map((a) => seg("ca", a, a + " anno", a === sc.anno)).join("")}</div>
+            <div class="tl-l">Semestre</div><div class="seg-cal">${[["I", "I semestre"], ["II", "II semestre"], ["entrambi", "Tutto l'anno"]].map(([v, t]) => seg("cs", v, t, v === sc.sem)).join("")}</div>
+            <div class="tl-l">Quando compri</div><div class="seg-cal">${seg("cq", "fuori", "Adesso · fuori sessione", sc.quando === "fuori")}${seg("cq", "in", "In sessione", sc.quando === "in")}</div>
+            <div class="tl-l">I tuoi esami · cosa compreresti singolarmente</div>
+            <div class="calc-tutti"><span class="small">Tutti:</span>${seg("ct", "appunti", "Appunti", 0)}${seg("ct", "completa", "Complete", 0)}${seg("ct", "no", "Nessuno", 0)}</div>
+            <ul class="calc-esami">${tutti.map((d) => { const t = tipoDi(d), c = completaDi(d); return `<li class="${t === "no" ? "off" : ""}"><span class="n">${esc(d.nome)}<small>${SEM[d.sem]}</small></span>
+              <span class="seg-mini">${seg("ce", d.slug + "|appunti", "Appunti", t === "appunti")}${c ? seg("ce", d.slug + "|completa", "Completa", t === "completa") : ""}${seg("ce", d.slug + "|no", "✕", t === "no")}</span>
+              <b>${t === "no" ? "—" : eur(prezzoDi(d, t, sc.quando))}</b></li>`; }).join("")}</ul>
+            <label class="calc-plus"><input type="checkbox" data-cp ${sc.plus ? "checked" : ""}> Aggiungi UniLink Plus</label>
+          </div>
+          <div class="calc-out">
+            <div class="calc-conf">
+              <div class="cc-r"><span>Uno per uno · ${presi.length} ${presi.length === 1 ? "esame" : "esami"}${sc.plus ? " + Plus" : ""}</span><b>${eur(totS)}</b></div><div class="cc-bar"><i style="width:${pct(totS)}%"></i></div>
+              <div class="cc-r ev"><span>${nomePac} · ${tutti.length} dispense complete${sc.plus ? " + Plus" : ""}</span><b>${eur(totP)}</b></div><div class="cc-bar ev"><i style="width:${pct(totP)}%"></i></div>
+            </div>
+            <div class="calc-cons ${forte ? "forte" : ""}"><span class="eyebrow">Il nostro consiglio</span><h3>${tit}</h3><p>${txt}</p>${extra.length ? `<ul>${extra.map((x) => `<li>${x}</li>`).join("")}</ul>` : ""}</div>
+            <a class="btn ${forte ? "btn-a" : "btn-p"}" href="${APP}" style="justify-content:center">${forte && presi.length ? `Prendi il ${nomePac}` : "Compra · accedi o crea l'account"}</a>
+            <p class="small">Prezzi ${sc.quando === "fuori" ? "fuori sessione" : "in sessione"} · ${esc(LIS.stato)}. Il pagamento nella demo è simulato.</p>
+          </div>`;
+        $$("[data-ca]", cal).forEach((b) => (b.onclick = () => { sc.anno = b.dataset.ca; draw(); }));
+        $$("[data-cs]", cal).forEach((b) => (b.onclick = () => { sc.sem = b.dataset.cs; draw(); }));
+        $$("[data-cq]", cal).forEach((b) => (b.onclick = () => { sc.quando = b.dataset.cq; draw(); }));
+        $$("[data-ct]", cal).forEach((b) => (b.onclick = () => { tutti.forEach((d) => (sc.scelte[d.slug] = b.dataset.ct === "completa" && !completaDi(d) ? "appunti" : b.dataset.ct)); draw(); }));
+        $$("[data-ce]", cal).forEach((b) => (b.onclick = () => { const [slug, t] = b.dataset.ce.split("|"); sc.scelte[slug] = t; draw(); }));
+        $("[data-cp]", cal).onchange = (e) => { sc.plus = e.target.checked; draw(); };
       };
       draw();
     }

@@ -12,7 +12,7 @@
 //   Gli strumenti stanno in tools.js (condiviso con la web app).
 // -----------------------------------------------------------------------------
 window.UL_CFG = {
-  versione: { n: 4, data: "2026-10-07", nota: "Landing v4: barra Hub · Guida · Materiali · Strumenti · Community, menu Founder, Materiali e Anteprima (P2), Planner di esempio (P3), tab Scegliere (P4), Guida per facoltà, founder e FAQ da config." },
+  versione: { n: 5, data: "2026-10-07", nota: "Landing v5: prezzi con card pulite, «Cosa c'è dentro» e calcolatore del pacchetto con il consiglio. Prima, v4: barra Hub · Guida · Materiali · Strumenti · Community, menu Founder, Materiali e Anteprima (P2), Planner di esempio (P3), tab Scegliere (P4), Guida per facoltà, founder e FAQ da config." },
   wa: "https://chat.whatsapp.com/KdA4r1POh6MAiBbLmmES0L",
   // Commenti del team sulle pagine e sulle sezioni (solo demo). Si salvano nel browser e si esportano in PDF/Markdown/JSON.
   // In produzione (Framer): attivi: false.
@@ -111,6 +111,29 @@ window.UL_CFG = {
     // mesi di sessione (UniFi Economia: invernale gen–feb, estiva giu–lug, autunnale set). Date vere: calendario degli appelli.
     mesi: [["ott", 0], ["nov", 0], ["dic", 0], ["gen", 1], ["feb", 1], ["mar", 0], ["apr", 0], ["mag", 0], ["giu", 1], ["lug", 1], ["ago", 0], ["set", 1]],
     plusNota: "Plus: da decidere se al lancio o quando planner e simulatore coprono un semestre (P2).",
+    // «Cosa c'è dentro» (Materiali): le differenze tra i piani stanno qui, non nelle card.
+    // Colonne: Appunti · Dispensa completa · Pacchetto semestre · Pacchetto anno · Plus. 1 = sì, 0 = no, testo = condizione.
+    dentro: [
+      ["Materiali", [
+        ["Appunti / Sbobine", 1, 1, 1, 1, 0],
+        ["Mappe per ripassare", 0, "dove ci sono", "dove ci sono", "dove ci sono", 0],
+        ["Quiz e simulazioni dell'appello", 0, 1, 1, 1, 0],
+        ["Informazioni utili sull'esame", 1, 1, 1, 1, 0],
+        ["Esami inclusi", "1", "1", "3–4 del semestre", "tutto l'anno", "—"],
+      ]],
+      ["Per sempre tuoi", [
+        ["PDF con filigrana personale", 1, 1, 1, 1, 0],
+        ["Aggiornamenti della stessa edizione", 1, 1, 1, 1, 0],
+      ]],
+      ["Il metodo", [
+        ["Planner per tutti gli esami", 0, 0, 0, 0, 1],
+        ["Simulazioni e registro errori", 0, 0, 0, 0, 1],
+        ["CV benchmark completo", 0, 0, 0, 0, 1],
+      ]],
+      ["Prezzo", [
+        ["Quando costa meno", "fuori sessione", "fuori sessione", "sempre uguale", "sempre uguale", "una volta per sessione"],
+      ]],
+    ],
   },
 
   // ANTEPRIMA dell'esame (preview.html): cosa si mostra prima di comprare. L'indice vero si legge dal PDF in produzione;
