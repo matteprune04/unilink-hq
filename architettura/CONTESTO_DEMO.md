@@ -28,7 +28,7 @@ Versione compatta dei PDF (`UniLink_Architettura_Landing.pdf`, `UniLink_Architet
 9. **Prima di ogni push** che tocca `demo-landing/`: `node _src/verifica_landing.js` deve scrivere «tutto ok». Accessibilità: contrasto minimo 4,5:1 sul testo piccolo (usare le varianti `--arancio-bt` per i fondi con testo bianco, `--arancio-t` per le parole accento, `--ar3` per le etichette; l'arancio del brand `#cf7527` solo per elementi decorativi), tutto raggiungibile da tastiera, un solo `h1` per pagina, titoli in ordine.
 
 ## 3 · Landing v2 (`demo-landing/`)
-Navbar: **Hub ▾ · Prima ▾ · Durante ▾ · Dopo ▾ · Strumenti · Community** + pillola arancio **Da decidere** + pulsante **Area personale**. Tutto (nav, footer, versione) viene da `UL_CFG` e `app.js`.
+Navbar (dal 7/10/2026): **Hub ▾ · Guida · Materiali · Strumenti · Community** + menu **Founder ▾** (Area personale, Da decidere, Commenti, Prezzi precedente; stile della vecchia pillola) + **Accedi** (web app). Negli hub e nelle fasi, tab **Panoramica · Scegliere · Studiare · Dopo la laurea** (`?hub=`). Tutto (nav, footer, versione) viene da `UL_CFG` e `app.js`.
 
 | Codice | Pagina | File |
 |---|---|---|
@@ -40,10 +40,13 @@ Navbar: **Hub ▾ · Prima ▾ · Durante ▾ · Dopo ▾ · Strumenti · Commun
 | S10 | Area personale: galleria di 19 schermate reali della web app in 3 formati, solo da guardare (`area.html?dev=tab#percorso-erasmus`) | `area.html` |
 | S11 | Community (gruppi WhatsApp per anno, ambassador) | `community.html` |
 | S12 | Prezzi (di esempio, **fuori dalla navbar**, letto da `UL_CFG.prezzi`) | `prezzi.html` |
-| S13 | Commenti del team (rapporto, esportazione) | `commenti.html` |
+| S13 | Commenti del team (rapporto, esportazione, storico) | `commenti.html` |
+| S14 | Guida per facoltà (Economia completa, altre in architettura) | `guida.html` + `guida-dati.js` + `guida.js` |
+| S15 | Materiali (listino P2, pacchetto, collezione) | `materiali.html` |
+| S16 | Anteprima esame (`?esame=slug`) | `preview.html` |
 | S90 | Da decidere (indice + schede `#L01`…`#L26`: L01–L09 con architettura completa, L10–L26 dal report) | `decidere.html` |
 
-`UL_CFG`: `versione` · `commenti` (`attivi`: true in demo, false in produzione) · `app` (percorso della web app) · `numeri` · `schermate` (gruppi e elenco delle 19 schermate reali) · `hub` (stato `attivo`/`in_arrivo`) · `fasi` (voci dei dropdown) · `prezzi` (listino + FAQ) · `decidere` (riassunto delle card L01–L09).
+`UL_CFG` (aggiunte 7/10: `nav` · `home` · `catalogo` · `listino` · `anteprima` · `team` · `faq` · `planner`, elenco in `demo-landing/LEGGIMI.md` «Campi per Framer»): `versione` · `commenti` (`attivi`: true in demo, false in produzione) · `app` (percorso della web app) · `numeri` · `schermate` (gruppi e elenco delle 19 schermate reali) · `hub` (stato `attivo`/`in_arrivo`) · `fasi` (voci dei dropdown) · `prezzi` (listino + FAQ) · `decidere` (riassunto delle card L01–L09).
 Card landing: L01 Gruppi di studio · L02 Metodo e piano · L03 Mentoring tra pari · L04 Test d'ingresso (TOLC) · L05 Borse e tasse · L06 Carriera e CV · L07 Listino e pacchetti · L08 Quale hub parte per primo · L09 Voci degli studenti. Ogni card ha un campo `consiglio` (parere di Claude, da discutere) e `area` (card Dxx corrispondente).
 Blocchi delle card: `hero, cards, steps, list, stats, chips, nota, piano, prezzi, appshot` (`BLOCCHI` in `app.js`, riassunto) e, per le pagine intere delle schede, `hero, testo, cards, steps, list, stats, faq, form, cta, profile, table, chips, cerca, tool, appshot, prezzi` (`MK`). `appshot` = schermata reale della web app (id da `UL_CFG.schermate`).
 Componenti: `LP/Navbar, Hero, Sticker, CardHub, Livello+Risposta, CardDispensa, Card(.cd), Strumento, Dispositivo, Checklist, Fase, Finale, CardDecidere, Schermo, Bottone, Badge, Footer`.
@@ -102,3 +105,13 @@ Il report «Dalla vetrina alla piattaforma» (4 ottobre 2026, demo v1) è stato 
 - **Web app: D26–D44**: le stesse voci che vivono nell'app, più account e accesso, proteggere i PDF, simulatore, piano di studio a sessioni, Career CV benchmark, libretto e voto, pannello del team. Dati in `demo-webapp/js/unilink-dati.js`.
 - Le card che esistono in entrambi i lati si rimandano (`area` nella landing, «Nella landing: card Lxx» nella web app).
 - **Discordanze non risolte** tra report e demo attuali (prezzi, Plus, accesso, piano gratuito, numero di scuole, lettore protetto D23, mentor): le card riportano il report, le demo restano com'erano. Vanno decise, non corrette in silenzio.
+
+## 11 · Modifiche A del 7/10/2026 (dal PDF «Proposte», `architettura/UniLink_Proposte.pdf`)
+- Barra nuova e menu Founder; home con campi da config (foto, numeri, hub, più scaricati, prezzi, founder con scheda personale, FAQ verso l'account).
+- P2/P7 · **Materiali** e **Anteprima**: prezzi = proposta del report (fuori sessione più bassi), Completa 12,99 € solo dove ci sono mappe, 9,99 € con appunti + quiz.
+- P3 · **Planner** in Studiare: esempio solo da guardare (Variabili · Percorso · Calendario · Da fare · Completate), fasce 18–21 / 22–25 / 26–28 / 29–30L con disclaimer, indicatore «Ci stai nei tempi?» = giorni × ore nette × (1 − 18%), piano calcolato una volta. «Crea il tuo piano» → web app.
+- P4 · tab **Scegliere** dentro gli hub (nome nuovo di «Prima»); l'«Orientati» generale a domande resta proposta, non costruito.
+- **Guida** per facoltà (S14, richiesta diretta del 7/10, non una proposta P): Economia triennale completa dalla «Guida essenziale» (agosto 2026), altre 9 Scuole UniFi solo architettura (stessi 6 capitoli, «da scrivere»).
+- Strumenti nuovi: voto di laurea per corso, peso di un voto, countdown sessioni (margine 18%, sessioni da 45′).
+- Segnaposto: founder (LinkedIn non raggiungibile da qui), «più scaricati» scelti a mano, indice dell'Anteprima letto da config.
+

@@ -12,7 +12,7 @@
 //   Gli strumenti stanno in tools.js (condiviso con la web app).
 // -----------------------------------------------------------------------------
 window.UL_CFG = {
-  versione: { n: 3, data: "2026-10-06", nota: "Landing v3: commenti del team su pagine e sezioni, architettura completa delle card Da decidere, accessibilità e primo accesso ottimizzati." },
+  versione: { n: 4, data: "2026-10-07", nota: "Landing v4: barra Hub · Guida · Materiali · Strumenti · Community, menu Founder, Materiali e Anteprima (P2), Planner di esempio (P3), tab Scegliere (P4), Guida per facoltà, founder e FAQ da config." },
   wa: "https://chat.whatsapp.com/KdA4r1POh6MAiBbLmmES0L",
   // Commenti del team sulle pagine e sulle sezioni (solo demo). Si salvano nel browser e si esportano in PDF/Markdown/JSON.
   // In produzione (Framer): attivi: false.
