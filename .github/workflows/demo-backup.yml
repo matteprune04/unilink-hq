@@ -24,6 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: main          # ultimo main (con il registro aggiornato dal backup precedente), non il commit del push
           fetch-depth: 100
       - uses: actions/setup-python@v5
         with:
