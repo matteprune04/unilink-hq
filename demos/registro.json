@@ -4,6 +4,21 @@
    "id": "landing",
    "versioni": [
     {
+     "n": 10,
+     "tag": "landing-v10",
+     "data": "2026-10-07T20:17+00:00",
+     "autore": "Claude",
+     "nota": "Idee: lo stato Approvata diventa Stand-by",
+     "commit": "8baf657",
+     "demo_v": 7,
+     "demo_data": "2026-10-07",
+     "impronta": "80d5cbd194a9e554",
+     "kb": 5365,
+     "file": "UniLink_landing_demo-v7_backup10_2026-10-07.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v10/UniLink_landing_demo-v7_backup10_2026-10-07.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v10/demo-landing"
+    },
+    {
      "n": 9,
      "tag": "landing-v9",
      "data": "2026-10-07T13:00+00:00",
@@ -149,6 +164,21 @@
    "id": "webapp",
    "versioni": [
     {
+     "n": 8,
+     "tag": "webapp-v8",
+     "data": "2026-10-07T20:17+00:00",
+     "autore": "Claude",
+     "nota": "Idee: lo stato Approvata diventa Stand-by",
+     "commit": "8baf657",
+     "demo_v": 6,
+     "demo_data": "2026-10-07",
+     "impronta": "982a6b2fcf8dc622",
+     "kb": 384,
+     "file": "UniLink_webapp_demo-v6_backup8_2026-10-07.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/webapp-v8/UniLink_webapp_demo-v6_backup8_2026-10-07.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v8/demo-webapp"
+    },
+    {
      "n": 7,
      "tag": "webapp-v7",
      "data": "2026-10-07T13:03+00:00",
@@ -261,5 +291,5 @@
    "url": "https://matteprune04.github.io/unilink-hq/demo-webapp/"
   }
  ],
- "aggiornato": "2026-10-07T13:03+00:00"
+ "aggiornato": "2026-10-07T20:17+00:00"
 }
