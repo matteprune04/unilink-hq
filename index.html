@@ -566,7 +566,25 @@ const attChip = d => hasFiles() && d.files && d.files.length ? " " + chip(`${d.f
 function fileList(list) {
   return `<div>${list.map(f => `<div class="li"><div class="grow"><button type="button" class="linkbtn t" data-openfile="${esc(f.path)}">${esc(f.name)}</button><div class="small muted">${fsize(f.size)}${f.by ? " · " + esc(f.by) : ""}${f.at ? " · " + fmtD(f.at.slice(0, 10)) : ""}</div></div></div>`).join("")}</div>`;
 }
-const filesBlock = d => hasFiles() && d.files && d.files.length ? `<section class="stack"><h3>Allegati</h3>${fileList(d.files)}</section>` : "";
+const filesBlock = (d, col) => !hasFiles() || !((d.files && d.files.length) || (S.canWrite && col)) ? "" : `<section class="stack"><div class="row between"><h3>Allegati</h3>${S.canWrite && col ? `<label class="btn sm acc" style="cursor:pointer">+ Allega file<input type="file" multiple hidden data-dfin="${col}:${d.id}"></label>` : ""}</div>${d.files && d.files.length ? fileList(d.files) : `<p class="small muted">Nessun allegato. Puoi caricarne quanti vuoi, anche insieme.</p>`}</section>`;
+async function attachToDoc(col, id, files) {
+  let n = 0;
+  for (const f of files) {
+    if (f.size > HQ_FILES.max) { toast(`“${f.name}” supera i 25 MB.`); continue; }
+    toast(`Carico ${f.name}…`);
+    try {
+      await guard(async () => {
+        const up = await HQ_FILES.upload(f, col);
+        const cur = (S.data[col].find(x => x.id === id) || {}).files || [];
+        const nf = { ...up, by: S.uid || "", at: new Date().toISOString() };
+        await S.db.collection(col).doc(id).update({ files: [...cur, nf] });
+        const d = S.data[col].find(x => x.id === id); if (d) d.files = [...cur, nf];
+      }); n++;
+    } catch (e) {}
+  }
+  if (n) toast(n === 1 ? "File allegato" : `${n} file allegati`);
+  const open = { ideas: openIdea, meetings: openMeeting, metrics: openMetric }[col]; if (open && !$("#modal").hidden) open(id);
+}
 function sectionFiles() {
   if (!hasFiles() || !S.ready || S.view === "home") return "";
   const list = S.data.sfiles.filter(f => f.section === S.view).sort(byDate("createdAt")).reverse();
@@ -1094,7 +1112,7 @@ function openIdea(id) {
     ${i.body ? `<section class="stack" style="gap:4px">${i.problem ? "<h3>L'idea</h3>" : ""}<p class="pre">${esc(i.body)}</p></section>` : ""}
     ${shorts.length ? `<div class="meta">${shorts.map(f => `<div><span>${esc(f.l)}</span>${esc(specVal(f, i[f.k]))}</div>`).join("")}</div>` : ""}
     ${longs.map(f => f.k === "m_caption" ? `<section class="stack" style="gap:6px"><div class="row between"><h3>${esc(f.l)}</h3><button class="btn sm" data-copy="${esc(i[f.k])}">Copia testo</button></div><div class="comment pre">${esc(i[f.k])}</div></section>` : `<section class="stack" style="gap:4px"><h3>${esc(f.l)}</h3><p class="pre">${esc(i[f.k])}</p></section>`).join("")}
-    ${filesBlock(i)}
+    ${filesBlock(i, "ideas")}
     <div class="meta"><div><span>Stato</span>${S.canWrite ? `<select class="mini-sel" data-move="ideas:${i.id}">${IDEA_ST.map(s => `<option ${s === ideaSt(i) ? "selected" : ""}>${s}</option>`).join("")}</select>` : esc(ideaSt(i))}</div><div><span>Impatto</span>${esc(i.impact || "—")} / 5</div><div><span>Sforzo</span>${esc(i.effort || "—")} / 5</div><div><span>Proposta da</span>${author(i) || "—"}${i.createdAt ? " · " + fmtD(i.createdAt.slice(0, 10)) : ""}</div></div>
     ${i.url ? `<a href="${esc(safeUrl(i.url))}" target="_blank" rel="noopener" class="small" style="overflow-wrap:anywhere">${esc(i.url)}</a>` : ""}
     <div class="row"><button class="vote ${voted(i) ? "on" : ""}" data-vote="${i.id}">${IC.up}<span class="num">${votes(i)}</span> ${voted(i) ? "Hai votato" : "Vota"}</button>${S.canWrite ? `<button class="btn sm" data-edit="ideas:${i.id}">Modifica</button><button class="btn sm" data-ideatask="${i.id}">Crea un task</button>` : ""}</div>
@@ -1112,7 +1130,7 @@ function openMeeting(id) {
   openModal(`${sheetHead(m.when ? fmtDT(m.when) : "Meeting", esc(m.title))}
     <div class="row">${chip(m.kind)}${m.link ? `<a class="btn acc" href="${esc(safeUrl(m.link))}" target="_blank" rel="noopener">Entra nel meeting</a><button class="btn sm" data-copy="${esc(safeUrl(m.link))}">Copia link</button>` : ""}</div>
     ${m.agenda ? `<section class="stack"><h3>Agenda</h3><p class="pre">${esc(m.agenda)}</p></section>` : ""}
-    ${filesBlock(m)}
+    ${filesBlock(m, "meetings")}
     <section class="stack"><h3>Verbale</h3>${m.notes ? `<p class="pre">${esc(m.notes)}</p>` : `<p class="small muted">Ancora nessun verbale. Modifica il meeting per scriverlo.</p>`}</section>
     ${acts.length ? `<section class="stack"><h3>Azioni decise</h3><ul style="margin:0;padding-left:20px">${acts.map(a => `<li>${esc(a)}</li>`).join("")}</ul>${S.canWrite ? `<div><button class="btn sm acc" data-acts="${m.id}" ${m.tasksCreated ? "disabled" : ""}>${m.tasksCreated ? "Task già creati" : "Trasforma in task"}</button></div>` : ""}</section>` : ""}
     ${S.canWrite ? `<div class="row"><button class="btn" data-edit="meetings:${m.id}">Modifica e scrivi il verbale</button></div>` : ""}`);
@@ -1127,7 +1145,7 @@ function openMetric(id) {
     <div class="row between" style="align-items:flex-end"><div><div class="small muted">Ultimo valore</div><div class="num" style="font-family:var(--fd);font-size:36px;color:var(--navy)">${st.v != null ? nf(st.v, 1) : "—"} <span class="small muted" style="font-family:var(--fb)">${esc(m.unit || "")}</span></div>${st.delta}</div>${spark(st.s.slice(-20).map(x => +x.value), 260, 60)}</div>
     ${S.canWrite ? `<form class="row" id="mval" data-mid="${m.id}"><input class="inp" type="date" id="mv_date" value="${localISO()}" style="width:auto"><input class="inp num" type="number" step="any" id="mv_val" placeholder="Valore" style="width:140px"><input class="inp" id="mv_note" placeholder="Nota (facoltativa)" style="flex:1;min-width:140px"><button class="btn pri">Aggiungi valore</button></form>` : ""}
     ${rows.length ? `<div class="tbl-wrap"><table><thead><tr><th>Data</th><th class="r">Valore</th><th>Nota</th><th></th></tr></thead><tbody>${rows.map(r => `<tr><td class="num">${fmtD(r.date, 1)}</td><td class="r num">${nf(r.value, 2)}</td><td class="muted">${esc(r.note || "")}</td><td class="r">${S.canWrite ? `<button class="btn ghost sm danger" data-delval="${r.id}">Elimina</button>` : ""}</td></tr>`).join("")}</tbody></table></div>` : `<p class="small muted">Nessun valore ancora.</p>`}
-    ${filesBlock(m)}
+    ${filesBlock(m, "metrics")}
     ${S.canWrite ? `<div class="row"><button class="btn" data-edit="metrics:${m.id}">Modifica metrica</button></div>` : ""}`);
 }
 
@@ -1195,6 +1213,7 @@ document.addEventListener("change", async e => {
     for (const f of Array.from(t.files || [])) { if (f.size > HQ_FILES.max) { toast(`“${f.name}” supera i 25 MB.`); continue; } S.form.files.push({ name: f.name, size: f.size, type: f.type, file: f }); }
     drawFiles(); return;
   }
+  if (t.dataset.dfin !== undefined) { const fl = Array.from(t.files || []); t.value = ""; const [c, id] = t.dataset.dfin.split(":"); if (hasFiles()) await attachToDoc(c, id, fl); return; }
   if (t.dataset.sfin !== undefined) { const fl = Array.from(t.files || []); t.value = ""; if (hasFiles()) await uploadSection(fl); return; }
   if (t.id === "f_file") { addFiles(Array.from(t.files || [])); return; }
   if (t.dataset.move) { const [c, id] = t.dataset.move.split(":"); await setDoc(c, id, { status: t.value }); toast("Spostato in “" + t.value + "”"); return; }
