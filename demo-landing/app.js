@@ -241,7 +241,8 @@
     const card = (x) => `<div class="pz-card ${x.top ? "ev" : ""} ${x.id === "plus" ? "plus" : ""}">${x.top ? '<span class="pz-tab">Il più scelto</span>' : ""}
       <span class="pz-tipo">${x.tipo}</span><h3 class="pz-nome">${x.nome}</h3>
       <div class="pz-prezzo"><b>${eur(x.p).replace(" €", "")}</b><span>€${x.unaTantum ? " una tantum" : ""}</span></div>
-      <p class="pz-sotto">${x.pieno ? `invece di ${barr(x.pieno)} · prezzo di lancio` : x.unaTantum ? "nessun abbonamento" : ""}</p>
+      ${x.pieno ? `<span class="pz-sconto">−${Math.round((1 - x.p / x.pieno) * 100)}%</span>` : ""}
+      <p class="pz-sotto">${x.pieno ? `invece di ${barr(x.pieno)} · prezzo di lancio` : x.unaTantum ? "nessun abbonamento" : ""}</p>${x.pieno ? `<span class="pz-risp">Risparmi ${eur(x.pieno - x.p)}${x.id === "semestre" ? ` (4 esami: ${eur(LIS.prezzi.semestre[4][1] - LIS.prezzi.semestre[4][0])})` : ""}</span>` : ""}
       <p class="pz-d">${x.d}</p>
       ${x.paga ? `<button type="button" class="btn btn-s" data-paga-piano="${x.id}">${x.cta[0]}</button>` : `<a class="btn ${x.top ? "btn-a" : "btn-s"}" href="${x.cta[1]}">${x.cta[0]}</a>`}</div>`;
     const P = PIANI(), D2 = LIS.dentro || [];
@@ -355,12 +356,15 @@
     // proprio piano di studi; con meno di 3 il pacchetto non c'è (conviene la dispensa singola). Dati: percorsi.js (catalogo UniFi).
     const cal = $("[data-calcola]");
     if (cal && LIS && PERC) {
-      const MAX = LIS.maxEsamiPacchetto || 4, sc = { cds: "EA", curr: "", anno: "I", sem: "I", plus: false, scelti: null };
+      const MAX = LIS.maxEsamiPacchetto || 4, sc = { cds: "EA", curr: "", anno: "I", sem: "I", plus: false, scelti: null, extra: [] };
       const N = { I: 1, II: 2, III: 3 };
       const draw = () => {
         const anno = D.filter((d) => d.anno === sc.anno), curricula = Object.entries(PERC.corsi[sc.cds].curricula);
         const serveCurr = PERC.serveCurriculum(anno, sc.cds); if (serveCurr && !sc.curr) sc.curr = curricula[0][0];
-        const tutti = anno.filter((d) => d.sem === sc.sem && PERC.include(d.codice, sc.cds, serveCurr ? sc.curr : ""));
+        // v10 (commento S15.1): oltre agli esami del percorso si possono aggiungere esami A SCELTA dello stesso anno e semestre
+        const base = anno.filter((d) => d.sem === sc.sem && PERC.include(d.codice, sc.cds, serveCurr ? sc.curr : ""));
+        const altri = anno.filter((d) => d.sem === sc.sem && !base.includes(d));
+        const tutti = base.concat(altri.filter((d) => sc.extra.includes(d.slug)));
         if (!sc.scelti || sc.scelti.some((s) => !tutti.find((d) => d.slug === s))) sc.scelti = tutti.slice(0, MAX).map((d) => d.slug);
         const presi = tutti.filter((d) => sc.scelti.includes(d.slug)), n = presi.length;
         const singoli = presi.reduce((t, d) => t + (gratisDi(d) ? 0 : completaDi(d)[0]), 0), pac = n >= 3 ? semPrezzo(n) : null;
@@ -379,7 +383,8 @@
             ${serveCurr ? `<div class="tl-l">Curriculum</div><div class="seg-cal">${curricula.map(([k, nm]) => seg("cu", k, nm, k === sc.curr)).join("")}</div>` : ""}
             <div class="tl-l">Semestre</div><div class="seg-cal">${[["I", "I semestre"], ["II", "II semestre"]].map(([v, t]) => seg("cs", v, t, v === sc.sem)).join("")}</div>
             <div class="tl-l">Le dispense incluse${tutti.length > MAX ? ` · il semestre ne ha ${tutti.length}: scegli le ${MAX} del tuo piano di studi` : ""}</div>
-            <ul class="calc-esami">${tutti.map((d) => { const on = sc.scelti.includes(d.slug); return `<li class="${on ? "" : "off"}"><span class="n">${esc(d.nome)}<small>${esc(d.codice)}${gratisDi(d) ? " · gratis per tutti" : ""}</small></span>
+            ${altri.length ? `<div class="calc-scelta"><label class="small" for="calc-extra">Hai un esame a scelta?</label><select id="calc-extra" data-extra><option value="">Aggiungi un esame a scelta del ${sc.anno} anno…</option>${altri.filter((d) => !sc.extra.includes(d.slug)).map((d) => `<option value="${d.slug}">${esc(d.nome)}</option>`).join("")}</select></div>` : ""}
+            <ul class="calc-esami">${tutti.map((d) => { const on = sc.scelti.includes(d.slug); return `<li class="${on ? "" : "off"}"><span class="n">${esc(d.nome)}${sc.extra.includes(d.slug) ? '<span class="tag-scelta">a scelta</span>' : ""}<small>${esc(d.codice)}${gratisDi(d) ? " · gratis per tutti" : ""}</small></span>
               <span class="seg-mini">${seg("ce", d.slug, on ? "✓ Inclusa" : "Aggiungi", on)}</span><b>${gratisDi(d) ? "0 €" : eur(completaDi(d)[0])}</b></li>`; }).join("") || '<li class="off"><span class="n">Nessuna dispensa per questo semestre</span></li>'}</ul>
             <p class="small" style="margin:8px 0 0">${esc(PERC.fonte)}. Gli esami del III anno spesso sono a scelta: controlla il tuo piano di studi.</p>
             <label class="calc-plus"><input type="checkbox" data-cp ${sc.plus ? "checked" : ""}> Aggiungi UniLink Plus</label>
@@ -395,8 +400,9 @@
             <p class="small">${esc(per)} · ${esc(LIS.stato)}. ${VENDE_QUI ? "Si paga con Stripe, tutto in un solo pagamento (simulato nella demo)." : "Si paga nell'area personale, con l'account gratuito."}</p>
           </div>`;
         const on = (sel, fn) => $$(sel, cal).forEach((b) => (b.onclick = () => { fn(b); draw(); }));
-        on("[data-cc]", (b) => { sc.cds = b.dataset.cc; sc.curr = ""; sc.scelti = null; }); on("[data-cu]", (b) => { sc.curr = b.dataset.cu; sc.scelti = null; });
-        on("[data-ca]", (b) => { sc.anno = b.dataset.ca; sc.scelti = null; }); on("[data-cs]", (b) => { sc.sem = b.dataset.cs; sc.scelti = null; });
+        on("[data-cc]", (b) => { sc.cds = b.dataset.cc; sc.curr = ""; sc.scelti = null; sc.extra = []; }); on("[data-cu]", (b) => { sc.curr = b.dataset.cu; sc.scelti = null; sc.extra = []; });
+        on("[data-ca]", (b) => { sc.anno = b.dataset.ca; sc.scelti = null; sc.extra = []; }); on("[data-cs]", (b) => { sc.sem = b.dataset.cs; sc.scelti = null; sc.extra = []; });
+        const ex = $("[data-extra]", cal); ex && (ex.onchange = () => { if (!ex.value) return; sc.extra.push(ex.value); if (sc.scelti.length < MAX) sc.scelti.push(ex.value); else toast(`Il pacchetto ha al massimo ${MAX} esami: togline uno per includere quello a scelta`); draw(); });
         on("[data-ce]", (b) => { const s = b.dataset.ce; if (sc.scelti.includes(s)) sc.scelti = sc.scelti.filter((x) => x !== s); else if (sc.scelti.length < MAX) sc.scelti.push(s); else toast(`Al massimo ${MAX} esami per pacchetto: togline uno`); });
         $("[data-cp]", cal).onchange = (e) => { sc.plus = e.target.checked; draw(); };
         const vociPac = pac ? [{ id: "pacchetto:" + sc.cds + (sc.curr || "") + N[sc.anno] + sc.sem, nome: "Pacchetto semestre · " + per, nota: presi.map((d) => d.nome).join(", "), prezzo: pac[0] }].concat(sc.plus ? [{ id: "plus", nome: "UniLink Plus", nota: "con un pacchetto", prezzo: LIS.prezzi.plusConPacchetto }] : []) : [];
@@ -522,6 +528,7 @@
      solo nella web app con l'account gratuito («Usalo gratis»). La versione funzionante della v8 resta per i founder:
      archivio/tools-v8.html e archivio/index-v8.html (body data-archiviata «…-v8») e nelle schede «Da decidere». */
   const FUNZIONANTI = /-v8$/.test(document.body.dataset.archiviata || "") || pagina === "decidere";
+  if (/-v8$/.test(document.body.dataset.archiviata || "")) window.UL_TOOLS_TUTTI = true; // le pagine v8 mostrano anche gli strumenti archiviati
   const VT = CFG.vetrina || {};
   const usaloHref = (id) => APP + "#/app/strumenti/" + id;
   const metrica = (v) => (v && v.metrica && v.metrica.valore != null && v.metrica.valore >= (VT.soglia || 50) ? `<p class="vt-num"><b>${esc(String(v.metrica.valore))}</b> ${esc(v.metrica.testo)}</p>` : "");
@@ -540,7 +547,7 @@
       const ricco = pagina === "tools";
       const drawV = () => {
         const ids = root.dataset.ids ? root.dataset.ids.split(",") : null;
-        let l = ids ? ids.map((i) => ULTools.trova(i)).filter(Boolean) : ULTools.lista(hub).slice(0, limit), ar = ids ? [] : ULTools.area(hub);
+        let l = ids ? ids.map((i) => ULTools.trova(i)).filter(Boolean) : ULTools.lista(hub).slice(0, limit), ar = []; // v10: «Erasmus completo» e «Media completa» sono dentro i 4 strumenti
         if (l.some((t) => t.id === "voto")) l = l.filter((t) => t.id !== "voto-cdl"); // un solo «Voto di laurea» per hub
         root.className = "vt-grid" + (ricco ? " ricco" : "");
         root.innerHTML = l.map((t) => vetrinaCard(t, ricco)).join("") + ar.map((t) => `<article class="vt-card area"><div class="vt-top"><span class="ico">${esc(t.icona)}</span><div><h3>${esc(t.nome)}</h3><p class="small">${esc(t.desc)}</p></div></div><a class="btn btn-s" href="${APP}${t.href || ""}">Nell'area personale →</a></article>`).join("");

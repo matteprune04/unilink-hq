@@ -21,14 +21,14 @@
   window.UL_HUB_NOMI = { economia: "Economia", giurisprudenza: "Giurisprudenza", medicina: "Medicina", tutti: "Per tutti" };
 
   window.UL_TOOLS = [
-    { id: "voto", nome: "Voto di laurea", desc: "Dalla media ponderata al voto finale.", hub: ["economia"], stato: "live", dove: "landing", icona: "110" },
-    { id: "media", nome: "Media e voto obiettivo", desc: "Che voto serve negli esami che restano.", hub: ["tutti"], stato: "live", dove: "landing", icona: "Ø" },
-    { id: "piano", nome: "Piano per l'appello", desc: "Argomenti e giorni: quanto ripassare ogni giorno.", hub: ["tutti"], stato: "live", dove: "landing", icona: "◷" },
-    { id: "erasmus", nome: "Punteggio Erasmus", desc: "Una stima del tuo punteggio per il bando.", hub: ["economia"], stato: "demo", dove: "landing", icona: "✈" },
+    { id: "voto", nome: "Quanto prendo alla laurea?", desc: "Dalla media al voto finale, con le regole ufficiali della Scuola.", hub: ["economia"], stato: "live", dove: "landing", icona: "110" },
+    { id: "media", nome: "Che media mi serve?", desc: "Che voti servono negli esami che restano per l'obiettivo che vuoi.", hub: ["tutti"], stato: "live", dove: "landing", icona: "Ø" },
+    { id: "piano", nome: "Ci stai nei tempi?", desc: "Giorni e argomenti fino all'appello: quanto fare ogni giorno. È l'assaggio gratuito del Planner.", hub: ["tutti"], stato: "live", dove: "landing", icona: "◷" },
+    { id: "erasmus", nome: "Erasmus: punteggio e mete", desc: "Il tuo punteggio per il bando e le mete con la media dell'ultima graduatoria.", hub: ["economia"], stato: "demo", dove: "landing", icona: "✈" },
     // strumenti universali della home (proposta P6): compatti, uguali per tutti, regole per corso dove servono
-    { id: "voto-cdl", nome: "Voto di laurea", desc: "Scegli il tuo corso: si applicano le sue regole.", hub: ["tutti"], stato: "live", dove: "landing", icona: "110" },
-    { id: "peso", nome: "Quanto pesa questo esame", desc: "Come cambia la media con il prossimo voto.", hub: ["tutti"], stato: "live", dove: "landing", icona: "±" },
-    { id: "countdown", nome: "Quanto manca all'appello", desc: "Giorni, ore utili e sessioni fino all'esame.", hub: ["tutti"], stato: "live", dove: "landing", icona: "⏳" },
+    { id: "voto-cdl", nome: "Voto di laurea (per corso)", desc: "Scegli il tuo corso: si applicano le sue regole.", hub: ["tutti"], stato: "live", dove: "landing", icona: "110", archiviato: true },
+    { id: "peso", nome: "Quanto pesa questo esame", desc: "Come cambia la media con il prossimo voto.", hub: ["tutti"], stato: "live", dove: "landing", icona: "±", archiviato: true },
+    { id: "countdown", nome: "Quanto manca all'appello", desc: "Giorni, ore utili e sessioni fino all'esame.", hub: ["tutti"], stato: "live", dove: "landing", icona: "⏳", archiviato: true },
     { id: "voto-lmg", nome: "Voto di laurea · ciclo unico", desc: "Media, tesi e bonus per Giurisprudenza.", hub: ["giurisprudenza"], stato: "demo", dove: "landing", icona: "§" },
     { id: "filtro", nome: "Piano semestre filtro", desc: "Settimane, ore e materie fino all'appello.", hub: ["medicina"], stato: "demo", dove: "landing", icona: "+" },
   ];
@@ -128,7 +128,7 @@
       const st = { media: 27, cfu: 80, lingua: 2 };
       el.innerHTML = `<div class="tl-in">${range("e-media", "Media", 18, 30, 0.1, st.media, (v) => fmt(v))}${range("e-cfu", "CFU acquisiti", 0, 180, 3, st.cfu, (v) => v)}
         ${seg("lingua", "Certificazione di lingua", [[0, "Nessuna"], [1, "B1"], [2, "B2"], [3, "C1"]], st.lingua)}</div>
-        <div class="tl-out"><div class="tl-k big"><span>Punteggio stimato</span><b id="e-pt"></b></div><p class="tl-nota" id="e-nota"></p>${flagDemo}</div>`;
+        <div class="tl-out"><div class="tl-k big"><span>Punteggio stimato</span><b id="e-pt"></b></div><p class="tl-nota" id="e-nota"></p><div class="tl-k"><span>Le mete</span><b style="font-size:15px">Per ogni meta: posti e media dell'ultima graduatoria</b></div>${nota("Le mete con la media dell'ultima graduatoria disponibile arrivano quando raccogliamo i dati (scelta dell'HQ: niente probabilità inventate).")}${flagDemo}</div>`;
       const up = () => { const pt = clamp(st.media * 2 + st.cfu / 12 + st.lingua * 2, 0, 100); $("#e-media-o", el).textContent = fmt(st.media); $("#e-cfu-o", el).textContent = st.cfu; $("#e-pt", el).textContent = fmt(pt, 1) + " / 100"; $("#e-nota", el).textContent = pt >= 70 ? "Punteggio competitivo (soglia di esempio)." : "Margine per migliorare: media, CFU o lingua."; };
       $("#e-media", el).oninput = (e) => { st.media = +e.target.value; up(); };
       $("#e-cfu", el).oninput = (e) => { st.cfu = +e.target.value; up(); };
@@ -209,7 +209,8 @@
 
   // API: montare uno strumento in un contenitore (rispetta lo stile della demo che lo ospita)
   window.ULTools = {
-    lista(hub) { return window.UL_TOOLS.filter((t) => !hub || t.hub.includes("tutti") || t.hub.includes(hub)); },
+    // v10 (commento S09): restano 4 strumenti per tutti; quelli «archiviato» si vedono solo nelle pagine dei founder (UL_TOOLS_TUTTI)
+    lista(hub) { return window.UL_TOOLS.filter((t) => (!t.archiviato || window.UL_TOOLS_TUTTI) && (!hub || t.hub.includes("tutti") || t.hub.includes(hub))); },
     area(hub) { return window.UL_TOOLS_AREA.filter((t) => !hub || t.hub.includes("tutti") || t.hub.includes(hub)); },
     trova(id) { return window.UL_TOOLS.find((t) => t.id === id); },
     monta(el, id) {

@@ -1165,3 +1165,32 @@ a.g-tile:hover { transform: translateY(-3px) rotate(-.5deg); }
 .amb-card h3 { font-size: 19px; } .amb-frase { font-size: 14.5px; color: var(--navy); }
 @media (max-width: 1100px) { .vt-grid, .vt-grid.ricco, .amb-cards { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 700px) { .vt-grid, .vt-grid.ricco, .amb-cards { grid-template-columns: 1fr; } }
+
+/* ===== v10 · Guida più leggibile (commento S14 del 7/10): testo più grande, più aria, contrasto pieno, righe corte ===== */
+body[data-page="guida"] main p, body[data-page="guida"] main li { font-size: 17px; line-height: 1.7; color: var(--navy); }
+body[data-page="guida"] main .small, body[data-page="guida"] main small { font-size: 15px; line-height: 1.6; color: #3c4663; }
+body[data-page="guida"] main p { max-width: 68ch; }
+body[data-page="guida"] main li + li { margin-top: 6px; }
+body[data-page="guida"] main h3 { line-height: 1.25; margin-bottom: 6px; }
+body[data-page="guida"] .g-sez { margin-top: 44px; }
+body[data-page="guida"] .g-sez + .g-sez { padding-top: 32px; border-top: 1px solid var(--linea); }
+body[data-page="guida"] .g-box, body[data-page="guida"] .g-scard { background: #fff; border: 1.5px solid var(--linea); box-shadow: none; color: var(--navy); }
+/* i riquadri scuri tengono il testo chiaro */
+body[data-page="guida"] main :is(.g-breve, .g-frase, .g-tile.t1, .g-fbtn.on, .bgn-scuro) :is(p, li, small, .small) { color: var(--crema); }
+body[data-page="guida"] .g-k { color: var(--ar3); letter-spacing: .06em; }
+body[data-page="guida"] .g-tab td, body[data-page="guida"] .g-tab th { font-size: 15.5px; line-height: 1.5; padding: 12px 14px; }
+@media (max-width: 700px) { body[data-page="guida"] main p, body[data-page="guida"] main li { font-size: 16.5px; } }
+
+/* ===== v10 · Materiali: sconto in evidenza, tabella «Cosa c'è dentro» più chiara ===== */
+.pz-card { position: relative; }
+.pz-sconto { position: absolute; top: 14px; right: 14px; background: var(--arancio); color: #fff; border-radius: 99px; padding: 4px 10px; font-size: 13px; }
+.pz-card.ev .pz-sconto { top: 30px; }
+.pz-risp { display: inline-block; margin-top: 4px; background: #e3f1e7; color: #1a6b3c; border-radius: 99px; padding: 3px 10px; font-size: 13px; }
+.pz-card.plus .pz-risp { background: rgba(244,241,234,.15); color: var(--crema); }
+.pz-tabella .ok { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: #e3f1e7; color: #1a6b3c; font-weight: 700; }
+.pz-tabella .no { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: #f6e0db; color: #a4321f; }
+.pz-tabella .pz-parz { display: inline-block; background: var(--ar2); color: var(--ar3); border-radius: 8px; padding: 3px 8px; font-size: 13px; }
+.pz-tabella tbody tr:nth-child(even) td, .pz-tabella tbody tr:nth-child(even) th { background: rgba(235,228,213,.35); }
+.calc-scelta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 4px 0 10px; }
+.calc-scelta select { font: inherit; font-size: 14.5px; border: 1.5px solid var(--linea); border-radius: 12px; padding: 8px 10px; background: #fff; color: var(--navy); max-width: 100%; }
+.calc-esami li .tag-scelta { font-size: 11px; background: var(--ar2); color: var(--ar3); border-radius: 99px; padding: 1px 8px; margin-left: 6px; }
