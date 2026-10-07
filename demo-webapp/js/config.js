@@ -87,7 +87,7 @@ UL.CONFIG = {
   },
 
   auth: {
-    flag: "Demo · UniLink v4",
+    flag: "Demo · UniLink v5",
     title: 'La tua <span class="accent">Area Personale</span> UniLink',
     sub: "Accedi per ritrovare le tue dispense, i tuoi esami e gli strumenti per scegliere. Da studenti, per studenti.",
     regTitle: 'Il tuo spazio, <span class="accent">gratis</span>',
