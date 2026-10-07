@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><title>UniLink listino · mockup</title>
+<!-- Mockup della pagina listino (P2/P7) per il PDF delle proposte. Prezzi = proposta dal report del 4 ottobre, non decisi. -->
+<style>
+@font-face { font-family: Croogla; src: url(../../../demo-landing/fonts/Croogla4F.ttf); }
+:root { --navy:#172554; --crema:#f4f1ea; --arancio:#cf7527; --ar2:#f6e4d1; --ar3:#a95d1c; --crema2:#ebe4d5; --nv2:#4b5675; --linea:#e2dccf; --verde:#2f6b4f; --verde2:#e3efe8; --ombra:0 10px 30px rgba(23,37,84,.08); }
+* { box-sizing:border-box; margin:0; padding:0; } body { font-family:Croogla,sans-serif; background:#ddd6c8; color:var(--navy); }
+.frame { width:1280px; height:auto; padding-bottom:60px; background:var(--crema); padding:26px 48px; position:relative; overflow:hidden; margin-bottom:40px; }
+.nav { background:#fff; border-radius:99px; padding:12px 22px; display:flex; justify-content:space-between; align-items:center; box-shadow:var(--ombra); font-size:14px; }
+.nav span { margin-left:22px; } .nav .on { color:var(--arancio); } .nav .acc { background:var(--navy); color:var(--crema); border-radius:99px; padding:8px 16px; }
+.eyebrow { font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--ar3); }
+h1 { font-size:36px; font-weight:400; margin:6px 0 2px; } h1 .acc { color:var(--arancio); } .sub { color:var(--nv2); font-size:14.5px; }
+.tabs { display:flex; gap:8px; margin:14px 0; } .tabs span { border-radius:99px; padding:7px 14px; font-size:13.5px; background:var(--crema2); } .tabs .on { background:var(--navy); color:var(--crema); }
+.grid { display:grid; grid-template-columns:1fr 1fr 0.9fr; gap:16px; }
+.col h2 { font-size:17px; font-weight:400; margin-bottom:8px; } .card { background:#fff; border-radius:18px; padding:14px 16px; box-shadow:var(--ombra); margin-bottom:10px; }
+.card.ev { outline:2px solid var(--arancio); }
+.r { display:flex; justify-content:space-between; align-items:baseline; } .p { font-size:24px; } .old { font-size:13px; color:var(--nv2); }
+.tag { font-size:11.5px; border-radius:99px; padding:2px 9px; background:var(--ar2); color:var(--ar3); } .ok { background:var(--verde2); color:var(--verde); }
+.tl { display:grid; grid-template-columns:repeat(12,1fr); gap:3px; margin-top:8px; } .tl i { height:20px; border-radius:4px; background:var(--verde2); } .tl i.s { background:var(--ar2); }
+.tl span { font-size:10px; color:var(--nv2); text-align:center; }
+.note { position:absolute; right:22px; bottom:16px; background:var(--navy); color:var(--crema); font-size:11.5px; border-radius:99px; padding:6px 12px; }
+.small { font-size:12px; color:var(--nv2); }
+</style></head><body>
+<section class="frame" id="l1">
+  <div class="nav"><b style="font-weight:400;font-size:19px">unilink</b><div><span>Hub ▾</span><span>Guida</span><span class="on">Materiali</span><span>Strumenti</span><span>Community</span><span class="acc">Accedi</span></div></div>
+  <div style="margin-top:22px"><span class="eyebrow">Materiali · Economia UniFi · proposta, prezzi non decisi</span><h1>Compra prima, <span class="acc">paghi meno</span></h1><p class="sub">Fuori sessione i prezzi sono più bassi: ti diciamo sempre fino a quando valgono.</p></div>
+  <div class="tabs"><span class="on">Economia</span><span>Giurisprudenza · in arrivo</span><span>Medicina · in arrivo</span></div>
+  <div class="grid">
+    <div class="col"><h2>Singoli esami</h2>
+      <div class="card"><div class="r"><span>Appunti</span><span class="p">4,99 €</span></div><p class="small">Appunti/Sbobine di un esame, con filigrana personale.</p><div class="r" style="margin-top:6px"><span class="tag ok">prezzo fuori sessione</span><span class="old">in sessione 9,99 €</span></div></div>
+      <div class="card ev"><div class="r"><span>Dispensa completa</span><span class="p">12,99 €</span></div><p class="small">Appunti + mappe + quiz e simulazioni dell'appello.</p><div class="r" style="margin-top:6px"><span class="tag ok">prezzo fuori sessione</span><span class="old">in sessione 18,99 €</span></div></div>
+      <div class="card"><p class="small">Senza mappe per questo esame? La completa costa 9,99 €: vedi cosa include ogni esame.</p></div>
+    </div>
+    <div class="col"><h2>Pacchetti</h2>
+      <div class="card ev"><div class="r"><span>Pacchetto semestre <span class="tag">il più scelto</span></span><span class="p">29,99 €</span></div><p class="small">Tutte le dispense complete del tuo semestre (3–4 esami).</p><p class="small" style="margin-top:4px">Comprate una per una: 38,97–51,96 € · risparmi fino a 21,97 €</p></div>
+      <div class="card"><div class="r"><span>Pacchetto anno</span><span class="p">49,99 €</span></div><p class="small">I due semestri. Il momento giusto: settembre–ottobre.</p></div>
+      <div class="card"><span class="small">CALCOLA IL TUO PACCHETTO</span><p class="small" style="margin-top:4px">Corso EA · I anno · II semestre → 3 esami → 29,99 € invece di 38,97 €</p></div>
+    </div>
+    <div class="col"><h2>Il metodo</h2>
+      <div class="card" style="background:var(--navy);color:var(--crema)"><div class="r"><span>UniLink Plus</span><span class="p">14,99 €</span></div><p class="small" style="color:#c9cfe2">Una volta per sessione, nessun abbonamento. Planner per tutti gli esami, simulazioni, registro errori, CV benchmark. Con un pacchetto: 4,99 €.</p></div>
+      <div class="card"><span class="small">QUANDO CONVIENE COMPRARE</span>
+        <div class="tl"><i></i><i></i><i></i><i class="s"></i><i class="s"></i><i></i><i></i><i></i><i class="s"></i><i class="s"></i><i></i><i class="s"></i></div>
+        <div class="tl"><span>ott</span><span>nov</span><span>dic</span><span>gen</span><span>feb</span><span>mar</span><span>apr</span><span>mag</span><span>giu</span><span>lug</span><span>ago</span><span>set</span></div>
+        <p class="small" style="margin-top:6px"><span class="tag ok">verde</span> fuori sessione · <span class="tag">arancio</span> in sessione (invernale, estiva, autunnale). Le date vere seguono il calendario degli appelli.</p></div>
+    </div>
+  </div>
+  <span class="note">MOCKUP · listino · proposta P2/P7</span>
+</section>
+</body></html>
