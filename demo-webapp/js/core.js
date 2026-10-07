@@ -23,14 +23,48 @@
 
   B.semesterCourses = (cds, anno, sem) => B.courses().filter((d) => d.anno === Number(anno) && d.sem === Number(sem) && (!cds || d.cds.includes(cds)));
 
-  B.owns = (user, slug) => {
-    if (!user) return false;
-    if (user.role === "admin") return true;
-    const c = B.course(slug);
-    return (user.activity.purchases || []).some((p) =>
-      (p.type === "exam" && p.slug === slug) ||
-      (p.type === "semester" && c && c.anno === p.anno && c.sem === p.sem && (!p.cds || c.cds.includes(p.cds))));
+  /* ---------- v4 · livelli di accesso per esame (listino P2) ----------
+     "none" → solo scheda e quiz di prova · "appunti" → PDF degli appunti · "completa" → + mappe, quiz e simulazioni dell'appello.
+     La Completa arriva da: acquisto «completa», pacchetto semestre o anno che copre l'esame, team. Plus NON dà materiali. */
+  const RANK = { none: 0, appunti: 1, completa: 2 };
+  B.copre = (p, c) => !!c && ((p.type === "semester" && c.anno === p.anno && c.sem === p.sem) || (p.type === "anno" && c.anno === p.anno)) && (!p.cds || c.cds.includes(p.cds));
+  B.level = (user, slug) => {
+    if (!user) return "none";
+    if (user.role === "admin") return "completa";
+    const c = B.course(slug); let lv = "none";
+    (user.activity.purchases || []).forEach((p) => {
+      let l = "none";
+      if ((p.type === "completa" || p.type === "exam") && p.slug === slug) l = "completa";
+      else if ((p.type === "appunti" || p.type === "gratis") && p.slug === slug) l = "appunti";
+      else if (B.copre(p, c)) l = "completa";
+      if (RANK[l] > RANK[lv]) lv = l;
+    });
+    return lv === "completa" && !B.haCompleta(c) ? "appunti" : lv;
   };
+  B.owns = (user, slug) => B.level(user, slug) !== "none";          // ha almeno gli Appunti (PDF)
+  B.ownsCompleta = (user, slug) => B.level(user, slug) === "completa"; // mappe, quiz e simulazioni dell'appello
+  B.haCompleta = (c) => !!c && !!(c.quiz || c.mappe);                // l'esame ha una Completa (altrimenti solo Appunti)
+  B.haPacchetto = (user) => (user.activity.purchases || []).some((p) => p.type === "semester" || p.type === "anno");
+
+  /* ---------- prezzi: fuori sessione (più basso) e in sessione ---------- */
+  B.inSessione = (d = new Date()) => !!UL.PIANI.sessione[d.getMonth()];
+  B.fascia = () => (B.inSessione() ? 1 : 0);
+  B.prezzoCompleta = (c) => (c && c.mappe ? B.PRICES.completa : B.PRICES.completaSenzaMappe);
+  B.prezzo = (k, c) => k === "appunti" ? B.PRICES.appunti[B.fascia()] : k === "completa" ? B.prezzoCompleta(c)[B.fascia()]
+    : k === "semester" ? B.PRICES.semester : k === "anno" ? B.PRICES.anno : k === "plus" ? B.PRICES.plus : 0;
+  B.prezzoPlus = (user) => (B.haPacchetto(user) ? B.PRICES.plusConPacchetto : B.PRICES.plus);
+  B.quandoVale = () => B.inSessione() ? "prezzo in sessione" : "prezzo fuori sessione";
+  // fine della sessione in corso o della prossima (fino a quando vale Plus)
+  B.fineSessione = (d = new Date()) => {
+    const y = d.getFullYear();
+    const date = UL.PIANI.fineSessioni.map((x) => new Date(`${y}-${x}T23:59:00`)).concat([new Date(`${y + 1}-${UL.PIANI.fineSessioni[0]}T23:59:00`)]);
+    return date.find((x) => x >= d);
+  };
+
+  /* ---------- account gratuito: 1 Appunti a scelta tra 3 + 1 in regalo per invito ---------- */
+  B.gratisUsati = (user) => (user.activity.purchases || []).filter((p) => p.type === "gratis").length;
+  B.gratisDisponibili = (user) => 1 + Math.min(UL.PIANI.gratis.regaloInvito, ((user.activity.referral || {}).confirmed || 0)) - B.gratisUsati(user);
+  B.puoGratis = (user, slug) => UL.PIANI.gratis.scelta.includes(slug) && B.gratisDisponibili(user) > 0 && !B.owns(user, slug);
 
   B.buy = (user, item, coupon) => {
     const disc = B.COUPONS[(coupon || "").toUpperCase()] || 0;
@@ -38,8 +72,8 @@
     const p = Object.assign({ id: "o" + Date.now().toString(36), at: new Date().toISOString(), coupon: disc ? coupon.toUpperCase() : "" }, item, { price, listPrice: item.price });
     user.activity.purchases.push(p);
     UL.store.addLog(user, "acquisto", `Acquisto — ${item.label} (${B.eur(price)})`);
-    if (item.type === "plus") user.activity.plus = { active: true, plan: "mensile", since: p.at, cancelAt: "" };
-    if (item.type === "exam" && !user.activity.exams.some((e) => e.slug === item.slug)) user.activity.exams.push({ slug: item.slug, partizione: "", appello: "", obiettivo: "", status: "doing" });
+    if (item.type === "plus") user.activity.plus = { active: true, plan: "sessione", since: p.at, until: B.fineSessione().toISOString(), cancelAt: "" };
+    if (["appunti", "completa", "gratis"].includes(item.type) && !user.activity.exams.some((e) => e.slug === item.slug)) user.activity.exams.push({ slug: item.slug, partizione: "", appello: "", obiettivo: "", status: "doing" });
     UL.store.save();
     B.track("acquisto");
     return p;
@@ -81,7 +115,7 @@
   B.shuffle = (arr) => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 
   /* ---------- metriche anonime della landing (solo in questo browser) ---------- */
-  const MK = "ul_unilink_v3_metrics";
+  const MK = "ul_unilink_v4_metrics";
   B.metrics = () => { try { return JSON.parse(localStorage.getItem(MK) || "{}"); } catch (e) { return {}; } };
   B.track = (k, slug) => {
     try {
@@ -93,24 +127,31 @@
   };
 
 
-  /* ---------- estensioni UniLink v3 ---------- */
-  B.plus = (user) => !!(user && (user.role === "admin" || (user.activity.plus && user.activity.plus.active)));
-  // materiali (PDF): solo con l'acquisto dell'esame o del semestre. Esercitazioni: anche con Plus.
-  B.ownsPractice = (user, slug) => B.plus(user) || B.owns(user, slug);
+  /* ---------- estensioni UniLink v3 → v4 ---------- */
+  // Plus: una tantum, vale fino alla fine della sessione (niente rinnovi). Il team lo ha sempre.
+  B.plus = (user) => !!(user && (user.role === "admin" || (user.activity.plus && user.activity.plus.active && (!user.activity.plus.until || new Date(user.activity.plus.until) >= new Date()))));
+  // esercitazioni complete (quiz rapido, simulazione d'esame) = Completa dell'esame. Il ripasso del registro errori = Plus.
+  B.ownsPractice = (user, slug) => B.ownsCompleta(user, slug);
   B.planName = (user) => {
     if (!user) return "";
     if (user.role === "admin") return "Team";
     const ps = user.activity.purchases || [];
     const parts = [];
     if (B.plus(user)) parts.push("Plus");
-    if (ps.some((p) => p.type === "semester")) parts.push("Semestre");
-    else if (ps.some((p) => p.type === "exam")) parts.push(ps.filter((p) => p.type === "exam").length + (ps.filter((p) => p.type === "exam").length === 1 ? " pacchetto" : " pacchetti"));
+    if (ps.some((p) => p.type === "anno")) parts.push("Anno");
+    else if (ps.some((p) => p.type === "semester")) parts.push("Semestre");
+    const n = B.courses().filter((c) => (ps || []).some((p) => p.slug === c.slug && p.type !== "gratis") && B.owns(user, c.slug)).length;
+    if (!parts.some((x) => x === "Anno" || x === "Semestre") && n) parts.push(n + (n === 1 ? " esame" : " esami"));
     return parts.join(" + ") || "Gratuito";
   };
-  B.plusItem = () => ({ type: "plus", price: B.PRICES.plus, label: "UniLink Plus · mensile", incl: UL.PIANI.lista.find((p) => p.k === "plus").incl });
+  B.plusItem = (user) => {
+    const pr = user ? B.prezzoPlus(user) : B.PRICES.plus, fino = B.fineSessione();
+    return { type: "plus", price: pr, label: "UniLink Plus · fino al " + fino.toLocaleDateString("it-IT", { day: "numeric", month: "long" }),
+      incl: ["UniLink Planner personalizzato su tutti i tuoi esami", "Missioni, calendario, «oggi» e completate", "Ripasso del registro errori su tutti gli esami", "CV benchmark completo", "Una volta per sessione, nessun rinnovo automatico" + (user && B.haPacchetto(user) ? " · prezzo con pacchetto" : "")] };
+  };
   B.cancelPlus = (user) => {
     user.activity.plus = Object.assign(user.activity.plus || {}, { active: false, cancelAt: new Date().toISOString() });
-    UL.store.addLog(user, "acquisto", "Plus disdetto");
+    UL.store.addLog(user, "acquisto", "Plus annullato (demo)");
     UL.store.save();
   };
 

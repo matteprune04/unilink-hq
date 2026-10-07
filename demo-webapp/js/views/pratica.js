@@ -9,7 +9,7 @@
   const MODES = {
     prova: { l: "Quiz di prova", n: 5, paid: false, d: "5 domande con spiegazione. Gratis per tutti." },
     rapido: { l: "Quiz rapido", n: 10, paid: true, d: "10 domande a caso con correzione immediata e spiegazione." },
-    errori: { l: "Ripasso errori", n: 10, paid: false, d: "Solo le domande che hai sbagliato, finché non le azzecchi due volte di fila." },
+    errori: { l: "Ripasso errori", n: 10, paid: "plus", d: "Il registro errori: solo le domande che hai sbagliato, finché non le azzecchi due volte di fila. Con Plus." },
     simulazione: { l: "Simulazione d'esame", n: 12, paid: true, min: 20, d: "12 domande in 20 minuti, correzione alla fine e voto in trentesimi." },
   };
   let timer = null;
@@ -27,7 +27,7 @@
         const own = B.ownsPractice(user, c.slug);
         return `<div class="exam-row">
           <div class="ring">${UL.ui.ring(pr, 64, 7)}<div class="lbl"><b>${pr}%</b></div></div>
-          <div><div class="row" style="gap:8px">${own ? '<span class="badge badge-navy">Pacchetto attivo</span>' : '<span class="badge badge-soft">Solo prova gratuita</span>'}${er ? `<span class="badge badge-red">${er} da ripassare</span>` : ""}</div>
+          <div><div class="row" style="gap:8px">${own ? '<span class="badge badge-navy">Completa attiva</span>' : '<span class="badge badge-soft">Solo prova gratuita</span>'}${er ? `<span class="badge badge-red">${er} da ripassare</span>` : ""}</div>
             <h3 style="margin-top:8px">${esc(c.title)}</h3><p class="small muted">${B.questions(c.slug).length} domande · ${[...new Set(B.questions(c.slug).map((q) => q.topic))].length} argomenti</p></div>
           <a class="btn btn-primary btn-sm" href="#/app/esercitazioni/${c.slug}">Apri</a></div>`;
       }).join("")}</div>
@@ -46,12 +46,12 @@
       <div class="page-head"><div><div class="eyebrow">${icon("quiz")} ${ROMAN[c.anno]} anno · ${esc(c.cds)}</div><h1>${esc(c.title)}</h1></div>
         ${own ? "" : `<button class="btn btn-orange" data-buy>Sblocca tutte le modalità</button>`}</div>
       <div class="mode-grid">${Object.entries(MODES).filter(([k]) => k !== "prova" || !own).map(([k, m]) => {
-        const locked = m.paid && !own;
+        const locked = m.paid === "plus" ? !B.plus(user) : m.paid && !own;
         const disabled = k === "errori" && !er;
         return `<div class="mode ${k === "errori" && er ? "focus" : ""}">
-          <div class="row between"><h3>${m.l}</h3>${locked ? `<span class="lock">${icon("lock")} Pacchetto o Plus</span>` : k === "errori" ? `<span class="badge ${er ? "badge-red" : "badge-soft"}">${er}</span>` : ""}</div>
+          <div class="row between"><h3>${m.l}</h3>${locked ? `<span class="lock">${icon("lock")} ${m.paid === "plus" ? "Plus" : "Dispensa completa"}</span>` : k === "errori" ? `<span class="badge ${er ? "badge-red" : "badge-soft"}">${er}</span>` : ""}</div>
           <p>${m.d}</p>
-          ${locked ? `<button class="btn btn-sm btn-ghost" data-buy>Sblocca</button>` : disabled ? `<span class="small muted">Nessun errore da ripassare.</span>` : `<a class="btn btn-sm btn-primary" href="#/app/esercitazioni/${slug}/${k}">Inizia</a>`}
+          ${locked ? `<button class="btn btn-sm btn-ghost" ${m.paid === "plus" ? "data-buyplus" : "data-buy"}>Sblocca</button>` : disabled ? `<span class="small muted">Nessun errore da ripassare.</span>` : `<a class="btn btn-sm btn-primary" href="#/app/esercitazioni/${slug}/${k}">Inizia</a>`}
         </div>`;
       }).join("")}</div>
       <div class="grid g-ov" style="margin-top:20px">
@@ -83,10 +83,11 @@
     mount(root, user, params) {
       const [slug, mode] = params;
       root.querySelectorAll("[data-buy]").forEach((b) => b.addEventListener("click", () => B.upsell(user, slug)));
+      root.querySelectorAll("[data-buyplus]").forEach((b) => b.addEventListener("click", () => B.upsell(user, slug, { plus: true })));
       if (!slug || !mode) return;
       const M = MODES[mode];
       if (!M) return UL.app.go(`#/app/esercitazioni/${slug}`);
-      if (M.paid && !B.ownsPractice(user, slug)) { UL.ui.toast("Questa modalità è inclusa nel pacchetto esame e in Plus", "err"); return UL.app.go(`#/app/esercitazioni/${slug}`); }
+      if (M.paid === "plus" ? !B.plus(user) : M.paid && !B.ownsPractice(user, slug)) { UL.ui.toast(M.paid === "plus" ? "Il ripasso del registro errori è incluso in Plus" : "Questa modalità è inclusa nella dispensa completa e nei pacchetti", "err"); return UL.app.go(`#/app/esercitazioni/${slug}`); }
       run(root.querySelector("[data-run]"), user, slug, mode);
     },
   };
@@ -161,7 +162,7 @@
           <div class="row" style="margin-top:20px">
             ${B.errors(user, slug).length ? `<a class="btn btn-primary" href="#/app/esercitazioni/${slug}/errori">Ripassa gli errori (${B.errors(user, slug).length})</a>` : ""}
             <a class="btn btn-ghost" href="#/app/esercitazioni/${slug}">Altre modalità</a>
-            ${!B.ownsPractice(user, slug) ? `<button class="btn btn-orange" data-buy2>Sblocca: pacchetto o Plus</button>` : ""}
+            ${!B.ownsPractice(user, slug) ? `<button class="btn btn-orange" data-buy2>Sblocca: dispensa completa o pacchetto</button>` : ""}
           </div>
         </div>`;
       const b2 = box.querySelector("[data-buy2]");

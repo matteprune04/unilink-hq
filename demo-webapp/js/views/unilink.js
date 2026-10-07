@@ -77,11 +77,11 @@
         if (n === 5) {
           const anno = Math.min(3, Math.max(1, Number(o.anno) || 1));
           const semOk = a().stato === "attiva" && unifi();
-          body = `<h2 style="margin:10px 0 6px">Come vuoi iniziare?</h2><p class="muted" style="margin-bottom:18px">Si parte gratis. Puoi anche passare subito a un pacchetto o a Plus: in ogni caso lo cambi quando vuoi da «Abbonamento». Prezzi: ipotesi.</p>
+          body = `<h2 style="margin:10px 0 6px">Come vuoi iniziare?</h2><p class="muted" style="margin-bottom:18px">Si parte gratis. Puoi anche prendere subito un pacchetto o Plus: lo cambi quando vuoi da «Abbonamento». Nessun rinnovo automatico. ${esc(UL.PIANI.stato)}.</p>
           <div class="pricing three">
-            ${[["free", "Gratuito", "0 €", "per sempre", UL.PIANI.lista[0].incl],
-              ["semester", `Pacchetto ${ROMAN[anno]} anno · ${ROMAN[o.sem]} sem.`, B.eur(B.PRICES.semester), "una volta · ipotesi", B.semesterCourses(o.cds, anno, o.sem).map((c) => c.title)],
-              ["plus", "UniLink Plus", B.eur(B.PRICES.plus), "al mese · ipotesi", UL.PIANI.lista[3].incl]].filter(([k]) => k !== "semester" || semOk).map(([k, t, pr, s, incl]) => `
+            ${[["free", "Gratuito", "0 €", "per sempre", ["Schede, quiz di prova, libretto e strumenti", "1 Appunti gratis a scelta tra 3 esami", "Metodo standard del Planner"]],
+              ["semester", `Pacchetto ${ROMAN[anno]} anno · ${ROMAN[o.sem]} sem.`, B.eur(B.PRICES.semester), "stesso prezzo tutto l'anno", B.semesterCourses(o.cds, anno, o.sem).map((c) => c.title)],
+              ["plus", "UniLink Plus", B.eur(B.PRICES.plus), "una tantum · fino a fine sessione", B.plusItem().incl.slice(0, 4)]].filter(([k]) => k !== "semester" || semOk).map(([k, t, pr, s, incl]) => `
               <div class="plan ${o.piano === k ? "hot" : ""}" data-hot="Scelto"><h3>${esc(t)}</h3><div class="price">${pr} <small>${esc(s)}</small></div>
                 <ul>${incl.slice(0, 5).map((x) => `<li>${icon("check")}${esc(x)}</li>`).join("")}</ul>
                 ${k === "semester" ? `<div class="seg" style="align-self:flex-start">${[1, 2].map((v) => `<button class="${String(o.sem) === String(v) ? "on" : ""}" data-sem="${v}">${ROMAN[v]} sem.</button>`).join("")}</div>` : ""}
@@ -103,7 +103,7 @@
         const done = () => { UL.store.markOnboarded(user); B.track("registrazione"); U.onb = null; UL.ui.toast("Il tuo spazio è pronto"); UL.app.go("#/app/dashboard"); };
         if (o.piano === "free") return done();
         const anno = Math.min(3, Math.max(1, Number(o.anno) || 1));
-        B.checkout(user, o.piano === "plus" ? B.plusItem() : B.semItem(o.cds, anno, o.sem), done);
+        B.checkout(user, o.piano === "plus" ? B.plusItem(user) : B.semItem(o.cds, anno, o.sem), done);
       };
       function bind() {
         box.querySelectorAll("[data-area]").forEach((b) => b.addEventListener("click", () => { o.area = b.dataset.area; if (o.area !== "economia" && o.piano === "semester") o.piano = "free"; draw(); }));
@@ -293,7 +293,7 @@
         ${card("alert", "3 · Sidebar: moduli da decidere", "js/boot.js → UL.NAV.dd · js/da-decidere/…", tab(["Modulo", "Voce", "Rotta → vista", "Proposta"], UL.NAV.dd.flatMap((g) => g.items.map((i) => [esc(g.modulo), esc(i.l), `<code>${esc(i.k)} → ${esc(i.v)}</code>`, U.DD_ROTTE[i.k] ? `<a href="#/app/decidere/${U.DD_ROTTE[i.k].id}">${U.DD_ROTTE[i.k].id}</a>` : "—"])))
           + `<p class="tiny muted" style="margin-top:10px">Promuovere un modulo: spostare la voce da UL.NAV.dd a UL.NAV.decise (e togliere U.dd() dalla rotta). Rimuoverlo: togliere voce, rotta e i suoi &lt;script&gt; da index.html.</p>`)}
         ${card("euro", "4 · Piani × funzioni", "js/config.js → UL.PIANI · prezzi = ipotesi",
-          `<div class="table-wrap"><table class="table"><thead><tr><th>Funzione</th>${UL.PIANI.lista.map((p) => `<th>${esc(p.nome)}<br><span class="tiny muted">${esc(p.prezzo)}</span></th>`).join("")}</tr></thead><tbody>
+          `<div class="table-wrap"><table class="table"><thead><tr><th>Funzione</th>${UL.PIANI.lista.map((p) => `<th>${esc(p.nome)}<br><span class="tiny muted">${esc(p.prezzo || "")}</span></th>`).join("")}</tr></thead><tbody>
           ${[["Schede, quiz di prova, ripasso errori", [1, 1, 1, 1]], ["Dispensa completa (PDF)", [0, 1, 1, 0]], ["Quiz rapidi e simulazioni", [0, 1, 1, 1]], ["…su tutti gli esami", [0, 0, 0, 1]], ["Sconto sui mentor", [0, 0, 0, 1]], ["Libretto, voto di laurea, Erasmus, magistrali", [1, 1, 1, 1]]].map(([t, v]) => `<tr><td>${t}</td>${v.map((x) => `<td>${si(x)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
           <p class="tiny muted" style="margin-top:10px">Gli acquisti si sommano. Plus apre le esercitazioni, non le dispense in PDF. Upgrade: nel primo accesso, in «Abbonamento», su ogni lucchetto. Plus è un solo campo (activity.plus) anche per i moduli Career.</p>`)}
         ${card("users", "5 · Tipologie demo", "js/seed.js → UL.DEMO e UL.SEED",

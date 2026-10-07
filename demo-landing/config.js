@@ -12,7 +12,7 @@
 //   Gli strumenti stanno in tools.js (condiviso con la web app).
 // -----------------------------------------------------------------------------
 window.UL_CFG = {
-  versione: { n: 5, data: "2026-10-07", nota: "Landing v5: prezzi con card pulite, «Cosa c'è dentro» e calcolatore del pacchetto con il consiglio. Prima, v4: barra Hub · Guida · Materiali · Strumenti · Community, menu Founder, Materiali e Anteprima (P2), Planner di esempio (P3), tab Scegliere (P4), Guida per facoltà, founder e FAQ da config." },
+  versione: { n: 6, data: "2026-10-07", nota: "Landing v6: Planner nella tabella dei piani (piano personale con la Completa o con Plus, come nella web app v4). Prima, v5: prezzi con card pulite, «Cosa c'è dentro» e calcolatore del pacchetto con il consiglio. Prima, v4: barra Hub · Guida · Materiali · Strumenti · Community, menu Founder, Materiali e Anteprima (P2), Planner di esempio (P3), tab Scegliere (P4), Guida per facoltà, founder e FAQ da config." },
   wa: "https://chat.whatsapp.com/KdA4r1POh6MAiBbLmmES0L",
   // Commenti del team sulle pagine e sulle sezioni (solo demo). Si salvano nel browser e si esportano in PDF/Markdown/JSON.
   // In produzione (Framer): attivi: false.
@@ -126,7 +126,7 @@ window.UL_CFG = {
         ["Aggiornamenti della stessa edizione", 1, 1, 1, 1, 0],
       ]],
       ["Il metodo", [
-        ["Planner per tutti gli esami", 0, 0, 0, 0, 1],
+        ["UniLink Planner · piano personale", 0, "per quell'esame", "esami del semestre", "esami dell'anno", "tutti gli esami"],
         ["Simulazioni e registro errori", 0, 0, 0, 0, 1],
         ["CV benchmark completo", 0, 0, 0, 0, 1],
       ]],
@@ -165,7 +165,7 @@ window.UL_CFG = {
     ["Cosa trovo gratis su UniLink?", "Anteprime, informazioni su ogni esame e gli strumenti. Con l'account, gratis, scegli anche una dispensa Appunti tra tre esami.", "Crea l'account gratis", "@app"],
     ["Perché la dispensa UniLink e non appunti presi qua e là?", "Segue il programma ufficiale di quest'anno, è datata e aggiornata, la scrive chi ha appena dato l'esame e ha mappe e quiz nel formato dell'appello.", "Guarda un'anteprima", "materiali.html"],
     ["Quanto costa?", "Dagli Appunti di un esame ai pacchetti per semestre e anno. Fuori sessione costa meno: conviene comprare prima. Prezzi in valutazione.", "Vedi i materiali", "materiali.html"],
-    ["Cosa c'è nell'area personale?", "I tuoi esami con data e obiettivo, le dispense che hai, le esercitazioni con il ripasso degli errori. Il planner è in arrivo.", "Accedi", "@app"],
+    ["Cosa c'è nell'area personale?", "I tuoi esami con data e obiettivo, le dispense che hai, le esercitazioni e UniLink Planner: il metodo standard per tutti, il piano personale con la dispensa completa o con Plus.", "Accedi", "@app"],
     ["Le dispense sono aggiornate?", "Ogni dispensa ha versione e data. Quando esce una nuova versione, chi l'ha comprata la riscarica gratis.", "Vedi i materiali", "materiali.html"],
     ["UniLink è solo per Economia?", "Oggi i materiali sono per Economia UniFi. Giurisprudenza e Medicina sono in arrivo: iscriviti alla lista d'attesa e sarai tra i primi.", "Scegli il tuo hub", "index.html#hub"],
     ["UniLink è affiliato all'Università di Firenze?", "No, è un progetto indipendente fatto da studenti.", "", ""],

@@ -30,15 +30,25 @@
       onDone && onDone(p);
     });
   };
-  B.examItem = (c) => ({
-    type: "exam", slug: c.slug, price: B.PRICES.exam, label: "Pacchetto " + c.title,
-    incl: ["Dispensa completa e aggiornata", c.mappe ? "Mappe & schemi" : "Schemi riassuntivi", B.hasQuiz(c.slug) ? `${B.questions(c.slug).length} domande con spiegazione` : "Quiz & simulazioni (PDF)", "Simulazioni a tempo e ripasso degli errori", "Aggiornamenti fino a fine anno accademico"],
-  });
+  /* ---------- v4 · articoli del listino P2 (prezzo fuori sessione / in sessione da core.js) ---------- */
+  const vale = () => B.quandoVale();
+  B.appuntiItem = (c) => ({ type: "appunti", slug: c.slug, price: B.prezzo("appunti", c), label: "Appunti · " + c.title,
+    incl: ["Appunti/Sbobine completi in PDF, con la tua filigrana", "Informazioni utili su esame e partizioni", "Aggiornamenti della stessa edizione", vale()] });
+  B.completaItem = (c) => ({ type: "completa", slug: c.slug, price: B.prezzo("completa", c), label: "Dispensa completa · " + c.title,
+    incl: ["Appunti/Sbobine in PDF, con la tua filigrana", c.mappe ? "Mappe per ripassare" : "Senza mappe per questo esame (per questo costa meno)", B.hasQuiz(c.slug) ? `Esercitazioni complete: ${B.questions(c.slug).length} domande, quiz rapido e simulazione d'esame` : "Quiz e simulazioni dell'appello (PDF)", "Aggiornamenti della stessa edizione", vale()] });
+  B.examItem = B.completaItem; // compatibilità con le viste della demo A/B
+  B.gratisItem = (c) => ({ type: "gratis", slug: c.slug, price: 0, label: "Appunti gratis · " + c.title, incl: ["Appunti/Sbobine completi in PDF", "Il regalo dell'account gratuito (1 a scelta tra 3 esami)"] });
   B.semItem = (cds, anno, sem) => ({
     type: "semester", cds, anno: Number(anno), sem: Number(sem), price: B.PRICES.semester,
-    label: `Pacchetto ${ROMAN[anno]} anno · ${ROMAN[sem]} semestre ${cds}`,
-    incl: B.semesterCourses(cds, anno, sem).map((c) => c.title).concat(["Tutto ciò che è incluso nei pacchetti esame"]),
+    label: `Pacchetto semestre · ${ROMAN[anno]} anno, ${ROMAN[sem]} semestre ${cds}`,
+    incl: B.semesterCourses(cds, anno, sem).map((c) => "Dispensa completa · " + c.title).concat(["Stesso prezzo tutto l'anno", "Con un pacchetto Plus costa " + B.eur(B.PRICES.plusConPacchetto)]),
   });
+  B.annoItem = (cds, anno) => ({
+    type: "anno", cds, anno: Number(anno), price: B.PRICES.anno, label: `Pacchetto anno · ${ROMAN[anno]} anno ${cds}`,
+    incl: [`Le dispense complete dei due semestri (${B.courses().filter((c) => c.anno === Number(anno) && c.cds.includes(cds)).length} esami)`, "Stesso prezzo tutto l'anno", "Con un pacchetto Plus costa " + B.eur(B.PRICES.plusConPacchetto)],
+  });
+  // valore delle complete comprate una per una (per i confronti «invece di»)
+  B.valoreSingoli = (list) => list.reduce((n, c) => n + (B.haCompleta(c) ? B.prezzo("completa", c) : B.prezzo("appunti", c)), 0);
 
   /* ---------- prova gratuita (3 domande) ---------- */
   function miniQuiz(slug, n) {
@@ -104,24 +114,15 @@
           ${c.docenti.length ? `<p class="small" style="margin-top:16px;color:rgba(255,255,255,.75)">Partizioni: ${c.docenti.map(esc).join(" · ")}</p>` : ""}
           <div class="row" style="margin-top:18px">${mine ? `<a class="btn btn-white btn-sm" href="#/app/esami/${c.slug}">Nei miei esami</a>` : `<button class="btn btn-white btn-sm" data-add>${icon("plus")} Aggiungi ai miei esami</button>`}</div>
         </div>
-        <div class="buy-card">
-          <div class="row between"><b class="display" style="color:var(--navy)">Pacchetto esame</b><span class="display" style="font-size:28px;color:var(--navy)">${B.eur(B.PRICES.exam)}</span></div>
-          <ul class="incl">
-            <li class="free">${icon("check")}<span>Scheda, partizioni e consigli — gratis</span></li>
-            ${B.hasQuiz(c.slug) ? `<li class="free">${icon("check")}<span>Prova gratuita di 3 domande — gratis</span></li>` : ""}
-            ${B.examItem(c).incl.map((x) => `<li class="paid">${icon(owned ? "check" : "lock")}<span>${esc(x)}</span></li>`).join("")}
-          </ul>
-          ${owned ? `<a class="btn btn-primary btn-block" href="${esc(c.pdf || "#")}" target="_blank" rel="noopener">${icon("download")} Apri la dispensa</a>` : `<button class="btn btn-orange btn-block" data-buy>Sblocca il pacchetto</button>`}
-          <span class="lock">${icon("lock")} Pagamento simulato nella demo</span>
-        </div>
+        <div class="buy-card">${UL.U && UL.U.buyCard ? UL.U.buyCard(user, c) : ""}</div>
       </div>
       <div class="grid g-ov" style="margin-top:20px">
         <div class="card c-7"><div class="card-head"><h3>${icon("info")} Informazioni utili</h3></div><div class="syllabus">${c.info || '<p class="muted">Informazioni in arrivo.</p>'}</div>
           ${c.unifi ? `<a class="btn btn-sm btn-ghost" style="margin-top:14px" href="${esc(c.unifi)}" target="_blank" rel="noopener">${icon("ext")} Scheda ufficiale UniFi</a>` : ""}</div>
         <div class="c-5 stack">
-          ${B.hasQuiz(c.slug) ? (owned ? `<div class="card"><h3>Esercitazioni sbloccate</h3><p class="small muted" style="margin:6px 0 12px">${B.questions(c.slug).length} domande, simulazioni e ripasso errori.</p><a class="btn btn-primary btn-sm" href="#/app/esercitazioni/${c.slug}">Vai alle esercitazioni</a></div>` : miniQuiz(c.slug, 3))
+          ${B.hasQuiz(c.slug) ? (B.ownsCompleta(user, c.slug) ? `<div class="card"><h3>Esercitazioni sbloccate</h3><p class="small muted" style="margin:6px 0 12px">${B.questions(c.slug).length} domande, simulazioni e ripasso errori.</p><a class="btn btn-primary btn-sm" href="#/app/esercitazioni/${c.slug}">Vai alle esercitazioni</a></div>` : miniQuiz(c.slug, 3))
             : `<div class="card beige"><h3>Esercitazioni in arrivo</h3><p class="small muted" style="margin-top:6px">Si parte da Microeconomia, Economia Aziendale e Statistica. Per questo esame il pacchetto include quiz e simulazioni in PDF.</p></div>`}
-          ${sem.length ? `<div class="card"><h3>Stesso semestre</h3><p class="small muted" style="margin:6px 0 12px">Con il pacchetto semestre (${B.eur(B.PRICES.semester)}) prendi anche:</p>
+          ${sem.length ? `<div class="card"><h3>Stesso semestre</h3><p class="small muted" style="margin:6px 0 12px">Con il pacchetto semestre (${B.eur(B.PRICES.semester)}) hai le complete anche di:</p>
             <ul class="feed">${sem.slice(0, 5).map((x) => `<li><span class="ic">${icon("book")}</span><div><a href="#/app/scheda/${x.slug}" style="text-decoration:none;color:var(--ink)">${esc(x.title)}</a></div></li>`).join("")}</ul>
             <a class="btn btn-sm btn-ghost" style="margin-top:10px" href="#/app/materiali/semestre">Pacchetti semestre</a></div>` : ""}
         </div>
@@ -132,8 +133,7 @@
       if (!c) return;
       B.track("visita", c.slug);
       bindMiniQuiz(root, c.slug, user);
-      const b = root.querySelector("[data-buy]");
-      b && b.addEventListener("click", () => B.checkout(user, B.examItem(c), () => UL.app.refresh()));
+      UL.U && UL.U.bindBuyCard && UL.U.bindBuyCard(root, user, c);
       const add = root.querySelector("[data-add]");
       add && add.addEventListener("click", () => {
         user.activity.exams.push({ slug: c.slug, partizione: "", appello: "", obiettivo: "", status: "todo" });

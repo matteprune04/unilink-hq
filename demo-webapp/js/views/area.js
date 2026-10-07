@@ -107,7 +107,7 @@
         <section class="card c-4">
           <div class="card-head"><h3>${icon("bell")} Aggiornamenti ai tuoi materiali</h3></div>
           <ul class="feed">${ups.map((u) => `<li><span class="ic">${icon("file")}</span><div><b class="display" style="font-weight:400">${esc(B.course(u.slug).title)} ${u.v}</b><br><span class="small">${esc(u.d)}</span></div></li>`).join("") || '<li class="small muted">Nessun aggiornamento: qui compaiono le nuove versioni dei pacchetti che possiedi.</li>'}</ul>
-          ${!hasSem && user.profile.cds ? `<hr class="divider"><p class="small">Ti mancano altri esami del ${ROMAN[sem]} semestre? Con il <b>pacchetto semestre</b> (${B.eur(B.PRICES.semester)}) li sblocchi tutti.</p><a class="btn btn-sm btn-orange" style="margin-top:10px" href="#/app/materiali">Vedi il pacchetto</a>` : ""}
+          ${!hasSem && user.profile.cds ? `<hr class="divider"><p class="small">Ti mancano altri esami del ${ROMAN[sem]} semestre? Con il <b>pacchetto semestre</b> (${B.eur(B.PRICES.semester)}) hai le dispense complete di tutti.</p><a class="btn btn-sm btn-orange" style="margin-top:10px" href="#/app/abbonamento/calcola">Calcola il tuo pacchetto</a>` : ""}
         </section>
       </div>`;
     },
@@ -197,19 +197,19 @@
   }
 
   function materialLinks(user, c) {
-    const own = B.owns(user, c.slug);
+    const own = B.owns(user, c.slug), full = B.ownsCompleta(user, c.slug);
     const item = (ok, href, ic, label, sub) => ok && href
       ? `<a class="feature" href="${esc(href)}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><span class="ic">${icon(ic)}</span><h3>${label}</h3><p>${sub}</p></a>`
-      : `<div class="feature" style="opacity:.75"><span class="ic">${icon(ok ? ic : "lock")}</span><h3>${label}</h3><p>${ok ? sub : "Incluso nel pacchetto esame"}</p></div>`;
+      : `<div class="feature" style="opacity:.75"><span class="ic">${icon(ok ? ic : "lock")}</span><h3>${label}</h3><p>${ok ? sub : label === "Dispensa · Appunti" ? "Con gli Appunti o la Completa" : "Con la dispensa completa o un pacchetto"}</p></div>`;
     return `<div class="feature-grid">
-      ${item(own, c.pdf, "book", "Dispensa completa", "Appunti e sbobine · a.a. 2025/26")}
-      ${item(own, c.mappe || c.pdf, "map", "Mappe & schemi", c.mappe ? "Schemi riassuntivi in PDF" : "Schemi nella dispensa")}
-      ${item(own, c.quiz, "quiz", "Quiz & simulazioni (PDF)", "Esercizi d'esame con soluzioni")}
+      ${item(own, c.pdf, "book", "Dispensa · Appunti", "Appunti e sbobine · con la tua filigrana")}
+      ${c.mappe ? item(full, c.mappe, "map", "Mappe per ripassare", "Schemi riassuntivi in PDF") : `<div class="feature" style="opacity:.6"><span class="ic">${icon("map")}</span><h3>Mappe</h3><p>Non ancora disponibili per questo esame</p></div>`}
+      ${B.haCompleta(c) ? item(full, c.quiz, "quiz", "Quiz & simulazioni (PDF)", "Esercizi d'esame con soluzioni") : ""}
     </div>
-    ${own ? "" : `<div class="row" style="margin-top:16px"><button class="btn btn-orange" data-buyslug="${c.slug}">Sblocca a ${B.eur(B.PRICES.exam)}</button><a class="btn btn-ghost" href="#/app/scheda/${c.slug}">Anteprima gratuita</a></div>`}`;
+    ${full ? "" : `<div class="row" style="margin-top:16px">${own && B.haCompleta(c) ? `<button class="btn btn-orange" data-buyslug="${c.slug}">Passa alla completa</button>` : own ? "" : `<button class="btn btn-orange" data-buyslug="${c.slug}">Sblocca · da ${B.eur(B.prezzo("appunti", c))}</button>`}<a class="btn btn-ghost" href="#/app/scheda/${c.slug}">Scheda e anteprima</a></div>`}`;
   }
   function bindBuy(root, user) {
-    root.querySelectorAll("[data-buyslug]").forEach((b) => b.addEventListener("click", () => B.checkout(user, B.examItem(B.course(b.dataset.buyslug)), () => UL.app.refresh())));
+    root.querySelectorAll("[data-buyslug]").forEach((b) => b.addEventListener("click", () => B.upsell(user, b.dataset.buyslug)));
     root.querySelectorAll("[data-buysem]").forEach((b) => b.addEventListener("click", () => {
       const [cds, anno, sem] = b.dataset.buysem.split("|");
       B.checkout(user, B.semItem(cds, anno, sem), () => UL.app.refresh());
@@ -226,28 +226,28 @@
       const cds = p.cds || "EA";
       const semOpts = [[1, 1], [1, 2], [2, 1], [2, 2], [3, 1], [3, 2]];
       const card = (c) => {
-        const own = B.owns(user, c.slug);
+        const own = B.owns(user, c.slug), lv = B.level(user, c.slug);
         return `<article class="course">
           <div class="thumb"><div class="ph area-${c.area}">${icon(own ? "book" : "lock")}<span>${esc(UL.ui.areaLabel(c.area))}</span></div>
             ${c.img ? `<img src="${esc(c.img)}?scale-down-to=512" alt="" loading="lazy" onerror="this.remove()">` : ""}
-            <span class="badge ${own ? "badge-green" : "badge-orange"}">${own ? "Attivo" : B.eur(B.PRICES.exam)}</span></div>
+            <span class="badge ${own ? "badge-green" : B.puoGratis(user, c.slug) ? "badge-navy" : "badge-orange"}">${lv === "completa" ? "Completa" : own ? "Appunti" : B.puoGratis(user, c.slug) ? "Gratis per te" : "da " + B.eur(B.prezzo("appunti", c))}</span></div>
           <div class="body"><span class="sq-label">${esc(c.cds)} · ${ROMAN[c.anno]} anno · ${ROMAN[c.sem]} sem.</span><h3><a href="#/app/scheda/${c.slug}" style="text-decoration:none;color:inherit">${esc(c.title)}</a></h3>
             <div class="foot">${own
               ? `<a class="btn btn-primary btn-sm btn-arrow" href="${esc(c.pdf || "#")}" target="_blank" rel="noopener">Apri dispensa <span class="arr">${icon("download")}</span></a><a class="icon-btn" href="#/app/esami/${c.slug}" title="Dettagli">${icon("info")}</a>`
-              : `<button class="btn btn-orange btn-sm" data-buyslug="${c.slug}">Sblocca</button><a class="btn btn-ghost btn-sm" href="#/app/scheda/${c.slug}">Anteprima</a>`}</div></div>
+              : `<button class="btn btn-orange btn-sm" data-buyslug="${c.slug}">${B.puoGratis(user, c.slug) ? "Prendilo gratis" : "Sblocca"}</button><a class="btn btn-ghost btn-sm" href="#/app/scheda/${c.slug}">Anteprima</a>`}</div></div>
         </article>`;
       };
       return `
       ${head("Materiali", "book", 'La tua <span class="accent">libreria</span>', "I pacchetti che possiedi, sempre aggiornati, e il catalogo degli altri esami.")}
-      <div class="tabs"><a href="#/app/materiali" class="${tab === "miei" ? "on" : ""}">${icon("book")} I miei pacchetti <span class="cnt">${owned.length}</span></a><a href="#/app/materiali/catalogo" class="${tab === "catalogo" ? "on" : ""}">${icon("layers")} Catalogo</a><a href="#/app/materiali/semestre" class="${tab === "semestre" ? "on" : ""}">${icon("spark")} Pacchetti semestre</a></div>
+      <div class="tabs"><a href="#/app/materiali" class="${tab === "miei" ? "on" : ""}">${icon("book")} I miei pacchetti <span class="cnt">${owned.length}</span></a><a href="#/app/materiali/catalogo" class="${tab === "catalogo" ? "on" : ""}">${icon("layers")} Catalogo</a><a href="#/app/materiali/semestre" class="${tab === "semestre" ? "on" : ""}">${icon("spark")} Pacchetti</a></div>
       ${tab === "miei" ? (owned.length ? `<div class="course-grid">${owned.map(card).join("")}</div>` : `<div class="card empty">${icon("book")}<p>Non hai ancora pacchetti. Prova gratis un esame dal catalogo.</p><a class="btn btn-primary" style="margin-top:12px" href="#/app/materiali/catalogo">Apri il catalogo</a></div>`)
         : tab === "catalogo" ? [1, 2, 3].map((y) => `<div class="year-head"><h2>${ROMAN[y]} anno</h2><span class="line"></span></div><div class="course-grid">${B.courses().filter((c) => c.anno === y && (!p.cds || c.cds.includes(p.cds))).map(card).join("")}</div>`).join("")
-        : `<p class="muted" style="margin-bottom:16px">Tutti gli esami di un semestre del corso ${esc(UL.ui.CDS[cds])} a ${B.eur(B.PRICES.semester)} invece di ${B.eur(B.PRICES.exam)} l'uno.</p>
+        : `<p class="muted" style="margin-bottom:16px">Le dispense complete di un semestre del corso ${esc(UL.ui.CDS[cds])} a ${B.eur(B.PRICES.semester)}, o di tutto l'anno a ${B.eur(B.PRICES.anno)}: stesso prezzo tutto l'anno. <a href="#/app/abbonamento/calcola">Calcola cosa ti conviene →</a></p>
           <div class="pricing three">${semOpts.map(([a, s]) => {
             const list = B.semesterCourses(cds, a, s);
             if (!list.length) return "";
-            const have = user.activity.purchases.some((x) => x.type === "semester" && x.anno === a && x.sem === s);
-            const full = list.length * B.PRICES.exam;
+            const have = user.activity.purchases.some((x) => (x.type === "semester" && x.anno === a && x.sem === s) || (x.type === "anno" && x.anno === a));
+            const full = B.valoreSingoli(list);
             return `<div class="plan ${String(a) === String(p.anno) ? "hot" : ""}" data-hot="Il tuo anno"><h3>${ROMAN[a]} anno · ${ROMAN[s]} semestre</h3><div class="price">${B.eur(B.PRICES.semester)} <small>invece di ${B.eur(full)}</small></div>
               <ul>${list.map((c) => `<li>${icon("check")}${esc(c.title)}</li>`).join("")}</ul>
               ${have ? '<span class="badge badge-green">Già attivo</span>' : `<button class="btn btn-primary" data-buysem="${cds}|${a}|${s}">Acquista</button>`}</div>`;

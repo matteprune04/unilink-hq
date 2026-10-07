@@ -1,5 +1,5 @@
 /* js/boot.js */
-/* NAVIGAZIONE, ROTTE E AVVIO della web app v3.
+/* NAVIGAZIONE, ROTTE E AVVIO della web app v4.
    UL.NAV.decise = sezioni decise (studente).  UL.NAV.dd = moduli DA DECIDERE (demo C e D), nel gruppo arancione.
    Promuovere un modulo: spostare la sua voce da UL.NAV.dd a UL.NAV.decise e registrare la rotta senza U.dd().
    soloAttiva = se l'area dell'utente è «in arrivo» la voce mostra «Presto» e la pagina «in arrivo». */
@@ -15,6 +15,8 @@
         { k: "esami", l: "I miei esami", i: "layers", to: "#/app/esami" },
         { k: "materiali", l: "Materiali", i: "book", to: "#/app/materiali", soloAttiva: true },
         { k: "esercitazioni", l: "Esercitazioni", i: "quiz", to: "#/app/esercitazioni", soloAttiva: true },
+        { k: "planner", l: "Planner", i: "target", to: "#/app/planner", soloAttiva: true },
+        { k: "guida", l: "Guida", i: "map", to: "#/app/guida" },
       ] },
       { g: "Dopo gli esami", items: [{ k: "percorso", l: "Il mio percorso", i: "cap", to: "#/app/percorso" }] },
       { g: "Account", items: [
@@ -84,10 +86,10 @@
   // pagina corrente: la app usa sia «#/app/pagina» sia il token «#app.pagina» nell'URL
   const curPage = () => (location.hash.replace(/^#\/?app[./]/, "").split(/[./]/)[0] || "dashboard");
   UL.shell.start({
-    key: "ul_unilink_v3",
+    key: "ul_unilink_v4",
     name: "UniLink",
     tag: "Area Personale",
-    flag: "DEMO v3 · dati di esempio",
+    flag: "DEMO v4 · dati di esempio",
     home: "#/app/dashboard",
     homeKey: "dashboard",
     onboarding: "onboardingU",
@@ -96,7 +98,7 @@
       // parte decisa
       dashboard: { view: "dashboardU" }, esami: { view: "esamiB" },
       materiali: { view: "materialiU" }, esercitazioni: { view: "praticaU" }, scheda: { view: "schedaU" },
-      percorso: { view: "percorsoB" },
+      percorso: { view: "percorsoB" }, planner: { view: "plannerU" }, guida: { view: "guidaU" },
       abbonamento: { view: "abbonamentoU" }, acquisti: { view: "abbonamentoU" }, account: { view: "account" },
       // sezione di lavoro
       decidere: { view: "decidereU" }, configurazione: { view: "configU" },
@@ -133,8 +135,8 @@
       const plus = B.plus(user);
       const n = B.courses().filter((c) => B.owns(user, c.slug)).length;
       return `<div class="row between"><span class="display small" style="color:var(--navy)">Il tuo piano</span><b class="display" style="color:var(--orange);font-weight:400">${esc(B.planName(user))}</b></div>
-        <p class="tiny muted" style="margin:6px 0 10px">${plus ? "Esercitazioni complete su tutti gli esami." : n ? `${n} esami sbloccati. Con Plus ti alleni su tutti.` : "Prova gratis, sblocchi solo ciò che ti serve."}</p>
-        <a href="#/app/abbonamento" class="small display" style="text-decoration:none">${plus ? "Gestisci il piano →" : "Passa a Plus →"}</a>`;
+        <p class="tiny muted" style="margin:6px 0 10px">${plus ? "Planner personale e ripasso errori su tutti gli esami." : n ? `${n} ${n === 1 ? "esame" : "esami"} con materiali. Il Planner personale è con Plus.` : "Parti gratis: 1 Appunti in regalo, sblocchi solo ciò che ti serve."}</p>
+        <a href="#/app/abbonamento" class="small display" style="text-decoration:none">${plus ? "Il tuo piano →" : "Vedi piani e prezzi →"}</a>`;
     },
     notifications(user) {
       const out = [];
