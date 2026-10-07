@@ -33,7 +33,8 @@
   const NAV = CFG.nav || {};
   const COMM = CFG.commenti && CFG.commenti.attivi;
   // menu «Founder»: strumenti di lavoro della demo, NON vanno nel sito finale (P7)
-  const fondItems = `<a href="area.html">Area personale · schermate</a><a href="decidere.html">Da decidere <span class="badge">${nDec}</span></a>${COMM ? '<a href="commenti.html">Commenti del team</a>' : ""}<a href="prezzi.html">Prezzi · pagina precedente</a>`;
+  const nArc = (CFG.archivio || []).length;
+  const fondItems = `<a href="area.html">Area personale · schermate</a><a href="decidere.html">Da decidere <span class="badge">${nDec}</span></a><a href="archivio/index.html">Archivio <span class="badge">${nArc}</span></a>${COMM ? '<a href="commenti.html">Commenti del team</a>' : ""}`;
   const fasePagine = ["prima", "durante", "dopo", "tesi"];
   const navHTML = `
     <div class="topbar" role="region" aria-label="Avviso demo">Demo navigabile v${CFG.versione.n} · contenuti in parte fittizi, nessun invio reale · strumenti del team nel menu <b>${esc(NAV.founder || "Founder")}</b>${COMM ? " · <b>commenta</b> con il pulsante in basso" : ""}</div>
@@ -41,12 +42,11 @@
       <a class="logo" href="index.html"><img src="img/logo-blu.png" alt="">unilink</a>
       <div class="menu">
         ${tend("Hub", "#", CFG.hub.map((h) => `<a href="${h.href}">${h.nome}${badge(h)}</a>`).join(""), pagina.startsWith("hub") || fasePagine.includes(pagina))}
-        <a class="${att(pagina === "guida")}" href="guida.html">${esc(NAV.guida || "Guida")}</a>
         <a class="${att(pagina === "materiali" || pagina === "preview")}" href="materiali.html">${esc(NAV.materiali || "Materiali")}</a>
         <a class="${att(pagina === "tools")}" href="tools.html">${esc(NAV.strumenti || "Strumenti")}</a>
-        <a class="${att(pagina === "community")}" href="community.html">${esc(NAV.community || "Community")}</a>
+        <a href="index.html#ambassador">${esc(NAV.ambassador || "Ambassador")}</a>
       </div>
-      <span class="tendina fondatori"><a class="tend decpill ${att(["decidere", "area", "commenti"].includes(pagina))}" href="#" title="Strumenti del team: solo in demo">${esc(NAV.founder || "Founder")} <span>${nDec}</span></a><div class="pan">${fondItems}</div></span>
+      <span class="tendina fondatori"><a class="tend decpill ${att(["decidere", "area", "commenti", "archivio"].includes(pagina))}" href="#" title="Strumenti del team: solo in demo">${esc(NAV.founder || "Founder")} <span>${nDec}</span></a><div class="pan">${fondItems}</div></span>
       <a class="btn btn-p navcta" href="${APP}">${esc(NAV.accedi || "Accedi")}</a>
       <button class="burger" aria-label="Apri il menu">≡</button>
     </div></header>
@@ -54,17 +54,17 @@
       <div class="mg">Hub</div>
       ${CFG.hub.map((h) => `<a href="${h.href}">${h.nome} ${badge(h)}</a>`).join("")}
       <div class="mg">UniLink</div>
-      <a href="guida.html">${esc(NAV.guida || "Guida")}</a><a href="materiali.html">${esc(NAV.materiali || "Materiali")}</a><a href="tools.html">${esc(NAV.strumenti || "Strumenti")}</a><a href="community.html">${esc(NAV.community || "Community")}</a>
+      <a href="materiali.html">${esc(NAV.materiali || "Materiali")}</a><a href="tools.html">${esc(NAV.strumenti || "Strumenti")}</a><a href="index.html#ambassador">${esc(NAV.ambassador || "Ambassador")}</a>
       <a class="btn btn-p" href="${APP}">${esc(NAV.accedi || "Accedi")}</a>
       <div class="mg">${esc(NAV.founder || "Founder")} · solo demo</div>
-      <a class="mdec" href="decidere.html">Da decidere · ${nDec}</a><a href="area.html">Area personale · schermate</a>${COMM ? '<a href="commenti.html">Commenti del team</a>' : ""}
+      <a class="mdec" href="decidere.html">Da decidere · ${nDec}</a><a href="archivio/index.html">Archivio · ${nArc}</a><a href="area.html">Area personale · schermate</a>${COMM ? '<a href="commenti.html">Commenti del team</a>' : ""}
       <a class="btn btn-a" href="${WA}" target="_blank" rel="noopener">Entra nel gruppo WhatsApp</a></div>`;
   const onda = (c) => `<svg class="top" viewBox="0 0 1440 60" preserveAspectRatio="none"><path fill="${c}" d="M0 60 L0 32 ${"a40 28 0 0 1 80 0 ".repeat(18)}L1440 60 Z"/></svg>`;
   const footHTML = `<footer>${onda("#172554")}<div class="wrap"><div class="fgrid">
       <div><a class="logo w" href="index.html"><img src="img/logo-white.png" alt="">unilink</a><p style="opacity:.75;font-size:15px;margin-top:14px;max-width:300px">Da studenti, per studenti. Da Firenze, un passo alla volta.</p></div>
       <div><h2 class="fh">Hub</h2>${CFG.hub.map((h) => `<a href="${h.href}">${h.nome}${h.stato === "attivo" ? "" : " · in arrivo"}</a>`).join("")}</div>
-      <div><h2 class="fh">In ogni hub</h2>${CFG.fasi.map((f) => `<a href="${f.href}">${f.tab}</a>`).join("")}<a href="guida.html">${esc(NAV.guida || "Guida")}</a><a href="materiali.html">${esc(NAV.materiali || "Materiali")}</a><a href="tools.html">Strumenti</a></div>
-      <div><h2 class="fh">UniLink</h2><a href="community.html">Community</a><a href="index.html#chi-siamo">Chi siamo</a><a href="index.html#faq">FAQ</a><a href="${APP}">Accedi all’area personale</a><a href="decidere.html">Da decidere (founder)</a></div>
+      <div><h2 class="fh">In ogni hub</h2>${CFG.fasi.map((f) => `<a href="${f.href}">${f.tab}</a>`).join("")}<a href="materiali.html">${esc(NAV.materiali || "Materiali")}</a><a href="tools.html">Strumenti</a></div>
+      <div><h2 class="fh">UniLink</h2><a href="${WA}" target="_blank" rel="noopener">Gruppo WhatsApp</a><a href="index.html#ambassador">Diventa ambassador</a><a href="index.html#faq">FAQ</a><a href="${APP}">Accedi all’area personale</a><a href="decidere.html">Da decidere (founder)</a></div>
       <div class="fnl"><h2 class="fh">Resta aggiornato</h2><p style="font-size:14.5px;opacity:.75">Una mail quando escono strumenti o hub nuovi. Niente spam.</p><form class="nl" id="nl"><input type="email" placeholder="La tua email" aria-label="La tua email" style="background:transparent;border:0;outline:0;color:#f4f1ea;font:inherit;flex:1;min-width:0"><button class="nlb" style="width:34px;height:34px;border-radius:50%;background:#cf7527;border:0;color:#fff;cursor:pointer">→</button></form></div>
     </div><div class="fbase"><span>© 2026 UniLink Firenze · Progetto indipendente, non affiliato all'Università di Firenze</span><span>Demo v${CFG.versione.n} · ${new Date(CFG.versione.data).toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" })}</span></div></div></footer>
     <div class="toast" id="toast"></div>`;
@@ -74,15 +74,19 @@
   document.body.insertAdjacentHTML("afterbegin", '<a class="skip" href="#main">Vai al contenuto</a>');
   const mmenu = $(".mmenu"), foot = $("footer");
   if (mmenu && foot) { const main = document.createElement("main"); main.id = "main"; main.tabIndex = -1; let n = mmenu.nextElementSibling; while (n && n !== foot) { const nx = n.nextElementSibling; main.appendChild(n); n = nx; } mmenu.after(main); }
-  const CRUMB = { prima: [["Scegliere"]], durante: [["Studiare"]], dopo: [["Dopo la laurea"]], tesi: [["Dopo la laurea", "dopo.html"], ["Tesi e laurea"]], guida: [["Guida"]], materiali: [[NAV.materiali || "Materiali"]], preview: [[NAV.materiali || "Materiali", "materiali.html"], ["Anteprima"]], tools: [["Strumenti"]], area: [["Area personale"]], community: [["Community"]], prezzi: [["Prezzi (esempio)"]], decidere: [["Da decidere"]], commenti: [["Commenti del team"]],
+  const CRUMB = { prima: [["Scegliere"]], durante: [["Studiare"]], dopo: [["Dopo la laurea"]], tesi: [["Dopo la laurea", "dopo.html"], ["Tesi e laurea"]], guida: [["Guida"]], materiali: [[NAV.materiali || "Materiali"]], preview: [[NAV.materiali || "Materiali", "materiali.html"], ["Anteprima"]], tools: [["Strumenti"]], area: [["Area personale"]], community: [["Community"]], prezzi: [["Prezzi (esempio)"]], decidere: [["Da decidere"]], commenti: [["Commenti del team"]], archivio: [["Archivio"]],
     "hub-economia": [["Hub"], ["Economia"]], "hub-giurisprudenza": [["Hub"], ["Giurisprudenza"]], "hub-medicina": [["Hub"], ["Medicina"]] }[pagina];
+  // pagine ARCHIVIATE (archivio/*.html, body data-archiviata="id"): briciole verso l'Archivio e banner con il perché
+  const ARC = document.body.dataset.archiviata && (CFG.archivio || []).find((a) => a.id === document.body.dataset.archiviata);
+  if (ARC && $("#main")) $("#main").insertAdjacentHTML("afterbegin", `<div class="arc-banner" role="note"><div class="wrap"><b>Pagina archiviata il ${new Date(ARC.quando).toLocaleDateString("it-IT")}</b> · ${esc(ARC.perche)} <a href="archivio/index.html"><u>← Archivio</u></a></div></div>`);
   if (CRUMB && $("#main")) { const it = [["Home", "index.html"], ...CRUMB]; $("#main").insertAdjacentHTML("afterbegin", `<nav class="crumbs" aria-label="Percorso"><div class="wrap">${it.map((c, i) => (i === it.length - 1 ? `<span aria-current="page">${esc(c[0])}</span>` : c[1] ? `<a href="${c[1]}">${esc(c[0])}</a>` : `<span>${esc(c[0])}</span>`)).join("<i>›</i>")}</div></nav>`); }
   /* schede dell'hub (P7): le fasi non sono più nella barra, stanno dentro ogni hub. L'hub scelto si ricorda. */
-  const hubDaPag = (CFG.hub.find((h) => pagina === "hub-" + h.slug) || {}).slug;
+  const HUBALL = CFG.hub.concat(CFG.hubArchiviati || []);
+  const hubDaPag = (HUBALL.find((h) => pagina === "hub-" + h.slug) || {}).slug;
   if (hubDaPag) store.set("hub", hubDaPag);
   const hubCorr = hubDaPag || new URLSearchParams(location.search).get("hub") || store.get("hub", "economia");
   if ((hubDaPag || fasePagine.includes(pagina)) && $("#main")) {
-    const h = CFG.hub.find((x) => x.slug === hubCorr) || CFG.hub[0];
+    const h = HUBALL.find((x) => x.slug === hubCorr) || CFG.hub[0];
     const voci = [["Panoramica", h.href, !!hubDaPag], ...CFG.fasi.map((f) => [f.tab, `${f.href}?hub=${h.slug}`, pagina === f.id || (f.id === "dopo" && pagina === "tesi")])];
     const html = `<nav class="hubtabs" aria-label="Sezioni dell'hub ${esc(h.nome)}"><div class="wrap"><span class="hubnome">${esc(h.nome)}${h.stato === "attivo" ? "" : " · in arrivo"}</span>${voci.map(([t, href, on]) => `<a href="${href}" ${on ? 'aria-current="page" class="on"' : ""}>${esc(t)}</a>`).join("")}</div></nav>`;
     const cr = $(".crumbs", $("#main")); cr ? cr.insertAdjacentHTML("afterend", html) : $("#main").insertAdjacentHTML("afterbegin", html);
@@ -125,8 +129,8 @@
   const FASI = {
     matricola: { k: "Per le matricole", t: "Tre cose da fare nel primo mese", r: [["Prima", "Come funziona l'università, passo per passo", "prima.html#funziona"], ["Strumenti", "Piano per il tuo primo appello", "tools.html#piano"], ["Community", "Il gruppo WhatsApp del tuo anno", WA]] },
     esame: { k: "Prepari un esame", t: "Parti dalla dispensa giusta", r: [["Area personale", "Le tue dispense e i tuoi esami", "area.html"], ["Metodo", "Un piano dalla data dell'appello", "durante.html#metodo"], ["Strumenti", "Media e voto che ti serve", "tools.html#media"]] },
-    erasmus: { k: "Pensi all'Erasmus", t: "Arriva al bando preparato", r: [["Punteggio", "Stima del tuo punteggio per il bando", "tools.html#erasmus"], ["Durante", "Learning Agreement senza panico", "durante.html#erasmus"], ["Community", "Chiedi a chi ci è già stato", "community.html"]] },
-    dopo: { k: "Pensi al dopo", t: "Scegli con più elementi", r: [["Voto di laurea", "Da dove parti alla discussione", "tools.html#voto"], ["Tesi", "Dall'argomento alla consegna", "tesi.html"], ["Carriera", "Magistrali, master e primi passi", "dopo.html"]] },
+    erasmus: { k: "Pensi all'Erasmus", t: "Arriva al bando preparato", r: [["Punteggio", "Stima del tuo punteggio per il bando", "tools.html#erasmus"], ["Durante", "Learning Agreement senza panico", "durante.html#erasmus"], ["WhatsApp", "Chiedi a chi ci è già stato, nel gruppo", WA]] },
+    dopo: { k: "Pensi al dopo", t: "Scegli con più elementi", r: [["Voto di laurea", "Da dove parti alla discussione", "tools.html#voto"], ["Magistrali", "Confronta i percorsi prima di scegliere", "dopo.html#magistrali"], ["Media", "Il voto che ti serve agli esami che restano", "tools.html#media"]] },
   };
   const risp = $("#risposta");
   $$(".liv[data-fase]").forEach((l) => l.addEventListener("click", () => {
@@ -144,13 +148,16 @@
   const D = window.UL_DISPENSE || [];
   const LIS = CFG.listino || null;
   const eur = (n) => Number(n).toFixed(2).replace(".", ",") + " €";
-  // regola P2: Completa a prezzo pieno solo con le mappe, ridotta con appunti e quiz, assente se c'è solo «Appunti»
-  const completaDi = (d) => (!LIS || !d.tipi.includes("Quiz") ? null : d.tipi.includes("Mappe") ? LIS.prezzi.completa : LIS.prezzi.completaSenzaMappe);
-  window.UL_PREZZO = { eur, completaDi };
+  // v8 · listino deciso il 7/10: Simulazione (dove ci sono i quiz), Dispensa completa per ogni esame, Economia Aziendale gratis
+  const completaDi = (d) => (!LIS ? null : LIS.prezzi.completa);
+  const simulazioneDi = (d) => (!LIS || !d.tipi.includes("Quiz") ? null : LIS.prezzi.simulazione);
+  const gratisDi = (d) => !!LIS && d.slug === LIS.gratisEsame;
+  const daPrezzo = (d) => (gratisDi(d) ? "Gratis" : "da " + eur((simulazioneDi(d) || completaDi(d))[0]));
+  window.UL_PREZZO = { eur, completaDi, simulazioneDi, gratisDi };
   const card = (d) => `<a class="disp" href="preview.html?esame=${encodeURIComponent(d.slug)}" title="Apri l'anteprima di ${esc(d.nome)}">
-      <div class="cop"><img src="img/cop/${d.cop}" alt="Copertina ${esc(d.nome)}" loading="lazy"><span class="badge on">${d.anno} anno</span></div>
+      <div class="cop"><img src="img/cop/${d.cop}" alt="Copertina ${esc(d.nome)}" loading="lazy"><span class="badge on">${gratisDi(d) ? "Gratis per tutti" : d.anno + " anno"}</span></div>
       <h3>${esc(d.nome)}</h3><div class="meta"><span>${d.sem} semestre</span>${d.mod ? `<span>· ${esc(d.mod.length > 22 ? d.mod.split(" ")[0] + "…" : d.mod)}</span>` : ""}</div>
-      <div class="piede"><span class="tipi">${d.tipi.map((t) => `<span>${t}</span>`).join("")}</span><span>${LIS ? "da " + eur(LIS.prezzi.appunti[0]) : "→"}</span></div></a>`;
+      <div class="piede"><span class="tipi">${d.tipi.map((t) => `<span>${t}</span>`).join("")}</span><span>${LIS ? daPrezzo(d) : "→"}</span></div></a>`;
   const norm = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
   function catalogo(box, { q = "", anno = "Tutti", area = "Tutte", limite = 99 } = {}) {
     const l = D.filter((d) => (anno === "Tutti" || d.anno === anno) && (area === "Tutte" || d.area === area) && (!q || norm(d.nome).includes(norm(q))));
@@ -208,22 +215,26 @@
   // Il contenuto dei piani NON sta nelle card: sta nella tabella di confronto (LIS.dentro in config). In home: solo card + mesi.
   // v7 · pagamento con Stripe Checkout (simulato: checkout-stripe.js). Dalla landing (in Framer: il bottone «Acquista»)
   // si paga senza account; il webhook registra l'ordine sull'email e lo studente lo trova sbloccato entrando con quella email.
-  const MESI = ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"];
-  const inSessione = () => { const m = ((LIS && LIS.mesi) || []).find((x) => x[0] === MESI[new Date().getMonth()]); return !!(m && m[1]); };
+  // listino · v8 (decisioni del meeting del 7/10, HQ → Decisioni): Simulazione · Dispensa completa · Pacchetto semestre (3 o 4 esami
+  // del TUO percorso) · Plus (in valutazione). Prezzi comunicati come sconto di lancio: [prezzo, prezzo pieno barrato]. Niente Appunti
+  // singoli, niente Pacchetto anno, niente «fuori sessione» (sono in archivio/). Il contenuto dei piani sta nella tabella «Cosa c'è dentro».
+  // Pagamento con Stripe Checkout (simulato: checkout-stripe.js): dalla landing si paga senza account; lo sblocco arriva sull'email.
+  const PERC = window.UL_PERCORSI;
   const paga = (voci, cosa) => window.UL_CHECKOUT ? window.UL_CHECKOUT.apri({ voci, cosa, dove: "landing", dopo: "Vai all'area personale", onFatto: () => { location.href = APP; } }) : (location.href = APP);
+  const barr = (p) => `<s class="pz-pieno">${eur(p)}</s>`;
+  const semPrezzo = (n) => LIS.prezzi.semestre[n >= 4 ? 4 : 3];
   const PIANI = () => { const P = LIS.prezzi; return [
-    { id: "appunti", tipo: "Singolo esame", nome: "Appunti", p: P.appunti[0], ses: P.appunti[1], d: "Gli appunti completi di un esame, da tenere.", cta: ["Scegli l'esame", "materiali.html#collezione"] },
-    { id: "completa", tipo: "Singolo esame", nome: "Dispensa completa", p: P.completa[0], ses: P.completa[1], d: `Tutto per un esame. Senza mappe: ${eur(P.completaSenzaMappe[0])}.`, cta: ["Scegli l'esame", "materiali.html#collezione"] },
-    { id: "semestre", tipo: "Pacchetto", nome: "Pacchetto semestre", p: P.semestre, d: "Tutte le dispense complete del tuo semestre.", top: true, cta: ["Calcola il tuo pacchetto", "materiali.html#calcola"] },
-    { id: "anno", tipo: "Pacchetto", nome: "Pacchetto anno", p: P.anno, d: "I due semestri, un solo acquisto.", cta: ["Calcola il tuo pacchetto", "materiali.html#calcola"] },
-    { id: "plus", tipo: "Il metodo", nome: "UniLink Plus", p: P.plus, d: `Una volta per sessione. Con un pacchetto: ${eur(P.plusConPacchetto)}.`, unaTantum: true, cta: ["Acquista Plus", "#dentro"], paga: true },
+    { id: "simulazione", tipo: "Singolo esame", nome: "Simulazione d'esame", p: P.simulazione[0], pieno: P.simulazione[1], d: "Una prova nel formato dell'appello, con correzione.", cta: ["Scegli l'esame", "materiali.html#collezione"] },
+    { id: "completa", tipo: "Singolo esame", nome: "Dispensa completa", p: P.completa[0], pieno: P.completa[1], d: "Tutto per un esame: dispensa, quiz e simulazioni.", cta: ["Scegli l'esame", "materiali.html#collezione"] },
+    { id: "semestre", tipo: "Pacchetto", nome: "Pacchetto semestre", p: P.semestre[3][0], pieno: P.semestre[3][1], d: `Il tuo semestre: 3 esami ${eur(P.semestre[3][0])}, 4 esami ${eur(P.semestre[4][0])}.`, top: true, cta: ["Calcola il tuo pacchetto", "materiali.html#calcola"] },
+    { id: "plus", tipo: "Il metodo · in valutazione", nome: "UniLink Plus", p: P.plus, d: `Una volta per sessione. Con un pacchetto: ${eur(P.plusConPacchetto)}.`, unaTantum: true, cta: ["Acquista Plus", "#dentro"], paga: true },
   ]; };
-  const mesiHTML = () => `<div class="li-quando"><div><span class="eyebrow">Quando conviene comprare</span><p class="small" style="margin-top:6px">Gli esami singoli costano meno fuori sessione. I pacchetti costano uguale tutto l'anno.</p></div><div class="li-mesi" role="img" aria-label="Mesi di sessione e fuori sessione">${LIS.mesi.map(([m, ses]) => `<span class="${ses ? "s" : ""}"><i></i>${m}</span>`).join("")}</div><p class="small"><span class="badge ok">fuori sessione</span> costa meno · <span class="badge">in sessione</span> costa di più</p></div>`;
+  const lancioHTML = () => `<div class="li-quando"><div><span class="eyebrow">Prezzi di lancio</span><p class="small" style="margin-top:6px">${esc(LIS.lancio)}</p></div><p class="small"><span class="badge ok">${esc(LIS.stato)}</span></p></div>`;
   const listinoHTML = (compatto) => { if (!LIS) return "";
     const card = (x) => `<div class="pz-card ${x.top ? "ev" : ""} ${x.id === "plus" ? "plus" : ""}">${x.top ? '<span class="pz-tab">Il più scelto</span>' : ""}
       <span class="pz-tipo">${x.tipo}</span><h3 class="pz-nome">${x.nome}</h3>
       <div class="pz-prezzo"><b>${eur(x.p).replace(" €", "")}</b><span>€${x.unaTantum ? " una tantum" : ""}</span></div>
-      <p class="pz-sotto">${x.ses ? `fuori sessione · in sessione ${eur(x.ses)}` : x.unaTantum ? "nessun abbonamento" : "stesso prezzo tutto l'anno"}</p>
+      <p class="pz-sotto">${x.pieno ? `invece di ${barr(x.pieno)} · prezzo di lancio` : x.unaTantum ? "nessun abbonamento" : ""}</p>
       <p class="pz-d">${x.d}</p>
       ${x.paga ? `<button type="button" class="btn btn-s" data-paga-piano="${x.id}">${x.cta[0]}</button>` : `<a class="btn ${x.top ? "btn-a" : "btn-s"}" href="${x.cta[1]}">${x.cta[0]}</a>`}</div>`;
     const P = PIANI(), D2 = LIS.dentro || [];
@@ -233,41 +244,64 @@
       <tbody>${D2.map(([gr, righe]) => `<tr class="gr"><td colspan="${P.length + 1}">${esc(gr)}</td></tr>` + righe.map(([nome, ...v]) => `<tr><th scope="row">${esc(nome)}</th>${v.map((c, k) => `<td class="${P[k].top ? "ev" : ""}">${cella(c)}</td>`).join("")}</tr>`).join("")).join("")}</tbody></table></div></div>`;
     const fee = (p) => window.UL_CHECKOUT ? window.UL_CHECKOUT.commissione(p) : Math.round((p * 0.015 + 0.25) * 100) / 100;
     const pc = (p) => (fee(p) / p * 100).toFixed(1).replace(".", ",") + "%";
-    const LP = LIS.prezzi, righeFee = [["Appunti", LP.appunti[0]], ["Appunti in sessione", LP.appunti[1]], ["Dispensa completa", LP.completa[0]], ["Completa in sessione", LP.completa[1]], ["Pacchetto semestre", LP.semestre], ["Pacchetto anno", LP.anno], ["UniLink Plus", LP.plus], ["Plus con un pacchetto", LP.plusConPacchetto]];
-    const comeSiPaga = compatto ? "" : `<div class="pz-paga" id="pagamento"><div class="testa" style="margin:56px 0 22px"><div><span class="eyebrow">Pagamento</span><h2 style="margin-top:10px">Come si <span class="acc">paga</span></h2></div><p>Un clic su «Acquista», si paga su Stripe e la dispensa è subito nella tua area. Senza abbonamenti, senza rinnovi.</p></div>
-      <ol class="pz-passi"><li><b>1</b><h3>Clicchi «Acquista»</h3><p>Qui sul sito o dentro l'area personale.</p></li><li><b>2</b><h3>Paghi su Stripe</h3><p>Carta di credito o debito, Apple Pay, Google Pay, Klarna (3 rate). La carta non passa da noi.</p></li><li><b>3</b><h3>È già sbloccato</h3><p>Stripe ci avvisa in automatico e la dispensa compare sul tuo profilo: entra con la stessa email.</p></li></ol>
+    const LP = LIS.prezzi, righeFee = [["Simulazione d'esame", LP.simulazione[0]], ["Dispensa completa", LP.completa[0]], ["Pacchetto semestre · 3 esami", LP.semestre[3][0]], ["Pacchetto semestre · 4 esami", LP.semestre[4][0]], ["UniLink Plus", LP.plus], ["Plus con un pacchetto", LP.plusConPacchetto]];
+    const comeSiPaga = compatto ? "" : `<div class="pz-paga" id="pagamento"><div class="testa" style="margin:56px 0 22px"><div><span class="eyebrow">Pagamento</span><h2 style="margin-top:10px">Come si <span class="acc">paga</span></h2></div><p>Un clic su «Acquista», si paga su Stripe e la dispensa è subito nella tua area, da leggere e annotare. Senza abbonamenti, senza rinnovi.</p></div>
+      <ol class="pz-passi"><li><b>1</b><h3>Clicchi «Acquista»</h3><p>Qui sul sito o dentro l'area personale.</p></li><li><b>2</b><h3>Paghi su Stripe</h3><p>Carta di credito o debito, Apple Pay, Google Pay, Klarna (3 rate). La carta non passa da noi.</p></li><li><b>3</b><h3>È già sbloccato</h3><p>Stripe ci avvisa in automatico e la dispensa compare nella tua area personale: entra con la stessa email.</p></li></ol>
       <div class="pz-metodi"><span>Visa</span><span>Mastercard</span><span>Maestro</span><span>Apple Pay</span><span>Google Pay</span><span>Klarna</span><button type="button" class="btn btn-s" data-paga-prova>Prova il pagamento</button></div>
-      <details class="pz-fee"><summary>Per i founder · commissioni Stripe sul listino P2 (1,5% + 0,25 € a transazione, 0 € al mese)</summary>
+      <details class="pz-fee"><summary>Per i founder · commissioni Stripe sul listino del 7/10 (1,5% + 0,25 € a transazione, 0 € al mese)</summary>
         <div class="pz-tab-wrap"><table class="pz-tabella"><thead><tr><th>Prodotto</th><th>Prezzo</th><th>Commissione</th><th>Netto UniLink</th><th>Quota persa</th></tr></thead><tbody>${righeFee.map(([n, p]) => `<tr><th scope="row">${n}</th><td>${eur(p)}</td><td>${eur(fee(p))}</td><td>${eur(p - fee(p))}</td><td>${pc(p)}</td></tr>`).join("")}</tbody></table></div>
-        <p class="small">La quota fissa pesa di più sui prezzi bassi: sugli Appunti a ${eur(LP.appunti[0])} se ne va il ${pc(LP.appunti[0])}, sul Pacchetto anno l'${pc(LP.anno)}. Più esami nello stesso carrello pagano una sola quota fissa. Klarna, carte premium o aziendali e carte non UE hanno tariffe più alte (da verificare sul listino Stripe Italia).</p></details></div>`;
-    return `<div class="pz-grid">${P.map(card).join("")}</div>${mesiHTML()}${tabella}${comeSiPaga}
+        <p class="small">La quota fissa pesa di più sui prezzi bassi: sulla Simulazione a ${eur(LP.simulazione[0])} se ne va il ${pc(LP.simulazione[0])}, sul pacchetto da 4 esami il ${pc(LP.semestre[4][0])}. Più esami nello stesso carrello pagano una sola quota fissa. Klarna, carte premium o aziendali e carte non UE hanno tariffe più alte (da verificare sul listino Stripe Italia).</p></details></div>`;
+    return `<div class="pz-grid pz-4">${P.map(card).join("")}</div>${lancioHTML()}${tabella}${comeSiPaga}
       <p class="small li-n"><b>Gratis:</b> ${esc(LIS.gratis)} · <span class="badge">${esc(LIS.stato)}</span>${compatto ? ' · <a href="materiali.html#dentro"><u>Cosa c\'è dentro ogni piano</u></a>' : ""}</p>`; };
   $$("[data-listino]").forEach((el) => (el.innerHTML = listinoHTML(el.dataset.listino === "compatto")));
   $$("[data-paga-piano]").forEach((b) => (b.onclick = () => paga([{ id: "plus", nome: "UniLink Plus", nota: "fino a fine sessione · una tantum", prezzo: LIS.prezzi.plus }], "UniLink Plus su tutti i tuoi esami")));
-  $$("[data-paga-prova]").forEach((b) => (b.onclick = () => paga([{ id: "appunti:microeconomia", nome: "Appunti · Microeconomia", nota: inSessione() ? "prezzo in sessione" : "prezzo fuori sessione", prezzo: LIS.prezzi.appunti[inSessione() ? 1 : 0] }], "Appunti di Microeconomia")));
-  // founder (H09): scheda personale con breve presentazione e LinkedIn (foto e testi: segnaposto da sostituire)
-  $$("[data-team]").forEach((box) => {
-    const T = CFG.team || [];
-    box.innerHTML = T.map((p, i) => `<button type="button" class="persona p${i + 1}" data-pid="${p.id}" aria-haspopup="dialog"><div class="av">${p.foto ? `<img src="img/${esc(p.foto)}" alt="">` : esc(p.nome[0])}</div><h3>${esc(p.nome.split(" ")[0])}</h3><p>Founder · ${esc(p.corso)}</p><p>${esc(p.ruolo)}</p><span class="small" style="text-decoration:underline">Profilo →</span></button>`).join("");
-    $$("[data-pid]", box).forEach((b) => b.addEventListener("click", () => {
-      const p = T.find((x) => x.id === b.dataset.pid);
-      document.body.insertAdjacentHTML("beforeend", `<div class="prof-bg" role="dialog" aria-modal="true" aria-label="Profilo di ${esc(p.nome)}"><div class="prof"><button type="button" class="prof-x" aria-label="Chiudi">✕</button>
-        <div class="prof-top"><div class="av">${p.foto ? `<img src="img/${esc(p.foto)}" alt="">` : esc(p.nome[0])}</div><div><span class="eyebrow">Founder · ${esc(p.corso)}</span><h2>${esc(p.nome)}</h2><p class="small">${esc(p.ruolo)}</p></div></div>
-        <p>${esc(p.bio)}</p><ul class="prof-p">${p.punti.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
-        <a class="btn btn-p" href="${esc(p.linkedin)}" target="_blank" rel="noopener">Profilo LinkedIn ↗</a><p class="small" style="margin-top:10px">Foto, testo e link sono segnaposto: si sostituiscono in config.js (team).</p></div></div>`);
-      const bg = $(".prof-bg"), chiudi = () => { bg.remove(); document.removeEventListener("keydown", k); b.focus(); }, k = (e) => { if (e.key === "Escape") chiudi(); };
-      bg.addEventListener("click", (e) => { if (e.target === bg) chiudi(); }); $(".prof-x", bg).addEventListener("click", chiudi); document.addEventListener("keydown", k); $(".prof-x", bg).focus();
-    }));
+  $$("[data-paga-prova]").forEach((b) => (b.onclick = () => paga([{ id: "simulazione:microeconomia", nome: "Simulazione d'esame · Microeconomia", nota: "prezzo di lancio, invece di " + eur(LIS.prezzi.simulazione[1]), prezzo: LIS.prezzi.simulazione[0] }], "Simulazione d'esame di Microeconomia")));
+
+  /* ---------- 4b2 · home: anteprima a numero chiuso (nota di Matteo del 7/10: al posto di «scarica gli appunti») ---------- */
+  const LAN = CFG.lancio, anteRoot = $("[data-anteprima]");
+  if (LAN) $$("[data-ante-ricevi]").forEach((ul) => (ul.innerHTML = LAN.ricevi.map((x) => `<li>${esc(x)}</li>`).join("")));
+  if (LAN && anteRoot) {
+    const fatto = (x) => { anteRoot.innerHTML = `<div class="ante-ok"><div class="ok">✓</div><h3>Sei dentro, ${esc(x.nome || "")}!</h3><p>Posto n. ${x.posto} su ${LAN.posti}. Ti scriviamo a <b style="font-weight:400">${esc(x.email)}</b> quando apre l'anteprima, con il tuo <b style="font-weight:400">codice invito personale</b>.</p><p class="small">Demo: niente email inviata, la registrazione resta solo in questo browser.</p></div>`; };
+    const gia = store.get("anteprima", null);
+    if (gia) fatto(gia);
+    else {
+      const iscritti = LAN.iscrittiDemo, rimasti = Math.max(0, LAN.posti - iscritti);
+      anteRoot.innerHTML = `<form class="ante-form" novalidate>
+        <div class="ante-posti"><b>${rimasti}</b> posti su ${LAN.posti}<i style="--p:${Math.round((iscritti / LAN.posti) * 100)}%"></i><span class="small">numeri di esempio</span></div>
+        <div class="ante-campi"><label>Nome<input name="nome" autocomplete="given-name" required></label><label>Email<input name="email" type="email" autocomplete="email" placeholder="nome.cognome@stud.unifi.it" required></label>
+          <label>Corso<select name="corso">${[["EA", "Economia Aziendale"], ["EC", "Economia e Commercio"], ["altro", "Altro corso"]].map(([v, t]) => `<option value="${v}">${t}</option>`).join("")}</select></label>
+          <label>Anno<select name="anno">${["I", "II", "III", "Magistrale"].map((a) => `<option>${a}</option>`).join("")}</select></label></div>
+        <label class="ante-ck"><input type="checkbox" name="privacy"> Accetto l'informativa privacy: usiamo l'email solo per l'anteprima.</label>
+        <button class="btn btn-a" type="submit">${esc(LAN.cta)} <span class="freccia">→</span></button><p class="small msg" aria-live="polite"></p></form>`;
+      $("form", anteRoot).addEventListener("submit", (e) => {
+        e.preventDefault(); const f = e.target, msg = $(".msg", f), em = f.email.value.trim();
+        if (!f.nome.value.trim()) { msg.textContent = "Scrivi il tuo nome."; return; }
+        if (!/^\S+@\S+\.\S+$/.test(em)) { msg.textContent = "Scrivi un'email valida."; return; }
+        if (!f.privacy.checked) { msg.textContent = "Serve il consenso privacy per scriverti."; return; }
+        const x = { nome: f.nome.value.trim(), email: em, corso: f.corso.value, anno: f.anno.value, posto: iscritti + 1, quando: new Date().toISOString() };
+        store.set("anteprima", x); fatto(x);
+      });
+    }
+  }
+  /* ---------- 4b3 · home: Ambassador (al posto di «Studenti, come te» con i profili dei founder, archiviati il 7/10) ---------- */
+  const AMB = CFG.ambassador;
+  $$("[data-ambassador]").forEach((box) => {
+    if (!AMB) return;
+    const es = LIS ? LIS.prezzi.completa[0] : 12.99, guad = Math.round(AMB.esempio * es * AMB.commissione) / 100;
+    box.innerHTML = `<div class="amb-grid"><ol class="amb-passi">${AMB.passi.map(([t, d], i) => `<li><b>${i + 1}</b><div><h3>${esc(t)}</h3><p>${esc(d)}</p></div></li>`).join("")}</ol>
+      <div class="amb-box"><span class="eyebrow" style="color:#f0b37c">La regola · decisa il 7/10</span><div class="amb-pc"><b>${AMB.commissione}%</b><span>di ogni acquisto fatto con il tuo codice</span></div>
+        <p>Esempio: ${AMB.esempio} amici prendono una dispensa completa a ${eur(es)} → ${eur(guad)} per te.</p><p class="small">${esc(AMB.nota)}</p>
+        <a class="btn btn-a" href="${WA}" target="_blank" rel="noopener">${esc(AMB.cta)}</a></div></div>`;
   });
   // FAQ (H11) dalla configurazione: ogni risposta porta verso l'account o l'acquisto
   $$("[data-faq]").forEach((box) => {
-    box.innerHTML = (CFG.faq || []).map(([d, r, t, h], i) => `<div class="qa ${i ? "" : "open"}"><div class="d">${esc(d)}<span>${i ? "+" : "−"}</span></div><div class="r">${esc(r)}${t ? ` <a class="faq-cta" href="${h === "@app" ? APP : esc(h)}">${esc(t)} →</a>` : ""}</div></div>`).join("");
+    box.innerHTML = (CFG.faq || []).map(([d, r, t, h], i) => `<div class="qa ${i ? "" : "open"}"><div class="d">${esc(d)}<span>${i ? "+" : "−"}</span></div><div class="r">${esc(r)}${t ? ` <a class="faq-cta" href="${h === "@app" ? APP : h.startsWith("@app#") ? APP + h.slice(4) : esc(h)}">${esc(t)} →</a>` : ""}</div></div>`).join("");
     $$(".qa", box).forEach((q) => $(".d", q).addEventListener("click", () => { const ap = !q.classList.contains("open"); $$(".qa", box).forEach((x) => { x.classList.remove("open"); $(".d span", x).textContent = "+"; }); if (ap) { q.classList.add("open"); $(".d span", q).textContent = "−"; } }));
   });
-  /* ---------- 4c · Materiali (P2) e Anteprima dell'esame ---------- */
+  /* ---------- 4c · Materiali e Anteprima dell'esame ---------- */
   const SEM = { I: "I semestre", II: "II semestre" };
-  const prezziEsame = (d) => { if (!LIS) return ""; const c = completaDi(d);
-    return `<div class="pz"><span>Appunti <b>${eur(LIS.prezzi.appunti[0])}</b></span>${c ? `<span>Completa <b>${eur(c[0])}</b></span>` : ""}</div>`; };
+  const prezziEsame = (d) => { if (!LIS) return ""; if (gratisDi(d)) return `<div class="pz"><span><b>Gratis per tutti</b> · completa</span></div>`; const s = simulazioneDi(d), c = completaDi(d);
+    return `<div class="pz">${s ? `<span>Simulazione <b>${eur(s[0])}</b></span>` : ""}<span>Completa <b>${eur(c[0])}</b> ${barr(c[1])}</span></div>`; };
   const matRoot = $("#mat-top");
   if (matRoot) {
     const tabs = $("[data-mat-hub]"), arrivo = $("[data-mat-arrivo]"), lista = $("[data-mat-lista]"), st = { q: "", anno: "Tutti" };
@@ -287,70 +321,58 @@
     const inp = $("[data-mat-cerca] input"); inp.addEventListener("input", () => { st.q = inp.value.trim(); disegna(); });
     $("[data-mat-cerca]").addEventListener("submit", (e) => { e.preventDefault(); st.q = inp.value.trim(); disegna(); });
     $$("[data-mat-anni] .chip").forEach((c) => c.addEventListener("click", () => { $$("[data-mat-anni] .chip").forEach((x) => x.classList.remove("on")); c.classList.add("on"); st.anno = c.dataset.anno; disegna(); }));
-    // calcolatore del pacchetto semestre: esami del semestre con la loro Completa contro il prezzo del pacchetto
+    // calcolatore del pacchetto semestre per PERCORSO (commento S15 di Matteo): corso → anno → curriculum → semestre; si vede quali
+    // dispense sono incluse e il prezzo dipende da quante sono (3 → 29,99 · 4 → 34,99). Con più di 4 esami si scelgono i 4 del
+    // proprio piano di studi; con meno di 3 il pacchetto non c'è (conviene la dispensa singola). Dati: percorsi.js (catalogo UniFi).
     const cal = $("[data-calcola]");
-    // v5: lo studente sceglie gli esami e cosa comprerebbe (Appunti o Completa); vede quanto spende uno per uno
-    // e un consiglio che gli fa «spendere meno» passando al pacchetto (per noi: un pacchetto venduto).
-    if (cal && LIS) {
-      const PR = LIS.prezzi;
-      const sc = { anno: "I", sem: "I", quando: "fuori", plus: false, scelte: {} };
-      const esamiDi = (anno, sem) => D.filter((d) => d.anno === anno && (sem === "entrambi" || d.sem === sem));
-      const prezzoDi = (d, tipo, q) => { const c = completaDi(d); const v = tipo === "completa" && c ? c : PR.appunti; return v[q === "fuori" ? 0 : 1]; };
-      const tipoDi = (d) => sc.scelte[d.slug] || (completaDi(d) ? "completa" : "appunti"); // "appunti" | "completa" | "no"
+    if (cal && LIS && PERC) {
+      const MAX = LIS.maxEsamiPacchetto || 4, sc = { cds: "EA", curr: "", anno: "I", sem: "I", plus: false, scelti: null };
+      const N = { I: 1, II: 2, III: 3 };
       const draw = () => {
-        const tutti = esamiDi(sc.anno, sc.sem), presi = tutti.filter((d) => tipoDi(d) !== "no");
-        const singoli = presi.reduce((n, d) => n + prezzoDi(d, tipoDi(d), sc.quando), 0);
-        const valoreComplete = tutti.reduce((n, d) => n + prezzoDi(d, "completa", sc.quando), 0);
-        const pacchetto = sc.sem === "entrambi" ? PR.anno : PR.semestre, nomePac = sc.sem === "entrambi" ? "Pacchetto anno" : "Pacchetto semestre";
-        const plusSingoli = sc.plus ? PR.plus : 0, plusPac = sc.plus ? PR.plusConPacchetto : 0;
-        const totS = singoli + plusSingoli, totP = pacchetto + plusPac, diff = totS - totP;
-        const pct = (x) => Math.max(6, Math.round((x / Math.max(totS, totP, 1)) * 100));
-        // il consiglio
-        let tit, txt, forte = true;
-        if (!presi.length) { tit = "Scegli almeno un esame"; txt = "Tocca gli esami che pensi di preparare: ti diciamo come spendere meno."; forte = false; }
-        else if (diff >= 0) { tit = `Prendi il ${nomePac}: risparmi ${eur(diff)}`; const giaTutte = presi.length === tutti.length && presi.every((d) => tipoDi(d) === "completa" || !completaDi(d));
-          txt = giaTutte ? `Le stesse ${tutti.length} dispense complete${sc.sem === "entrambi" ? " dell'anno" : " del semestre"}, in un solo acquisto, a ${eur(pacchetto)} invece di ${eur(singoli)}.` : `Spendi meno di quanto spenderesti per ${presi.length === 1 ? "un solo esame" : `i ${presi.length} esami che hai scelto`}, e in più hai le dispense complete di tutti i ${tutti.length} esami${sc.sem === "entrambi" ? " dell'anno" : " del semestre"} (comprate una per una: ${eur(valoreComplete)}).`; }
-        else if (-diff <= 12 && valoreComplete > pacchetto) { tit = `Con ${eur(-diff)} in più hai ${sc.sem === "entrambi" ? "tutto l'anno" : "tutto il semestre"}`; txt = `Il ${nomePac} include le dispense complete di tutti i ${tutti.length} esami: comprate una per una costerebbero ${eur(valoreComplete)}. Se pensi di dare anche gli altri esami, è il modo più conveniente.`; }
-        else if (-diff <= 12) { tit = "Costano quasi uguale: scegli tu"; txt = `Qui il ${nomePac} non fa risparmiare sulle dispense (${tutti.length} complete a ${eur(valoreComplete)} contro ${eur(pacchetto)}), ma è un solo acquisto${sc.plus ? "" : ` e con un pacchetto Plus costa ${eur(PR.plus - PR.plusConPacchetto)} in meno`}.`; forte = false; }
-        else { tit = "Per questi esami ti bastano i singoli"; txt = `Se prepari solo ${presi.length === 1 ? "questo esame" : "questi esami"}, i singoli costano meno. Il ${nomePac} conviene se pensi di dare anche gli altri: ${tutti.length} dispense complete a ${eur(pacchetto)} invece di ${eur(valoreComplete)}.`; forte = false; }
-        const altroSem = sc.sem !== "entrambi" && esamiDi(sc.anno, sc.sem === "I" ? "II" : "I").length >= 3;
-        const extra = [
-          altroSem ? `Ti serve anche il ${sc.sem === "I" ? "II" : "I"} semestre? Il Pacchetto anno costa ${eur(PR.anno)} invece di ${eur(PR.semestre * 2)} per due semestri.` : "",
-          sc.quando === "in" && presi.length ? `In sessione i singoli costano di più: fuori sessione gli stessi esami costerebbero ${eur(presi.reduce((n, d) => n + prezzoDi(d, tipoDi(d), "fuori"), 0))}. Il pacchetto costa uguale.` : "",
-          sc.plus ? `Con un pacchetto Plus costa ${eur(PR.plusConPacchetto)} invece di ${eur(PR.plus)}.` : `Aggiungi Plus (planner e simulazioni): con un pacchetto costa solo ${eur(PR.plusConPacchetto)}.`,
-        ].filter(Boolean);
+        const anno = D.filter((d) => d.anno === sc.anno), curricula = Object.entries(PERC.corsi[sc.cds].curricula);
+        const serveCurr = PERC.serveCurriculum(anno, sc.cds); if (serveCurr && !sc.curr) sc.curr = curricula[0][0];
+        const tutti = anno.filter((d) => d.sem === sc.sem && PERC.include(d.codice, sc.cds, serveCurr ? sc.curr : ""));
+        if (!sc.scelti || sc.scelti.some((s) => !tutti.find((d) => d.slug === s))) sc.scelti = tutti.slice(0, MAX).map((d) => d.slug);
+        const presi = tutti.filter((d) => sc.scelti.includes(d.slug)), n = presi.length;
+        const singoli = presi.reduce((t, d) => t + (gratisDi(d) ? 0 : completaDi(d)[0]), 0), pac = n >= 3 ? semPrezzo(n) : null;
+        const totS = singoli + (sc.plus ? LIS.prezzi.plus : 0), totP = pac ? pac[0] + (sc.plus ? LIS.prezzi.plusConPacchetto : 0) : null;
+        const pct = (x) => Math.max(6, Math.round((x / Math.max(totS, totP || 0, 1)) * 100));
+        const nomeCurr = serveCurr ? " · " + PERC.nomeCurr(sc.cds, sc.curr) : "", per = `${sc.anno} anno, ${sc.sem} semestre · ${PERC.corsi[sc.cds].nome}${nomeCurr}`;
+        let tit, txt, forte = false;
+        if (tutti.length < 3) { tit = tutti.length ? "Qui il pacchetto non c'è" : "Nessuna dispensa per questo semestre"; txt = tutti.length ? `Nel tuo percorso questo semestre ha ${tutti.length === 1 ? "una sola dispensa" : "due dispense"}: prendile singole a ${eur(LIS.prezzi.completa[0])} l'una.` : "Prova un altro semestre o un altro curriculum."; }
+        else if (n < 3) { tit = "Scegli almeno 3 esami"; txt = `Il pacchetto parte da 3 esami (${eur(semPrezzo(3)[0])}). Con meno conviene la dispensa singola a ${eur(LIS.prezzi.completa[0])}.`; }
+        else if (totP <= totS) { forte = true; tit = `Prendi il pacchetto: risparmi ${eur(totS - totP)}`; txt = `Le ${n} dispense complete del tuo semestre a ${eur(pac[0])} invece di ${eur(singoli)} comprate una per una.`; }
+        else { tit = "Qui ti convengono le singole"; txt = `Una delle dispense è già gratis per tutti (${esc(presi.find(gratisDi)?.nome || "")}): le altre costano ${eur(singoli)}.`; }
         const seg = (k, v, t, on) => `<button type="button" data-${k}="${v}" class="${on ? "on" : ""}" aria-pressed="${on}">${t}</button>`;
         cal.innerHTML = `<div class="calc-sel">
+            <div class="tl-l">Corso di laurea</div><div class="seg-cal">${Object.entries(PERC.corsi).map(([k, x]) => seg("cc", k, x.nome, k === sc.cds)).join("")}</div>
             <div class="tl-l">Anno</div><div class="seg-cal">${["I", "II", "III"].map((a) => seg("ca", a, a + " anno", a === sc.anno)).join("")}</div>
-            <div class="tl-l">Semestre</div><div class="seg-cal">${[["I", "I semestre"], ["II", "II semestre"], ["entrambi", "Tutto l'anno"]].map(([v, t]) => seg("cs", v, t, v === sc.sem)).join("")}</div>
-            <div class="tl-l">Quando compri</div><div class="seg-cal">${seg("cq", "fuori", "Adesso · fuori sessione", sc.quando === "fuori")}${seg("cq", "in", "In sessione", sc.quando === "in")}</div>
-            <div class="tl-l">I tuoi esami · cosa compreresti singolarmente</div>
-            <div class="calc-tutti"><span class="small">Tutti:</span>${seg("ct", "appunti", "Appunti", 0)}${seg("ct", "completa", "Complete", 0)}${seg("ct", "no", "Nessuno", 0)}</div>
-            <ul class="calc-esami">${tutti.map((d) => { const t = tipoDi(d), c = completaDi(d); return `<li class="${t === "no" ? "off" : ""}"><span class="n">${esc(d.nome)}<small>${SEM[d.sem]}</small></span>
-              <span class="seg-mini">${seg("ce", d.slug + "|appunti", "Appunti", t === "appunti")}${c ? seg("ce", d.slug + "|completa", "Completa", t === "completa") : ""}${seg("ce", d.slug + "|no", "✕", t === "no")}</span>
-              <b>${t === "no" ? "—" : eur(prezzoDi(d, t, sc.quando))}</b></li>`; }).join("")}</ul>
+            ${serveCurr ? `<div class="tl-l">Curriculum</div><div class="seg-cal">${curricula.map(([k, nm]) => seg("cu", k, nm, k === sc.curr)).join("")}</div>` : ""}
+            <div class="tl-l">Semestre</div><div class="seg-cal">${[["I", "I semestre"], ["II", "II semestre"]].map(([v, t]) => seg("cs", v, t, v === sc.sem)).join("")}</div>
+            <div class="tl-l">Le dispense incluse${tutti.length > MAX ? ` · il semestre ne ha ${tutti.length}: scegli le ${MAX} del tuo piano di studi` : ""}</div>
+            <ul class="calc-esami">${tutti.map((d) => { const on = sc.scelti.includes(d.slug); return `<li class="${on ? "" : "off"}"><span class="n">${esc(d.nome)}<small>${esc(d.codice)}${gratisDi(d) ? " · gratis per tutti" : ""}</small></span>
+              <span class="seg-mini">${seg("ce", d.slug, on ? "✓ Inclusa" : "Aggiungi", on)}</span><b>${gratisDi(d) ? "0 €" : eur(completaDi(d)[0])}</b></li>`; }).join("") || '<li class="off"><span class="n">Nessuna dispensa per questo semestre</span></li>'}</ul>
+            <p class="small" style="margin:8px 0 0">${esc(PERC.fonte)}. Gli esami del III anno spesso sono a scelta: controlla il tuo piano di studi.</p>
             <label class="calc-plus"><input type="checkbox" data-cp ${sc.plus ? "checked" : ""}> Aggiungi UniLink Plus</label>
           </div>
           <div class="calc-out">
             <div class="calc-conf">
-              <div class="cc-r"><span>Uno per uno · ${presi.length} ${presi.length === 1 ? "esame" : "esami"}${sc.plus ? " + Plus" : ""}</span><b>${eur(totS)}</b></div><div class="cc-bar"><i style="width:${pct(totS)}%"></i></div>
-              <div class="cc-r ev"><span>${nomePac} · ${tutti.length} dispense complete${sc.plus ? " + Plus" : ""}</span><b>${eur(totP)}</b></div><div class="cc-bar ev"><i style="width:${pct(totP)}%"></i></div>
+              <div class="cc-r"><span>Una per una · ${n} ${n === 1 ? "dispensa" : "dispense"}${sc.plus ? " + Plus" : ""}</span><b>${eur(totS)}</b></div><div class="cc-bar"><i style="width:${pct(totS)}%"></i></div>
+              ${pac ? `<div class="cc-r ev"><span>Pacchetto semestre · ${n} esami ${barr(pac[1])}${sc.plus ? " + Plus" : ""}</span><b>${eur(totP)}</b></div><div class="cc-bar ev"><i style="width:${pct(totP)}%"></i></div>` : ""}
             </div>
-            <div class="calc-cons ${forte ? "forte" : ""}"><span class="eyebrow">Il nostro consiglio</span><h3>${tit}</h3><p>${txt}</p>${extra.length ? `<ul>${extra.map((x) => `<li>${x}</li>`).join("")}</ul>` : ""}</div>
-            ${presi.length ? `<button type="button" class="btn ${forte ? "btn-a" : "btn-p"}" data-cpaga="${forte ? "pac" : "sing"}" style="justify-content:center">${forte ? `Acquista il ${nomePac} · ${eur(totP)}` : `Acquista ${presi.length === 1 ? "l'esame" : `i ${presi.length} esami`} · ${eur(totS)}`}</button>
-            <button type="button" class="btn btn-s" data-cpaga="${forte ? "sing" : "pac"}" style="justify-content:center">${forte ? `oppure i singoli · ${eur(totS)}` : `oppure il ${nomePac} · ${eur(totP)}`}</button>` : ""}
-            <p class="small">Prezzi ${sc.quando === "fuori" ? "fuori sessione" : "in sessione"} · ${esc(LIS.stato)}. Si paga con Stripe, tutto in un solo pagamento (simulato nella demo).</p>
+            <div class="calc-cons ${forte ? "forte" : ""}"><span class="eyebrow">Il nostro consiglio</span><h3>${tit}</h3><p>${txt}</p></div>
+            ${pac ? `<button type="button" class="btn ${forte ? "btn-a" : "btn-p"}" data-cpaga="pac" style="justify-content:center">Acquista il pacchetto · ${eur(totP)}</button>` : ""}
+            ${n ? `<button type="button" class="btn btn-s" data-cpaga="sing" style="justify-content:center">${pac ? "oppure le singole" : "Acquista le singole"} · ${eur(totS)}</button>` : ""}
+            <p class="small">${esc(per)} · ${esc(LIS.stato)}. Si paga con Stripe, tutto in un solo pagamento (simulato nella demo).</p>
           </div>`;
-        $$("[data-ca]", cal).forEach((b) => (b.onclick = () => { sc.anno = b.dataset.ca; draw(); }));
-        $$("[data-cs]", cal).forEach((b) => (b.onclick = () => { sc.sem = b.dataset.cs; draw(); }));
-        $$("[data-cq]", cal).forEach((b) => (b.onclick = () => { sc.quando = b.dataset.cq; draw(); }));
-        $$("[data-ct]", cal).forEach((b) => (b.onclick = () => { tutti.forEach((d) => (sc.scelte[d.slug] = b.dataset.ct === "completa" && !completaDi(d) ? "appunti" : b.dataset.ct)); draw(); }));
-        $$("[data-ce]", cal).forEach((b) => (b.onclick = () => { const [slug, t] = b.dataset.ce.split("|"); sc.scelte[slug] = t; draw(); }));
+        const on = (sel, fn) => $$(sel, cal).forEach((b) => (b.onclick = () => { fn(b); draw(); }));
+        on("[data-cc]", (b) => { sc.cds = b.dataset.cc; sc.curr = ""; sc.scelti = null; }); on("[data-cu]", (b) => { sc.curr = b.dataset.cu; sc.scelti = null; });
+        on("[data-ca]", (b) => { sc.anno = b.dataset.ca; sc.scelti = null; }); on("[data-cs]", (b) => { sc.sem = b.dataset.cs; sc.scelti = null; });
+        on("[data-ce]", (b) => { const s = b.dataset.ce; if (sc.scelti.includes(s)) sc.scelti = sc.scelti.filter((x) => x !== s); else if (sc.scelti.length < MAX) sc.scelti.push(s); else toast(`Al massimo ${MAX} esami per pacchetto: togline uno`); });
         $("[data-cp]", cal).onchange = (e) => { sc.plus = e.target.checked; draw(); };
-        const per = sc.sem === "entrambi" ? `${sc.anno} anno` : `${sc.sem} semestre del ${sc.anno} anno`, q = sc.quando === "fuori" ? "fuori sessione" : "in sessione";
-        const vociPac = [{ id: "pacchetto:" + sc.anno + sc.sem, nome: `${nomePac} · ${per}`, nota: `${tutti.length} dispense complete`, prezzo: pacchetto }].concat(sc.plus ? [{ id: "plus", nome: "UniLink Plus", nota: "con un pacchetto", prezzo: PR.plusConPacchetto }] : []);
-        const vociSing = presi.map((d) => ({ id: tipoDi(d) + ":" + d.slug, nome: `${tipoDi(d) === "completa" ? "Dispensa completa" : "Appunti"} · ${d.nome}`, nota: q, prezzo: prezzoDi(d, tipoDi(d), sc.quando) })).concat(sc.plus ? [{ id: "plus", nome: "UniLink Plus", nota: "fino a fine sessione", prezzo: PR.plus }] : []);
-        $$("[data-cpaga]", cal).forEach((b) => (b.onclick = () => b.dataset.cpaga === "pac" ? paga(vociPac, `${nomePac} (${per})`) : paga(vociSing, presi.map((d) => d.nome).join(", "))));
+        const vociPac = pac ? [{ id: "pacchetto:" + sc.cds + (sc.curr || "") + N[sc.anno] + sc.sem, nome: "Pacchetto semestre · " + per, nota: presi.map((d) => d.nome).join(", "), prezzo: pac[0] }].concat(sc.plus ? [{ id: "plus", nome: "UniLink Plus", nota: "con un pacchetto", prezzo: LIS.prezzi.plusConPacchetto }] : []) : [];
+        const vociSing = presi.filter((d) => !gratisDi(d)).map((d) => ({ id: "completa:" + d.slug, nome: "Dispensa completa · " + d.nome, nota: "prezzo di lancio", prezzo: completaDi(d)[0] })).concat(sc.plus ? [{ id: "plus", nome: "UniLink Plus", nota: "fino a fine sessione", prezzo: LIS.prezzi.plus }] : []);
+        $$("[data-cpaga]", cal).forEach((b) => (b.onclick = () => b.dataset.cpaga === "pac" ? paga(vociPac, "Pacchetto semestre (" + per + ")") : vociSing.length ? paga(vociSing, presi.map((d) => d.nome).join(", ")) : toast("Queste dispense le hai già gratis")));
       };
       draw();
     }
@@ -358,28 +380,36 @@
   }
   const prevRoot = $("[data-preview]");
   if (prevRoot) {
-    const slug = new URLSearchParams(location.search).get("esame"), d = D.find((x) => x.slug === slug) || D[0], A = CFG.anteprima || {}, arg = (A.argomenti || {})[d.slug];
-    const c = completaDi(d), stessi = D.filter((x) => x.anno === d.anno && x.sem === d.sem);
+    const slug = new URLSearchParams(location.search).get("esame"), d = D.find((x) => x.slug === slug) || D[0], A = CFG.anteprima || {}, arg = (A.argomenti || {})[d.slug], IND = (A.indice || {})[d.slug];
+    const c = completaDi(d), s = simulazioneDi(d), free = gratisDi(d), stessi = D.filter((x) => x.anno === d.anno && x.sem === d.sem && PERC && (PERC.esami[x.codice] || []).some((p) => (PERC.esami[d.codice] || []).some((q) => q.split("-")[0] === p.split("-")[0])));
     document.title = `UniLink · Anteprima di ${d.nome}`;
+    // indice completo: capitoli della dispensa raggruppati per i moduli del programma ufficiale UniFi (config.js → anteprima.indice)
+    const indice = IND ? `<p class="small" style="margin:-4px 0 12px">${esc(IND.fonte)}</p>${IND.moduli.map((m, i) => `<details class="prev-mod" ${i ? "" : "open"}><summary><span class="eyebrow">Modulo ${i + 1} del programma UniFi</span><b>${esc(m.titolo)}</b><span class="small">${m.capitoli.length} ${m.capitoli.length === 1 ? "capitolo" : "capitoli"}</span></summary>
+        <ol class="prev-ind" start="${m.capitoli[0].n}">${m.capitoli.map((k) => `<li value="${k.n}"><b>${esc(k.titolo)}</b><ul>${k.sezioni.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></li>`).join("")}</ol></details>`).join("")}
+        <div class="prev-cop2"><span class="eyebrow">Copertura del programma ufficiale</span><ul>${IND.copertura.map(([p, cap]) => `<li><span>${esc(p)}</span><b>${esc(cap)}</b></li>`).join("")}</ul><p class="small">${esc(IND.nota)}</p></div>`
+      : arg ? `<ol class="prev-ind">${arg.map((a) => `<li>${esc(a)}</li>`).join("")}</ol><p class="small">Argomenti della banca di quiz di esempio. In produzione qui c'è l'indice vero della dispensa, capitolo per capitolo.</p>`
+      : `<p class="small prev-vuoto">L'indice completo si legge dalla dispensa: in produzione appare qui, capitolo per capitolo, prima di comprare.</p>`;
+    const leggi = APP + "#/app/leggi/" + (d.slug === "economia_aziendale" ? "economia-aziendale" : d.slug.replace(/_/g, "-"));
     prevRoot.innerHTML = `<div class="prev">
-      <div class="prev-cop"><img src="img/cop/${d.cop}" alt="Copertina della dispensa di ${esc(d.nome)}"></div>
+      <div class="prev-cop"><img src="img/cop/${d.cop}" alt="Copertina della dispensa di ${esc(d.nome)}">${free ? '<span class="badge on prev-free">Gratis per tutti</span>' : ""}</div>
       <div class="prev-main"><span class="eyebrow">${d.anno} anno · ${SEM[d.sem] || ""} · ${esc(d.codice)}</span><h1 class="h2" style="margin:8px 0 10px">${esc(d.nome)}</h1>
         <div class="chips" style="margin:0 0 18px">${d.tipi.map((t) => `<span class="chip on">${t}</span>`).join("")}<span class="chip">${esc(d.mod)}</span></div>
-        <h2 class="prev-h">Indice</h2>
-        ${arg ? `<ol class="prev-ind">${arg.map((a) => `<li>${esc(a)}</li>`).join("")}</ol><p class="small">Argomenti della banca di quiz di esempio. In produzione qui c'è l'indice vero del PDF, capitolo per capitolo.</p>` : `<p class="small prev-vuoto">L'indice completo si legge dal PDF della dispensa: in produzione appare qui, capitolo per capitolo, prima di comprare.</p>`}
-        <h2 class="prev-h">Perché la dispensa ${c ? "completa" : "UniLink"}</h2><ul class="prev-ok">${(A.perche || []).map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
+        <h2 class="prev-h">Indice${IND ? " completo" : ""}</h2>${indice}
+        <h2 class="prev-h">Perché la dispensa UniLink</h2><ul class="prev-ok">${(A.perche || []).map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
         <h2 class="prev-h">Tips per passare l'esame</h2>
         <div class="prev-lock"><ul>${(A.tips || []).map((x) => `<li>${esc(x)}</li>`).join("")}</ul><div class="prev-lock-v"><p>Le tips su prof ed esame sono per chi ha l'account.</p><a class="btn btn-a" href="${APP}">Accedi per scoprirle</a></div></div>
       </div>
       <aside class="prev-buy"><h2 class="li-h">Studia ${esc(d.nome)}</h2>
-        ${LIS ? `<div class="li-card"><div class="r"><span>Appunti</span><b>${eur(LIS.prezzi.appunti[0])}</b></div><span class="small">in sessione ${eur(LIS.prezzi.appunti[1])}</span></div>
-        ${c ? `<div class="li-card ev"><div class="r"><span>Dispensa completa</span><b>${eur(c[0])}</b></div><span class="small">in sessione ${eur(c[1])}${d.tipi.includes("Mappe") ? "" : " · senza mappe per questo esame"}</span></div>` : `<p class="small">Per questo esame ci sono gli Appunti: mappe e quiz non ancora.</p>`}
-        ${stessi.length >= 3 ? `<div class="li-card"><div class="r"><span>Nel pacchetto semestre</span><b>${eur(LIS.prezzi.semestre)}</b></div><span class="small">${stessi.length} esami del ${SEM[d.sem]} del ${d.anno} anno · <a href="materiali.html#calcola"><u>calcola</u></a></span></div>` : ""}
-        <button type="button" class="btn btn-p" data-pv-paga="appunti" style="justify-content:center">Acquista gli Appunti · ${eur(LIS.prezzi.appunti[inSessione() ? 1 : 0])}</button>${c ? `<button type="button" class="btn btn-a" data-pv-paga="completa" style="justify-content:center;margin-top:8px">Acquista la Completa · ${eur(c[inSessione() ? 1 : 0])}</button>` : ""}
-        <p class="small">Paghi con carta, Apple Pay, Google Pay o Klarna su Stripe · prezzo ${inSessione() ? "in sessione" : "fuori sessione"}.</p><p class="small">${esc(LIS.gratis)}</p><span class="badge">${esc(LIS.stato)}</span>` : ""}
+        ${!LIS ? "" : free ? `<div class="li-card ev"><div class="r"><span>Dispensa completa</span><b>Gratis</b></div><span class="small">${esc(LIS.gratisNota)}</span></div>
+          <a class="btn btn-a" href="${leggi}" style="justify-content:center">Leggila nell'area personale</a><p class="small">Si legge e si annota nell'area personale: non si scarica.</p>`
+        : `${s ? `<div class="li-card"><div class="r"><span>Simulazione d'esame</span><b>${eur(s[0])}</b></div><span class="small">invece di ${barr(s[1])} · prezzo di lancio</span></div>` : `<p class="small">La simulazione d'esame per questo esame è in preparazione.</p>`}
+        <div class="li-card ev"><div class="r"><span>Dispensa completa</span><b>${eur(c[0])}</b></div><span class="small">invece di ${barr(c[1])} · dispensa, quiz e simulazioni</span></div>
+        ${stessi.length >= 3 ? `<div class="li-card"><div class="r"><span>Nel pacchetto semestre</span><b>${eur(semPrezzo(3)[0])}</b></div><span class="small">3 esami del tuo percorso, ${eur(semPrezzo(4)[0])} con 4 · <a href="materiali.html#calcola"><u>calcola il tuo</u></a></span></div>` : ""}
+        ${s ? `<button type="button" class="btn btn-s" data-pv-paga="simulazione" style="justify-content:center">Acquista la Simulazione · ${eur(s[0])}</button>` : ""}<button type="button" class="btn btn-a" data-pv-paga="completa" style="justify-content:center;margin-top:8px">Acquista la Completa · ${eur(c[0])}</button>
+        <p class="small">Si legge e si annota nell'area personale: non si scarica. Paghi con carta, Apple Pay, Google Pay o Klarna su Stripe.</p><p class="small">${esc(LIS.gratis)}</p><span class="badge">${esc(LIS.stato)}</span>`}
       </aside></div>`;
-    $$("[data-pv-paga]", prevRoot).forEach((b) => (b.onclick = () => { const k = b.dataset.pvPaga, i = inSessione() ? 1 : 0, nome = (k === "completa" ? "Dispensa completa" : "Appunti") + " · " + d.nome;
-      paga([{ id: k + ":" + d.slug, nome, nota: i ? "prezzo in sessione" : "prezzo fuori sessione", prezzo: k === "completa" ? c[i] : LIS.prezzi.appunti[i] }], nome); }));
+    $$("[data-pv-paga]", prevRoot).forEach((b) => (b.onclick = () => { const k = b.dataset.pvPaga, nome = (k === "completa" ? "Dispensa completa" : "Simulazione d'esame") + " · " + d.nome;
+      paga([{ id: k + ":" + d.slug, nome, nota: "prezzo di lancio", prezzo: (k === "completa" ? c : s)[0] }], nome); }));
   }
 
   // link verso l'accesso alla web app (H06b, H12): data-app="#/rotta" o vuoto
@@ -702,6 +732,20 @@
     window.addEventListener("scroll", agg, { passive: true }); window.addEventListener("resize", agg);
     $("button", bar).addEventListener("click", () => { nascosta = true; bar.classList.remove("vis"); try { sessionStorage.setItem("ul-cta-chiusa", "1"); } catch (e) {} });
     agg();
+  }
+  /* ---------- 11 · ARCHIVIO (solo founder: archivio/index.html) · dalle voci di CFG.archivio ---------- */
+  const arcRoot = $("[data-archivio]");
+  if (arcRoot) {
+    const A = CFG.archivio || [], T = CFG.team || [];
+    const data = (q) => new Date(q).toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
+    arcRoot.innerHTML = `<div class="arc-lista">${A.map((a) => `<article class="arc-card" id="${a.id}">
+        <div class="arc-top"><span class="eyebrow">${esc(a.tipo)} · archiviata il ${data(a.quando)}</span>${a.file ? `<a class="btn btn-s" href="${esc(a.file)}">Apri ${a.tipo.startsWith("Pagina") || a.tipo.startsWith("Versione") ? "la pagina" : ""} →</a>` : ""}</div>
+        <h2>${esc(a.titolo)}</h2>
+        <p><b>Perché è stata tolta.</b> ${esc(a.perche)}</p>
+        <p class="small">Fonte: ${esc(a.fonte)}</p>
+        ${a.tabella ? `<div class="pz-tab-wrap"><table class="pz-tabella"><tbody>${a.tabella.map(([k, v]) => `<tr><th scope="row">${esc(k)}</th><td>${esc(v)}</td></tr>`).join("")}</tbody></table></div>` : ""}
+        ${a.team ? `<div class="arc-team">${T.map((p) => `<div class="arc-persona"><div class="av">${esc(p.nome[0])}</div><div><b>${esc(p.nome)}</b><span class="small">${esc(p.ruolo)} · ${esc(p.corso)}</span><span class="small">${esc(p.bio)}</span></div></div>`).join("")}</div>` : ""}
+        <p class="small arc-rimetti"><b>Per rimetterla:</b> ${esc(a.rimettere)}</p></article>`).join("")}</div>`;
   }
   // le dimensioni dei dispositivi cambiano al ridimensionamento: la pagina intera non deve scorrere di lato
   document.documentElement.style.overflowX = "hidden";

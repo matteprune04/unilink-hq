@@ -7,54 +7,56 @@
    Caricato PRIMA di store.js: chiavi del database, MODELLO DATI (default di profilo e attività) e testi del login. */
 window.UL = window.UL || {};
 
-UL.VERSIONE = { n: 6, data: "2026-10-07", nota: "Pagamento con Stripe Checkout (simulato): carta, Apple Pay, Google Pay, Klarna; sblocco dopo il webhook; netto dopo Stripe nelle metriche. Prima, v5: Commenti del 7/10: Croogla 4F ovunque, login con foto di Novoli sotto il blu, nuova sezione Community (Aula studio P1 e Mentor e ambassador, promossi dai moduli C e D), moduli C e D solo come card nelle proposte, commenti scaricati archiviati e condivisi nell'HQ." };
+UL.VERSIONE = { n: 7, data: "2026-10-07", nota: "Decisioni del meeting del 7/10: listino di lancio (Simulazione 4,99, Dispensa completa 12,99, Pacchetto semestre 29,99 o 34,99 per percorso, Plus 14,99 o 7,99 con un pacchetto, niente Appunti singoli né Pacchetto anno, niente prezzi in sessione), Economia Aziendale completa gratis per tutti, dispense solo da leggere e annotare nell'app (niente download), Ambassador a commissione (20%). Archiviati Guida, Tesi, CV e Mentor (Founder → Archivio). Prima, v6: pagamento con Stripe Checkout (simulato)." };
 
-/* PIANI — proposta P2 (7/10/2026), uguale alla landing v5 (demo-landing/config.js → listino). Prezzi NON decisi.
-   Fuori sessione costa meno; i pacchetti costano uguale tutto l'anno. Cambiarli qui li cambia ovunque (B.PRICES punta qui).
-   Regola della Completa: 12,99 € dove ci sono le mappe, 9,99 € dove ci sono appunti e quiz; solo Appunti se c'è solo quello. */
+/* PIANI — decisi nel meeting del 7/10/2026 (HQ → Decisioni «MEETING 7/10»), uguali alla landing v8 (demo-landing/config.js → listino).
+   Prezzi comunicati come SCONTO DI LANCIO: [prezzo di lancio, prezzo pieno barrato]. Niente prezzi «in sessione / fuori sessione».
+   Niente Appunti singoli e niente Pacchetto anno (archiviati). Plus è in stand-by: si vende a parte (14,99) o con un pacchetto (7,99).
+   Il pacchetto semestre costa in base a quanti esami ha il semestre del TUO percorso (corso + curriculum, js/percorsi.js):
+   3 esami 29,99 € · 4 esami 34,99 €; se il semestre ne ha più di 4 ne scegli 4; con 2 o meno conviene comprare le singole.
+   Le dispense NON si scaricano: si leggono e si annotano solo qui (lettore, js/views/lettore.js). Cambiarli qui li cambia ovunque. */
 UL.PIANI = {
-  stato: "Proposta P2 · prezzi non decisi",
-  prezzi: { appunti: [4.99, 9.99], completa: [12.99, 18.99], completaSenzaMappe: [9.99, 14.99], semester: 29.99, anno: 49.99, plus: 14.99, plusConPacchetto: 4.99, mentor: 20 },
-  // mesi di sessione (Economia UniFi: invernale gen–feb, estiva giu–lug, autunnale set). Indice 0 = gennaio.
-  sessione: [1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0],
+  stato: "Prezzi di lancio · decisi il 7/10",
+  prezzi: { simulazione: [4.99, 9.99], completa: [12.99, 18.99], semestre: { 3: [29.99, 39.99], 4: [34.99, 44.99] }, plus: 14.99, plusConPacchetto: 7.99 },
+  maxEsamiPacchetto: 4,
   // fine della sessione in corso o della prossima: fino a quando vale Plus (una tantum)
   fineSessioni: ["02-28", "07-31", "09-30"],
-  // account gratuito: 1 Appunti a scelta tra questi 3 (uno per anno) + 1 in regalo quando un amico invitato conferma l'email
-  gratis: { scelta: ["microeconomia", "macroeconomia", "finanza-aziendale"], regaloInvito: 1,
-    testo: "Con l'account gratis scegli 1 Appunti tra 3 esami (uno per anno), e un altro in regalo quando un amico invitato conferma l'email." },
+  // gratis per tutti, come esempio dell'offerta: la dispensa completa di Economia Aziendale (I anno)
+  gratis: { esame: "economia-aziendale",
+    testo: "Gratis per tutti: schede degli esami, quiz di prova, strumenti e la dispensa completa di Economia Aziendale (I anno), per vedere com'è fatta prima di comprare." },
   lista: [
-    { k: "free", nome: "Gratuito", tipo: "Account", prezzo: "0 €", sub: "per sempre", d: "Schede degli esami, quiz di prova, libretto e strumenti. 1 Appunti a scelta in regalo." },
-    { k: "appunti", prezzo: "4,99 € · in sessione 9,99 €", nome: "Appunti", tipo: "Singolo esame", d: "Gli appunti completi di un esame, da tenere." },
-    { k: "completa", prezzo: "12,99 € · in sessione 18,99 €", nome: "Dispensa completa", tipo: "Singolo esame", d: "Tutto per un esame. Senza mappe: 9,99 €." },
-    { k: "semester", prezzo: "29,99 €", nome: "Pacchetto semestre", tipo: "Pacchetto", d: "Tutte le dispense complete del tuo semestre.", hot: true },
-    { k: "anno", prezzo: "49,99 €", nome: "Pacchetto anno", tipo: "Pacchetto", d: "I due semestri, un solo acquisto." },
-    { k: "plus", prezzo: "14,99 € una tantum", nome: "UniLink Plus", tipo: "Il metodo", d: "Planner personalizzato su tutti gli esami. Una volta per sessione." },
+    { k: "free", nome: "Gratuito", tipo: "Account", prezzo: "0 €", sub: "per sempre", d: "Schede, quiz di prova, libretto e strumenti. Economia Aziendale completa, gratis." },
+    { k: "simulazione", prezzo: "4,99 € · invece di 9,99 €", nome: "Simulazione d'esame", tipo: "Singolo esame", d: "Una prova nel formato dell'appello, con correzione e spiegazioni." },
+    { k: "completa", prezzo: "12,99 € · invece di 18,99 €", nome: "Dispensa completa", tipo: "Singolo esame", d: "Tutto per un esame: dispensa, quiz e simulazioni, da leggere e annotare qui." },
+    { k: "semester", prezzo: "29,99 € o 34,99 €", nome: "Pacchetto semestre", tipo: "Pacchetto", d: "Le dispense complete del semestre del tuo percorso: 3 esami 29,99 €, 4 esami 34,99 €.", hot: true },
+    { k: "plus", prezzo: "14,99 € · 7,99 € con un pacchetto", nome: "UniLink Plus", tipo: "Il metodo · in valutazione", d: "Planner personalizzato su tutti gli esami e ripasso degli errori. Una volta per sessione." },
   ],
-  // «Cosa c'è dentro»: colonne Gratuito · Appunti · Completa · Semestre · Anno · Plus. 1 sì, 0 no, testo = condizione.
+  // «Cosa c'è dentro»: colonne Gratuito · Simulazione · Completa · Semestre · Plus. 1 sì, 0 no, testo = condizione.
   dentro: [
     ["Per tutti", [
-      ["Schede, partizioni e informazioni utili", 1, 1, 1, 1, 1, 1],
-      ["Quiz di prova (5 domande)", 1, 1, 1, 1, 1, 1],
-      ["I miei esami, libretto, voto di laurea, Guida", 1, 1, 1, 1, 1, 1],
-      ["Metodo standard del Planner e «Ci stai nei tempi?»", 1, 1, 1, 1, 1, 1],
+      ["Schede, partizioni e informazioni utili", 1, 1, 1, 1, 1],
+      ["Quiz di prova (5 domande)", 1, 1, 1, 1, 1],
+      ["Economia Aziendale completa", 1, 1, 1, 1, 1],
+      ["I miei esami, libretto e voto di laurea", 1, 1, 1, 1, 1],
+      ["Metodo standard del Planner e «Ci stai nei tempi?»", 1, 1, 1, 1, 1],
     ]],
-    ["Materiali", [
-      ["Appunti / Sbobine (PDF con filigrana)", "1 a scelta", 1, 1, 1, 1, 0],
-      ["Mappe per ripassare", 0, 0, "dove ci sono", "dove ci sono", "dove ci sono", 0],
-      ["Quiz e simulazioni dell'appello", 0, 0, 1, 1, 1, 0],
-      ["Esami inclusi", "—", "1", "1", "3–4 del semestre", "tutto l'anno", "—"],
+    ["Materiali · da leggere e annotare nell'app", [
+      ["Dispensa completa (appunti e sbobine)", 0, 0, 1, 1, 0],
+      ["Quiz per argomento e quiz rapido", 0, 0, 1, 1, 0],
+      ["Simulazione d'esame con correzione", 0, "1 esame", 1, 1, 0],
+      ["Esami inclusi", "—", "1", "1", "3 o 4 del tuo percorso", "—"],
+      ["Aggiornamenti della stessa edizione", 0, 1, 1, 1, 0],
     ]],
     ["Il metodo", [
-      ["UniLink Planner: piano personale (percorso, missioni, calendario)", 0, 0, "per quell'esame", "esami del semestre", "esami dell'anno", "tutti gli esami"],
-      ["Ripasso del registro errori su tutti gli esami", 0, 0, 0, 0, 0, 1],
-      ["CV benchmark completo", 0, 0, 0, 0, 0, 1],
+      ["UniLink Planner: piano personale (percorso, missioni, calendario)", 0, 0, "per quell'esame", "esami del pacchetto", "tutti gli esami"],
+      ["Ripasso del registro errori su tutti gli esami", 0, 0, 0, 0, 1],
     ]],
   ],
 };
 
 UL.CONFIG = {
-  dbKey: "ul_unilink_v4_db",
-  sessionKey: "ul_unilink_v4_session",
+  dbKey: "ul_unilink_v7_db"   /* v7: nuovo seed (listino del 7/10) */,
+  sessionKey: "ul_unilink_v7_session",
 
   /* MODELLO DATI — ogni utente = { email, role, profile, activity }. store.js fonde questi default nei nuovi utenti.
      [A/B] = parte decisa · [C] = modulo Career (da decidere) · [D] = modulo Network (da decidere). */
@@ -62,13 +64,14 @@ UL.CONFIG = {
     area: "economia",      // [v3] area di studio: UL_AREE (economia attiva; giurisprudenza/medicina in arrivo)
     ateneo: "unifi",       // [D]  ateneo (oggi solo UniFi attivo)
     corso: "",             // [D]  corso di laurea libero (altri atenei)
+    curriculum: "",        // [v7] curriculum (E94/E95 per EA, F011/F013/F084 per EC): serve per il pacchetto semestre
     colore: "",            // [v3] colore del cerchio in alto a destra
     headline: "", skills: [], linkedin: "", // [C] profilo talento
   },
   activityDefaults: {
     // [A/B] parte decisa
     exams: [],             // {slug, partizione, appello, obiettivo, status: todo|doing|done, voto}
-    purchases: [],         // {id, type: appunti|completa|semester|anno|plus|gratis|mentor [B] · selfstudy|tutoring|academy|featured [D], label, price, coupon, at}
+    purchases: [],         // {id, type: simulazione|completa|semester|plus [v7] · appunti|anno|gratis|mentor = archiviati [B] · selfstudy|tutoring|academy|featured [D], label, price, coupon, at}
     quiz: { sessions: [], stats: {} },
     bookings: [],          // {id, mentor, topic, when, price} — Mentor di «Il mio percorso» [B] e Mentor marketplace [C]
     erasmus: { lista: [], check: [] },
@@ -77,6 +80,8 @@ UL.CONFIG = {
     cv: [],
     // Plus — UNICO per tutta la app (B.plus e C.isPlus leggono questo campo)
     plus: { active: false, plan: "", since: "", cancelAt: "" },
+    note: {},              // [v7] annotazioni del lettore: slug → { pagina: [{ id, testo, at }] }
+    letture: {},           // [v7] lettore: slug → ultima pagina aperta
     // [v4] UniLink Planner (P3, solo Plus): un piano per esame, calcolato una volta alla creazione
     planner: {},           // slug → { fascia, appello, giorni[0-6], ore, margine, creato, sessioni: [{ fase, cap, tipo, data, fatto, esito, errori }] }
     // [C] Career
@@ -87,15 +92,15 @@ UL.CONFIG = {
   },
 
   auth: {
-    flag: "Demo · UniLink v6",
+    flag: "Demo · UniLink v7",
     title: 'La tua <span class="accent">Area Personale</span> UniLink',
     sub: "Accedi per ritrovare le tue dispense, i tuoi esami e gli strumenti per scegliere. Da studenti, per studenti.",
     regTitle: 'Il tuo spazio, <span class="accent">gratis</span>',
     regSub: "Crei l'account in un minuto, scegli area e piano, e decidi tu se e quando passare a un pacchetto o a Plus.",
     feats: [
-      { i: "book", t: "Dispense", d: "Appunti, mappe e quiz per anno e partizione." },
+      { i: "book", t: "Dispense", d: "Da leggere e annotare qui, per anno e partizione." },
       { i: "quiz", t: "Esercitazioni", d: "Quiz con spiegazioni, simulazioni e ripasso errori." },
-      { i: "cap", t: "Il tuo percorso", d: "Libretto, Erasmus, magistrali e mentor." },
+      { i: "cap", t: "Il tuo percorso", d: "Libretto, voto di laurea, Erasmus e magistrali." },
       { i: "spark", t: "E presto…", d: "Giurisprudenza e Medicina: lista d'attesa aperta." },
     ],
   },

@@ -18,7 +18,7 @@ fs.mkdirSync(RAW, { recursive: true });
 const SCHERMATE = [
   ["studio-dashboard", 0, "#/app/dashboard"], ["studio-esami", 0, "#/app/esami"], ["studio-esame", 0, "#/app/esami/microeconomia"], ["studio-materiali", 1, "#/app/materiali"],
   ["studio-catalogo", 0, "#/app/materiali/catalogo"], ["studio-esercitazioni", 0, "#/app/esercitazioni"], ["studio-quiz", 0, "#/app/esercitazioni/microeconomia"],
-  ["percorso-libretto", 3, "#/app/percorso/libretto"], ["percorso-erasmus", 3, "#/app/percorso/erasmus"], ["percorso-magistrali", 3, "#/app/percorso/magistrali"], ["percorso-mentor", 3, "#/app/percorso/mentor"],
+  ["percorso-libretto", 3, "#/app/percorso/libretto"], ["percorso-erasmus", 3, "#/app/percorso/erasmus"], ["percorso-magistrali", 3, "#/app/percorso/magistrali"],
   ["account-abbonamento", 0, "#/app/abbonamento"], ["account-profilo", 0, "#/app/account"],
   ["decidere-elenco", 0, "#/app/decidere"], ["decidere-career-piano", 3, "#/app/piano"], ["decidere-career-opportunita", 3, "#/app/opportunita"], ["decidere-network-home", 5, "#/app/home"],
   ["altro-in-arrivo", 4, "#/app/dashboard"], ["altro-accesso", null, ""],

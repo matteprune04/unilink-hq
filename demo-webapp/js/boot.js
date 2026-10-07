@@ -16,12 +16,12 @@
         { k: "materiali", l: "Materiali", i: "book", to: "#/app/materiali", soloAttiva: true },
         { k: "esercitazioni", l: "Esercitazioni", i: "quiz", to: "#/app/esercitazioni", soloAttiva: true },
         { k: "planner", l: "Planner", i: "target", to: "#/app/planner", soloAttiva: true },
-        { k: "guida", l: "Guida", i: "map", to: "#/app/guida" },
+        // «Guida» archiviata il 7/10 (Da decidere → Archivio)
       ] },
-      // Community (7/10): Aula studio (P1) e Mentor e ambassador, promossi dai moduli C e D (v4-community.js)
+      // Community: Aula studio (P1) e Ambassador a commissione (decisione del 7/10; il vecchio «Mentor e ambassador» è in archivio)
       { g: "Community", items: [
         { k: "aula", l: "Aula studio", i: "users", to: "#/app/aula", soloAttiva: true },
-        { k: "mentoring", l: "Mentor e ambassador", i: "shield", to: "#/app/mentoring" },
+        { k: "ambassador", l: "Ambassador", i: "shield", to: "#/app/ambassador" },
       ] },
       { g: "Dopo gli esami", items: [{ k: "percorso", l: "Il mio percorso", i: "cap", to: "#/app/percorso" }] },
       { g: "Account", items: [
@@ -83,6 +83,7 @@
     <div class="field"><label for="ac-area">Area di studio</label><select class="select" id="ac-area" name="area">${window.UL_AREE.map((a) => opt(a.slug, a.nome + (a.stato === "attiva" ? "" : a.stato === "in_arrivo" ? " (in arrivo)" : " (proposta)"), p.area)).join("")}</select></div>
     <div class="field"><label for="ac-ateneo">Ateneo</label><select class="select" id="ac-ateneo" name="ateneo">${[["unifi", "Università di Firenze"]].concat((window.UL_D ? window.UL_D.unis : []).filter((u) => u.id !== "unifi").map((u) => [u.id, u.n || u.id])).map(([k, l]) => opt(k, l + (k === "unifi" ? "" : " (da decidere)"), p.ateneo || "unifi")).join("")}</select></div>
     <div class="field"><label for="ac-cds">Corso di laurea</label><select class="select" id="ac-cds" name="cds">${[["EA", "Economia Aziendale"], ["EC", "Economia e Commercio"], ["", "Altro / nessuno"]].map(([k, l]) => opt(k, l, p.cds)).join("")}</select></div>
+    <div class="field"><label for="ac-curr">Curriculum (III anno; II anno per EC)</label><select class="select" id="ac-curr" name="curriculum">${[["", "Non ancora scelto"]].concat(window.UL_PERCORSI ? Object.entries(window.UL_PERCORSI.corsi).flatMap(([cds, c]) => Object.entries(c.curricula).map(([k, n]) => [k, cds + " · " + n])) : []).map(([k, l]) => opt(k, l, p.curriculum || "")).join("")}</select></div>
     <div class="field"><label for="ac-anno">Anno</label><select class="select" id="ac-anno" name="anno">${[["1", "I anno"], ["2", "II anno"], ["3", "III anno"], ["FC", "Fuori corso"]].map(([k, l]) => opt(k, l, p.anno)).join("")}</select></div>
     <div class="field span-2"><label>Colore del tuo cerchio (in alto a destra)</label><div class="row">${U.COLORI.map((c) => `<label style="cursor:pointer"><input type="radio" name="colore" value="${c}" ${p.colore === c ? "checked" : ""} class="sr-only"><span class="avatar" style="background:${c};color:#fff;outline:${p.colore === c ? "3px solid var(--navy)" : "0"};outline-offset:2px">${esc(UL.ui.initials(p))}</span></label>`).join("")}</div></div>`;
   };
@@ -103,8 +104,10 @@
       // parte decisa
       dashboard: { view: "dashboardU" }, esami: { view: "esamiB" },
       materiali: { view: "materialiU" }, esercitazioni: { view: "praticaU" }, scheda: { view: "schedaU" },
-      percorso: { view: "percorsoB" }, planner: { view: "plannerU" }, guida: { view: "guidaU" },
-      aula: { view: "aulaU" }, mentoring: { view: "mentoringU" },
+      percorso: { view: "percorsoB" }, planner: { view: "plannerU" }, leggi: { view: "lettoreU" },
+      aula: { view: "aulaU" }, ambassador: { view: "ambassadorU" },
+      // archiviati il 7/10: si aprono solo dall'Archivio (guida tiene la sua rotta per i link interni, con il banner)
+      archivio: { view: "archivioU" }, guida: { view: "guidaArch" }, mentoring: { view: "ambassadorU" },
       abbonamento: { view: "abbonamentoU" }, acquisti: { view: "abbonamentoU" }, account: { view: "account" },
       // sezione di lavoro
       decidere: { view: "decidereU" }, configurazione: { view: "configU" },
@@ -118,7 +121,7 @@
       // gruppo arancione: solo il catalogo delle proposte (i moduli C e D si aprono dalle card, non più dalla sidebar) + configurazione
       const cur = curPage(), inModulo = UL.NAV.dd.some((m) => m.items.some((i) => i.k === cur));
       const ddItems = [{ k: inModulo ? cur : "decidere", l: "Tutte le proposte", i: "alert", to: "#/app/decidere", badge: String(window.UL_DA_DECIDERE.length) }]
-        .concat([{ k: "configurazione", l: "Configurazione", i: "settings", to: "#/app/configurazione" }])
+        .concat([{ k: "archivio", l: "Archivio", i: "file", to: "#/app/archivio", badge: String((UL.ARCHIVIO || []).length) }, { k: "configurazione", l: "Configurazione", i: "settings", to: "#/app/configurazione" }])
         .concat(user.role === "admin" ? [{ k: "metriche", l: "Metriche", i: "shield", to: "#/app/metriche" }] : []);
       g.push({ g: "Da decidere", cls: "dd", items: ddItems });
       return g;
@@ -140,7 +143,7 @@
       const plus = B.plus(user);
       const n = B.courses().filter((c) => B.owns(user, c.slug)).length;
       return `<div class="row between"><span class="display small" style="color:var(--navy)">Il tuo piano</span><b class="display" style="color:var(--orange);font-weight:400">${esc(B.planName(user))}</b></div>
-        <p class="tiny muted" style="margin:6px 0 10px">${plus ? "Planner personale e ripasso errori su tutti gli esami." : n ? `${n} ${n === 1 ? "esame" : "esami"} con materiali. Il Planner personale è con Plus.` : "Parti gratis: 1 Appunti in regalo, sblocchi solo ciò che ti serve."}</p>
+        <p class="tiny muted" style="margin:6px 0 10px">${plus ? "Planner personale e ripasso errori su tutti gli esami." : n > 1 ? `${n} dispense da leggere. Il Planner su tutti gli esami è con Plus.` : "Economia Aziendale è gratis per tutti: sblocchi solo ciò che ti serve."}</p>
         <a href="#/app/abbonamento" class="small display" style="text-decoration:none">${plus ? "Il tuo piano →" : "Vedi piani e prezzi →"}</a>`;
     },
     notifications(user) {

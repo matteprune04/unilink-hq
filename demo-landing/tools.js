@@ -167,7 +167,7 @@
   // ---------- strumenti universali (P6) ----------
   // Voto di laurea per corso di laurea: ogni corso ha le sue regole; quelle non verificate sono marcate «esempio»
   IMPL["voto-cdl"] = (el) => {
-    const CORSI = [["voto", "Economia (EA · EC)", ""], ["voto-lmg", "Giurisprudenza", "esempio"], ["", "Medicina", "in arrivo"], ["", "Altri corsi", "in arrivo"]];
+    const CORSI = [["voto", "Economia (EA · EC)", ""], ["voto-lmg", "Giurisprudenza", "esempio"], ["", "Altri corsi", "in arrivo"]];
     let cur = "voto";
     el.innerHTML = `<div class="tl-r" style="margin-bottom:6px"><span class="tl-l">Il tuo corso di laurea</span><div class="tl-seg" data-k="cdl">${CORSI.map(([id, t, b]) => `<button type="button" data-v="${id}" class="${id === cur ? "on" : ""}" ${id ? "" : "disabled"}>${t}${b ? ` <small>· ${b}</small>` : ""}</button>`).join("")}</div></div><div class="tl-sub"></div>`;
     const sub = $(".tl-sub", el);

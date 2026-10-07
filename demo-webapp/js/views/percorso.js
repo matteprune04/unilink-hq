@@ -5,7 +5,7 @@
   const B = UL.B;
   const { icon, esc, num, fmtDate, ago } = UL.ui;
 
-  const TABS = [["libretto", "Media e voto di laurea", "calc"], ["tesi", "Tesi", "file"], ["erasmus", "Erasmus", "plane"], ["magistrali", "Magistrali", "cap"], ["cv", "CV", "brief"]]; // Mentor spostato in Community → «Mentor e ambassador» (v4-community.js)
+  const TABS = [["libretto", "Media e voto di laurea", "calc"], ["erasmus", "Erasmus", "plane"], ["magistrali", "Magistrali", "cap"]]; // Tesi e CV archiviati il 7/10 (js/archivio/tesi-cv-guida.js); Mentor in js/archivio/mentor.js
   const ERASMUS_CHECK = [
     { k: "bando", t: "Leggere il bando Erasmus+ della Scuola di Economia", d: "dicembre" },
     { k: "dest", t: "Scegliere 3 destinazioni compatibili con il piano di studi", d: "gennaio" },
@@ -78,7 +78,7 @@
       return `
       <div class="page-head"><div><div class="eyebrow">${icon("cap")} Il mio percorso</div><h1>Oltre gli <span class="accent">esami</span></h1><p class="lead">Media, voto di laurea, Erasmus e magistrali come prosecuzione del tuo percorso.</p></div></div>
       <div class="tabs">${TABS.map(([k, l, i]) => `<a href="#/app/percorso/${k}" class="${k === tab ? "on" : ""}">${icon(i)} ${l}</a>`).join("")}</div>
-      ${tab === "libretto" ? libretto(user) : tab === "tesi" ? UL.U.tesiTab(user) : tab === "cv" ? UL.U.cvTab(user) : tab === "erasmus" ? erasmus(user) : tab === "mentor" ? mentor(user)
+      ${tab === "libretto" ? libretto(user) : tab === "erasmus" ? erasmus(user) : tab === "mentor" ? mentor(user)
         : `<div class="card"><h3>Magistrali</h3><p class="muted" style="margin:8px 0 16px">In questa variante la parte magistrali resta leggera: si parte dagli esami e si estende la relazione dopo. Il tool completo con 163 programmi è sul sito.</p>
             <a class="btn btn-primary" href="https://www.unilinkfirenze.it/tools/master-magistrale" target="_blank" rel="noopener">${icon("ext")} Apri il tool Master / Magistrale</a></div>`}`;
     },

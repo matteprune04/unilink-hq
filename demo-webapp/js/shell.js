@@ -12,7 +12,7 @@
   UL.views = UL.views || {};
 
   const SITE = "https://www.unilinkfirenze.it";
-  const SITE_LINKS = [{ l: "Dispense", to: SITE + "/dispense" }, { l: "Tools", to: SITE + "/tools" }, { l: "Guida", to: SITE + "/guide" }, { l: "FAQs", to: SITE + "/faq" }];
+  const SITE_LINKS = [{ l: "Dispense", to: SITE + "/dispense" }, { l: "Tools", to: SITE + "/tools" }, { l: "FAQs", to: SITE + "/faq" }];
   const app = { dirty: false, lastHash: "", current: null };
   UL.app = app;
   let C = null;

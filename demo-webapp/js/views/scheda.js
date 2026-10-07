@@ -35,25 +35,24 @@
         onPagato: (r) => { p = B.buy(user, item, code); p.pagamento = { via: "stripe", metodo: r.metodo, commissione: r.commissione }; UL.store.save(); }, onFatto: fine });
     });
   };
-  /* ---------- v4 · articoli del listino P2 (prezzo fuori sessione / in sessione da core.js) ---------- */
-  const vale = () => B.quandoVale();
-  B.appuntiItem = (c) => ({ type: "appunti", slug: c.slug, price: B.prezzo("appunti", c), label: "Appunti · " + c.title,
-    incl: ["Appunti/Sbobine completi in PDF, con la tua filigrana", "Informazioni utili su esame e partizioni", "Aggiornamenti della stessa edizione", vale()] });
+  /* ---------- v7 · articoli del listino (decisioni del 7/10: prezzi di lancio, niente Appunti singoli né Pacchetto anno) ---------- */
+  const lancio = (k, n) => `Prezzo di lancio: invece di ${B.eur(B.prezzoPieno(k, n))}`;
+  B.simulazioneItem = (c) => ({ type: "simulazione", slug: c.slug, price: B.prezzo("simulazione", c), label: "Simulazione d'esame · " + c.title,
+    incl: ["Una simulazione nel formato dell'appello, a tempo", "Correzione con le spiegazioni e il registro dei tuoi errori", "Informazioni utili su esame e partizioni", lancio("simulazione")] });
   B.completaItem = (c) => ({ type: "completa", slug: c.slug, price: B.prezzo("completa", c), label: "Dispensa completa · " + c.title,
-    incl: ["Appunti/Sbobine in PDF, con la tua filigrana", c.mappe ? "Mappe per ripassare" : "Senza mappe per questo esame (per questo costa meno)", B.hasQuiz(c.slug) ? `Esercitazioni complete: ${B.questions(c.slug).length} domande, quiz rapido e simulazione d'esame` : "Quiz e simulazioni dell'appello (PDF)", "Aggiornamenti della stessa edizione", vale()] });
+    incl: ["La dispensa completa, da leggere e annotare nell'area personale (non si scarica)", B.hasQuiz(c.slug) ? `Esercitazioni complete: ${B.questions(c.slug).length} domande, quiz rapido e simulazione d'esame` : "Quiz e simulazioni dell'appello", "Il piano personale del Planner per questo esame", "Aggiornamenti della stessa edizione", lancio("completa")] });
   B.examItem = B.completaItem; // compatibilità con le viste della demo A/B
-  B.gratisItem = (c) => ({ type: "gratis", slug: c.slug, price: 0, label: "Appunti gratis · " + c.title, incl: ["Appunti/Sbobine completi in PDF", "Il regalo dell'account gratuito (1 a scelta tra 3 esami)"] });
-  B.semItem = (cds, anno, sem) => ({
-    type: "semester", cds, anno: Number(anno), sem: Number(sem), price: B.PRICES.semester,
-    label: `Pacchetto semestre · ${ROMAN[anno]} anno, ${ROMAN[sem]} semestre ${cds}`,
-    incl: B.semesterCourses(cds, anno, sem).map((c) => "Dispensa completa · " + c.title).concat(["Stesso prezzo tutto l'anno", "Con un pacchetto Plus costa " + B.eur(B.PRICES.plusConPacchetto)]),
-  });
-  B.annoItem = (cds, anno) => ({
-    type: "anno", cds, anno: Number(anno), price: B.PRICES.anno, label: `Pacchetto anno · ${ROMAN[anno]} anno ${cds}`,
-    incl: [`Le dispense complete dei due semestri (${B.courses().filter((c) => c.anno === Number(anno) && c.cds.includes(cds)).length} esami)`, "Stesso prezzo tutto l'anno", "Con un pacchetto Plus costa " + B.eur(B.PRICES.plusConPacchetto)],
-  });
+  // pacchetto semestre del PERCORSO (corso + curriculum): 3 esami 29,99 · 4 esami 34,99; con più di 4 esami lo studente ne sceglie 4
+  B.semItem = (cds, anno, sem, curr, scelti) => {
+    const tutti = B.semesterCourses(cds, anno, sem, curr), max = UL.PIANI.maxEsamiPacchetto || 4;
+    const esami = (scelti && scelti.length ? tutti.filter((c) => scelti.includes(c.slug)) : tutti).slice(0, max);
+    const nc = curr && window.UL_PERCORSI ? " · " + window.UL_PERCORSI.nomeCurr(cds, curr) : "";
+    return { type: "semester", cds, curr: curr || "", anno: Number(anno), sem: Number(sem), esami: esami.map((c) => c.slug), price: B.prezzo("semester", null, esami.length),
+      label: `Pacchetto semestre · ${ROMAN[anno]} anno, ${ROMAN[sem]} semestre ${cds}${nc}`,
+      incl: esami.map((c) => "Dispensa completa · " + c.title).concat([`${esami.length} esami · ${lancio("semester", esami.length)}`, "Con un pacchetto Plus costa " + B.eur(B.PRICES.plusConPacchetto)]) };
+  };
   // valore delle complete comprate una per una (per i confronti «invece di»)
-  B.valoreSingoli = (list) => list.reduce((n, c) => n + (B.haCompleta(c) ? B.prezzo("completa", c) : B.prezzo("appunti", c)), 0);
+  B.valoreSingoli = (list) => list.reduce((n, c) => n + B.prezzo("completa", c), 0);
 
   /* ---------- prova gratuita (3 domande) ---------- */
   function miniQuiz(slug, n) {
@@ -108,7 +107,7 @@
       if (!c) return `<div class="empty">Esame non trovato. <a href="#/app/materiali/catalogo">Torna al catalogo</a></div>`;
       const owned = B.owns(user, c.slug);
       const mine = user.activity.exams.some((e) => e.slug === c.slug);
-      const sem = B.semesterCourses(c.cds.includes(user.profile.cds || "EA") ? user.profile.cds || "EA" : c.cds.split("/")[0], c.anno, c.sem).filter((x) => x.slug !== c.slug);
+      const semTutti = B.semesterCourses(c.cds.includes(B.cdsDi(user)) ? B.cdsDi(user) : c.cds.split("/")[0], c.anno, c.sem, B.currDi(user)), sem = semTutti.filter((x) => x.slug !== c.slug);
       return `
       <a href="#/app/materiali/catalogo" class="small display" style="text-decoration:none">← Catalogo</a>
       <div class="exam-hero" style="margin-top:14px">
@@ -126,8 +125,8 @@
           ${c.unifi ? `<a class="btn btn-sm btn-ghost" style="margin-top:14px" href="${esc(c.unifi)}" target="_blank" rel="noopener">${icon("ext")} Scheda ufficiale UniFi</a>` : ""}</div>
         <div class="c-5 stack">
           ${B.hasQuiz(c.slug) ? (B.ownsCompleta(user, c.slug) ? `<div class="card"><h3>Esercitazioni sbloccate</h3><p class="small muted" style="margin:6px 0 12px">${B.questions(c.slug).length} domande, simulazioni e ripasso errori.</p><a class="btn btn-primary btn-sm" href="#/app/esercitazioni/${c.slug}">Vai alle esercitazioni</a></div>` : miniQuiz(c.slug, 3))
-            : `<div class="card beige"><h3>Esercitazioni in arrivo</h3><p class="small muted" style="margin-top:6px">Si parte da Microeconomia, Economia Aziendale e Statistica. Per questo esame il pacchetto include quiz e simulazioni in PDF.</p></div>`}
-          ${sem.length ? `<div class="card"><h3>Stesso semestre</h3><p class="small muted" style="margin:6px 0 12px">Con il pacchetto semestre (${B.eur(B.PRICES.semester)}) hai le complete anche di:</p>
+            : `<div class="card beige"><h3>Esercitazioni in arrivo</h3><p class="small muted" style="margin-top:6px">Si parte da Microeconomia, Economia Aziendale e Statistica. Per questo esame la dispensa completa include quiz e simulazioni da fare nell'app.</p></div>`}
+          ${sem.length ? `<div class="card"><h3>Stesso semestre</h3><p class="small muted" style="margin:6px 0 12px">Con il pacchetto semestre del tuo percorso (${B.eur(B.prezzo("semester", null, semTutti.length))}) hai le complete anche di:</p>
             <ul class="feed">${sem.slice(0, 5).map((x) => `<li><span class="ic">${icon("book")}</span><div><a href="#/app/scheda/${x.slug}" style="text-decoration:none;color:var(--ink)">${esc(x.title)}</a></div></li>`).join("")}</ul>
             <a class="btn btn-sm btn-ghost" style="margin-top:10px" href="#/app/materiali/semestre">Pacchetti semestre</a></div>` : ""}
         </div>

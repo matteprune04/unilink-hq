@@ -79,9 +79,9 @@
           const semOk = a().stato === "attiva" && unifi();
           body = `<h2 style="margin:10px 0 6px">Come vuoi iniziare?</h2><p class="muted" style="margin-bottom:18px">Si parte gratis. Puoi anche prendere subito un pacchetto o Plus: lo cambi quando vuoi da «Abbonamento». Nessun rinnovo automatico. ${esc(UL.PIANI.stato)}.</p>
           <div class="pricing three">
-            ${[["free", "Gratuito", "0 €", "per sempre", ["Schede, quiz di prova, libretto e strumenti", "1 Appunti gratis a scelta tra 3 esami", "Metodo standard del Planner"]],
-              ["semester", `Pacchetto ${ROMAN[anno]} anno · ${ROMAN[o.sem]} sem.`, B.eur(B.PRICES.semester), "stesso prezzo tutto l'anno", B.semesterCourses(o.cds, anno, o.sem).map((c) => c.title)],
-              ["plus", "UniLink Plus", B.eur(B.PRICES.plus), "una tantum · fino a fine sessione", B.plusItem().incl.slice(0, 4)]].filter(([k]) => k !== "semester" || semOk).map(([k, t, pr, s, incl]) => `
+            ${[["free", "Gratuito", "0 €", "per sempre", ["Schede, quiz di prova, libretto e strumenti", "Economia Aziendale completa, gratis per tutti", "Metodo standard del Planner"]],
+              ["semester", `Pacchetto ${ROMAN[anno]} anno · ${ROMAN[o.sem]} sem.`, B.eur(B.prezzo("semester", null, Math.min(4, B.semesterCourses(o.cds, anno, o.sem).length))), "prezzo di lancio", B.semesterCourses(o.cds, anno, o.sem).slice(0, 4).map((c) => c.title)],
+              ["plus", "UniLink Plus", B.eur(B.PRICES.plus), "una tantum · fino a fine sessione", B.plusItem().incl.slice(0, 4)]].filter(([k]) => k !== "semester" || (semOk && B.semesterCourses(o.cds, anno, o.sem).length >= 3)).map(([k, t, pr, s, incl]) => `
               <div class="plan ${o.piano === k ? "hot" : ""}" data-hot="Scelto"><h3>${esc(t)}</h3><div class="price">${pr} <small>${esc(s)}</small></div>
                 <ul>${incl.slice(0, 5).map((x) => `<li>${icon("check")}${esc(x)}</li>`).join("")}</ul>
                 ${k === "semester" ? `<div class="seg" style="align-self:flex-start">${[1, 2].map((v) => `<button class="${String(o.sem) === String(v) ? "on" : ""}" data-sem="${v}">${ROMAN[v]} sem.</button>`).join("")}</div>` : ""}

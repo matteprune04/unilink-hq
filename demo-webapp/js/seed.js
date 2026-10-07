@@ -9,7 +9,7 @@
   const PW = "UniLink2026!";
 
   UL.DEMO = [
-    { k: "free", label: "Gratuito", desc: "Economia · I anno · Appunti gratis di Microeconomia", icon: "user", email: "giulia.rossi@stud.unifi.it", password: PW },
+    { k: "free", label: "Gratuito", desc: "Economia · I anno · Simulazione di Microeconomia", icon: "user", email: "giulia.rossi@stud.unifi.it", password: PW },
     { k: "completa", label: "Dispensa completa", desc: "Economia · I anno · Completa di Microeconomia", icon: "book", email: "marco.bianchi@stud.unifi.it", password: PW },
     { k: "semester", label: "Pacchetto semestre", desc: "Economia · I anno, II semestre", icon: "layers", email: "sara.neri@stud.unifi.it", password: PW },
     { k: "plus", label: "Plus", desc: "Economia · III anno · Planner attivo · dati Career", icon: "spark", email: "luca.conti@stud.unifi.it", password: PW },
@@ -23,8 +23,8 @@
   const P = (type, extra, price, days) => Object.assign({ id: "o" + Math.random().toString(36).slice(2, 8), type, price, listPrice: price, coupon: "", at: ago(days) }, extra);
   const nome = (slug) => ((window.UL_DISPENSE || []).find((d) => d.slug === slug) || {}).title;
   const exam = (slug) => ({ type: "completa", slug, label: "Dispensa completa · " + nome(slug) });
-  const gratis = (slug) => ({ type: "gratis", slug, label: "Appunti gratis · " + nome(slug) });
-  const sem = (anno, s, cds) => ({ type: "semester", anno, sem: s, cds, label: `Pacchetto semestre · ${["", "I", "II", "III"][anno]} anno, ${s === 1 ? "I" : "II"} semestre ${cds}` });
+  const simulazione = (slug) => ({ type: "simulazione", slug, label: "Simulazione d'esame · " + nome(slug) });
+  const sem = (anno, s, cds) => ({ type: "semester", anno, sem: s, cds, esami: (window.UL_DISPENSE || []).filter((d) => d.anno === anno && d.sem === s && !d.soon && (!window.UL_PERCORSI || !d.code || window.UL_PERCORSI.include(d.code, cds, ""))).slice(0, 4).map((d) => d.slug), label: `Pacchetto semestre · ${["", "I", "II", "III"][anno]} anno, ${s === 1 ? "I" : "II"} semestre ${cds}` });
   const PR = UL.PIANI.prezzi;
 
   const person = (email, nome, cognome, profile, activity, days) => ({
@@ -41,14 +41,14 @@
         { slug: "statistica", partizione: "", appello: inDays(42), obiettivo: "27", status: "doing" },
         { slug: "economia-aziendale", status: "done", voto: 27 },
       ],
-      purchases: [P("gratis", gratis("microeconomia"), 0, 10)],
+      purchases: [P("simulazione", simulazione("microeconomia"), PR.simulazione[0], 10)],
       referral: { code: "GIULIA-3F8", invited: 1, confirmed: 0, credits: 0 },
       quiz: { stats: stats([["mi01", 1, 0, 1], ["mi02", 1, 1, 0], ["mi03", 1, 1, 0], ["mi04", 1, 0, 1], ["mi05", 1, 0, 1]]), sessions: [{ slug: "microeconomia", mode: "prova", modeLabel: "Quiz di prova", n: 5, correct: 3, dur: 160, at: ago(1), topics: {} }] },
     }, 12),
 
     person("marco.bianchi@stud.unifi.it", "Marco", "Bianchi", { cds: "EC", anno: "1", area: "economia", colore: "#172554" }, {
       exams: [{ slug: "microeconomia", appello: inDays(28), obiettivo: "26", status: "doing" }, { slug: "statistica", appello: inDays(42), obiettivo: "", status: "todo" }],
-      purchases: [P("completa", exam("microeconomia"), PR.completaSenzaMappe[0], 9)],
+      purchases: [P("completa", exam("microeconomia"), PR.completa[0], 9)],
       quiz: { stats: stats([["mi01", 2, 0, 2], ["mi02", 2, 1, 1], ["mi03", 2, 2, 0], ["mi06", 1, 1, 0], ["mi09", 2, 1, 0]]),
         sessions: [{ slug: "microeconomia", mode: "rapido", modeLabel: "Quiz rapido", n: 10, correct: 6, dur: 412, at: ago(2), topics: {} }] },
     }, 20),
@@ -59,7 +59,7 @@
         { slug: "statistica", appello: inDays(33), obiettivo: "27", status: "doing" },
         { slug: "economia-aziendale", status: "done", voto: 27 },
       ],
-      purchases: [P("semester", sem(1, 2, "EA"), PR.semester, 14)],
+      purchases: [P("semester", sem(1, 2, "EA"), PR.semestre[3][0], 14)],
       quiz: {
         stats: stats([["mi01", 2, 0, 2], ["mi02", 2, 1, 1], ["mi03", 2, 2, 0], ["mi04", 1, 0, 1], ["mi05", 2, 1, 0], ["mi11", 2, 2, 0], ["st01", 1, 0, 1], ["st03", 1, 1, 0], ["st04", 1, 1, 0]]),
         sessions: [
@@ -110,8 +110,8 @@
 
     // altri studenti (solo per le metriche dell'admin)
     person("davide.lombardi@stud.unifi.it", "Davide", "Lombardi", { cds: "EC", anno: "1", area: "economia" }, { exams: [{ slug: "microeconomia", status: "todo" }] }, 6),
-    person("giorgia.ferri@stud.unifi.it", "Giorgia", "Ferri", { cds: "EA", anno: "1", area: "economia" }, { purchases: [P("semester", sem(1, 2, "EA"), PR.semester, 20)] }, 40),
-    person("alice.costa@stud.unifi.it", "Alice", "Costa", { cds: "EA", anno: "1", area: "economia" }, { purchases: [P("completa", exam("economia-aziendale"), PR.completa[0], 50)] }, 60),
+    person("giorgia.ferri@stud.unifi.it", "Giorgia", "Ferri", { cds: "EA", anno: "1", area: "economia" }, { purchases: [P("semester", sem(1, 2, "EA"), PR.semestre[3][0], 20)] }, 40),
+    person("alice.costa@stud.unifi.it", "Alice", "Costa", { cds: "EA", anno: "1", area: "economia" }, { purchases: [P("completa", exam("statistica"), PR.completa[0], 50)] }, 60),
     person("bianca.romani@stud.unifi.it", "Bianca", "Romani", { cds: "EA", anno: "3", area: "economia", inglese: "C2", gmat: "655", headline: "Data & strategy", skills: ["Python", "SQL", "Excel"], areeProf: ["Data / Analytics"] },
       { plus: { active: true, plan: "sessione", since: ago(50), until: "2027-02-28T23:59:00", cancelAt: "" }, tracks: [{ id: "msc", at: ago(25), done: [0, 1, 2] }], talent: { visible: true }, applications: [{ id: "a3", job: "j5", st: "offerta", at: ago(15) }] }, 90),
     person("alessandro.valli@studbocconi.it", "Alessandro", "Valli", { ateneo: "bocconi", corso: "CLEF", cds: "", anno: "3", area: "economia" },

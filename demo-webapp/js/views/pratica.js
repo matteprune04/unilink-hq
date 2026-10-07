@@ -46,10 +46,10 @@
       <div class="page-head"><div><div class="eyebrow">${icon("quiz")} ${ROMAN[c.anno]} anno · ${esc(c.cds)}</div><h1>${esc(c.title)}</h1></div>
         ${own ? "" : `<button class="btn btn-orange" data-buy>Sblocca tutte le modalità</button>`}</div>
       <div class="mode-grid">${Object.entries(MODES).filter(([k]) => k !== "prova" || !own).map(([k, m]) => {
-        const locked = m.paid === "plus" ? !B.plus(user) : m.paid && !own;
+        const locked = m.paid === "plus" ? !B.plus(user) : k === "simulazione" ? !B.ownsSimulazione(user, slug) : m.paid && !own; // v7: la Simulazione (4,99) sblocca solo la simulazione
         const disabled = k === "errori" && !er;
         return `<div class="mode ${k === "errori" && er ? "focus" : ""}">
-          <div class="row between"><h3>${m.l}</h3>${locked ? `<span class="lock">${icon("lock")} ${m.paid === "plus" ? "Plus" : "Dispensa completa"}</span>` : k === "errori" ? `<span class="badge ${er ? "badge-red" : "badge-soft"}">${er}</span>` : ""}</div>
+          <div class="row between"><h3>${m.l}</h3>${locked ? `<span class="lock">${icon("lock")} ${m.paid === "plus" ? "Plus" : k === "simulazione" ? "Simulazione o completa" : "Dispensa completa"}</span>` : k === "errori" ? `<span class="badge ${er ? "badge-red" : "badge-soft"}">${er}</span>` : ""}</div>
           <p>${m.d}</p>
           ${locked ? `<button class="btn btn-sm btn-ghost" ${m.paid === "plus" ? "data-buyplus" : "data-buy"}>Sblocca</button>` : disabled ? `<span class="small muted">Nessun errore da ripassare.</span>` : `<a class="btn btn-sm btn-primary" href="#/app/esercitazioni/${slug}/${k}">Inizia</a>`}
         </div>`;
@@ -87,7 +87,7 @@
       if (!slug || !mode) return;
       const M = MODES[mode];
       if (!M) return UL.app.go(`#/app/esercitazioni/${slug}`);
-      if (M.paid === "plus" ? !B.plus(user) : M.paid && !B.ownsPractice(user, slug)) { UL.ui.toast(M.paid === "plus" ? "Il ripasso del registro errori è incluso in Plus" : "Questa modalità è inclusa nella dispensa completa e nei pacchetti", "err"); return UL.app.go(`#/app/esercitazioni/${slug}`); }
+      if (M.paid === "plus" ? !B.plus(user) : mode === "simulazione" ? !B.ownsSimulazione(user, slug) : M.paid && !B.ownsPractice(user, slug)) { UL.ui.toast(M.paid === "plus" ? "Il ripasso del registro errori è incluso in Plus" : "Questa modalità è inclusa nella dispensa completa e nei pacchetti", "err"); return UL.app.go(`#/app/esercitazioni/${slug}`); }
       run(root.querySelector("[data-run]"), user, slug, mode);
     },
   };

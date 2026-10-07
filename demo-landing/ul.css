@@ -1079,3 +1079,67 @@ a.g-tile:hover { transform: translateY(-3px) rotate(-.5deg); }
 .pz-fee .pz-tabella { min-width: 560px; }
 .prev-buy .btn { width: 100%; }
 @media (max-width: 760px) { .pz-passi { grid-template-columns: 1fr; } .pz-metodi .btn { margin-left: 0; width: 100%; } }
+
+/* ===== v8 · decisioni del 7/10: listino di lancio, anteprima a numero chiuso, ambassador, indice completo, archivio ===== */
+.pz-grid.pz-4 { grid-template-columns: repeat(4, 1fr); }
+.pz-pieno { color: var(--nv2); text-decoration: line-through; text-decoration-thickness: 1.5px; }
+.pz-card.plus .pz-pieno { color: rgba(244,241,234,.7); }
+.li-quando:has(> div + p:last-child) { grid-template-columns: 1fr auto; }
+/* anteprima a numero chiuso (H05b) */
+.ante { display: grid; grid-template-columns: 1fr 1.15fr; gap: 40px; align-items: start; }
+.ante-ricevi { list-style: none; display: grid; gap: 10px; margin: 18px 0 0; padding: 0; }
+.ante-ricevi li { display: flex; gap: 10px; align-items: baseline; font-size: 16px; }
+.ante-ricevi li::before { content: "✓"; color: var(--arancio); }
+.ante-form, .ante-ok { background: #fff; border-radius: 24px; padding: 26px; box-shadow: var(--ombra); display: grid; gap: 14px; }
+.ante-posti { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; align-items: center; }
+.ante-posti b { font-family: Croogla, serif; font-weight: 400; font-size: 34px; color: var(--navy); grid-row: span 2; }
+.ante-posti i { display: block; height: 8px; border-radius: 99px; background: linear-gradient(90deg, var(--arancio) var(--p), var(--crema2) var(--p)); }
+.ante-campi { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.ante-campi label { display: grid; gap: 5px; font-size: 14px; color: var(--nv2); }
+.ante-campi input, .ante-campi select { font: inherit; font-size: 16px; color: var(--navy); border: 1.5px solid var(--linea); border-radius: 12px; padding: 11px 12px; background: var(--crema); min-width: 0; }
+.ante-campi input:focus, .ante-campi select:focus { outline: 2px solid var(--arancio); outline-offset: 1px; }
+.ante-ck { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--nv2); cursor: pointer; }
+.ante-ck input { width: 18px; height: 18px; accent-color: var(--navy); margin-top: 2px; flex: none; }
+.ante-form .btn { justify-content: center; }
+.ante-form .msg { color: var(--ar3); min-height: 1em; }
+.ante-ok { text-align: center; justify-items: center; }
+.ante-ok .ok { width: 54px; height: 54px; border-radius: 50%; background: var(--arancio); color: #fff; display: grid; place-items: center; font-size: 26px; }
+/* ambassador (H09) */
+.amb-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 28px; align-items: stretch; }
+.amb-passi { list-style: none; display: grid; gap: 14px; margin: 0; padding: 0; }
+.amb-passi li { display: flex; gap: 16px; align-items: flex-start; background: #fff; border-radius: 18px; padding: 18px; box-shadow: var(--ombra); }
+.amb-passi li b { width: 38px; height: 38px; border-radius: 50%; background: var(--arancio); color: #fff; display: grid; place-items: center; font-weight: 400; flex: none; }
+.amb-passi h3 { font-size: 20px; } .amb-passi p { color: var(--nv2); font-size: 15px; margin-top: 4px; }
+.amb-box { background: var(--navy); color: var(--crema); border-radius: 24px; padding: 26px; display: grid; gap: 12px; align-content: start; }
+.amb-box .small { color: rgba(244,241,234,.75); }
+.amb-pc { display: flex; gap: 14px; align-items: baseline; flex-wrap: wrap; } .amb-pc b { font-family: Croogla, serif; font-weight: 400; font-size: 64px; line-height: 1; color: var(--arancio); }
+.amb-box .btn { justify-self: start; }
+/* anteprima: indice completo per moduli del programma UniFi */
+.prev-mod { background: #fff; border-radius: 16px; margin: 0 0 10px; box-shadow: var(--ombra); }
+.prev-mod summary { cursor: pointer; list-style: none; display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding: 14px 18px; }
+.prev-mod summary::-webkit-details-marker { display: none; }
+.prev-mod summary .eyebrow { grid-column: 1 / -1; font-size: 11px; }
+.prev-mod summary b { font-weight: 400; color: var(--navy); font-size: 17px; } .prev-mod summary .small { align-self: end; }
+.prev-mod[open] summary { border-bottom: 1px solid var(--linea); }
+.prev-mod .prev-ind { padding: 12px 18px 16px 44px; margin: 0; }
+.prev-mod .prev-ind > li { margin-bottom: 10px; } .prev-mod .prev-ind > li > b { font-weight: 400; color: var(--navy); }
+.prev-mod .prev-ind ul { margin: 4px 0 0 16px; padding: 0; color: var(--nv2); font-size: 14.5px; list-style: "– "; }
+.prev-cop2 { background: var(--crema2); border-radius: 16px; padding: 16px 18px; margin: 14px 0 6px; }
+.prev-cop2 ul { list-style: none; padding: 0; margin: 8px 0; display: grid; gap: 6px; }
+.prev-cop2 li { display: flex; justify-content: space-between; gap: 12px; font-size: 14.5px; border-bottom: 1px dashed var(--linea); padding-bottom: 6px; }
+.prev-cop2 li b { font-weight: 400; color: var(--navy); white-space: nowrap; }
+.prev-cop { position: relative; } .prev-free { position: absolute; top: 12px; left: 12px; }
+/* archivio (solo founder) */
+.arc-banner { background: var(--ar2); border-bottom: 2px dashed var(--arancio); padding: 12px 0; font-size: 15px; color: var(--navy); }
+.arc-banner b { font-weight: 400; }
+.arc-lista { display: grid; gap: 16px; }
+.arc-card { background: #fff; border-radius: 22px; padding: 22px 24px; box-shadow: var(--ombra); display: grid; gap: 10px; border-left: 6px solid var(--arancio); }
+.arc-top { display: flex; justify-content: space-between; gap: 12px; align-items: center; flex-wrap: wrap; }
+.arc-card h2 { font-size: 26px; } .arc-card p b { font-weight: 400; color: var(--navy); }
+.arc-rimetti { background: var(--crema); border-radius: 12px; padding: 10px 12px; }
+.arc-team { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.arc-persona { display: flex; gap: 12px; align-items: flex-start; background: var(--crema); border-radius: 14px; padding: 12px; }
+.arc-persona .av { width: 40px; height: 40px; border-radius: 50%; background: var(--navy); color: var(--crema); display: grid; place-items: center; flex: none; }
+.arc-persona div { display: grid; gap: 2px; } .arc-persona b { font-weight: 400; color: var(--navy); }
+@media (max-width: 1100px) { .pz-grid.pz-4 { grid-template-columns: repeat(2, 1fr); } .ante, .amb-grid { grid-template-columns: 1fr; } }
+@media (max-width: 700px) { .pz-grid.pz-4, .ante-campi, .arc-team { grid-template-columns: 1fr; } .amb-pc b { font-size: 48px; } .arc-card { padding: 18px; } .li-quando:has(> div + p:last-child) { grid-template-columns: 1fr; } }

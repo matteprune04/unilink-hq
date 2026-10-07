@@ -1,18 +1,18 @@
 <!doctype html>
 <html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>UniLink · Materiali</title>
-<meta name="description" content="Dispense, pacchetti e Plus per hub: compra prima della sessione e paghi meno. Prezzi in valutazione.">
+<meta name="description" content="Simulazioni, dispense complete e pacchetti per percorso, a prezzi di lancio. Si leggono e si annotano nell'area personale.">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#172554">
-<meta property="og:type" content="website"><meta property="og:title" content="UniLink · Materiali"><meta property="og:description" content="Dispense, pacchetti e Plus per hub: compra prima della sessione e paghi meno. Prezzi in valutazione."><meta property="og:image" content="img/render-dispense.jpg">
+<meta property="og:type" content="website"><meta property="og:title" content="UniLink · Materiali"><meta property="og:description" content="Simulazioni, dispense complete e pacchetti per percorso, a prezzi di lancio. Si leggono e si annotano nell'area personale."><meta property="og:image" content="img/render-dispense.jpg">
 <link rel="preload" href="fonts/Croogla4F.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="icon" href="img/logo-blu.png"><link rel="stylesheet" href="ul.css"><link rel="stylesheet" href="tools.css"><link rel="stylesheet" href="commenti.css"></head>
 <body data-page="materiali">
 <div id="ul-nav"></div>
 <section style="padding-top:70px" id="mat-top">
-  <span class="demo-tag">PROPOSTA P2 · PREZZI NON DECISI</span>
+  <span class="demo-tag">LISTINO DECISO IL 7/10 · PREZZI DI LANCIO</span>
   <div class="wrap">
-    <div class="testa"><div><span class="eyebrow">Materiali</span><h1 class="h2" style="margin-top:10px">Compra prima, <span class="acc">paghi meno</span></h1></div><p>Singoli esami, pacchetti e il metodo, divisi per hub. Fuori sessione i prezzi sono più bassi: ti diciamo sempre fino a quando valgono.</p></div>
+    <div class="testa"><div><span class="eyebrow">Materiali</span><h1 class="h2" style="margin-top:10px">Prezzi di <span class="acc">lancio</span></h1></div><p>Simulazioni, dispense complete e il pacchetto del tuo semestre, divisi per hub. Scontati per il lancio, uguali tutto l'anno. Si leggono nell'area personale.</p></div>
     <div class="chips" data-mat-hub aria-label="Scegli l'hub"></div>
     <div data-mat-arrivo></div>
     <div data-listino></div>
@@ -20,7 +20,7 @@
 </section>
 <section class="bg2" id="calcola">
   <div class="wrap">
-    <div class="testa"><div><span class="eyebrow">Pacchetto semestre</span><h2 style="margin-top:10px">Calcola il tuo <span class="acc">pacchetto</span></h2></div><p>Scegli i tuoi esami e cosa compreresti: vedi quanto spenderesti uno per uno e il modo per spendere meno.</p></div>
+    <div class="testa"><div><span class="eyebrow">Pacchetto semestre</span><h2 style="margin-top:10px">Calcola il tuo <span class="acc">pacchetto</span></h2></div><p>Scegli corso, curriculum e semestre: vedi quali dispense sono incluse e quanto costa (3 o 4 esami).</p></div>
     <div class="calc-pac" data-calcola></div>
   </div>
 </section>
@@ -34,6 +34,7 @@
 </section>
 <div id="ul-foot"></div>
 <script src="config.js"></script>
+<script src="percorsi.js"></script>
 <script src="data.js"></script>
 <script src="tools.js"></script>
 <script src="checkout-stripe.js"></script>

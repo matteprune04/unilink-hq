@@ -33,15 +33,15 @@ Navbar (dal 7/10/2026): **Hub ▾ · Guida · Materiali · Strumenti · Communit
 | Codice | Pagina | File |
 |---|---|---|
 | S01 | Home (sezioni H02 hero · H03 numeri · H04 hub · H05 parti da dove sei · H06 catalogo · H06b area personale · H07 come funziona · H08 strumenti · H09 chi c'è dietro · H11 FAQ · H12 finale) | `index.html` |
-| S02 / S03 / S04 | Hub Economia (attivo) / Giurisprudenza / Medicina (in arrivo, lista d'attesa) | `hub-*.html` |
+| S02 / S03 | Hub Economia (attivo) / Giurisprudenza (in arrivo, lista d'attesa) · Medicina **archiviata** il 7/10 | `hub-*.html` · `archivio/hub-medicina.html` |
 | S05 / S06 / S07 | Prima / Durante / Dopo | `prima.html`, `durante.html`, `dopo.html` |
-| S08 | Tesi e laurea (checklist 6 passi che si ricorda) | `tesi.html` |
+| S08 | Tesi e laurea · **archiviata** il 7/10 (tool tesi in stand-by) | `archivio/tesi.html` |
 | S09 | Strumenti (tab per hub + pannello funzionante) | `tools.html` |
 | S10 | Area personale: galleria di 19 schermate reali della web app in 3 formati, solo da guardare (`area.html?dev=tab#percorso-erasmus`) | `area.html` |
-| S11 | Community (gruppi WhatsApp per anno, ambassador) | `community.html` |
+| S11 | Community · **archiviata** il 7/10 (mentor/ambassador tolti; Ambassador al 20% ora in home, `#ambassador`) | `archivio/community.html` |
 | S12 | Prezzi (di esempio, **fuori dalla navbar**, letto da `UL_CFG.prezzi`) | `prezzi.html` |
 | S13 | Commenti del team (rapporto, esportazione, storico) | `commenti.html` |
-| S14 | Guida per facoltà (Economia completa, altre in architettura) | `guida.html` + `guida-dati.js` + `guida.js` |
+| S14 | Guida per facoltà · **archiviata** il 7/10 | `archivio/guida.html` + `guida-dati.js` + `guida.js` |
 | S15 | Materiali (listino P2, pacchetto, collezione) | `materiali.html` |
 | S16 | Anteprima esame (`?esame=slug`) | `preview.html` |
 | S90 | Da decidere (indice + schede `#L01`…`#L26`: L01–L09 con architettura completa, L10–L26 dal report) | `decidere.html` |
@@ -108,10 +108,19 @@ Il report «Dalla vetrina alla piattaforma» (4 ottobre 2026, demo v1) è stato 
 
 ## 11 · Modifiche A del 7/10/2026 (dal PDF «Proposte», `architettura/UniLink_Proposte.pdf`)
 - Barra nuova e menu Founder; home con campi da config (foto, numeri, hub, più scaricati, prezzi, founder con scheda personale, FAQ verso l'account).
-- P2/P7 · **Materiali** e **Anteprima**: prezzi = proposta del report (fuori sessione più bassi), Completa 12,99 € solo dove ci sono mappe, 9,99 € con appunti + quiz.
+- P2/P7 · **Materiali** e **Anteprima**: dal 7/10 listino DECISO (vedi sotto «Decisioni del 7/10»); il listino P2 (fuori sessione, Appunti, Pacchetto anno) è in archivio.
 - P3 · **Planner** in Studiare: esempio solo da guardare (Variabili · Percorso · Calendario · Da fare · Completate), fasce 18–21 / 22–25 / 26–28 / 29–30L con disclaimer, indicatore «Ci stai nei tempi?» = giorni × ore nette × (1 − 18%), piano calcolato una volta. «Crea il tuo piano» → web app.
 - P4 · tab **Scegliere** dentro gli hub (nome nuovo di «Prima»); l'«Orientati» generale a domande resta proposta, non costruito.
 - **Guida** per facoltà (S14, richiesta diretta del 7/10, non una proposta P): Economia triennale completa dalla «Guida essenziale» (agosto 2026), altre 9 Scuole UniFi solo architettura (stessi 6 capitoli, «da scrivere»).
 - Strumenti nuovi: voto di laurea per corso, peso di un voto, countdown sessioni (margine 18%, sessioni da 45′).
 - Segnaposto: founder (LinkedIn non raggiungibile da qui), «più scaricati» scelti a mano, indice dell'Anteprima letto da config.
+
+## Decisioni del 7/10 (meeting dei founder) · landing v8 e web app v7
+- Listino di lancio, comunicato come sconto (prezzo pieno barrato), senza «fuori sessione»: Simulazione d'esame 4,99 (da 9,99) · Dispensa completa 12,99 (da 18,99) · Pacchetto semestre 29,99 con 3 esami (da 39,99) o 34,99 con 4 (da 44,99), calcolato sul percorso (corso + curriculum, `percorsi.js`, uguale in landing e web app) · Plus in stand-by: 14,99 o 7,99 con un pacchetto. Niente Appunti singoli, niente Pacchetto anno.
+- Economia Aziendale (B018991) completa gratis per tutti, come esempio. Dispense non scaricabili: si leggono e si annotano nella web app (`#/app/leggi/<slug>`, `js/views/lettore.js`).
+- Ambassador solo a commissione: 20% sugli acquisti con il proprio codice, nessun accesso gratuito (home `#ambassador`, web app `#/app/ambassador`).
+- Niente profili dei founder né statistiche false. Rebranding non annunciato.
+- Stand-by: focus group, tool tesi, curriculum, social network, Medicina, materiali gratis ai primi iscritti; mappe concettuali rimandate.
+- Tutto ciò che è stato tolto è nell'**Archivio** (solo founder): landing `archivio/index.html` (dati in `config.js → archivio`), web app `#/app/archivio` (`js/archivio/`).
+- Nuove card: L27 (lancio: anteprima a numero chiuso e regali) e L28 (email per usare gli strumenti).
 

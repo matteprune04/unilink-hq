@@ -1,9 +1,9 @@
 /* js/views/v4.js — web app v4: tutto segue il listino P2 della landing v5 (config.js → UL.PIANI).
    REGOLA GENERALE: ogni parte dell'app esiste per tutti; se il tuo piano non la include la vedi lo stesso,
    con il lucchetto e il piano che la sblocca (U.lock / B.upsell). Mai pagine nascoste o vuote.
-   1 scheda esame: cosa compri (Appunti, Completa, gratis)     2 «Sblocca»: il piano giusto per quello che ti manca
+   1 scheda esame: cosa compri (Simulazione, Completa; Economia Aziendale gratis)     2 «Sblocca»: il piano giusto per quello che ti manca
    3 Abbonamento: card, Cosa c'è dentro, calcolatore, ordini   4 UniLink Planner (P3): Plus = piano personale, gli altri = metodo standard
-   5 Il mio percorso: Tesi (per tutti) e CV (5 regole gratis, 17 con Plus)   6 Guida per facoltà (dalla landing) */
+   5–6 Tesi, CV e Guida: archiviati il 7/10 (js/archivio/tesi-cv-guida.js) */
 (function () {
   const UL = window.UL, B = UL.B, U = UL.U;
   const { icon, esc, ROMAN, fmtDate } = UL.ui;
@@ -18,30 +18,32 @@
   U.lock = (titolo, serve, attr) => `<div class="v4-lock"><span class="ic">${icon("lock")}</span><div><b>${esc(titolo)}</b><span>${esc(serve)}</span></div><button class="btn btn-sm btn-orange" ${attr || "data-v4plus"}>Sblocca</button></div>`;
   const bindPlus = (root, user, slug) => root.querySelectorAll("[data-v4plus]").forEach((b) => b.addEventListener("click", () => B.upsell(user, slug, { plus: true })));
 
-  /* ---------- 1 · scheda esame: cosa compri ---------- */
+  /* ---------- 1 · scheda esame: cosa compri (v7: Simulazione · Dispensa completa · pacchetto del percorso) ---------- */
+  const barrato = (k, n) => `<s class="tiny muted">${eur(B.prezzoPieno(k, n))}</s>`;
   U.buyCard = (user, c) => {
-    const lv = B.level(user, c.slug), fs = B.inSessione() ? 1 : 0;
-    const pa = P.prezzi.appunti, pc = B.prezzoCompleta(c);
-    const riga = (k, nome, prezzi, sub, attivo, cta) => `<div class="v4-buy ${attivo ? "on" : ""}"><div><b>${nome}</b><span class="tiny muted">${sub}</span></div>
-      <div class="v4-pr"><b>${eur(prezzi[fs])}</b><span class="tiny muted">${fs ? "in sessione" : "fuori sessione · in sessione " + eur(prezzi[1])}</span></div>${cta}</div>`;
-    const sem = B.semesterCourses(c.cds.includes(cdsDi(user)) ? cdsDi(user) : c.cds.split("/")[0], c.anno, c.sem);
-    return `<div class="row between"><b class="display" style="color:var(--navy)">Studia ${esc(c.title)}</b>${lv !== "none" ? `<span class="badge badge-green">${lv === "completa" ? "Completa" : "Appunti"} attivi</span>` : ""}</div>
-      ${B.puoGratis(user, c.slug) ? `<div class="v4-gratis">${icon("spark")}<div><b>Gratis con il tuo account</b><span class="tiny">1 Appunti a scelta tra 3 esami</span></div><button class="btn btn-sm btn-primary" data-v4k="gratis">Prendilo gratis</button></div>` : ""}
-      ${riga("appunti", "Appunti", pa, "Appunti/Sbobine in PDF", lv !== "none", lv !== "none" ? `<a class="btn btn-sm btn-ghost" href="${esc(c.pdf || "#")}" target="_blank" rel="noopener">${icon("download")} Apri</a>` : `<button class="btn btn-sm btn-ghost" data-v4k="appunti">Scegli</button>`)}
-      ${B.haCompleta(c) ? riga("completa", "Dispensa completa", pc, c.mappe ? "Appunti + mappe + quiz e simulazioni" : "Appunti + quiz e simulazioni · senza mappe", lv === "completa",
-        lv === "completa" ? `<a class="btn btn-sm btn-ghost" href="#/app/esercitazioni/${c.slug}">${icon("quiz")} Allenati</a>` : `<button class="btn btn-sm ${lv === "appunti" ? "btn-orange" : "btn-primary"}" data-v4k="completa">${lv === "appunti" ? "Passa alla completa" : "Scegli"}</button>`)
-        : `<p class="tiny muted">Per questo esame ci sono gli Appunti: mappe e quiz non ancora.</p>`}
-      ${sem.length >= 3 && lv !== "completa" ? `<p class="small" style="margin-top:4px">Nel <b>pacchetto semestre</b> (${eur(P.prezzi.semester)}) con altri ${sem.length - 1} esami. <a href="#/app/abbonamento/calcola">Calcola</a></p>` : ""}
-      <span class="lock">${icon("lock")} Pagamento con Stripe · simulato nella demo · ${esc(P.stato)}</span>`;
+    const lv = B.level(user, c.slug), free = B.gratisPerTutti(c.slug);
+    const riga = (k, nome, sub, attivo, cta) => `<div class="v4-buy ${attivo ? "on" : ""}"><div><b>${nome}</b><span class="tiny muted">${sub}</span></div>
+      <div class="v4-pr"><b>${eur(B.prezzo(k, c))}</b><span class="tiny muted">${barrato(k)} · prezzo di lancio</span></div>${cta}</div>`;
+    const sem = B.semesterCourses(c.cds.includes(cdsDi(user)) ? cdsDi(user) : c.cds.split("/")[0], c.anno, c.sem, B.currDi(user));
+    const leggi = `<a class="btn btn-sm btn-primary" href="#/app/leggi/${c.slug}">${icon("book")} Leggi</a>`;
+    if (free) return `<div class="row between"><b class="display" style="color:var(--navy)">Studia ${esc(c.title)}</b><span class="badge badge-green">Gratis per tutti</span></div>
+      <div class="v4-gratis">${icon("spark")}<div><b>La dispensa completa è gratis</b><span class="tiny">È l'esempio dell'offerta UniLink: dispensa, quiz e simulazioni, da leggere e annotare qui.</span></div>${leggi}</div>
+      ${B.hasQuiz(c.slug) ? `<a class="btn btn-sm btn-ghost" href="#/app/esercitazioni/${c.slug}">${icon("quiz")} Allenati</a>` : ""}`;
+    return `<div class="row between"><b class="display" style="color:var(--navy)">Studia ${esc(c.title)}</b>${lv !== "none" ? `<span class="badge badge-green">${lv === "completa" ? "Completa" : "Simulazione"} attiva</span>` : ""}</div>
+      ${B.haSimulazione(c) ? riga("simulazione", "Simulazione d'esame", "Una prova nel formato dell'appello, con correzione", lv !== "none",
+        lv !== "none" ? `<a class="btn btn-sm btn-ghost" href="#/app/esercitazioni/${c.slug}">${icon("quiz")} Falla</a>` : `<button class="btn btn-sm btn-ghost" data-v4k="simulazione">Scegli</button>`)
+        : `<p class="tiny muted">La simulazione d'esame per questo esame è in preparazione.</p>`}
+      ${riga("completa", "Dispensa completa", "Dispensa da leggere e annotare qui, quiz e simulazioni", lv === "completa",
+        lv === "completa" ? leggi : `<button class="btn btn-sm ${lv === "simulazione" ? "btn-orange" : "btn-primary"}" data-v4k="completa">${lv === "simulazione" ? "Passa alla completa" : "Scegli"}</button>`)}
+      ${sem.length >= 3 && lv !== "completa" ? `<p class="small" style="margin-top:4px">Nel <b>pacchetto semestre</b> del tuo percorso (${eur(B.prezzo("semester", null, sem.length))}) con altri ${Math.min(sem.length, UL.PIANI.maxEsamiPacchetto) - 1} esami. <a href="#/app/abbonamento/calcola">Calcola</a></p>` : ""}
+      <span class="lock">${icon("lock")} Si legge solo nell'area personale · pagamento con Stripe (simulato) · ${esc(P.stato)}</span>`;
   };
   U.bindBuyCard = (root, user, c) => root.querySelectorAll("[data-v4k]").forEach((b) => b.addEventListener("click", () => {
-    const k = b.dataset.v4k;
-    if (k === "gratis") { B.buy(user, B.gratisItem(c)); UL.ui.toast(`Appunti di ${c.title} sbloccati: sono tuoi`); return UL.app.refresh(); }
-    const item = k === "appunti" ? B.appuntiItem(c) : B.completaItem(c);
-    // passare dagli Appunti alla Completa riconosce quanto già pagato (proposta P2)
-    if (k === "completa" && B.level(user, c.slug) === "appunti") {
-      const pagato = (user.activity.purchases || []).filter((p) => p.slug === c.slug && p.type === "appunti").reduce((n, p) => n + p.price, 0);
-      item.price = Math.max(0, Math.round((item.price - pagato) * 100) / 100); item.label = "Passa alla completa · " + c.title; item.incl = [`Paghi la differenza: ${eur(pagato)} già pagati per gli Appunti`].concat(item.incl);
+    const k = b.dataset.v4k, item = k === "simulazione" ? B.simulazioneItem(c) : B.completaItem(c);
+    // passare dalla Simulazione alla Completa riconosce quanto già pagato
+    if (k === "completa" && B.level(user, c.slug) === "simulazione") {
+      const pagato = (user.activity.purchases || []).filter((p) => p.slug === c.slug && p.type === "simulazione").reduce((n, p) => n + p.price, 0);
+      item.price = Math.max(0, Math.round((item.price - pagato) * 100) / 100); item.label = "Passa alla completa · " + c.title; item.incl = [`Paghi la differenza: ${eur(pagato)} già pagati per la simulazione`].concat(item.incl);
     }
     B.checkout(user, item, () => UL.app.refresh());
   }));
@@ -53,53 +55,46 @@
     const o = [];
     if (opz.plus || opz.pianifica) { if (!B.plus(user)) o.push({ t: "UniLink Plus", p: B.prezzoPlus(user), s: "una tantum · fino al " + B.fineSessione().toLocaleDateString("it-IT", { day: "numeric", month: "long" }), incl: B.plusItem(user).incl, item: () => B.plusItem(user), hot: true, tag: "Il metodo" }); }
     if (!opz.plus && c) {
-      if (B.puoGratis(user, slug) && !opz.pianifica) o.push({ t: "Appunti gratis", p: 0, s: "il regalo del tuo account", incl: B.gratisItem(c).incl, item: () => B.gratisItem(c) });
-      else if (lv === "none" && !opz.pianifica) o.push({ t: "Appunti", p: B.prezzo("appunti", c), s: B.quandoVale(), incl: B.appuntiItem(c).incl.slice(0, 3), item: () => B.appuntiItem(c) });
-      if (B.haCompleta(c) && lv !== "completa") o.push({ t: lv === "appunti" ? "Passa alla completa" : "Dispensa completa", p: B.prezzo("completa", c), s: B.quandoVale(), incl: B.completaItem(c).incl.slice(0, 4), item: () => B.completaItem(c), hot: true, tag: "Per questo esame" });
-      const sem = B.semesterCourses(cds, anno, c.sem);
-      if (sem.length >= 2 && lv !== "completa") o.push({ t: "Pacchetto semestre", p: P.prezzi.semester, s: `${sem.length} complete · invece di ${eur(B.valoreSingoli(sem))}`, incl: sem.map((x) => x.title), item: () => B.semItem(cds, anno, c.sem) });
+      if (lv === "none" && !opz.pianifica && B.haSimulazione(c)) o.push({ t: "Simulazione d'esame", p: B.prezzo("simulazione", c), s: "invece di " + eur(B.prezzoPieno("simulazione")), incl: B.simulazioneItem(c).incl.slice(0, 3), item: () => B.simulazioneItem(c) });
+      if (lv !== "completa") o.push({ t: lv === "simulazione" ? "Passa alla completa" : "Dispensa completa", p: B.prezzo("completa", c), s: "invece di " + eur(B.prezzoPieno("completa")), incl: B.completaItem(c).incl.slice(0, 4), item: () => B.completaItem(c), hot: true, tag: "Per questo esame" });
+      const sem = B.semesterCourses(cds, anno, c.sem, B.currDi(user)), n = Math.min(sem.length, UL.PIANI.maxEsamiPacchetto);
+      if (sem.length >= 3 && lv !== "completa") o.push({ t: "Pacchetto semestre", p: B.prezzo("semester", null, n), s: `${n} complete · invece di ${eur(B.valoreSingoli(sem.slice(0, n)))}`, incl: sem.slice(0, n).map((x) => x.title), item: () => B.semItem(cds, anno, c.sem, B.currDi(user), sem.length > n ? [c.slug].concat(sem.filter((x) => x.slug !== c.slug).map((x) => x.slug)) : null) });
     }
     if (!o.length) return UL.ui.toast("Hai già tutto quello che serve qui");
     const m = UL.ui.modal(`
-      <div class="modal-head"><div><span class="sq-label">Sblocca</span><h2 style="margin-top:8px">${esc(opz.plus ? "Con UniLink Plus" : opz.pianifica ? "Il piano di " + (c ? c.title : "questo esame") : c ? c.title : "")}</h2><p class="small muted" style="margin-top:4px">${opz.plus ? "Plus è il metodo: Planner personale, ripasso degli errori e CV completo su tutti gli esami. Le dispense si comprano a parte." : opz.pianifica ? "Il piano personale si crea con la dispensa completa dell'esame (o un pacchetto che lo include), oppure con Plus per tutti i tuoi esami." : "Scegli tu cosa ti serve. " + esc(P.stato) + "."}</p></div>
+      <div class="modal-head"><div><span class="sq-label">Sblocca</span><h2 style="margin-top:8px">${esc(opz.plus ? "Con UniLink Plus" : opz.pianifica ? "Il piano di " + (c ? c.title : "questo esame") : c ? c.title : "")}</h2><p class="small muted" style="margin-top:4px">${opz.plus ? "Plus è il metodo: Planner personale e ripasso degli errori su tutti gli esami. Le dispense si comprano a parte." : opz.pianifica ? "Il piano personale si crea con la dispensa completa dell'esame (o un pacchetto che lo include), oppure con Plus per tutti i tuoi esami." : "Scegli tu cosa ti serve. " + esc(P.stato) + "."}</p></div>
         <button class="icon-btn" data-close aria-label="Chiudi">${icon("x")}</button></div>
       <div class="pricing" style="grid-template-columns:repeat(${o.length},1fr)">${o.map((x, i) => `<div class="plan ${x.hot ? "hot" : ""}" data-hot="${esc(x.tag || "")}"><h3>${esc(x.t)}</h3><div class="price">${x.p ? eur(x.p) : "Gratis"} <small>${esc(x.s)}</small></div>
         <ul>${x.incl.map((y) => `<li>${icon("check")}${esc(y)}</li>`).join("")}</ul><button class="btn ${x.hot ? "btn-orange" : "btn-primary"}" data-pick="${i}">Scegli</button></div>`).join("")}</div>
       <p class="tiny muted" style="margin-top:12px">Le differenze tra i piani: <a href="#/app/abbonamento" data-close>Abbonamento → Cosa c'è dentro</a></p>`, { width: Math.min(980, 300 * o.length + 80) });
-    m.el.querySelectorAll("[data-pick]").forEach((b) => b.addEventListener("click", () => {
-      m.close(); const it = o[Number(b.dataset.pick)].item();
-      if (it.type === "gratis") { B.buy(user, it); UL.ui.toast("Appunti sbloccati: sono tuoi"); return UL.app.refresh(); }
-      B.checkout(user, it, () => UL.app.refresh());
-    }));
+    m.el.querySelectorAll("[data-pick]").forEach((b) => b.addEventListener("click", () => { m.close(); B.checkout(user, o[Number(b.dataset.pick)].item(), () => UL.app.refresh()); }));
   };
 
   /* ---------- 3 · Abbonamento ---------- */
-  const COLS = ["free", "appunti", "completa", "semester", "anno", "plus"];
+  const COLS = ["free", "simulazione", "completa", "semester", "plus"];
   const colonnaUtente = (user) => {
     const ps = user.activity.purchases || [];
-    return B.plus(user) ? "plus" : ps.some((p) => p.type === "anno") ? "anno" : ps.some((p) => p.type === "semester") ? "semester"
-      : B.courses().some((c) => B.ownsCompleta(user, c.slug)) ? "completa" : ps.some((p) => p.type === "appunti") ? "appunti" : "free";
+    return B.plus(user) ? "plus" : ps.some((p) => p.type === "semester" || p.type === "anno") ? "semester"
+      : ps.some((p) => ["completa", "appunti", "gratis"].includes(p.type)) ? "completa" : ps.some((p) => p.type === "simulazione") ? "simulazione" : "free";
   };
-  const mesi = ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"];
-  const quando = () => `<div class="v4-quando"><div><span class="sq-label">Quando conviene comprare</span><p class="small muted" style="margin-top:6px">Gli esami singoli costano meno fuori sessione. I pacchetti e Plus costano uguale tutto l'anno.</p></div>
-    <div class="v4-mesi">${mesi.map((m, i) => `<span class="${P.sessione[i] ? "s" : ""} ${i === new Date().getMonth() ? "ora" : ""}"><i></i>${m}</span>`).join("")}</div>
-    <p class="small">${B.inSessione() ? '<span class="badge badge-orange">Adesso: in sessione</span>' : '<span class="badge badge-green">Adesso: fuori sessione, costa meno</span>'}</p></div>`;
+  // v7: niente «quando conviene comprare» (prezzi uguali tutto l'anno): al suo posto la regola del prezzo di lancio
+  const quando = () => `<div class="v4-quando"><div><span class="sq-label">Prezzi di lancio</span><p class="small muted" style="margin-top:6px">I prezzi sono scontati per il lancio: il prezzo pieno è quello barrato. Uguali tutto l'anno, senza abbonamenti né rinnovi.</p></div>
+    <p class="small"><span class="badge badge-green">${esc(P.stato)}</span></p></div>`;
   const tabellaDentro = (user) => {
     const me = colonnaUtente(user), L = Object.fromEntries(P.lista.map((x) => [x.k, x]));
     const cella = (v) => v === 1 ? `<span class="v4-ok">${icon("check")}</span>` : v === 0 ? '<span class="v4-no">—</span>' : `<span class="tiny muted">${esc(v)}</span>`;
     return `<div class="card section" id="dentro"><div class="card-head"><h3>${icon("layers")} Cosa c'è dentro</h3><span class="small muted">la colonna «Tu» è il tuo piano di oggi</span></div>
       <div class="table-wrap"><table class="table v4-tab"><thead><tr><th></th>${COLS.map((k) => `<th class="${k === me ? "me" : ""}">${esc(L[k].nome)}${k === me ? ' <span class="badge badge-orange">Tu</span>' : ""}<br><span class="tiny muted">${esc(L[k].prezzo || "")}</span></th>`).join("")}</tr></thead>
-      <tbody>${P.dentro.map(([g, righe]) => `<tr class="gr"><td colspan="7">${esc(g)}</td></tr>` + righe.map(([n, ...v]) => `<tr><th scope="row">${esc(n)}</th>${v.map((x, i) => `<td class="${COLS[i] === me ? "me" : ""}">${cella(x)}</td>`).join("")}</tr>`).join("")).join("")}</tbody></table></div>
-      <p class="tiny muted" style="margin-top:10px">${esc(P.gratis.testo)}</p></div>`;
+      <tbody>${P.dentro.map(([g, righe]) => `<tr class="gr"><td colspan="${COLS.length + 1}">${esc(g)}</td></tr>` + righe.map(([n, ...v]) => `<tr><th scope="row">${esc(n)}</th>${v.map((x, i) => `<td class="${COLS[i] === me ? "me" : ""}">${cella(x)}</td>`).join("")}</tr>`).join("")).join("")}</tbody></table></div>
+      <p class="tiny muted" style="margin-top:10px">${esc(P.gratis.testo)} Le dispense non si scaricano: si leggono e si annotano nell'area personale.</p></div>`;
   };
   const cardPrezzi = (user) => {
-    const ps = user.activity.purchases || [], plus = B.plus(user), fs = B.inSessione() ? 1 : 0;
+    const ps = user.activity.purchases || [], plus = B.plus(user);
     const studio = U.attiva(user) && U.ateneoAttivo(user);
     const C = [
-      { k: "appunti", p: P.prezzi.appunti[fs], sub: fs ? "in sessione" : "fuori sessione · in sessione " + eur(P.prezzi.appunti[1]), on: ps.some((x) => x.type === "appunti" || x.type === "gratis"), cta: studio ? `<a class="btn btn-ghost" href="#/app/materiali/catalogo">Scegli l'esame</a>` : "" },
-      { k: "completa", p: P.prezzi.completa[fs], sub: fs ? "in sessione" : "fuori sessione · in sessione " + eur(P.prezzi.completa[1]), on: ps.some((x) => x.type === "completa"), cta: studio ? `<a class="btn btn-ghost" href="#/app/materiali/catalogo">Scegli l'esame</a>` : "" },
-      { k: "semester", p: P.prezzi.semester, sub: "stesso prezzo tutto l'anno", on: ps.some((x) => x.type === "semester"), cta: studio ? `<a class="btn btn-orange" href="#/app/abbonamento/calcola">Calcola il tuo pacchetto</a>` : "" },
-      { k: "anno", p: P.prezzi.anno, sub: "stesso prezzo tutto l'anno", on: ps.some((x) => x.type === "anno"), cta: studio ? `<a class="btn btn-ghost" href="#/app/abbonamento/calcola">Calcola il tuo pacchetto</a>` : "" },
+      { k: "simulazione", p: B.prezzo("simulazione"), sub: "invece di " + eur(B.prezzoPieno("simulazione")) + " · prezzo di lancio", on: ps.some((x) => x.type === "simulazione"), cta: studio ? `<a class="btn btn-ghost" href="#/app/materiali/catalogo">Scegli l'esame</a>` : "" },
+      { k: "completa", p: B.prezzo("completa"), sub: "invece di " + eur(B.prezzoPieno("completa")) + " · prezzo di lancio", on: ps.some((x) => x.type === "completa"), cta: studio ? `<a class="btn btn-ghost" href="#/app/materiali/catalogo">Scegli l'esame</a>` : "" },
+      { k: "semester", p: B.prezzo("semester", null, 3), sub: `3 esami · 4 esami ${eur(B.prezzo("semester", null, 4))} · invece di ${eur(B.prezzoPieno("semester", 3))} / ${eur(B.prezzoPieno("semester", 4))}`, on: ps.some((x) => x.type === "semester"), cta: studio ? `<a class="btn btn-orange" href="#/app/abbonamento/calcola">Calcola il tuo pacchetto</a>` : "" },
       { k: "plus", p: B.prezzoPlus(user), sub: B.haPacchetto(user) ? "una tantum · prezzo con pacchetto" : "una tantum · con un pacchetto " + eur(P.prezzi.plusConPacchetto), on: plus, cta: plus ? `<span class="small muted">Fino al ${fmtDate(user.activity.plus.until || B.fineSessione().toISOString())}</span>` : `<button class="btn btn-primary" data-plus>Prendi Plus</button>` },
     ];
     const L = Object.fromEntries(P.lista.map((x) => [x.k, x]));
@@ -107,50 +102,52 @@
       <span class="sq-label">${esc(L[x.k].tipo)}</span><h3>${esc(L[x.k].nome)}</h3><div class="v4-p"><b>${eur(x.p).replace("€", "")}</b><span>€</span></div><p class="tiny ${x.k === "plus" ? "" : "muted"}">${esc(x.sub)}</p>
       <p class="small" style="flex:1">${esc(L[x.k].d)}</p>${x.on ? '<span class="badge badge-green">Attivo</span>' : x.cta || '<span class="small muted">Quando la tua area sarà attiva</span>'}</div>`).join("")}</div>`;
   };
-  // calcolatore del pacchetto (stessa logica della landing v5), con acquisto vero nella demo
+  // calcolatore del pacchetto (stessa logica della landing v8): percorso (corso + curriculum) → esami del semestre → prezzo per numero
+  // di esami (3 → 29,99 · 4 → 34,99). Con più di 4 esami si scelgono i 4 del proprio piano di studi; con 2 o meno conviene la singola.
   function calcolatore(root, user) {
     const box = root.querySelector("[data-calc]"); if (!box) return;
-    const cds = cdsDi(user), sc = { anno: String(annoDi(user)), sem: "1", quando: B.inSessione() ? "in" : "fuori", plus: false, scelte: {} };
-    const esamiDi = (a, s) => B.courses().filter((c) => c.anno === Number(a) && (s === "entrambi" || c.sem === Number(s)) && c.cds.includes(cds));
-    const prezzoDi = (c, t, q) => { const v = t === "completa" && B.haCompleta(c) ? B.prezzoCompleta(c) : P.prezzi.appunti; return v[q === "fuori" ? 0 : 1]; };
-    const tipoDi = (c) => B.owns(user, c.slug) && sc.scelte[c.slug] === undefined ? "gia" : sc.scelte[c.slug] || (B.haCompleta(c) ? "completa" : "appunti");
+    const PERC = window.UL_PERCORSI, MAX = P.maxEsamiPacchetto || 4;
+    const sc = { cds: cdsDi(user), curr: B.currDi(user), anno: String(annoDi(user)), sem: "1", plus: false, scelti: null };
     const draw = () => {
-      const tutti = esamiDi(sc.anno, sc.sem), presi = tutti.filter((c) => !["no", "gia"].includes(tipoDi(c)));
-      const singoli = presi.reduce((n, c) => n + prezzoDi(c, tipoDi(c), sc.quando), 0);
-      const valore = tutti.reduce((n, c) => n + prezzoDi(c, "completa", sc.quando), 0);
-      const pac = sc.sem === "entrambi" ? P.prezzi.anno : P.prezzi.semester, nomePac = sc.sem === "entrambi" ? "Pacchetto anno" : "Pacchetto semestre";
-      const totS = singoli + (sc.plus ? P.prezzi.plus : 0), totP = pac + (sc.plus ? P.prezzi.plusConPacchetto : 0), diff = totS - totP;
-      const pct = (x) => Math.max(6, Math.round((x / Math.max(totS, totP, 1)) * 100));
-      let tit, txt, forte = true;
-      if (!presi.length) { tit = "Scegli almeno un esame"; txt = "Tocca gli esami che pensi di preparare: ti diciamo come spendere meno."; forte = false; }
-      else if (diff >= 0) { tit = `Prendi il ${nomePac}: risparmi ${eur(diff)}`; txt = `${tutti.length} dispense complete a ${eur(pac)} invece di ${eur(singoli)} per ${presi.length === tutti.length ? "comprarle una per una" : `i ${presi.length} esami che hai scelto`}.`; }
-      else if (-diff <= 12 && valore > pac) { tit = `Con ${eur(-diff)} in più hai ${sc.sem === "entrambi" ? "tutto l'anno" : "tutto il semestre"}`; txt = `Il ${nomePac} include le complete di tutti i ${tutti.length} esami: una per una costerebbero ${eur(valore)}.`; }
-      else if (-diff <= 12) { tit = "Costano quasi uguale: scegli tu"; txt = `Qui il pacchetto non fa risparmiare sulle dispense, ma è un solo acquisto${sc.plus ? "" : ` e con un pacchetto Plus costa ${eur(P.prezzi.plus - P.prezzi.plusConPacchetto)} in meno`}.`; forte = false; }
-      else { tit = "Per questi esami ti bastano i singoli"; txt = `Il ${nomePac} conviene se pensi di dare anche gli altri: ${tutti.length} complete a ${eur(pac)} invece di ${eur(valore)}.`; forte = false; }
+      const serveCurr = B.serveCurriculum(sc.cds, sc.anno), curricula = Object.entries(((PERC && PERC.corsi[sc.cds]) || {}).curricula || {});
+      if (serveCurr && !sc.curr && curricula.length) sc.curr = curricula[0][0];
+      const tutti = B.semesterCourses(sc.cds, sc.anno, sc.sem, serveCurr ? sc.curr : "");
+      if (!sc.scelti || sc.scelti.some((s) => !tutti.find((c) => c.slug === s))) sc.scelti = tutti.slice(0, MAX).map((c) => c.slug);
+      const gia = (c) => B.owns(user, c.slug);
+      const presi = tutti.filter((c) => sc.scelti.includes(c.slug)), n = presi.length;
+      const daPagare = presi.filter((c) => !gia(c)), singoli = daPagare.reduce((t, c) => t + B.prezzo("completa", c), 0);
+      const pac = n >= 3 ? B.prezzo("semester", null, n) : null, pieno = n >= 3 ? B.prezzoPieno("semester", n) : null;
+      const totS = singoli + (sc.plus ? P.prezzi.plus : 0), totP = pac == null ? null : pac + (sc.plus ? P.prezzi.plusConPacchetto : 0);
+      const pct = (x) => Math.max(6, Math.round((x / Math.max(totS, totP || 0, 1)) * 100));
+      let tit, txt, forte = false;
+      if (tutti.length < 3) { tit = tutti.length ? "Qui il pacchetto non c'è" : "Nessuna dispensa per questo semestre"; txt = tutti.length ? `Nel tuo percorso questo semestre ha ${tutti.length === 1 ? "una sola dispensa" : "due dispense"}: prendi ${tutti.length === 1 ? "la completa" : "le complete"} a ${eur(P.prezzi.completa[0])} l'una.` : "Prova un altro semestre o un altro curriculum."; }
+      else if (n < 3) { tit = "Scegli almeno 3 esami"; txt = `Il pacchetto parte da 3 esami (${eur(B.prezzo("semester", null, 3))}). Con meno conviene la dispensa singola a ${eur(P.prezzi.completa[0])}.`; }
+      else if (totP <= totS) { forte = true; tit = `Prendi il pacchetto: risparmi ${eur(totS - totP)}`; txt = `${n} dispense complete a ${eur(pac)} invece di ${eur(B.valoreSingoli(presi))} comprate una per una.`; }
+      else { tit = "Ti conviene comprare le singole"; txt = `Hai già ${presi.length - daPagare.length} di questi esami: le altre ${daPagare.length} costano ${eur(singoli)}, meno del pacchetto.`; }
       const seg = (k, v, t, on) => `<button type="button" data-${k}="${v}" class="${on ? "on" : ""}">${t}</button>`;
       box.innerHTML = `<div class="v4-calc"><div class="card">
+          <div class="field"><label>Corso di laurea</label><div class="seg">${Object.entries((PERC && PERC.corsi) || { EA: { nome: "Economia Aziendale" }, EC: { nome: "Economia e Commercio" } }).map(([k, x]) => seg("cc", k, x.nome, k === sc.cds)).join("")}</div></div>
           <div class="field"><label>Anno</label><div class="seg">${["1", "2", "3"].map((a) => seg("ca", a, ROMAN[a] + " anno", a === sc.anno)).join("")}</div></div>
-          <div class="field"><label>Semestre</label><div class="seg">${[["1", "I semestre"], ["2", "II semestre"], ["entrambi", "Tutto l'anno"]].map(([v, t]) => seg("cs", v, t, v === sc.sem)).join("")}</div></div>
-          <div class="field"><label>Quando compri</label><div class="seg">${seg("cq", "fuori", "Fuori sessione", sc.quando === "fuori")}${seg("cq", "in", "In sessione", sc.quando === "in")}</div></div>
-          <label class="sq-label" style="margin-top:10px;display:block">I tuoi esami · cosa compreresti singolarmente</label>
-          <ul class="v4-esami">${tutti.map((c) => { const t = tipoDi(c); return `<li class="${["no", "gia"].includes(t) ? "off" : ""}"><span>${esc(c.title)}<small>${ROMAN[c.sem]} sem.${t === "gia" ? " · già tuo" : ""}</small></span>
-            <span class="seg sm">${seg("ce", c.slug + "|appunti", "Appunti", t === "appunti")}${B.haCompleta(c) ? seg("ce", c.slug + "|completa", "Completa", t === "completa") : ""}${seg("ce", c.slug + "|no", "✕", t === "no" || t === "gia")}</span>
-            <b>${["no", "gia"].includes(t) ? "—" : eur(prezzoDi(c, t, sc.quando))}</b></li>`; }).join("")}</ul>
+          ${serveCurr ? `<div class="field"><label>Curriculum</label><div class="seg" style="flex-wrap:wrap">${curricula.map(([k, nm]) => seg("cu", k, nm, k === sc.curr)).join("")}</div></div>` : ""}
+          <div class="field"><label>Semestre</label><div class="seg">${[["1", "I semestre"], ["2", "II semestre"]].map(([v, t]) => seg("cs", v, t, v === sc.sem)).join("")}</div></div>
+          <label class="sq-label" style="margin-top:10px;display:block">Le dispense del tuo semestre${tutti.length > MAX ? ` · scegline ${MAX} (quelle del tuo piano di studi)` : ""}</label>
+          <ul class="v4-esami">${tutti.map((c) => { const on = sc.scelti.includes(c.slug); return `<li class="${on ? "" : "off"}"><span>${esc(c.title)}<small>${ROMAN[c.sem]} sem.${gia(c) ? " · già tua" : ""}</small></span>
+            <span class="seg sm">${seg("ce", c.slug, on ? "Inclusa" : "Aggiungi", on)}</span><b>${eur(B.prezzo("completa", c))}</b></li>`; }).join("") || '<li class="small muted">Nessuna dispensa in questo semestre.</li>'}</ul>
+          <p class="tiny muted" style="margin-top:8px">${esc((PERC && PERC.fonte) || "")}. Gli esami del III anno spesso sono a scelta: controlla il tuo piano di studi.</p>
           <label class="check" style="margin-top:10px"><input type="checkbox" data-cp ${sc.plus ? "checked" : ""}> Aggiungi UniLink Plus</label></div>
         <div class="card stack">
-          <div class="v4-r"><span>Uno per uno · ${presi.length} ${presi.length === 1 ? "esame" : "esami"}${sc.plus ? " + Plus" : ""}</span><b>${eur(totS)}</b></div><div class="v4-bar"><i style="width:${pct(totS)}%"></i></div>
-          <div class="v4-r ev"><span>${nomePac} · ${tutti.length} complete${sc.plus ? " + Plus" : ""}</span><b>${eur(totP)}</b></div><div class="v4-bar ev"><i style="width:${pct(totP)}%"></i></div>
+          <div class="v4-r"><span>Una per una · ${daPagare.length} ${daPagare.length === 1 ? "dispensa" : "dispense"}${sc.plus ? " + Plus" : ""}</span><b>${eur(totS)}</b></div><div class="v4-bar"><i style="width:${pct(totS)}%"></i></div>
+          ${totP != null ? `<div class="v4-r ev"><span>Pacchetto semestre · ${n} esami${sc.plus ? " + Plus" : ""} <s class="tiny muted">${eur(pieno)}</s></span><b>${eur(totP)}</b></div><div class="v4-bar ev"><i style="width:${pct(totP)}%"></i></div>` : ""}
           <div class="v4-cons ${forte ? "forte" : ""}"><span class="sq-label">Il nostro consiglio</span><h3>${tit}</h3><p class="small">${txt}</p></div>
-          <button class="btn ${forte ? "btn-orange" : "btn-primary"} btn-block" data-compra>${forte && presi.length ? "Prendi il " + nomePac : "Prendi il " + nomePac + " comunque"}</button>
-          <p class="tiny muted">Prezzi ${sc.quando === "fuori" ? "fuori sessione" : "in sessione"} · ${esc(P.stato)} · pagamento simulato.</p></div></div>`;
+          ${totP != null ? `<button class="btn ${forte ? "btn-orange" : "btn-primary"} btn-block" data-compra>Prendi il pacchetto · ${eur(totP)}</button>` : ""}
+          <p class="tiny muted">${esc(P.stato)} · pagamento simulato.</p></div></div>`;
       const on = (sel, fn) => box.querySelectorAll(sel).forEach((b) => (b.onclick = () => { fn(b); draw(); }));
-      on("[data-ca]", (b) => (sc.anno = b.dataset.ca)); on("[data-cs]", (b) => (sc.sem = b.dataset.cs)); on("[data-cq]", (b) => (sc.quando = b.dataset.cq));
-      on("[data-ce]", (b) => { const [s, t] = b.dataset.ce.split("|"); sc.scelte[s] = t; });
+      on("[data-cc]", (b) => { sc.cds = b.dataset.cc; sc.curr = ""; sc.scelti = null; }); on("[data-cu]", (b) => { sc.curr = b.dataset.cu; sc.scelti = null; });
+      on("[data-ca]", (b) => { sc.anno = b.dataset.ca; sc.scelti = null; }); on("[data-cs]", (b) => { sc.sem = b.dataset.cs; sc.scelti = null; });
+      on("[data-ce]", (b) => { const s = b.dataset.ce; if (sc.scelti.includes(s)) sc.scelti = sc.scelti.filter((x) => x !== s); else if (sc.scelti.length < MAX) sc.scelti.push(s); else UL.ui.toast(`Al massimo ${MAX} esami per pacchetto: togline uno`); });
       box.querySelector("[data-cp]").onchange = (e) => { sc.plus = e.target.checked; draw(); };
-      box.querySelector("[data-compra]").onclick = () => {
-        const it = sc.sem === "entrambi" ? B.annoItem(cds, sc.anno) : B.semItem(cds, sc.anno, sc.sem);
-        B.checkout(user, it, () => { if (sc.plus && !B.plus(user)) B.checkout(user, B.plusItem(user), () => UL.app.refresh()); else UL.app.refresh(); });
-      };
+      const cb = box.querySelector("[data-compra]");
+      cb && (cb.onclick = () => B.checkout(user, B.semItem(sc.cds, sc.anno, sc.sem, serveCurr ? sc.curr : "", sc.scelti), () => { if (sc.plus && !B.plus(user)) B.checkout(user, B.plusItem(user), () => UL.app.refresh()); else UL.app.refresh(); }));
     };
     draw();
   }
@@ -159,23 +156,23 @@
     render(user, params) {
       const tab = ["calcola", "ordini"].includes(params[0]) ? params[0] : "piano", plus = B.plus(user), ps = user.activity.purchases;
       const tuoi = user.activity.exams.map((e) => B.course(e.slug)).filter(Boolean);
-      const LV = { none: ["Solo scheda e quiz di prova", "badge-soft"], appunti: ["Appunti", "badge-yellow"], completa: ["Completa", "badge-green"] };
-      return `${head("Account", "euro", `Il tuo <span class="accent">piano</span>`, `Singoli esami, pacchetti e Plus. Quello che compri resta tuo; Plus vale fino a fine sessione. ${esc(P.stato)}.`)}
+      const LV = { none: ["Solo scheda e quiz di prova", "badge-soft"], simulazione: ["Simulazione", "badge-yellow"], completa: ["Completa", "badge-green"] };
+      return `${head("Account", "euro", `Il tuo <span class="accent">piano</span>`, `Simulazioni, dispense complete, pacchetti del tuo percorso e Plus. Quello che compri resta tuo e si legge qui; Plus vale fino a fine sessione. ${esc(P.stato)}.`)}
         <div class="tabs"><a href="#/app/abbonamento" class="${tab === "piano" ? "on" : ""}">${icon("spark")} Il tuo piano</a><a href="#/app/abbonamento/calcola" class="${tab === "calcola" ? "on" : ""}">${icon("calc")} Calcola il pacchetto</a><a href="#/app/abbonamento/ordini" class="${tab === "ordini" ? "on" : ""}">${icon("file")} Ordini <span class="cnt">${ps.length}</span></a></div>
         ${tab === "ordini" ? UL.views.acquistiB.render(user).replace(/<div class="page-head">[\s\S]*?<\/div><\/div>/, "")
-        : tab === "calcola" ? `<p class="muted" style="margin-bottom:16px">Scegli i tuoi esami e cosa compreresti: vedi quanto spenderesti uno per uno e il modo per spendere meno. Gli esami che hai già non si pagano due volte.</p><div data-calc></div>${quando()}`
+        : tab === "calcola" ? `<p class="muted" style="margin-bottom:16px">Scegli corso, curriculum e semestre: vedi quali dispense entrano nel pacchetto e quanto costa (3 esami o 4). Le dispense che hai già non si pagano due volte.</p><div data-calc></div>${quando()}`
         : `<div class="grid g-ov" style="margin-bottom:22px">
           <section class="card navy c-7"><span class="badge badge-orange">Il tuo piano</span><h2 style="margin:12px 0 8px">${esc(B.planName(user))}</h2>
-            <p style="color:rgba(255,255,255,.78)">${plus ? `Plus attivo fino al ${fmtDate(user.activity.plus.until || B.fineSessione().toISOString())}: Planner personale, ripasso degli errori e CV completo su tutti gli esami.` : "Le dispense si comprano per esame o a pacchetti; il metodo (Planner, ripasso errori, CV) è Plus, una volta per sessione."}</p>
+            <p style="color:rgba(255,255,255,.78)">${plus ? `Plus attivo fino al ${fmtDate(user.activity.plus.until || B.fineSessione().toISOString())}: Planner personale e ripasso degli errori su tutti gli esami.` : "Le dispense si comprano per esame o con il pacchetto del tuo semestre; il metodo (Planner su tutti gli esami, ripasso errori) è Plus, una volta per sessione."}</p>
             <div class="row" style="margin-top:18px">${plus ? `<a class="btn btn-white" href="#/app/planner">Apri il Planner</a>` : `<button class="btn btn-white btn-arrow" data-plus>Prendi Plus · ${eur(B.prezzoPlus(user))} <span class="arr">${icon("arrow")}</span></button>`}<a class="btn btn-ghost" style="color:#fff;border-color:rgba(255,255,255,.4)" href="#/app/abbonamento/calcola">Calcola il pacchetto</a></div></section>
           <section class="c-5 stack">
-            <div class="stat"><span class="k">${icon("book")} Esami con materiali</span><span class="v">${B.courses().filter((c) => B.owns(user, c.slug)).length}</span><span class="s">${B.courses().filter((c) => B.ownsCompleta(user, c.slug)).length} con la dispensa completa</span></div>
-            <div class="stat"><span class="k">${icon("spark")} Regali dell'account</span><span class="v">${Math.max(0, B.gratisDisponibili(user))}</span><span class="s">Appunti gratis da scegliere · ${B.gratisUsati(user)} già usati</span></div></section></div>
+            <div class="stat"><span class="k">${icon("book")} Dispense da leggere</span><span class="v">${B.courses().filter((c) => B.owns(user, c.slug)).length}</span><span class="s">compresa Economia Aziendale, gratis per tutti</span></div>
+            <div class="stat"><span class="k">${icon("quiz")} Simulazioni</span><span class="v">${B.courses().filter((c) => B.ownsSimulazione(user, c.slug)).length}</span><span class="s">esami in cui puoi fare la simulazione d'esame</span></div></section></div>
         ${cardPrezzi(user)}${quando()}
         ${tuoi.length ? `<div class="card section" style="margin-top:22px"><div class="card-head"><h3>${icon("layers")} I tuoi esami: cosa hai e cosa puoi sbloccare</h3></div><div class="table-wrap"><table class="table"><thead><tr><th>Esame</th><th>Hai</th><th>Ti manca</th><th></th></tr></thead><tbody>
           ${tuoi.map((c) => { const lv = B.level(user, c.slug); return `<tr><td><a href="#/app/scheda/${c.slug}">${esc(c.title)}</a></td><td><span class="badge ${LV[lv][1]}">${LV[lv][0]}</span></td>
-            <td class="small">${lv === "completa" ? "Niente: hai tutto per questo esame" : lv === "appunti" ? (B.haCompleta(c) ? (c.mappe ? "Mappe, quiz e simulazioni" : "Quiz e simulazioni") : "Mappe e quiz non ancora disponibili") : "Appunti" + (B.haCompleta(c) ? ", quiz e simulazioni" : "")}</td>
-            <td>${lv === "completa" || (lv === "appunti" && !B.haCompleta(c)) ? "" : `<button class="btn btn-sm ${B.puoGratis(user, c.slug) ? "btn-primary" : "btn-orange"}" data-up="${c.slug}">${B.puoGratis(user, c.slug) ? "Gratis per te" : "Sblocca"}</button>`}</td></tr>`; }).join("")}</tbody></table></div></div>` : ""}
+            <td class="small">${lv === "completa" ? "Niente: hai tutto per questo esame" : lv === "simulazione" ? "La dispensa completa e i quiz per argomento" : "Dispensa, quiz e simulazioni"}</td>
+            <td>${lv === "completa" ? `<a class="btn btn-sm btn-ghost" href="#/app/leggi/${c.slug}">Leggi</a>` : `<button class="btn btn-sm btn-orange" data-up="${c.slug}">Sblocca</button>`}</td></tr>`; }).join("")}</tbody></table></div></div>` : ""}
         <div style="margin-top:22px">${tabellaDentro(user)}</div>`}`;
     },
     mount(root, user) {
@@ -387,62 +384,5 @@
     },
   };
 
-  /* ---------- 5 · Il mio percorso: Tesi (per tutti) e CV (5 regole gratis, 17 con Plus) ---------- */
-  const TESI = [["Scegli la materia", "Dove hai i voti migliori, o cosa ti serve per la magistrale."], ["Scegli il relatore", "Arriva con una proposta di due o tre righe. Guida «come scegliere il relatore», non una classifica."], ["Domanda di ricerca", "Una domanda precisa vale più di un titolo ambizioso."], ["Indice", "Concordalo presto: è la mappa del lavoro."], ["Stesura", "Un capitolo alla volta, fonti annotate subito."], ["Consegna", "Scadenze e formato: controlla il sito della tua Scuola."]];
-  const CV = [
-    ["Una pagina", "Fino alla magistrale, una pagina sola."], ["Formazione in alto", "Corso, ateneo, media e anno previsto di laurea."], ["Esperienze con risultati", "Verbi d'azione e numeri: cosa hai ottenuto, non cosa facevi."], ["Competenze verificabili", "Excel, lingue con certificazione, strumenti: niente «buona conoscenza del pacchetto Office»."], ["Contatti puliti", "Email con nome e cognome, LinkedIn aggiornato."],
-    ["Ordine per traiettoria", "Finance, consulting e marketing leggono il CV in modo diverso."], ["Media e lodi", "Quando metterle e quando no."], ["Progetti universitari", "Come trasformare un lavoro di gruppo in un'esperienza."], ["Associazioni", "Cosa conta davvero per i recruiter."], ["Lingue", "Livelli e certificazioni che servono per stage all'estero."], ["Lettera", "Quando serve e come tenerla breve."], ["Parole chiave", "Gli ATS leggono prima di una persona."], ["Errori tipici", "I 10 errori che vediamo più spesso."], ["Stage curricolari", "Come raccontarli."], ["Erasmus", "Come farlo valere."], ["Formato", "PDF, nome del file, font."], ["Benchmark", "Il CV UniLink per la tua traiettoria, da confrontare con il tuo."],
-  ];
-  U.tesiTab = (user) => {
-    const done = (user.activity.tesi = user.activity.tesi || []);
-    return `<div class="grid g-ov"><section class="card c-7"><div class="card-head"><h3>${icon("file")} La tesi, tappa per tappa</h3><span class="badge badge-green">per tutti</span></div>
-      <ul class="v4-task">${TESI.map(([t, d], i) => `<li class="${done.includes(i) ? "done" : ""}"><button class="v4-cb" data-tesi="${i}">${done.includes(i) ? icon("check") : ""}</button><span>${i + 1} · ${esc(t)}<small>${esc(d)}</small></span></li>`).join("")}</ul></section>
-      <section class="c-5 stack"><div class="card beige"><h3>Regole della prova finale</h3><p class="small" style="margin-top:6px">Economia UniFi: media + costante + premio di velocità (2 punti entro il 31/12 del terzo anno, 1 entro il 30/4, poi 0). Ogni corso ha le sue regole nel catalogo unico dei corsi.</p><a class="btn btn-sm btn-ghost" style="margin-top:10px" href="#/app/percorso/libretto">Calcola il voto</a></div>
-        <div class="card"><h3>Template Word e LaTeX</h3><p class="small muted" style="margin:6px 0 10px">Impaginato secondo le regole della Scuola. In arrivo per tutti.</p><span class="badge badge-soft">in arrivo</span></div></section></div>`;
-  };
-  U.cvTab = (user) => {
-    const plus = B.plus(user), mine = user.activity.cv || [], vis = plus ? CV : CV.slice(0, 5);
-    return `<div class="grid g-ov"><section class="card c-8"><div class="card-head"><h3>${icon("brief")} CV benchmark</h3><span class="small muted">${plus ? "17 regole" : "5 regole su 17"}</span></div>
-      <ul class="v4-task">${vis.map(([t, d], i) => `<li class="${mine.includes("cv" + i) ? "done" : ""}"><button class="v4-cb" data-cv="${i}">${mine.includes("cv" + i) ? icon("check") : ""}</button><span>${esc(t)}<small>${esc(d)}</small></span></li>`).join("")}</ul>
-      ${plus ? "" : `<div style="margin-top:14px">${U.lock("Altre 12 regole e il CV benchmark per traiettoria", "Con Plus: finance, consulting, marketing · " + eur(B.prezzoPlus(user)) + " una tantum")}</div>`}</section>
-      <section class="c-4 stack"><div class="stat"><span class="k">Regole spuntate</span><span class="v">${mine.filter((x) => Number(x.slice(2)) < vis.length).length} / ${vis.length}</span><span class="s">si salvano nel tuo account</span></div></section></div>`;
-  };
-  U.bindPercorsoV4 = (root, user) => {
-    root.querySelectorAll("[data-tesi]").forEach((b) => b.addEventListener("click", () => { const a = (user.activity.tesi = user.activity.tesi || []), i = Number(b.dataset.tesi); a.includes(i) ? a.splice(a.indexOf(i), 1) : a.push(i); UL.store.save(); UL.app.refresh(); }));
-    root.querySelectorAll("[data-cv]").forEach((b) => b.addEventListener("click", () => { const a = (user.activity.cv = user.activity.cv || []), k = "cv" + b.dataset.cv; a.includes(k) ? a.splice(a.indexOf(k), 1) : a.push(k); UL.store.save(); UL.app.refresh(); }));
-    bindPlus(root, user);
-  };
-
-  /* ---------- 6 · Guida per facoltà (contenuti della landing: js/guida-dati.js) ---------- */
-  const IMG = "../demo-landing/img/";
-  const GB = {
-    cards: (b) => `<div class="g-cards c${b.cols || 2}">${b.items.map((c) => `<div class="g-card">${c.k ? `<span class="g-k">${esc(c.k)}</span>` : ""}<h4>${esc(c.h)}</h4>${c.p ? `<p>${esc(c.p)}</p>` : ""}${c.lista ? `<ul>${c.lista.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}</div>`).join("")}</div>`,
-    passi: (b) => `<ol class="g-passi">${b.items.map((x, i) => `<li><span class="g-n">${i + 1}</span><div><h4>${esc(x.h)}</h4><p>${esc(x.p)}</p></div></li>`).join("")}</ol>`,
-    tabella: (b) => `<div class="table-wrap" style="margin:12px 0">${b.h ? `<p class="sq-label" style="margin-bottom:6px">${esc(b.h)}</p>` : ""}<table class="table"><thead><tr>${b.head.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${b.rows.map((r) => `<tr>${r.map((c) => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`,
-    frase: (b) => `<blockquote class="g-frase">${esc(b.testo)}</blockquote>`,
-    box: (b) => `<div class="banner" style="margin:12px 0">${icon("info")}<span><b>${esc(b.h)}</b> ${esc(b.p)}</span></div>`,
-    cta: (b) => /materiali|tools|strumenti/.test(b.href) ? `<a class="btn btn-sm btn-ghost" style="margin:8px 0" href="${/materiali/.test(b.href) ? "#/app/materiali" : "#/app/percorso/libretto"}">${esc(b.testo)} →</a>` : "",
-    formula: (b) => `<div class="card beige" style="margin:12px 0"><span class="sq-label">${esc(b.h)}</span><p class="display" style="font-size:20px;color:var(--navy);margin-top:6px">${esc(b.testo)}</p></div>`,
-    fonte: (b) => `<p class="tiny muted">${esc(b.testo)}</p>`,
-    lista: (b) => `${b.h ? `<h4 style="margin:12px 0 6px">${esc(b.h)}</h4>` : ""}<ul class="g-lista">${b.items.map((x) => `<li>${x.href ? `<a href="${esc(x.href)}" target="_blank" rel="noopener">${esc(x.h)} ↗</a>` : `${x.h ? `<b>${esc(x.h)}</b>${x.k ? ` <span class="tiny muted">${esc(x.k)}</span>` : ""} ` : ""}${esc(x.p || "")}`}</li>`).join("")}</ul>`,
-    mappa: (b) => `<div class="g-cards c${Math.min(4, b.items.length)}">${b.items.map((x) => `<div class="g-card"><span class="g-k">${esc(x.k)}</span><h4>${esc(x.h)}</h4><p>${esc(x.p)}</p></div>`).join("")}</div>`,
-  };
-  UL.views.guidaU = {
-    title: "Guida",
-    render(user, params) {
-      const G = window.UL_GUIDA;
-      if (!G) return `<div class="card empty">Guida non disponibile.</div>`;
-      const f = G.facolta.find((x) => x.id === (params[0] || user.profile.area)) || G.facolta[0];
-      const fac = `<div class="chips" style="margin-bottom:14px">${G.facolta.slice(0, 6).map((x) => `<a class="chip ${x.id === f.id ? "on" : ""}" href="#/app/guida/${x.id}">${esc(x.nome)}${x.stato === "completa" ? "" : " · in arrivo"}</a>`).join("")}</div>`;
-      if (f.stato !== "completa") return `${head("Guida", "map", `Guida <span class="accent">${esc(f.nome)}</span>`, "Stessa struttura della guida di Economia. I testi li scriviamo con chi studia lì.")}${fac}
-        <div class="grid g-ov">${G.schema.map((s) => `<div class="card c-4"><span class="sq-label">${s.n}</span><h3 style="margin:6px 0">${esc(s.titolo)}</h3><ul class="g-lista">${s.sezioni.map((x) => `<li>${esc(x)}</li>`).join("")}</ul><span class="badge badge-soft">da scrivere</span></div>`).join("")}</div>`;
-      const E = G[f.id], c = E.capitoli.find((x) => x.id === params[1]) || E.capitoli[0], i = E.capitoli.indexOf(c);
-      return `${head(`Guida · aggiornata ad ${G.aggiornata}`, "map", `${esc(E.titolo.split("·")[0])}<span class="accent">${esc(f.nome)}</span>`, esc(E.obiettivo || ""))}${fac}
-        <div class="tabs" style="overflow-x:auto">${E.capitoli.map((x) => `<a href="#/app/guida/${f.id}/${x.id}" class="${x.id === c.id ? "on" : ""}">${x.n} ${esc(x.titolo)}</a>`).join("")}</div>
-        <div class="grid g-ov"><section class="card c-8"><span class="sq-label">Capitolo ${c.n}</span><h2 style="margin:6px 0">${esc(c.titolo)}</h2><p class="muted">${esc(c.sotto)}</p>
-            ${c.sezioni.map((s) => `<div class="g-sez"><span class="sq-label">${esc(s.sotto || "")}</span><h3>${esc(s.titolo)}</h3>${s.intro ? `<p>${esc(s.intro)}</p>` : ""}${(s.blocchi || []).map((b) => (GB[b.t] ? GB[b.t](b) : "")).join("")}</div>`).join("")}
-            <div class="row between" style="margin-top:18px">${i ? `<a class="btn btn-ghost" href="#/app/guida/${f.id}/${E.capitoli[i - 1].id}">← ${esc(E.capitoli[i - 1].titolo)}</a>` : "<span></span>"}${E.capitoli[i + 1] ? `<a class="btn btn-primary" href="#/app/guida/${f.id}/${E.capitoli[i + 1].id}">${esc(E.capitoli[i + 1].titolo)} →</a>` : ""}</div></section>
-          <aside class="c-4 stack">${c.img ? `<img src="${IMG + esc(c.img)}" alt="" style="width:100%;border-radius:18px" onerror="this.remove()">` : ""}<div class="card beige"><span class="sq-label">In breve</span><ul class="g-lista" style="margin-top:8px">${c.breve.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div></aside></div>`;
-    },
-  };
+  /* 5 · Tesi e CV · 6 · Guida: ARCHIVIATI il 7/10 → js/archivio/tesi-cv-guida.js (si aprono da Da decidere → Archivio) */
 })();
