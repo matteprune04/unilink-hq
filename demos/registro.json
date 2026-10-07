@@ -4,6 +4,21 @@
    "id": "landing",
    "versioni": [
     {
+     "n": 14,
+     "tag": "landing-v14",
+     "data": "2026-10-07T22:16+00:00",
+     "autore": "Claude",
+     "nota": "Landing v10: commenti v9 (Guida leggibile, sconti visibili, esami a scelta, 4 strumenti)",
+     "commit": "342d0e4",
+     "demo_v": 10,
+     "demo_data": "2026-10-08",
+     "impronta": "81df8a815da3e751",
+     "kb": 5630,
+     "file": "UniLink_landing_demo-v10_backup14_2026-10-07.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v14/UniLink_landing_demo-v10_backup14_2026-10-07.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v14/demo-landing"
+    },
+    {
      "n": 13,
      "tag": "landing-v13",
      "data": "2026-10-07T22:08+00:00",
@@ -209,6 +224,21 @@
    "id": "webapp",
    "versioni": [
     {
+     "n": 12,
+     "tag": "webapp-v12",
+     "data": "2026-10-07T22:16+00:00",
+     "autore": "Claude",
+     "nota": "Landing v10: commenti v9 (Guida leggibile, sconti visibili, esami a scelta, 4 strumenti)",
+     "commit": "342d0e4",
+     "demo_v": 9,
+     "demo_data": "2026-10-08",
+     "impronta": "6f445c6fd2911aa5",
+     "kb": 454,
+     "file": "UniLink_webapp_demo-v9_backup12_2026-10-07.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/webapp-v12/UniLink_webapp_demo-v9_backup12_2026-10-07.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v12/demo-webapp"
+    },
+    {
      "n": 11,
      "tag": "webapp-v11",
      "data": "2026-10-07T22:08+00:00",
@@ -381,5 +411,5 @@
    "url": "https://matteprune04.github.io/unilink-hq/demo-webapp/"
   }
  ],
- "aggiornato": "2026-10-07T22:08+00:00"
+ "aggiornato": "2026-10-07T22:16+00:00"
 }
