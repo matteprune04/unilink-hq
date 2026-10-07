@@ -4,6 +4,21 @@
    "id": "landing",
    "versioni": [
     {
+     "n": 12,
+     "tag": "landing-v12",
+     "data": "2026-10-07T21:50+00:00",
+     "autore": "Claude",
+     "nota": "Landing v9: risposte di Matteo e PDF della landing reale",
+     "commit": "a0967fa",
+     "demo_v": 9,
+     "demo_data": "2026-10-08",
+     "impronta": "faf8931cdabc355e",
+     "kb": 5628,
+     "file": "UniLink_landing_demo-v9_backup12_2026-10-07.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v12/UniLink_landing_demo-v9_backup12_2026-10-07.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v12/demo-landing"
+    },
+    {
      "n": 11,
      "tag": "landing-v11",
      "data": "2026-10-07T21:35+00:00",
@@ -321,5 +336,5 @@
    "url": "https://matteprune04.github.io/unilink-hq/demo-webapp/"
   }
  ],
- "aggiornato": "2026-10-07T21:35+00:00"
+ "aggiornato": "2026-10-07T21:50+00:00"
 }
