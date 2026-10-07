@@ -7,7 +7,7 @@
    Caricato PRIMA di store.js: chiavi del database, MODELLO DATI (default di profilo e attività) e testi del login. */
 window.UL = window.UL || {};
 
-UL.VERSIONE = { n: 7, data: "2026-10-07", nota: "Decisioni del meeting del 7/10: listino di lancio (Simulazione 4,99, Dispensa completa 12,99, Pacchetto semestre 29,99 o 34,99 per percorso, Plus 14,99 o 7,99 con un pacchetto, niente Appunti singoli né Pacchetto anno, niente prezzi in sessione), Economia Aziendale completa gratis per tutti, dispense solo da leggere e annotare nell'app (niente download), Ambassador a commissione (20%). Archiviati Guida, Tesi, CV e Mentor (Founder → Archivio). Prima, v6: pagamento con Stripe Checkout (simulato)." };
+UL.VERSIONE = { n: 8, data: "2026-10-08", nota: "Commenti del 7/10 (web app v7): «I miei esami» diventa l'unica macrosezione di studio (Panoramica, Dispensa con evidenziatore e note, Flashcard SM-2, Esercizi per macroargomento e capitolo con tempi e registro errori, Simulazione, Mappa del corso, Note); Strumenti nella web app; Planner con ore ufficiali UniFi e giudizio di fattibilità; Aula studio e Ambassador nelle proposte (D45, D46); nuove proposte D47–D49 e tabella «Kit per esame». Prima, v7: listino del 7/10 e lettore senza download." };
 
 /* PIANI — decisi nel meeting del 7/10/2026 (HQ → Decisioni «MEETING 7/10»), uguali alla landing v8 (demo-landing/config.js → listino).
    Prezzi comunicati come SCONTO DI LANCIO: [prezzo di lancio, prezzo pieno barrato]. Niente prezzi «in sessione / fuori sessione».
@@ -92,7 +92,7 @@ UL.CONFIG = {
   },
 
   auth: {
-    flag: "Demo · UniLink v7",
+    flag: "Demo · UniLink v8",
     title: 'La tua <span class="accent">Area Personale</span> UniLink',
     sub: "Accedi per ritrovare le tue dispense, i tuoi esami e gli strumenti per scegliere. Da studenti, per studenti.",
     regTitle: 'Il tuo spazio, <span class="accent">gratis</span>',

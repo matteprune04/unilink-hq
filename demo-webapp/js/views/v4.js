@@ -185,7 +185,11 @@
   /* ---------- 4 · UniLink Planner (P3) ----------
      Deciso in chat: il piano si calcola UNA volta alla creazione (niente ricalcolo); se salti, le missioni restano in ordine
      e si mostra il ritardo; rigenerare è una scelta dello studente. Fasce: Passare 18–21 · Buono 22–25 · Ottimo 26–28 · Massimo 29–30L.
-     Ore utili = giorni × ore nette × (1 − margine 15–20%). Sessioni da 45′. Numeri di sessioni per fascia: da calibrare con dati veri. */
+     Ore utili = giorni × ore nette × (1 − margine 15–20%). Sessioni da 45′.
+     v8 (commento 12 del 7/10): le ore che servono partono dal dato UFFICIALE, non da numeri inventati: studio individuale =
+     CFU × 25 − ore di lezione (DM 270/2004 + Course Catalogue UniFi, js/studio-dati.js → UL.ORE), meno quello che hai già studiato
+     durante il corso, più metà delle ore di lezione se non le hai seguite; × il moltiplicatore della fascia (IPOTESI da calibrare con
+     i tempi veri registrati). Giudizio: Fattibile · Tirato · Difficile · Non realistico (UL.METODO.giudizi). Fonti: UL.METODO.fonti. */
   const PL = {
     min: 45,
     fasce: [
@@ -197,21 +201,27 @@
     fasi: [["Avvio", 0.06], ["Basi", 0.32], ["Approfondimento", 0.27], ["Allenamento d'esame", 0.23], ["Rifinitura", 0.12]],
     giorni: ["dom", "lun", "mar", "mer", "gio", "ven", "sab"],
     disclaimer: "Le fasce dicono quanto lavoro prevede il metodo per quel voto: non garantiamo il risultato.",
-    TIPI: { Lezione: "t-lez", Esercizi: "t-ese", Test: "t-test", Ripasso: "t-rip", Simulazione: "t-sim", Errori: "t-err" },
+    TIPI: { Lezione: "t-lez", Esercizi: "t-ese", Test: "t-test", Flashcard: "t-test", Ripasso: "t-rip", Simulazione: "t-sim", Errori: "t-err" },
   };
   const n1 = (x) => Number(x).toLocaleString("it-IT", { maximumFractionDigits: 1 });
   // chi può creare il piano personale di un esame: Completa di quell'esame (anche da pacchetto) oppure Plus (tutti gli esami)
   B.puoPianificare = (user, slug) => B.plus(user) || B.ownsCompleta(user, slug);
   const fascia = (id) => PL.fasce.find((f) => f.id === id) || PL.fasce[2];
   const capitoli = (c) => { const t = [...new Set(B.questions(c.slug).map((q) => q.topic))]; return t.length ? t : Array.from({ length: Math.max(5, Math.round((c.cfu || 6) * 0.8)) }, (_, i) => "Capitolo " + (i + 1)); };
-  const sessioniTot = (c, f) => Math.round(fascia(f).s * ((c.cfu || 9) / 9));
+  // ore ufficiali di studio individuale dell'esame (UniFi: 17 h per CFU) e ore che servono per fascia e situazione dello studente
+  const M = UL.METODO || { fasce: {}, giudizi: [[0, "—", "badge-soft"]], lezioniNonSeguite: 0.5 };
+  const oreUff = (c) => { const o = UL.ORE && UL.ORE.esami[c.code], cfu = (o && o.cfu) || c.cfu || 9, lez = (o && o.ore) != null ? o.ore : cfu * 8; return { cfu, lez, studio: cfu * 25 - lez, vero: !!o }; };
+  const oreServono = (c, f, cfg = {}) => { const u = oreUff(c), gia = Number(cfg.gia || 0), extra = cfg.lezioni === "no" ? u.lez * M.lezioniNonSeguite : 0;
+    return Math.max(4, (u.studio * (1 - gia) + extra) * (M.fasce[f] || 1)); };
+  const sessioniTot = (c, f, cfg) => Math.round((oreServono(c, f, cfg) * 60) / PL.min);
+  const giudizio = (utili, serve) => { const r = utili / Math.max(serve, 0.1); return (M.giudizi.find(([soglia]) => r >= soglia) || M.giudizi[M.giudizi.length - 1]).concat([r]); };
   const giorno0 = (d) => { const x = new Date(d); x.setHours(0, 0, 0, 0); return x; };
   const iso = (d) => giorno0(d).toISOString().slice(0, 10);
   const giorniUtili = (cfg) => { let n = 0; const fine = giorno0(cfg.appello); for (let d = giorno0(cfg.dal || new Date()); d < fine; d.setDate(d.getDate() + 1)) if (cfg.giorni.includes(d.getDay())) n++; return n; };
   const perGiorno = (cfg) => Math.max(1, Math.floor((cfg.ore * 60 * (1 - cfg.margine)) / PL.min));
-  const stima = (c, cfg) => { const tot = sessioniTot(c, cfg.fascia), gu = giorniUtili(cfg), utili = gu * cfg.ore * (1 - cfg.margine), serve = (tot * PL.min) / 60; return { tot, gu, utili, serve, ok: utili >= serve }; };
+  const stima = (c, cfg) => { const tot = sessioniTot(c, cfg.fascia, cfg), gu = giorniUtili(cfg), utili = gu * cfg.ore * (1 - cfg.margine), serve = (tot * PL.min) / 60, g = giudizio(utili, serve); return { tot, gu, utili, serve, ok: utili >= serve, giudizio: g }; };
   function genera(c, cfg) {
-    const tot = sessioniTot(c, cfg.fascia), caps = capitoli(c), pf = PL.fasi.map(([, q]) => Math.round(tot * q)); pf[4] += tot - pf.reduce((a, b) => a + b, 0);
+    const tot = sessioniTot(c, cfg.fascia, cfg), caps = capitoli(c), pf = PL.fasi.map(([, q]) => Math.round(tot * q)); pf[4] += tot - pf.reduce((a, b) => a + b, 0);
     const S = [];
     const add = (fase, cap, tipo) => S.push({ fase, cap, tipo, data: "", fatto: "", esito: "", errori: 0 });
     for (let i = 0; i < pf[0]; i++) add(0, i === 0 ? "Indice e programma" : "Prova diagnostica", i === 0 ? "Lezione" : "Test");
@@ -242,8 +252,11 @@
         <div class="grid-2"><div class="field"><label>Esame</label><select class="select" data-pv="slug">${opzioni.map((x) => `<option value="${x.slug}" ${x.slug === c.slug ? "selected" : ""}>${esc(x.title)} · ${x.cfu || "?"} CFU</option>`).join("")}</select></div>
           <div class="field"><label>Data dell'appello</label><input class="input" type="date" data-pv="appello" value="${esc(cfg.appello)}"></div></div>
         <label class="sq-label" style="display:block;margin:12px 0 8px">Fascia di voto obiettivo</label>
-        <div class="v4-fasce">${PL.fasce.map((f) => `<button type="button" class="${f.id === cfg.fascia ? "on" : ""}" data-pf="${f.id}"><b>${f.nome}</b><span>${f.voto}</span><small>${sessioniTot(c, f.id)} sessioni</small></button>`).join("")}</div>
+        <div class="v4-fasce">${PL.fasce.map((f) => `<button type="button" class="${f.id === cfg.fascia ? "on" : ""}" data-pf="${f.id}"><b>${f.nome}</b><span>${f.voto}</span><small>${n1(oreServono(c, f.id, cfg))} h</small></button>`).join("")}</div>
         <p class="small" style="margin-top:8px">${esc(fascia(cfg.fascia).cosa)}</p><p class="tiny muted">${esc(PL.disclaimer)}</p>
+        <div class="grid-2" style="margin-top:12px"><div class="field"><label>Quanto hai già studiato durante il corso</label><select class="select" data-pv="gia">${[["0", "Niente, parto da zero"], ["0.25", "Circa un quarto"], ["0.5", "Circa metà"], ["0.75", "Quasi tutto, devo ripassare"]].map(([v, t]) => `<option value="${v}" ${String(cfg.gia || 0) === v ? "selected" : ""}>${t}</option>`).join("")}</select></div>
+          <div class="field"><label>Lezioni</label><select class="select" data-pv="lezioni">${[["si", "Le ho seguite"], ["no", "Non le ho seguite"]].map(([v, t]) => `<option value="${v}" ${(cfg.lezioni || "si") === v ? "selected" : ""}>${t}</option>`).join("")}</select></div></div>
+        <p class="tiny muted" style="margin-top:6px">${(() => { const u = oreUff(c); return `${esc(c.title)}: ${u.cfu} CFU = ${u.cfu * 25} ore di impegno, ${u.lez} di lezione e ${u.studio} di studio individuale${u.vero ? " (dati ufficiali UniFi)" : " (stima: 8 ore di lezione per CFU)"}.`; })()}</p>
         <label class="sq-label" style="display:block;margin:14px 0 8px">Giorni in cui studi</label>
         <div class="v4-gg">${[1, 2, 3, 4, 5, 6, 0].map((g) => `<button type="button" class="${cfg.giorni.includes(g) ? "on" : ""}" data-pg="${g}">${PL.giorni[g][0].toUpperCase()}</button>`).join("")}</div>
         <div class="grid-2" style="margin-top:12px"><div class="field"><label>Ore nette al giorno</label><input class="input" type="number" min="0.5" max="10" step="0.5" data-pv="ore" value="${cfg.ore}"></div>
@@ -252,8 +265,9 @@
           <div class="v4-r" style="margin-top:10px"><span>Ore che servono (${fascia(cfg.fascia).nome})</span><b>${n1(st.serve)} h</b></div><div class="v4-bar ev"><i style="width:${Math.min(100, (st.serve / Math.max(st.utili, st.serve, 1)) * 100)}%"></i></div>
           <div class="v4-r"><span>Ore utili fino all'appello</span><b>${n1(st.utili)} h</b></div><div class="v4-bar"><i style="width:${Math.min(100, (st.utili / Math.max(st.utili, st.serve, 1)) * 100)}%"></i></div>
           <p class="tiny muted">${st.gu} giorni × ${n1(cfg.ore)} h − margine ${Math.round(cfg.margine * 100)}% · ${st.tot} sessioni da ${PL.min}′ · ${perGiorno(cfg)} al giorno</p>
-          <p style="margin-top:10px"><span class="badge ${st.ok ? "badge-green" : "badge-red"}">${st.ok ? `Fattibile · ${n1(st.utili - st.serve)} h di riserva` : `Non ci stai: mancano ${n1(st.serve - st.utili)} h`}</span></p>
-          ${st.ok ? "" : '<p class="small" style="margin-top:8px">Aggiungi giorni o ore, oppure scegli una fascia più bassa.</p>'}</div>
+          <p style="margin-top:10px"><span class="badge ${st.giudizio[2]}">${st.giudizio[1]}</span> <span class="small">${st.ok ? `${n1(st.utili - st.serve)} h di riserva` : `mancano ${n1(st.serve - st.utili)} h`} · copri il ${Math.round(Math.min(9.99, st.giudizio[3]) * 100)}% delle ore che servono</span></p>
+          ${st.giudizio[1] === "Fattibile" ? "" : `<p class="small" style="margin-top:8px">${st.giudizio[1] === "Non realistico" ? "Con questi tempi l'obiettivo non è realistico: scegli una fascia più bassa, sposta l'appello o aggiungi giorni e ore." : "Aggiungi giorni o ore, oppure scegli una fascia più bassa."}</p>`}
+          <p class="tiny muted" style="margin-top:8px">Fattibile ≥ 110% · Tirato 90–110% · Difficile 70–90% · Non realistico &lt; 70%. Le fasce moltiplicano le ore ufficiali (ipotesi da calibrare con i tempi veri).</p></div>
         ${plus ? `<button class="btn btn-orange btn-arrow btn-block" data-crea>${piani(user)[c.slug] ? "Rigenera il piano" : "Crea il piano"} <span class="arr">${icon("arrow")}</span></button><p class="tiny muted">Il piano si calcola una volta sola: ${piani(user)[c.slug] ? "rigenerarlo azzera le date (le sessioni fatte restano fatte)." : "se salti una sessione, le missioni restano in ordine e vedi il ritardo."}</p>`
           : U.lock("Il piano personale di " + c.title, B.haCompleta(c) ? `Con la dispensa completa (${eur(B.prezzo("completa", c))}) o con Plus per tutti gli esami (${eur(B.prezzoPlus(user))})` : `Con Plus (${eur(B.prezzoPlus(user))}): per questo esame la completa non c'è ancora`, `data-v4plan="${c.slug}"`)}</section></div>`;
   }
@@ -262,8 +276,12 @@
     return `<div class="card section"><div class="card-head"><h3>${icon("book")} Il metodo standard di ${esc(c.title)}</h3><span class="badge badge-green">per tutti</span></div>
       <p class="small muted" style="margin-bottom:12px">Fasi uguali per tutti gli esami; cambiano capitoli e numero di sessioni per fascia. È il metodo: il piano personale lo mette sui tuoi giorni.</p>
       <div class="v4-fasi">${PL.fasi.map(([n, q], i) => `<div><span class="sq-label">Fase ${i + 1}</span><b>${n}</b><span class="tiny muted">${Math.round(q * 100)}% delle sessioni</span></div>`).join("")}</div>
-      <div class="table-wrap" style="margin-top:14px"><table class="table"><thead><tr><th>Fascia</th><th>Voto</th><th class="num">Sessioni da 45′</th><th class="num">Ore</th><th>Cosa cambia</th></tr></thead><tbody>${PL.fasce.map((f) => `<tr><td>${f.nome}</td><td>${f.voto}</td><td class="num">${sessioniTot(c, f.id)}</td><td class="num">${Math.round((sessioniTot(c, f.id) * PL.min) / 60)}</td><td class="small">${f.cosa}</td></tr>`).join("")}</tbody></table></div>
-      <p class="small" style="margin-top:12px">Capitoli: ${caps.map(esc).join(" · ")}</p></div>`;
+      <div class="table-wrap" style="margin-top:14px"><table class="table"><thead><tr><th>Fascia</th><th>Voto</th><th class="num">Sessioni da 45′</th><th class="num">Ore</th><th>Cosa cambia</th></tr></thead><tbody>${PL.fasce.map((f) => `<tr><td>${f.nome}</td><td>${f.voto}</td><td class="num">${sessioniTot(c, f.id, {})}</td><td class="num">${Math.round((sessioniTot(c, f.id) * PL.min) / 60)}</td><td class="small">${f.cosa}</td></tr>`).join("")}</tbody></table></div>
+      <p class="small" style="margin-top:12px">Capitoli: ${caps.map(esc).join(" · ")}</p>
+      <h3 style="margin:18px 0 8px">Che cosa fai in ogni sessione, e perché</h3>
+      <div class="table-wrap"><table class="table"><thead><tr><th>Sessione</th><th>Tecnica</th><th>Prova scientifica</th></tr></thead><tbody>${(M.tecniche || []).map(([t, d, f]) => `<tr><td><span class="v4-t ${PL.TIPI[t] || ""}">${esc(t)}</span></td><td class="small">${esc(d)}</td><td class="small muted">${esc(f)}</td></tr>`).join("")}</tbody></table></div>
+      <p class="small" style="margin-top:8px">${esc(M.sconsigliate || "")}</p>
+      <details style="margin-top:10px"><summary class="small display">Fonti del metodo</summary><ul class="feed" style="margin-top:8px">${(M.fonti || []).map(([t, u]) => `<li><span class="ic">${icon("file")}</span><div><a href="${esc(u)}" target="_blank" rel="noopener">${esc(t)} ↗</a></div></li>`).join("")}</ul></details></div>`;
   }
   const VISTE = [["variabili", "Variabili", "settings"], ["percorso", "Percorso", "chart"], ["missioni", "Missioni", "check"], ["calendario", "Calendario", "calendar"], ["oggi", "Oggi", "clock"], ["completate", "Completate", "file"]];
   function vistaPlus(user, c, p, v) {
@@ -348,7 +366,7 @@
       root.querySelectorAll("[data-pv]").forEach((el) => el.addEventListener("change", () => {
         const k = el.dataset.pv;
         if (k === "slug") return UL.app.go(`#/app/planner/${el.value}/variabili`);
-        cfg[k] = k === "ore" ? Number(el.value) || 1 : k === "margine" ? Math.min(0.4, Math.max(0, Number(el.value) / 100)) : el.value; redraw();
+        cfg[k] = k === "ore" ? Number(el.value) || 1 : k === "margine" ? Math.min(0.4, Math.max(0, Number(el.value) / 100)) : k === "gia" ? Number(el.value) : el.value; redraw();
       }));
       root.querySelectorAll("[data-pf]").forEach((b) => b.addEventListener("click", () => { cfg.fascia = b.dataset.pf; redraw(); }));
       root.querySelectorAll("[data-pg]").forEach((b) => b.addEventListener("click", () => { const g = Number(b.dataset.pg); cfg.giorni = cfg.giorni.includes(g) ? cfg.giorni.filter((x) => x !== g) : cfg.giorni.concat(g); if (!cfg.giorni.length) cfg.giorni = [g]; redraw(); }));
@@ -358,7 +376,7 @@
         if (vecchio && !(await UL.ui.confirmBox("Rigenerare il piano?", "Le date delle sessioni vengono ricalcolate da oggi con le nuove variabili. Le sessioni già fatte restano fatte.", "Rigenera"))) return;
         const S = genera(c, { ...cfg, dal: new Date() });
         if (vecchio) vecchio.sessioni.filter((s) => s.fatto).forEach((s, i) => { if (S[i]) Object.assign(S[i], { fatto: s.fatto, esito: s.esito, errori: s.errori }); });
-        PI[cfg.slug] = { fascia: cfg.fascia, appello: cfg.appello, giorni: cfg.giorni.slice(), ore: cfg.ore, margine: cfg.margine, creato: new Date().toISOString(), sessioni: S };
+        PI[cfg.slug] = { fascia: cfg.fascia, appello: cfg.appello, giorni: cfg.giorni.slice(), ore: cfg.ore, margine: cfg.margine, gia: cfg.gia || 0, lezioni: cfg.lezioni || "si", creato: new Date().toISOString(), sessioni: S };
         const e = user.activity.exams.find((x) => x.slug === cfg.slug); if (e && !e.appello) e.appello = cfg.appello;
         UL.store.addLog(user, "piano", `Planner: piano ${fascia(cfg.fascia).nome} per ${c.title}`); UL.store.save();
         UL.ui.toast("Piano creato"); UL.app.go(`#/app/planner/${cfg.slug}/percorso`);

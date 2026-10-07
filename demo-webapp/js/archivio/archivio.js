@@ -45,6 +45,12 @@
     },
     mount(root, u, params) { const x = UL.ARCHIVIO.find((a) => a.id === params[0]); if (x && x.mount) x.mount(root, u, params.slice(1)); },
   };
+  // v8: Aula studio (D45) e Ambassador (D46) sono proposte: si aprono dalle card, con il banner
+  const prop = (id, vista) => ({ get title() { return UL.views[vista].title; },
+    render: (u, p) => `<div class="banner dd-banner">${icon("alert")}<span><b>Proposta ${id}</b> — tolta dalla sidebar l'8/10 (commenti del team), si vede solo da Da decidere.</span><a class="btn btn-sm btn-orange" href="#/app/decidere/${id}">La proposta</a></div><div style="margin-top:16px">${UL.views[vista].render(u, p)}</div>`,
+    mount: (r, u, p) => UL.views[vista].mount && UL.views[vista].mount(r, u, p) });
+  UL.views.aulaProp = prop("D45", "aulaU");
+  UL.views.ambassadorProp = prop("D46", "ambassadorU");
   // i link interni della Guida archiviata (#/app/guida/…) restano validi, ma si aprono con il banner dell'archivio
   UL.views.guidaArch = { title: "Archivio · Guida", render: (u, p) => UL.views.archivioU.render(u, ["guida"].concat(p)), mount: (r, u, p) => UL.views.archivioU.mount(r, u, ["guida"].concat(p)) };
 })();

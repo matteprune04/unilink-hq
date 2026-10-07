@@ -10,18 +10,15 @@
 
   UL.NAV = {
     decise: [
+      // v8 (commento 11): «I miei esami» è l'unica macrosezione di studio: dentro ogni esame ci sono dispensa, flashcard, esercizi,
+      // simulazione, mappa e note (views/studio.js). «Materiali» diventa il catalogo per comprare; «Esercitazioni» è dentro l'esame.
       { g: "Studio", items: [
         { k: "dashboard", l: "Dashboard", i: "home", to: "#/app/dashboard" },
-        { k: "esami", l: "I miei esami", i: "layers", to: "#/app/esami" },
-        { k: "materiali", l: "Materiali", i: "book", to: "#/app/materiali", soloAttiva: true },
-        { k: "esercitazioni", l: "Esercitazioni", i: "quiz", to: "#/app/esercitazioni", soloAttiva: true },
+        { k: "esami", l: "I miei esami", i: "book", to: "#/app/esami" },
+        { k: "materiali", l: "Catalogo e pacchetti", i: "layers", to: "#/app/materiali/catalogo", soloAttiva: true },
         { k: "planner", l: "Planner", i: "target", to: "#/app/planner", soloAttiva: true },
-        // «Guida» archiviata il 7/10 (Da decidere → Archivio)
-      ] },
-      // Community: Aula studio (P1) e Ambassador a commissione (decisione del 7/10; il vecchio «Mentor e ambassador» è in archivio)
-      { g: "Community", items: [
-        { k: "aula", l: "Aula studio", i: "users", to: "#/app/aula", soloAttiva: true },
-        { k: "ambassador", l: "Ambassador", i: "shield", to: "#/app/ambassador" },
+        { k: "strumenti", l: "Strumenti", i: "calc", to: "#/app/strumenti" },
+        // «Guida» archiviata il 7/10; «Aula studio» e «Ambassador» spostate nelle proposte l'8/10 (D45, D46)
       ] },
       { g: "Dopo gli esami", items: [{ k: "percorso", l: "Il mio percorso", i: "cap", to: "#/app/percorso" }] },
       { g: "Account", items: [
@@ -51,7 +48,7 @@
         { k: "academy", l: "Academy", i: "spark", v: "academyD" },
         { k: "club", l: "Club ed eventi", i: "users", v: "clubD" },
         { k: "mercatino", l: "Mercatino", i: "bookmark", v: "mercatinoD" },
-        { k: "strumenti", l: "Calcolatori e guide", i: "calc", v: "strumentiD" },
+        { k: "calcolatori", l: "Calcolatori e guide", i: "calc", v: "strumentiD" },
         { k: "pass", l: "Pass e crediti", i: "star", v: "passD" },
         { k: "rete", l: "La rete", i: "shield", v: "adminD", admin: true },
       ] },
@@ -95,19 +92,19 @@
     key: "ul_unilink_v4",
     name: "UniLink",
     tag: "Area Personale",
-    flag: "DEMO v6 · dati di esempio",
+    flag: "DEMO v8 · dati di esempio",
     home: "#/app/dashboard",
     homeKey: "dashboard",
     onboarding: "onboardingU",
     publicRoutes: { "": "login", login: "login", registrati: "register", recupero: "recover" },
     appRoutes: Object.assign({
       // parte decisa
-      dashboard: { view: "dashboardU" }, esami: { view: "esamiB" },
+      dashboard: { view: "dashboardU" }, esami: { view: "studioU" }, strumenti: { view: "strumentiU" }, kit: { view: "kitU" },
       materiali: { view: "materialiU" }, esercitazioni: { view: "praticaU" }, scheda: { view: "schedaU" },
       percorso: { view: "percorsoB" }, planner: { view: "plannerU" }, leggi: { view: "lettoreU" },
-      aula: { view: "aulaU" }, ambassador: { view: "ambassadorU" },
+      aula: { view: "aulaProp" }, ambassador: { view: "ambassadorProp" },   // v8: proposte D45 e D46, fuori dalla sidebar
       // archiviati il 7/10: si aprono solo dall'Archivio (guida tiene la sua rotta per i link interni, con il banner)
-      archivio: { view: "archivioU" }, guida: { view: "guidaArch" }, mentoring: { view: "ambassadorU" },
+      archivio: { view: "archivioU" }, guida: { view: "guidaArch" }, mentoring: { view: "ambassadorProp" },
       abbonamento: { view: "abbonamentoU" }, acquisti: { view: "abbonamentoU" }, account: { view: "account" },
       // sezione di lavoro
       decidere: { view: "decidereU" }, configurazione: { view: "configU" },
@@ -115,13 +112,13 @@
     }, ddRoutes), // moduli da decidere: piano, studio, opportunita, …, home, dispense, test, …
     nav(user) {
       const err = Object.keys(window.UL_QUIZ).reduce((s, k) => s + B.errors(user, k).length, 0);
-      const badge = (it) => it.k === "esami" ? user.activity.exams.filter((e) => e.status !== "done").length || "" : it.k === "esercitazioni" ? err || "" : it.k === "abbonamento" && B.plus(user) ? "Plus" : "";
+      const badge = (it) => it.k === "esami" ? (err ? err + " errori" : user.activity.exams.filter((e) => e.status !== "done").length || "") : it.k === "abbonamento" && B.plus(user) ? "Plus" : "";
       const toItem = (it) => Object.assign({}, it, { soon: soon(user, it), badge: soon(user, it) ? "" : badge(it) });
       const g = UL.NAV.decise.map((x) => ({ g: x.g, items: x.items.map(toItem) }));
       // gruppo arancione: solo il catalogo delle proposte (i moduli C e D si aprono dalle card, non più dalla sidebar) + configurazione
       const cur = curPage(), inModulo = UL.NAV.dd.some((m) => m.items.some((i) => i.k === cur));
       const ddItems = [{ k: inModulo ? cur : "decidere", l: "Tutte le proposte", i: "alert", to: "#/app/decidere", badge: String(window.UL_DA_DECIDERE.length) }]
-        .concat([{ k: "archivio", l: "Archivio", i: "file", to: "#/app/archivio", badge: String((UL.ARCHIVIO || []).length) }, { k: "configurazione", l: "Configurazione", i: "settings", to: "#/app/configurazione" }])
+        .concat([{ k: "kit", l: "Kit per esame", i: "layers", to: "#/app/kit" }, { k: "archivio", l: "Archivio", i: "file", to: "#/app/archivio", badge: String((UL.ARCHIVIO || []).length) }, { k: "configurazione", l: "Configurazione", i: "settings", to: "#/app/configurazione" }])
         .concat(user.role === "admin" ? [{ k: "metriche", l: "Metriche", i: "shield", to: "#/app/metriche" }] : []);
       g.push({ g: "Da decidere", cls: "dd", items: ddItems });
       return g;

@@ -139,3 +139,52 @@
 .lt-note textarea { user-select: text; -webkit-user-select: text; }
 @media (max-width: 980px) { .lt-wrap { grid-template-columns: 1fr; } .lt-note { position: static; } }
 @media print { .lt-wrap { display: none !important; } }
+
+/* ---------- v8 · lettore: evidenziatore, filigrana sotto la pagina ---------- */
+.lt-fil { display: none; }
+.lt-foglio { position: relative; display: inline-block; line-height: 0; }
+.lt-evid { position: absolute; inset: 0; pointer-events: none; }
+.lt-evid.attivo { pointer-events: auto; cursor: crosshair; touch-action: none; }
+.lt-evid.gomma { cursor: pointer; }
+.lt-evid i { position: absolute; border-radius: 3px; mix-blend-mode: multiply; }
+.lt-evid i.c-g, .lt-col.c-g { background: rgba(255, 214, 0, .42); } .lt-evid i.c-v, .lt-col.c-v { background: rgba(80, 200, 120, .38); }
+.lt-evid i.c-a, .lt-col.c-a { background: rgba(80, 160, 255, .36); } .lt-evid i.c-r, .lt-col.c-r { background: rgba(255, 110, 170, .38); }
+.lt-colori { display: inline-flex; gap: 6px; align-items: center; margin-right: 6px; }
+.lt-col { width: 26px; height: 26px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--line, #ddd); cursor: pointer; }
+.lt-col[aria-pressed="true"], .lt-colori .icon-btn[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--navy); }
+.lt-wm { display: flex; justify-content: space-between; gap: 12px; width: 100%; padding: 8px 6px 2px; font-size: 11.5px; color: var(--muted, #6b7280); font-family: var(--font-display); line-height: 1.3; }
+.lt-wm b { font-weight: 400; white-space: nowrap; }
+/* ---------- v8 · I miei esami come macrosezione di studio ---------- */
+.st-testa { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; margin: 12px 0 14px; flex-wrap: wrap; }
+.st-testa h1 { margin-top: 6px; }
+.st-tabs { margin-bottom: 18px; }
+.fc-carta { background: var(--white, #fff); border: 1.5px solid var(--line, #e5e1d8); border-radius: 22px; padding: 28px; min-height: 200px; display: grid; gap: 10px; align-content: center; }
+.fc-carta .fc-f { font-family: var(--font-display); font-size: 22px; color: var(--navy); }
+.fc-carta .fc-b { font-size: 16px; }
+.fc-voti { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
+.fc-voti .btn { flex-direction: column; gap: 2px; } .fc-voti small { font-size: 11px; opacity: .7; }
+[data-fc-box] .btn-block { margin-top: 12px; }
+.fc-fine { text-align: center; padding: 36px 12px; }
+.es-filtri { display: grid; gap: 8px; } .es-filtri .sq-label { margin-top: 6px; }
+.es-filtri .chips { flex-wrap: wrap; }
+.chip.on { background: var(--navy); color: #fff; border-color: var(--navy); }
+.mp-mappa { display: grid; gap: 16px; }
+.mp-mod { background: var(--beige, #f4f1ea); border-radius: 22px; padding: 18px; }
+.mp-mod h3 { margin: 4px 0 12px; }
+.mp-caps { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+.mp-cap { background: #fff; border-radius: 16px; padding: 14px; border-left: 5px solid var(--line, #ddd); display: grid; gap: 8px; }
+.mp-cap.corso { border-left-color: var(--orange); } .mp-cap.fatto { border-left-color: var(--green, #2f855a); }
+.mp-cap b { font-family: var(--font-display); font-weight: 400; color: var(--navy); }
+.mp-sel { width: auto; padding: 4px 8px; font-size: 13px; min-height: 0; }
+.mp-num { display: flex; gap: 12px; flex-wrap: wrap; font-size: 13px; color: var(--muted, #6b7280); }
+@media (max-width: 700px) { .fc-voti { grid-template-columns: 1fr 1fr; } .lt-colori { order: 5; width: 100%; } }
+
+/* ---------- v8 · Strumenti nella web app (tools.js e tools.css copiati dalla landing) ---------- */
+.ul-tools { --crema: var(--cream); --arancio: var(--orange); }
+.st-tool { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 20px; align-items: start; }
+.st-tlist { display: grid; gap: 8px; }
+.st-tlist a { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: var(--r-md); background: var(--white); border: 1.5px solid var(--line); text-decoration: none; color: inherit; }
+.st-tlist a.on { border-color: var(--navy); box-shadow: var(--shadow); }
+.st-tlist .ico { width: 38px; height: 38px; border-radius: 12px; background: var(--navy); color: var(--cream); display: grid; place-items: center; font-size: 13px; flex: none; }
+.st-tlist b { font-family: var(--font-display); font-weight: 400; color: var(--navy); display: block; } .st-tlist small { font-size: 12.5px; color: var(--muted); }
+@media (max-width: 980px) { .st-tool { grid-template-columns: 1fr; } }

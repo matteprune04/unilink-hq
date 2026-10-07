@@ -2,8 +2,11 @@
    annotabili solo nell'area personale della web app»). Rotta: #/app/leggi/<slug>.
    - Il PDF si disegna pagina per pagina su un <canvas> con PDF.js (cdnjs, versione fissa): niente pulsante di download o stampa,
      niente tasto destro, niente selezione del testo, Ctrl/Cmd+S e Ctrl/Cmd+P bloccati mentre il lettore è aperto.
-   - Filigrana personale sopra ogni pagina: nome, cognome, email dello studente (in produzione la mette anche il server, vedi
-     Da decidere D39 · nella demo solo a schermo).
+   - v8: filigrana discreta SOTTO la pagina, accanto al numero (stile Studocu): «UniLink · nome · email · p. N di T»
+     (in produzione la mette anche il server sul file, vedi Da decidere D39). Evidenziatore a 4 colori (si trascina sulla pagina,
+     activity.evid[slug][pagina] = [{ x, y, w, h, c }] in coordinate 0–1), gomma, e «crea una flashcard da questa pagina».
+   - Stampa: bloccata. Il browser non permette di distinguere «stampa su carta» da «salva come PDF» nella finestra di stampa,
+     quindi consentire la stampa vorrebbe dire consentire il PDF (commento 11: spiegato nella proposta D49).
    - Note per pagina: activity.note[slug][pagina] = [{ id, testo, at }]; ultima pagina letta: activity.letture[slug].
    ATTENZIONE: nella demo il PDF arriva dal suo indirizzo pubblico (framerusercontent): in produzione sta in uno storage privato
    (Supabase) e arriva solo a chi l'ha comprato, con un link temporaneo. Chi ha la dispensa: B.owns (Completa, pacchetto, gratis). */
@@ -37,7 +40,7 @@
         <div class="page-head" style="margin-top:12px"><div><div class="eyebrow">${icon("book")} Lettore</div><h1>${esc(c.title)}</h1><p class="lead">La dispensa si legge e si annota qui, nell'area personale: non si scarica.</p></div></div>
         ${U.lock("La dispensa completa di " + c.title, `Con la dispensa completa (${B.eur(B.prezzo("completa", c))}, invece di ${B.eur(B.prezzoPieno("completa"))}) o con il pacchetto del tuo semestre`, `data-sblocca="${c.slug}"`)}`;
       const pag = (u.activity.letture || {})[c.slug] || 1, n = quante(u, c.slug);
-      const fil = `${[u.profile.nome, u.profile.cognome].filter(Boolean).join(" ")} · ${u.email} · UniLink`;
+      const fil = `UniLink · ${[u.profile.nome, u.profile.cognome].filter(Boolean).join(" ")} · ${u.email}`;
       return `<a href="#/app/materiali" class="small display" style="text-decoration:none">← Materiali</a>
         <div class="page-head" style="margin-top:12px"><div><div class="eyebrow">${icon("book")} Lettore · ${esc(c.code || "")}</div><h1>${esc(c.title)}</h1>
           <p class="lead">Leggi e annota qui. Le note restano nel tuo account; la dispensa non si scarica e porta la tua filigrana.</p></div>
@@ -45,14 +48,16 @@
         <div class="lt-wrap" data-lt="${esc(c.slug)}">
           <section class="lt-main card">
             <div class="lt-bar"><button class="icon-btn" data-lt-prev aria-label="Pagina precedente">‹</button><span class="small"><label for="lt-p" class="sr-only">Pagina</label>Pagina <input id="lt-p" class="input lt-num" type="number" min="1" value="${pag}"> di <b data-lt-tot>…</b></span><button class="icon-btn" data-lt-next aria-label="Pagina successiva">›</button>
-              <span class="lt-sp"></span><button class="icon-btn" data-lt-zoom="-1" aria-label="Rimpicciolisci">−</button><span class="tiny muted" data-lt-z>100%</span><button class="icon-btn" data-lt-zoom="1" aria-label="Ingrandisci">+</button></div>
-            <div class="lt-pagina" data-lt-pag><canvas aria-label="Pagina della dispensa"></canvas><div class="lt-fil" aria-hidden="true">${Array.from({ length: 14 }, () => `<span>${esc(fil)}</span>`).join("")}</div><div class="lt-stato small muted" data-lt-stato>Carico la dispensa…</div></div>
+              <span class="lt-sp"></span><span class="lt-colori" role="group" aria-label="Evidenziatore">${[["g", "giallo"], ["v", "verde"], ["a", "azzurro"], ["r", "rosa"]].map(([k, n]) => `<button type="button" class="lt-col c-${k}" data-col="${k}" aria-pressed="false" title="Evidenzia in ${n}"></button>`).join("")}<button type="button" class="icon-btn" data-col="x" aria-pressed="false" title="Gomma: tocca un'evidenziazione per toglierla">${icon("trash")}</button></span>
+              <button class="icon-btn" data-lt-zoom="-1" aria-label="Rimpicciolisci">−</button><span class="tiny muted" data-lt-z>100%</span><button class="icon-btn" data-lt-zoom="1" aria-label="Ingrandisci">+</button></div>
+            <div class="lt-pagina" data-lt-pag><div class="lt-foglio"><canvas aria-label="Pagina della dispensa"></canvas><div class="lt-evid" data-lt-evid></div></div><div class="lt-wm" aria-hidden="true"><span>${esc(fil)}</span><b data-lt-wmp></b></div><div class="lt-stato small muted" data-lt-stato>Carico la dispensa…</div></div>
           </section>
           <aside class="lt-note card">
             <div class="card-head"><h3>${icon("edit")} Note · pagina <span data-lt-np>${pag}</span></h3><span class="badge badge-soft" data-lt-cnt>${n} in tutto</span></div>
             <form data-lt-form><label class="sr-only" for="lt-t">Scrivi una nota</label><textarea class="textarea" id="lt-t" rows="3" maxlength="600" placeholder="Scrivi una nota su questa pagina…"></textarea><button class="btn btn-primary btn-sm" style="margin-top:8px">Aggiungi la nota</button></form>
             <ul class="lt-lista" data-lt-qui></ul>
             <details class="lt-tutte"><summary class="small">Tutte le note della dispensa</summary><ul class="lt-lista" data-lt-tutte></ul></details>
+            <details class="lt-tutte"><summary class="small">Crea una flashcard da questa pagina</summary><form data-lt-fc style="display:grid;gap:8px;margin-top:8px"><input class="input" name="f" placeholder="Fronte: domanda o termine" maxlength="200"><textarea class="textarea" name="b" rows="2" placeholder="Retro: risposta" maxlength="600"></textarea><button class="btn btn-sm btn-ghost">Aggiungi al mazzo</button></form></details>
             <p class="tiny muted" style="margin-top:10px">${icon("lock")} Niente download, stampa o copia: la dispensa è tua da leggere qui, sempre aggiornata.</p>
           </aside>
         </div>`;
@@ -88,7 +93,29 @@
         st.render = p.render({ canvasContext: cv.getContext("2d"), viewport: vp });
         try { await st.render.promise; } catch (e) { return; }
         stato.hidden = true;
+        wrap.querySelector("[data-lt-wmp]").textContent = `p. ${st.pag} di ${st.tot}`;
+        disegnaEvid();
       };
+      // evidenziatore: si trascina sulla pagina; le aree si salvano in coordinate relative (0–1), così restano giuste a ogni zoom
+      const EV = ((u.activity.evid = u.activity.evid || {})[c.slug] = (u.activity.evid[c.slug] || {}));
+      const strato = wrap.querySelector("[data-lt-evid]");
+      let col = "";
+      const disegnaEvid = () => { strato.innerHTML = (EV[st.pag] || []).map((r, i) => `<i class="c-${r.c}" data-ev="${i}" style="left:${r.x * 100}%;top:${r.y * 100}%;width:${r.w * 100}%;height:${r.h * 100}%"></i>`).join(""); strato.classList.toggle("attivo", !!col); strato.classList.toggle("gomma", col === "x"); };
+      wrap.querySelectorAll("[data-col]").forEach((b) => b.addEventListener("click", () => { col = col === b.dataset.col ? "" : b.dataset.col; wrap.querySelectorAll("[data-col]").forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.col === col))); disegnaEvid(); }));
+      let inizio = null, bozza = null;
+      const pos = (e) => { const r = strato.getBoundingClientRect(); return [Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)), Math.min(1, Math.max(0, (e.clientY - r.top) / r.height))]; };
+      strato.addEventListener("pointerdown", (e) => {
+        if (col === "x") { const i = e.target.dataset && e.target.dataset.ev; if (i != null) { EV[st.pag].splice(Number(i), 1); if (!EV[st.pag].length) delete EV[st.pag]; UL.store.save(); disegnaEvid(); } return; }
+        if (!col) return; e.preventDefault(); strato.setPointerCapture(e.pointerId); inizio = pos(e);
+        bozza = document.createElement("i"); bozza.className = "c-" + col; strato.appendChild(bozza);
+      });
+      strato.addEventListener("pointermove", (e) => { if (!inizio) return; const [x, y] = pos(e); Object.assign(bozza.style, { left: Math.min(x, inizio[0]) * 100 + "%", top: Math.min(y, inizio[1]) * 100 + "%", width: Math.abs(x - inizio[0]) * 100 + "%", height: Math.abs(y - inizio[1]) * 100 + "%" }); });
+      strato.addEventListener("pointerup", (e) => { if (!inizio) return; const [x, y] = pos(e), r = { x: Math.min(x, inizio[0]), y: Math.min(y, inizio[1]), w: Math.abs(x - inizio[0]), h: Math.abs(y - inizio[1]), c: col }; inizio = null;
+        if (r.w > 0.01 && r.h > 0.004) { (EV[st.pag] = EV[st.pag] || []).push(r); UL.store.save(); } disegnaEvid(); });
+      const fcf = wrap.querySelector("[data-lt-fc]");
+      fcf && fcf.addEventListener("submit", (e) => { e.preventDefault(); const f = fcf.f.value.trim(), b = fcf.b.value.trim(); if (!f || !b) return UL.ui.toast("Scrivi fronte e retro");
+        const F = (u.activity.fc = u.activity.fc || {}); F[c.slug] = Object.assign({ mie: [], s: {}, nuoveOggi: { data: "", n: 0 } }, F[c.slug] || {});
+        F[c.slug].mie.push({ id: "mia-" + Date.now().toString(36), f, b, cap: 0, pag: st.pag, at: new Date().toISOString() }); UL.store.save(); fcf.reset(); UL.ui.toast("Flashcard aggiunta al mazzo dell'esame"); });
       const vai = (n) => {
         st.pag = Math.min(Math.max(1, n), st.tot || n); inp.value = st.pag;
         (u.activity.letture = u.activity.letture || {})[c.slug] = st.pag; UL.store.save();
