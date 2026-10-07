@@ -20,7 +20,7 @@
         { k: "strumenti", l: "Strumenti", i: "calc", to: "#/app/strumenti" },
         // «Guida» archiviata il 7/10; «Aula studio» e «Ambassador» spostate nelle proposte l'8/10 (D45, D46)
       ] },
-      { g: "Dopo gli esami", items: [{ k: "percorso", l: "Il mio percorso", i: "cap", to: "#/app/percorso" }] },
+      // «Dopo gli esami» (Il mio percorso) è una proposta dall'8/10 (D50); il libretto è in «I miei esami»
       { g: "Account", items: [
         { k: "abbonamento", l: "Abbonamento", i: "euro", to: "#/app/abbonamento" },
         { k: "account", l: "Profilo e account", i: "user", to: "#/app/account" },
@@ -82,7 +82,7 @@
     <div class="field"><label for="ac-cds">Corso di laurea</label><select class="select" id="ac-cds" name="cds">${[["EA", "Economia Aziendale"], ["EC", "Economia e Commercio"], ["", "Altro / nessuno"]].map(([k, l]) => opt(k, l, p.cds)).join("")}</select></div>
     <div class="field"><label for="ac-curr">Curriculum (III anno; II anno per EC)</label><select class="select" id="ac-curr" name="curriculum">${[["", "Non ancora scelto"]].concat(window.UL_PERCORSI ? Object.entries(window.UL_PERCORSI.corsi).flatMap(([cds, c]) => Object.entries(c.curricula).map(([k, n]) => [k, cds + " · " + n])) : []).map(([k, l]) => opt(k, l, p.curriculum || "")).join("")}</select></div>
     <div class="field"><label for="ac-anno">Anno</label><select class="select" id="ac-anno" name="anno">${[["1", "I anno"], ["2", "II anno"], ["3", "III anno"], ["FC", "Fuori corso"]].map(([k, l]) => opt(k, l, p.anno)).join("")}</select></div>
-    <div class="field span-2"><label>Colore del tuo cerchio (in alto a destra)</label><div class="row">${U.COLORI.map((c) => `<label style="cursor:pointer"><input type="radio" name="colore" value="${c}" ${p.colore === c ? "checked" : ""} class="sr-only"><span class="avatar" style="background:${c};color:#fff;outline:${p.colore === c ? "3px solid var(--navy)" : "0"};outline-offset:2px">${esc(UL.ui.initials(p))}</span></label>`).join("")}</div></div>`;
+    <div class="field span-2"><label>Colore del tuo cerchio (in alto a destra)</label><div class="row colori-cerchio">${U.COLORI.map((c) => `<label style="cursor:pointer"><input type="radio" name="colore" value="${c}" ${p.colore === c ? "checked" : ""} class="sr-only"><span class="avatar" style="background:${c};color:#fff">${esc(UL.ui.initials(p))}</span></label>`).join("")}</div><p class="tiny muted" style="margin-top:6px">Quello scelto ha il bordo e la spunta: si applica quando salvi.</p></div>`;
   };
 
   const soon = (user, it) => it.soloAttiva && !U.attiva(user);
@@ -92,7 +92,7 @@
     key: "ul_unilink_v4",
     name: "UniLink",
     tag: "Area Personale",
-    flag: "DEMO v8 · dati di esempio",
+    flag: "DEMO v9 · dati di esempio",
     home: "#/app/dashboard",
     homeKey: "dashboard",
     onboarding: "onboardingU",
@@ -101,7 +101,7 @@
       // parte decisa
       dashboard: { view: "dashboardU" }, esami: { view: "studioU" }, strumenti: { view: "strumentiU" }, kit: { view: "kitU" },
       materiali: { view: "materialiU" }, esercitazioni: { view: "praticaU" }, scheda: { view: "schedaU" },
-      percorso: { view: "percorsoB" }, planner: { view: "plannerU" }, leggi: { view: "lettoreU" },
+      percorso: { view: "percorsoProp" }, planner: { view: "plannerU" }, leggi: { view: "lettoreU" },
       aula: { view: "aulaProp" }, ambassador: { view: "ambassadorProp" },   // v8: proposte D45 e D46, fuori dalla sidebar
       // archiviati il 7/10: si aprono solo dall'Archivio (guida tiene la sua rotta per i link interni, con il banner)
       archivio: { view: "archivioU" }, guida: { view: "guidaArch" }, mentoring: { view: "ambassadorProp" },

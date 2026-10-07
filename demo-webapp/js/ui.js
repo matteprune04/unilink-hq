@@ -94,8 +94,9 @@
     ov.className = "overlay" + (opts.drawer ? " drawer" : "");
     ov.innerHTML = `<div class="modal" role="dialog" aria-modal="true" style="${opts.width ? "max-width:" + opts.width + "px" : ""}">${html}</div>`;
     const close = () => { ov.remove(); document.removeEventListener("keydown", onKey); opts.onClose && opts.onClose(); };
-    const onKey = (e) => { if (e.key === "Escape") close(); };
-    ov.addEventListener("click", (e) => { if (e.target === ov || e.target.closest("[data-close]")) close(); });
+    // opts.obbligatorio: non si chiude con Esc né cliccando fuori (es. «Com'è andato l'esame?», views/libretto.js)
+    const onKey = (e) => { if (e.key === "Escape" && !opts.obbligatorio) close(); };
+    ov.addEventListener("click", (e) => { if ((e.target === ov && !opts.obbligatorio) || e.target.closest("[data-close]")) close(); });
     document.addEventListener("keydown", onKey);
     document.body.appendChild(ov);
     const first = ov.querySelector("input, select, textarea, button:not([data-close])");

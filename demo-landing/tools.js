@@ -46,15 +46,17 @@
   const paint = (r) => r.style.setProperty("--p", ((r.value - r.min) / (r.max - r.min)) * 100 + "%");
 
   const IMPL = {
-    // Regole di UniLinkVotoLaurea.v5: media·110/30, +0,333 per lode, tesi 1-3, in corso +2, lode con pres ≥ 104,5 e tesi Ottimo
+    // Regole UFFICIALI della Scuola di Economia e Management UniFi (prova finale, 20/6/2017 + 22/5/2018), uguali al libretto della
+    // web app (views/libretto.js): presentazione = media·110/30 + 0,333 per lode; produttività 0–3; rapidità 0–2; tesi 1–3;
+    // arrotondamento all'intero; lode con 110, presentazione ≥ 104,5 e tesi Ottima.
     voto(el) {
-      const st = { media: 27.4, lodi: 2, tesi: 2, corso: 2 };
+      const st = { media: 27.4, lodi: 2, tesi: 2, corso: 2, prod: 3 };
       el.innerHTML = `<div class="tl-in">${range("t-media", "Media ponderata", 18, 30, 0.1, st.media, (v) => fmt(v))}${range("t-lodi", "Lodi", 0, 10, 1, st.lodi, (v) => v)}
-        ${seg("tesi", "Tesi", [[1, "Sufficiente"], [2, "Buona"], [3, "Ottima"]], st.tesi)}${seg("corso", "Quando ti laurei", [[2, "In corso"], [1, "Semestre dopo"], [0, "Più tardi"]], st.corso)}</div>
+        ${seg("tesi", "Tesi", [[1, "Sufficiente"], [2, "Buona"], [3, "Ottima"]], st.tesi)}${seg("corso", "Quando ti laurei", [[2, "Entro il 31/12 del III anno"], [1, "Entro il 30/4"], [0, "Più tardi"]], st.corso)}${seg("prod", "Produttività (CFU ogni anno)", [[3, "40+ ogni anno"], [2, "Quasi sempre 40+"], [1, "20–39"], [0, "Meno"]], st.prod)}</div>
         <div class="tl-out"><div class="tl-k"><span>Voto di presentazione</span><b id="t-pres"></b></div><div class="tl-k big"><span>Voto finale stimato</span><b id="t-fin"></b></div><p class="tl-nota" id="t-nota"></p>
-        ${nota("Regole della Scuola di Economia (versione compatta). Decide sempre la commissione.")}</div>`;
+        ${nota("Regole ufficiali della Scuola di Economia e Management UniFi (prova finale, 2017/2018). Decide sempre la Commissione.")}</div>`;
       const up = () => {
-        const pres = (st.media * 11) / 3 + st.lodi * 0.333, fin = Math.min(110, pres + st.tesi + st.corso), lode = Math.round(fin) >= 110 && pres >= 104.5 && st.tesi === 3;
+        const pres = (st.media * 11) / 3 + st.lodi * 0.333, fin = Math.min(110, pres + st.tesi + st.corso + st.prod), lode = Math.round(fin) >= 110 && pres >= 104.5 && st.tesi === 3;
         $("#t-media-o", el).textContent = fmt(st.media); $("#t-lodi-o", el).textContent = st.lodi; $("#t-pres", el).textContent = fmt(pres);
         $("#t-fin", el).textContent = Math.round(fin) + (lode ? " e lode" : "");
         $("#t-nota", el).textContent = lode ? "Hai i requisiti per la lode." : Math.round(fin) >= 110 ? "110: per la lode servono presentazione ≥ 104,5 e tesi Ottima." : "Stima indicativa.";

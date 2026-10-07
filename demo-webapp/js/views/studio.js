@@ -219,7 +219,12 @@
     title: (p) => (p[0] && B.course(p[0]) ? B.course(p[0]).title : "I miei esami"),
     render(u, params) {
       const c = params[0] && B.course(params[0]);
-      if (!c) return UL.views.esamiB.render(u, []);
+      if (!c) { // elenco: in preparazione · libretto e voto di laurea (commento 5 del 7/10: dentro «I miei esami», non una sezione a parte)
+        const lb = params[0] === "libretto", sosp = B.esitiInSospeso ? B.esitiInSospeso(u).length : 0;
+        const tabs = `<div class="tabs" style="margin-bottom:16px"><a href="#/app/esami" class="${lb ? "" : "on"}">${icon("book")} In preparazione</a><a href="#/app/esami/libretto" class="${lb ? "on" : ""}">${icon("calc")} Libretto e voto di laurea</a></div>`;
+        if (!lb) return UL.views.esamiB.render(u, []).replace(/(<\/div><\/div>)/, "$1" + tabs);
+        return `<div class="page-head"><div><div class="eyebrow">${icon("book")} I miei esami</div><h1>Libretto e <span class="accent">voto di laurea</span></h1><p class="lead">I tuoi voti, la media e il voto di laurea con le regole ufficiali del tuo corso.${sosp ? ` Hai ${sosp} esami da raccontare: rispondi in Dashboard.` : ""}</p></div></div>${tabs}${U.librettoHTML(u)}`;
+      }
       const tab = SCHEDE.some((s) => s[0] === params[1]) ? params[1] : "panoramica", own = B.owns(u, c.slug);
       const lv = B.level(u, c.slug);
       const testa = `<a href="#/app/esami" class="small display" style="text-decoration:none">← I miei esami</a>
@@ -238,7 +243,7 @@
     },
     mount(root, u, params) {
       const c = params[0] && B.course(params[0]);
-      if (!c) return UL.views.esamiB.mount && UL.views.esamiB.mount(root, u, []);
+      if (!c) return params[0] === "libretto" ? U.bindLibretto(root, u) : UL.views.esamiB.mount && UL.views.esamiB.mount(root, u, []);
       const tab = params[1] || "panoramica", own = B.owns(u, c.slug);
       root.querySelectorAll("[data-sblocca]").forEach((b) => b.addEventListener("click", () => B.upsell(u, b.dataset.sblocca)));
       if (tab === "panoramica") UL.views.esamiB.mount && UL.views.esamiB.mount(root, u, [c.slug]);
@@ -274,7 +279,11 @@
         <div class="card section"><div class="table-wrap"><table class="table"><thead><tr><th>Esame</th><th class="num">CFU / lezione / studio</th><th>Dispensa</th><th>Indice per capitoli</th><th class="num">Esercizi</th><th class="num">Flashcard</th><th>Simulazione</th><th>Mappe</th><th>Formato prova</th></tr></thead><tbody>${righe}</tbody></table></div>
           <p class="tiny muted" style="margin-top:8px">${esc((UL.ORE || {}).fonte || "")}. «Esercizi» e «Flashcard» contano quello che c'è oggi nella demo.</p></div>
         <div class="card section"><div class="card-head"><h3>${icon("check")} Cosa serve per ogni esame, e da dove lo prendiamo</h3></div>
-          <div class="table-wrap"><table class="table"><thead><tr><th>Cosa</th><th>Da dove</th><th>A cosa serve</th></tr></thead><tbody>${DA.map((r) => `<tr>${r.map((x) => `<td class="small">${esc(x)}</td>`).join("")}</tr>`).join("")}</tbody></table></div></div>`;
+          <div class="table-wrap"><table class="table"><thead><tr><th>Cosa</th><th>Da dove</th><th>A cosa serve</th></tr></thead><tbody>${DA.map((r) => `<tr>${r.map((x) => `<td class="small">${esc(x)}</td>`).join("")}</tr>`).join("")}</tbody></table></div></div>
+        ${(() => { const E = U.esitiRiepilogo ? U.esitiRiepilogo() : []; const n2 = (x) => (x == null ? "—" : x.toFixed(1).replace(".", ","));
+          return `<div class="card section"><div class="card-head"><h3>${icon("db")} Esiti degli appelli · database «Com'è andato l'esame?»</h3><span class="small muted">${E.reduce((s, x) => s + x.n, 0)} risposte</span></div>
+            ${E.length ? `<div class="table-wrap"><table class="table"><thead><tr><th>Esame</th><th class="num">Risposte</th><th class="num">Superati</th><th class="num">Voto medio</th><th class="num">Difficoltà</th><th class="num">Utilità UniLink</th><th>Capitoli più chiesti</th></tr></thead><tbody>${E.map((x) => `<tr><td>${esc((B.course(x.slug) || {}).title || x.slug)}</td><td class="num">${x.n}</td><td class="num">${x.sup}</td><td class="num">${n2(x.voto)}</td><td class="num">${n2(x.diff)}</td><td class="num">${n2(x.util)}</td><td class="small">${x.args.map(([a, k]) => `cap. ${a} (${k})`).join(" · ") || "—"}</td></tr>`).join("")}</tbody></table></div>` : '<p class="small muted">Ancora nessuna risposta. Il questionario compare in Dashboard il giorno dopo l\'appello (prova con l\'account Gratuito: Diritto Pubblico).</p>'}
+            <p class="tiny muted" style="margin-top:8px">Demo: le risposte stanno in questo browser (senza nome né email). In produzione: tabella «esiti» su Supabase, letta solo dal team.</p></div>`; })()}`;
     },
   };
 })();

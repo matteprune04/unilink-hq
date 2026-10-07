@@ -51,6 +51,7 @@
     mount: (r, u, p) => UL.views[vista].mount && UL.views[vista].mount(r, u, p) });
   UL.views.aulaProp = prop("D45", "aulaU");
   UL.views.ambassadorProp = prop("D46", "ambassadorU");
+  UL.views.percorsoProp = prop("D50", "percorsoB");
   // i link interni della Guida archiviata (#/app/guida/…) restano validi, ma si aprono con il banner dell'archivio
   UL.views.guidaArch = { title: "Archivio · Guida", render: (u, p) => UL.views.archivioU.render(u, ["guida"].concat(p)), mount: (r, u, p) => UL.views.archivioU.mount(r, u, ["guida"].concat(p)) };
 })();

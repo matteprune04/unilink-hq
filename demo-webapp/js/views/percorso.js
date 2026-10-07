@@ -5,7 +5,7 @@
   const B = UL.B;
   const { icon, esc, num, fmtDate, ago } = UL.ui;
 
-  const TABS = [["libretto", "Media e voto di laurea", "calc"], ["erasmus", "Erasmus", "plane"], ["magistrali", "Magistrali", "cap"]]; // Tesi e CV archiviati il 7/10 (js/archivio/tesi-cv-guida.js); Mentor in js/archivio/mentor.js
+  const TABS = [["erasmus", "Erasmus", "plane"], ["magistrali", "Magistrali", "cap"], ["libretto", "Media e voto (versione v7)", "calc"]]; // v9: il libretto vero è in «I miei esami» (views/libretto.js) // Tesi e CV archiviati il 7/10 (js/archivio/tesi-cv-guida.js); Mentor in js/archivio/mentor.js
   const ERASMUS_CHECK = [
     { k: "bando", t: "Leggere il bando Erasmus+ della Scuola di Economia", d: "dicembre" },
     { k: "dest", t: "Scegliere 3 destinazioni compatibili con il piano di studi", d: "gennaio" },
@@ -74,7 +74,7 @@
   UL.views.percorsoB = {
     title: "Il mio percorso",
     render(user, params) {
-      const tab = TABS.some((t) => t[0] === params[0]) ? params[0] : "libretto";
+      const tab = TABS.some((t) => t[0] === params[0]) ? params[0] : "erasmus";
       return `
       <div class="page-head"><div><div class="eyebrow">${icon("cap")} Il mio percorso</div><h1>Oltre gli <span class="accent">esami</span></h1><p class="lead">Media, voto di laurea, Erasmus e magistrali come prosecuzione del tuo percorso.</p></div></div>
       <div class="tabs">${TABS.map(([k, l, i]) => `<a href="#/app/percorso/${k}" class="${k === tab ? "on" : ""}">${icon(i)} ${l}</a>`).join("")}</div>

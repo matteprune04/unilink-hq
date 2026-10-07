@@ -7,7 +7,7 @@
    Caricato PRIMA di store.js: chiavi del database, MODELLO DATI (default di profilo e attività) e testi del login. */
 window.UL = window.UL || {};
 
-UL.VERSIONE = { n: 8, data: "2026-10-08", nota: "Commenti del 7/10 (web app v7): «I miei esami» diventa l'unica macrosezione di studio (Panoramica, Dispensa con evidenziatore e note, Flashcard SM-2, Esercizi per macroargomento e capitolo con tempi e registro errori, Simulazione, Mappa del corso, Note); Strumenti nella web app; Planner con ore ufficiali UniFi e giudizio di fattibilità; Aula studio e Ambassador nelle proposte (D45, D46); nuove proposte D47–D49 e tabella «Kit per esame». Prima, v7: listino del 7/10 e lettore senza download." };
+UL.VERSIONE = { n: 9, data: "2026-10-08", nota: "Commenti «Il mio percorso» del 7/10: libretto e voto di laurea dentro «I miei esami» con le regole ufficiali della Scuola di Economia (prova finale 2017/2018), «Com'è andato l'esame?» obbligatorio in Dashboard il giorno dopo l'appello con le risposte nel database del team, «Il mio percorso» nelle proposte (D50), colore del cerchio che si vede prima di salvare. Prima, v8: I miei esami come macrosezione di studio, Planner con ore ufficiali, Strumenti." };
 
 /* PIANI — decisi nel meeting del 7/10/2026 (HQ → Decisioni «MEETING 7/10»), uguali alla landing v8 (demo-landing/config.js → listino).
    Prezzi comunicati come SCONTO DI LANCIO: [prezzo di lancio, prezzo pieno barrato]. Niente prezzi «in sessione / fuori sessione».
@@ -55,8 +55,8 @@ UL.PIANI = {
 };
 
 UL.CONFIG = {
-  dbKey: "ul_unilink_v7_db"   /* v7: nuovo seed (listino del 7/10) */,
-  sessionKey: "ul_unilink_v7_session",
+  dbKey: "ul_unilink_v9_db"   /* v9: nuovo seed (appello passato per il questionario) */,
+  sessionKey: "ul_unilink_v9_session",
 
   /* MODELLO DATI — ogni utente = { email, role, profile, activity }. store.js fonde questi default nei nuovi utenti.
      [A/B] = parte decisa · [C] = modulo Career (da decidere) · [D] = modulo Network (da decidere). */
@@ -92,7 +92,7 @@ UL.CONFIG = {
   },
 
   auth: {
-    flag: "Demo · UniLink v8",
+    flag: "Demo · UniLink v9",
     title: 'La tua <span class="accent">Area Personale</span> UniLink',
     sub: "Accedi per ritrovare le tue dispense, i tuoi esami e gli strumenti per scegliere. Da studenti, per studenti.",
     regTitle: 'Il tuo spazio, <span class="accent">gratis</span>',

@@ -40,6 +40,7 @@
         { slug: "microeconomia", partizione: "", appello: inDays(28), obiettivo: "28", status: "doing" },
         { slug: "statistica", partizione: "", appello: inDays(42), obiettivo: "27", status: "doing" },
         { slug: "economia-aziendale", status: "done", voto: 27 },
+        { slug: "diritto-pubblico", partizione: "", appello: inDays(-1), obiettivo: "26", status: "doing" }, // v9: appello di ieri → «Com'è andato l'esame?»
       ],
       purchases: [P("simulazione", simulazione("microeconomia"), PR.simulazione[0], 10)],
       referral: { code: "GIULIA-3F8", invited: 1, confirmed: 0, credits: 0 },
