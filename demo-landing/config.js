@@ -12,7 +12,7 @@
 //   Gli strumenti stanno in tools.js (condiviso con la web app).
 // -----------------------------------------------------------------------------
 window.UL_CFG = {
-  versione: { n: 8, data: "2026-10-07", nota: "Landing v8 · decisioni del meeting del 7/10 e commenti v7: listino di lancio (Simulazione 4,99, Dispensa completa 12,99, Pacchetto semestre 29,99 o 34,99 per percorso, Plus 14,99 o 7,99), Economia Aziendale gratis, niente download, anteprima a numero chiuso in home, Ambassador al 20% al posto dei profili dei founder, calcolatore per corso e curriculum, indice completo di Economia Aziendale. Archiviati (Founder → Archivio): Guida, Community e mentor, Tesi, Carriera e CV, hub Medicina, profili dei founder, listino P2. Prima, v7: pagamento con Stripe Checkout (simulato) da Plus, calcolatore e anteprima esame, sezione «Come si paga» con le commissioni sul listino P2. Prima, v6: Planner nella tabella dei piani (piano personale con la Completa o con Plus, come nella web app v4). Prima, v5: prezzi con card pulite, «Cosa c'è dentro» e calcolatore del pacchetto con il consiglio. Prima, v4: barra Hub · Guida · Materiali · Strumenti · Community, menu Founder, Materiali e Anteprima (P2), Planner di esempio (P3), tab Scegliere (P4), Guida per facoltà, founder e FAQ da config." },
+  versione: { n: 9, data: "2026-10-08", nota: "Landing v9 · risposte di Matteo e PDF «Architettura della landing reale»: barra Hub · Guida · Materiali · Strumenti · Ambassador, Guida e Medicina «in arrivo» di nuovo nel sito, registrazione aperta a tutti (niente anteprima a numero chiuso), si paga solo nella web app, strumenti in vetrina (si usano nella web app), pagina Ambassador con profili, footer con avvisi e link legali. La v8 (anteprima, pagamento e strumenti funzionanti nella landing) resta per i founder in Archivio. Prima, v8: · decisioni del meeting del 7/10 e commenti v7: listino di lancio (Simulazione 4,99, Dispensa completa 12,99, Pacchetto semestre 29,99 o 34,99 per percorso, Plus 14,99 o 7,99), Economia Aziendale gratis, niente download, anteprima a numero chiuso in home, Ambassador al 20% al posto dei profili dei founder, calcolatore per corso e curriculum, indice completo di Economia Aziendale. Archiviati (Founder → Archivio): Guida, Community e mentor, Tesi, Carriera e CV, hub Medicina, profili dei founder, listino P2. Prima, v7: pagamento con Stripe Checkout (simulato) da Plus, calcolatore e anteprima esame, sezione «Come si paga» con le commissioni sul listino P2. Prima, v6: Planner nella tabella dei piani (piano personale con la Completa o con Plus, come nella web app v4). Prima, v5: prezzi con card pulite, «Cosa c'è dentro» e calcolatore del pacchetto con il consiglio. Prima, v4: barra Hub · Guida · Materiali · Strumenti · Community, menu Founder, Materiali e Anteprima (P2), Planner di esempio (P3), tab Scegliere (P4), Guida per facoltà, founder e FAQ da config." },
   wa: "https://chat.whatsapp.com/KdA4r1POh6MAiBbLmmES0L",
   // Commenti del team sulle pagine e sulle sezioni (solo demo). Si salvano nel browser e si esportano in PDF/Markdown/JSON.
   // In produzione (Framer): attivi: false.
@@ -60,6 +60,8 @@ window.UL_CFG = {
       desc: "34 esami di EA ed EC con dispense, quiz e simulazioni. Strumenti per Erasmus, media e laurea.", tag: ["Matricole", "Esami", "Dopo la laurea"] },
     { slug: "giurisprudenza", icoImg: "", nome: "Giurisprudenza", stato: "in_arrivo", href: "hub-giurisprudenza.html", ico: "§", cls: "giu", img: "palazzo.jpg",
       desc: "Lo stesso metodo, per un ciclo unico di cinque anni. Lo costruiamo con chi studia lì.", tag: ["Primo anno", "Esami", "Professioni legali"] },
+    { slug: "medicina", icoImg: "", nome: "Medicina", stato: "in_arrivo", href: "hub-medicina.html", ico: "+", cls: "med", img: "aula.jpg",
+      desc: "Dal semestre filtro (Fisica, Chimica, Biologia) agli esami del corso. Stiamo raccogliendo interesse.", tag: ["Semestre filtro", "Esami", "Tirocini"] },
   ],
 
   // ===========================================================================================================
@@ -69,7 +71,7 @@ window.UL_CFG = {
   // ===========================================================================================================
 
   // Barra di navigazione (P7, aggiornata il 7/10). «materiali» è il nome proposto al posto di «Market»: si cambia qui.
-  nav: { materiali: "Materiali", strumenti: "Strumenti", ambassador: "Ambassador", accedi: "Accedi", founder: "Founder" },   // Guida e Community archiviate il 7/10
+  nav: { guida: "Guida", materiali: "Materiali", strumenti: "Strumenti", ambassador: "Ambassador", accedi: "Accedi", founder: "Founder" },   // v9: come nel PDF della landing reale (cap. 5); Community → Ambassador
 
   // HOME · testi e immagini (H02 hero, H03 numeri, H04 scuole). I numeri restano quelli veri di «numeri».
   home: {
@@ -150,7 +152,34 @@ window.UL_CFG = {
     commissione: 20, esempio: 10,
     passi: [["Ricevi il tuo codice", "Un codice personale, sempre lo stesso, da condividere nel tuo anno."], ["Lo usa chi compra", "Simulazioni, dispense, pacchetti: ogni acquisto fatto con il tuo codice conta."], ["Il 20% è tuo", "Vedi iscritti, acquisti e commissione nella tua area personale."]],
     nota: "Solo commissione: essere ambassador non dà accesso gratuito ai materiali.",
-    cta: "Candidati su WhatsApp",
+    cta: "Candidati",
+    // PROFILI (risposta di Matteo: «foto e nomi degli ambassador»). 3–6 profili veri, scelti da Niccolò/Cosimo tra gli attivi del
+    // gruppo WhatsApp, SOLO con liberatoria firmata (revocabile). Qui sono SEGNAPOSTO: nomi, foto e frasi da sostituire.
+    profili: [
+      { nome: "Nome Cognome", corso: "Economia Aziendale", anno: "II anno", frase: "Frase breve dell'ambassador: perché UniLink, cosa consiglia a chi inizia.", foto: "" },
+      { nome: "Nome Cognome", corso: "Economia e Commercio", anno: "III anno", frase: "Frase breve dell'ambassador: l'esame che gli è piaciuto di più e un consiglio.", foto: "" },
+      { nome: "Nome Cognome", corso: "Economia Aziendale", anno: "I anno", frase: "Frase breve dell'ambassador: come si è organizzato per la prima sessione.", foto: "" },
+      { nome: "Nome Cognome", corso: "Giurisprudenza", anno: "hub in arrivo", frase: "Il primo ambassador di un hub in arrivo: raccoglie cosa manca a chi studia lì.", foto: "" },
+    ],
+    segnaposto: "Profili di esempio: si pubblicano solo con foto, frase e liberatoria firmata.",
+  },
+
+  // VETRINA DEGLI STRUMENTI (v9): nella landing si mostrano, si usano nella web app (#/app/strumenti/<id>) con l'account gratuito.
+  // domanda = a cosa risponde · tempo = quanto ci vuole · esempio = risultato d'esempio (etichetta «Esempio») · fonte = da dove viene
+  // la regola · metrica = numero vero dalla web app (Supabase), mostrato solo se valore ≥ soglia (oggi nessun dato: valore null).
+  vetrina: {
+    soglia: 50,
+    tools: {
+      "voto": { domanda: "Che voto di laurea posso prendere?", tempo: "1 minuto", esempio: "Media 27,4 · 2 lodi · tesi buona · in corso → presentazione 101,1 · voto stimato 105", fonte: "regole della Scuola di Economia UniFi (versione compatta), da riverificare a ogni anno accademico", metrica: { valore: null, testo: "voti di laurea calcolati questo mese" } },
+      "voto-cdl": { domanda: "Che voto di laurea posso prendere, con le regole del mio corso?", tempo: "1 minuto", esempio: "Economia · media 27,4 · 2 lodi → voto stimato 105", fonte: "regole del proprio corso di laurea (Economia: Scuola di Economia UniFi)", metrica: { valore: null, testo: "voti di laurea calcolati questo mese" } },
+      "media": { domanda: "Che voto mi serve negli esami che restano per arrivare alla media che voglio?", tempo: "2 minuti", esempio: "Media 26,1 su 96 CFU · obiettivo 27 · restano 84 CFU → ti serve 28,0 di media", fonte: "media ponderata sui CFU (calcolo esatto)", metrica: { valore: null, testo: "obiettivi calcolati questo mese" } },
+      "peso": { domanda: "Quanto si muove la mia media con il prossimo esame?", tempo: "30 secondi", esempio: "Media 26,5 su 60 CFU · esame da 9 CFU con 30 → nuova media 26,96", fonte: "media ponderata sui CFU (calcolo esatto)", metrica: { valore: null, testo: "simulazioni questo mese" } },
+      "countdown": { domanda: "Quanto tempo utile ho davvero fino all'appello?", tempo: "30 secondi", esempio: "26 giorni · 2,5 ore al giorno, 6 giorni su 7 → 46 ore utili, 61 sessioni da 45 minuti", fonte: "margine del 18% per imprevisti (metodo del Planner)", metrica: { valore: null, testo: "conti alla rovescia attivi" } },
+      "piano": { domanda: "Quanto devo ripassare ogni giorno per finire il programma in tempo?", tempo: "2 minuti", esempio: "12 argomenti · 20 giorni → 0,6 argomenti al giorno, ripasso finale di 3 giorni", fonte: "metodo del Planner UniLink", metrica: { valore: null, testo: "piani creati questo mese" } },
+      "erasmus": { domanda: "Che punteggio avrei nel bando Erasmus?", tempo: "2 minuti", esempio: "Media 27 · 120 CFU · B2 → punteggio stimato 71/100", fonte: "regole di ESEMPIO: vanno prese dal bando ufficiale prima del lancio", metrica: { valore: null, testo: "stime Erasmus questo mese" } },
+      "voto-lmg": { domanda: "Che voto di laurea posso prendere a Giurisprudenza?", tempo: "1 minuto", esempio: "Media 27 · tesi 5 punti → voto stimato 104", fonte: "regole di ESEMPIO del ciclo unico, da verificare", metrica: { valore: null, testo: "voti calcolati" } },
+      "filtro": { domanda: "Come organizzo il semestre filtro di Medicina?", tempo: "2 minuti", esempio: "10 settimane · 3 materie → 14 ore a settimana per materia", fonte: "regole di ESEMPIO, da verificare con il bando ministeriale", metrica: { valore: null, testo: "piani creati" } },
+    },
   },
 
   // ANTEPRIMA dell'esame (preview.html): cosa si mostra prima di comprare.
@@ -218,9 +247,10 @@ window.UL_CFG = {
     ["Perché la dispensa UniLink e non appunti presi qua e là?", "Segue il programma ufficiale di quest'anno, è datata e aggiornata, la scrive chi ha appena dato l'esame e ha quiz e simulazioni nel formato dell'appello.", "Guarda un'anteprima", "preview.html?esame=economia_aziendale"],
     ["Quanto costa?", "La simulazione d'esame 4,99 €, la dispensa completa 12,99 €, il pacchetto del tuo semestre 29,99 € (3 esami) o 34,99 € (4 esami). Sono prezzi di lancio, scontati.", "Vedi i materiali", "materiali.html"],
     ["Posso scaricare le dispense?", "No: si leggono e si annotano nella tua area personale, da computer, tablet o telefono, sempre aggiornate. Così restano di chi le compra.", "Accedi", "@app"],
-    ["Come pago?", "Con carta di credito o debito, Apple Pay, Google Pay o Klarna (3 rate), su Stripe: i dati della carta non passano da noi. Pagamento unico, senza rinnovi: appena paghi, la dispensa è nella tua area (entra con la stessa email).", "Come si paga", "materiali.html#pagamento"],
+    ["Come pago?", "Nell'area personale, con l'account gratuito: carta, Apple Pay, Google Pay o Klarna su Stripe. I dati della carta non passano da noi. Pagamento unico, senza rinnovi: appena paghi, la dispensa è sbloccata.", "Come si paga", "materiali.html#pagamento"],
+    ["Chi vende?", "I dati del venditore (nome o ragione sociale, partita IVA, email) compaiono qui e nei termini appena è definito il soggetto legale.", "", ""],
     ["Cosa c'è nell'area personale?", "I tuoi esami con data e obiettivo, le dispense da leggere e annotare, le esercitazioni e UniLink Planner: il metodo standard per tutti, il piano personale con la dispensa completa.", "Accedi", "@app"],
-    ["UniLink è solo per Economia?", "Oggi i materiali sono per Economia UniFi. Giurisprudenza è la prossima: iscriviti alla lista d'attesa e sarai tra i primi.", "Scegli il tuo hub", "index.html#hub"],
+    ["UniLink è solo per Economia?", "Oggi i materiali sono per Economia UniFi. Giurisprudenza e Medicina sono in arrivo: lascia l'email nella lista d'attesa e ti scriviamo quando aprono.", "Scegli il tuo hub", "index.html#hub"],
     ["UniLink è affiliato all'Università di Firenze?", "No, è un progetto indipendente fatto da studenti.", "", ""],
   ],
 
@@ -283,16 +313,21 @@ window.UL_CFG = {
   // NON si cancellano: le pagine sono in archivio/ (con <base href="../"> per usare file e immagini della landing) e qui c'è,
   // per ognuna, cosa era, perché è stata tolta (con la fonte) e come si rimette. Aggiungere una voce: una riga qui.
   // ===========================================================================================================
-  hubArchiviati: [
-    { slug: "medicina", icoImg: "", nome: "Medicina", stato: "in_arrivo", href: "archivio/hub-medicina.html", ico: "+", cls: "med", img: "aula.jpg",
-      desc: "Dal semestre filtro (Fisica, Chimica, Biologia) agli esami del corso. Stiamo raccogliendo interesse.", tag: ["Semestre filtro", "Esami", "Tirocini"] },
-  ],
+
   archivio: [
-    { id: "guida", titolo: "Guida per facoltà", file: "archivio/guida.html", quando: "2026-10-07", tipo: "Pagina",
-      perche: "Il meeting del 7/10 ha deciso: «sezioni mentor/ambassador e guida da togliere» dal sito.", fonte: "Meeting dei founder 7/10 · HQ → Meeting «Call #2 - Brainstorming»",
-      rimettere: "Rimettere la voce «guida» in config.js → nav e i link in app.js (barra, menu, footer). Contenuti: guida-dati.js." },
+    { id: "index-v8", titolo: "Home v8: anteprima a numero chiuso e strumenti funzionanti", file: "archivio/index-v8.html", quando: "2026-10-08", tipo: "Versione precedente della pagina",
+      perche: "Registrazione aperta a tutti da subito (niente numero chiuso) e strumenti solo nella web app: nella home restano in vetrina.", fonte: "Risposte di Matteo · PDF «Architettura della landing reale», cap. 1 e 5",
+      rimettere: "La sezione H05b e il blocco 4b2 di app.js sono ancora nel codice: basta rimettere la sezione in index.html." },
+    { id: "tools-v8", titolo: "Strumenti funzionanti nella landing", file: "archivio/tools-v8.html", quando: "2026-10-08", tipo: "Versione precedente della pagina",
+      perche: "«Tool solo nella web app»: nella landing c'è la vetrina (cosa ti dice, esempio, fonte, «Usalo gratis»).", fonte: "Risposte di Matteo · PDF landing reale, cap. 8",
+      rimettere: "In app.js (sezione 5) la costante FUNZIONANTI decide: vale per le pagine *-v8 e per Da decidere." },
+    { id: "materiali-v8", titolo: "Materiali v8: pagamento dalla landing", file: "archivio/materiali-v8.html", quando: "2026-10-08", tipo: "Versione precedente della pagina",
+      perche: "«Si paga nella web app, dopo il login»: nella landing «Sblocca» porta all'area personale. Qui c'è anche la tabella delle commissioni Stripe per i founder.", fonte: "Risposte di Matteo · PDF landing reale, cap. 9",
+      rimettere: "In app.js la costante VENDE_QUI decide se la landing apre Stripe." },
+    { id: "preview-v8", titolo: "Anteprima d'esame v8 con «Acquista» su Stripe", file: "archivio/preview-v8.html?esame=economia_aziendale", quando: "2026-10-08", tipo: "Versione precedente della pagina",
+      perche: "Come sopra: l'acquisto avviene nell'area personale.", fonte: "PDF landing reale, cap. 9", rimettere: "VENDE_QUI in app.js." },
     { id: "community", titolo: "Community: gruppi per anno, ambassador, mentoring tra pari", file: "archivio/community.html", quando: "2026-10-07", tipo: "Pagina",
-      perche: "«Sezioni mentor/ambassador da togliere»; ambassador solo a commissione (20%): il programma è in home, sezione Ambassador. Il gruppo WhatsApp resta in home e nel footer.", fonte: "Meeting dei founder 7/10",
+      perche: "Nella barra «Community» lascia il posto ad «Ambassador» (pagina ambassador.html con profili e candidatura). Il gruppo WhatsApp resta in home e nel footer.", fonte: "Meeting dei founder 7/10 · PDF «Architettura della landing reale», cap. 5 e domanda 5",
       rimettere: "Rimettere la voce «community» in config.js → nav e i link in app.js." },
     { id: "founder", titolo: "Profili dei founder («Studenti, come te»)", file: "", quando: "2026-10-07", tipo: "Sezione della home (H09)",
       perche: "«Sul sito niente statistiche false né profili founder». Al suo posto, come suggerito nel commento su S01, la sezione Ambassador.", fonte: "Meeting dei founder 7/10 · commento di Matteo su S01 (demo v6)",
@@ -303,9 +338,6 @@ window.UL_CFG = {
     { id: "dopo", titolo: "«Dopo la laurea» con Tesi e Carriera e CV", file: "archivio/dopo-v7.html", quando: "2026-10-07", tipo: "Versione precedente della pagina",
       perche: "«Curriculum» e «tool tesi» in stand-by: nella pagina Dopo restano voto di laurea e magistrali.", fonte: "Meeting dei founder 7/10 · HQ → Idee «CURRICULUM» (Stand-by)",
       rimettere: "Ricopiare le sezioni #tesi e #carriera da archivio/dopo-v7.html in dopo.html." },
-    { id: "medicina", titolo: "Hub Medicina «in arrivo»", file: "archivio/hub-medicina.html", quando: "2026-10-07", tipo: "Pagina e hub",
-      perche: "L'espansione a Medicina è tra le idee in stand-by: in arrivo resta solo Giurisprudenza.", fonte: "Meeting dei founder 7/10",
-      rimettere: "Spostare la voce da config.js → hubArchiviati a hub e riportare la pagina nella cartella principale (togliendo <base>)." },
     { id: "prezzi", titolo: "Pagina «Prezzi» con il listino di esempio del 4/10", file: "archivio/prezzi.html", quando: "2026-10-07", tipo: "Pagina",
       perche: "Superata dal listino deciso il 7/10 (Materiali).", fonte: "Meeting dei founder 7/10 · HQ → Decisioni «MEETING 7/10»",
       rimettere: "Non previsto: i prezzi in uso sono in config.js → listino." },
@@ -437,7 +469,7 @@ window.UL_CFG = {
       storico: [["2026-10-07", "Deciso: Simulazione 4,99 (da 9,99), Dispensa completa 12,99 (da 18,99), Pacchetto semestre 29,99/34,99 (3/4 esami), niente pacchetto anno né appunti singoli, Plus 14,99 o 7,99 con un pacchetto; sconto di lancio senza «fuori sessione». In Materiali (v8)."], ["2026-10-06", "Pagina pronta e config-driven, fuori dalla navbar."]],
     },
     {
-      id: "L08", titolo: "Quale hub parte per primo", gruppo: "Hub", stato: "In parte deciso · 7/10", impatto: 5, sforzo: 4, area: "D01",
+      id: "L08", titolo: "Quale hub parte per primo", gruppo: "Hub", stato: "Deciso · 8/10", impatto: 5, sforzo: 4, area: "D01",
       origine: "Nota Cosimo 6/10 · landing cap. 10",
       problema: "Giurisprudenza e Medicina sono «in arrivo»: raccogliamo la lista d'attesa ma non ci sono materiali né studenti nel team.",
       proposta: "Dopo 3–4 settimane di lista d'attesa si guarda quale hub ha più iscritti e almeno uno o due studenti disposti a costruirlo; quello passa ad «attivo» cambiando una riga della config.",
@@ -449,7 +481,7 @@ window.UL_CFG = {
       ],
       serve: ["Dati della lista d'attesa", "Studenti disposti a costruire l'hub", "Piano ufficiale verificato sul Course Catalogue UniFi"],
       domande: ["Soglia minima di iscritti?", "Quali 3 esami per primi?"],
-      storico: [["2026-10-07", "Meeting dei founder: espansione Medicina in stand-by, resta Giurisprudenza «in arrivo». Hub Medicina archiviato."], ["2026-10-06", "Criterio: iscritti + persone disponibili."]],
+      storico: [["2026-10-08", "Giurisprudenza e Medicina restano «in arrivo» con la lista d'attesa (scelta di Matteo dell'8/10)."], ["2026-10-07", "Meeting dei founder: espansione Medicina in stand-by, resta Giurisprudenza «in arrivo». Hub Medicina archiviato."], ["2026-10-06", "Criterio: iscritti + persone disponibili."]],
     },
     {
       id: "L09", titolo: "Voci degli studenti", gruppo: "Fiducia", stato: "Da decidere", impatto: 3, sforzo: 1, area: "",
@@ -644,7 +676,7 @@ window.UL_CFG = {
       schermata: [{"t": "cards", "titolo": "Come funziona", "items": [["Referral", "Codice fisso e unico per account (es. UL-D96C) e link …?ref=UL-D96C. Chi si iscrive col link vede chi l'ha invitato; quando conferma l'email UniFi scatta il regalo per chi ha invitato. Le regole (quanti amici per un regalo, quanti regali al massimo) sono nel config dei piani."], ["Ambassador", "Pagina pubblica con candidatura. Nell'area personale: iscritti, confermati, venduto, crediti (20% del venduto) e messaggio pronto per il gruppo WhatsApp col suo codice. Più ambassador per anno e corso, ognuno col suo codice."], ["Crediti", "All'inizio gli ambassador ricevono crediti (dispense, Plus) invece di soldi. Quando c'è il soggetto legale si passa alla commissione in denaro con le regole giuste."]]}],
       serve: ["Soggetto legale per passare dai crediti alla commissione in denaro", "Regole del regalo: quanti amici per un regalo, quanti regali al massimo"],
       domande: ["Ambassador: commissione 20% in crediti finché non si può pagare. Quanti per anno?", "Gratuito: quali 3 esami (uno per anno)? Regalo per invito: 1 o più? (1 ogni amico, massimo 3?)"],
-      storico: [["2026-10-07", "Deciso: ambassador solo a commissione, 20% sugli acquisti con il proprio codice, senza accesso gratuito. In home (v8) e nella web app (Ambassador)."], ["2026-10-04", "Descritta nel report «Dalla vetrina alla piattaforma», sezione 12."], ["2026-10-06", "Aggiunta al registro dal report: solo contenuto, nessuna modifica al design."]],
+      storico: [["2026-10-08", "Ambassador anche con foto e nomi (pagina ambassador.html), solo con liberatoria."], ["2026-10-07", "Deciso: ambassador solo a commissione, 20% sugli acquisti con il proprio codice, senza accesso gratuito. In home (v8) e nella web app (Ambassador)."], ["2026-10-04", "Descritta nel report «Dalla vetrina alla piattaforma», sezione 12."], ["2026-10-06", "Aggiunta al registro dal report: solo contenuto, nessuna modifica al design."]],
     },
     {
       id: "L20",
@@ -773,7 +805,7 @@ window.UL_CFG = {
       storico: [["2026-10-04", "Descritta nel report «Dalla vetrina alla piattaforma», sezione 1, 24 e 25."], ["2026-10-06", "Aggiunta al registro dal report: solo contenuto, nessuna modifica al design."]],
     },
     {
-      id: "L27", titolo: "Lancio: anteprima a numero chiuso e cosa regalare", gruppo: "Lancio", stato: "Da decidere", impatto: 4, sforzo: 2, area: "",
+      id: "L27", titolo: "Lancio: anteprima a numero chiuso e cosa regalare", gruppo: "Lancio", stato: "Deciso · 8/10", impatto: 4, sforzo: 2, area: "",
       origine: "Commento di Matteo su S01 (7/10, demo v5) · nota HQ del 7/10 «form di iscrizione per anteprima a numero chiuso» · idea «FOCUS GROUP» · meeting 7/10: «materiali gratis ai primi iscritti» in stand-by",
       problema: "Per il lancio serve un motivo per iscriversi subito, senza «bruciare» il valore delle dispense che fino a pochi giorni fa erano gratis e senza contraddire le decisioni del 7/10 (niente appunti singoli, ambassador senza accesso gratuito).",
       proposta: "A) Anteprima a numero chiuso (già in home, v8): chi si iscrive entra per primo nell'area personale e riceve via email il suo codice invito personale. B) Regalo d'ingresso: 1 Simulazione d'esame gratis (valore 4,99 €) a scelta tra 3 esami fissi, uno per anno (proposta del commento: Matematica I, Diritto Privato, Bilancio d'esercizio). C) Chi è già nel gruppo WhatsApp: invito a diventare ambassador (20%) e un credito di benvenuto da spendere sul primo acquisto. D) Inviti: un piccolo credito quando un amico invitato compra, con un tetto.",
@@ -787,10 +819,10 @@ window.UL_CFG = {
       ],
       serve: ["Servizio email (conferma, codice invito)", "Codici sconto in Stripe (coupon)", "Regole scritte: posti, scadenza, esami fissi", "Lista degli iscritti esportabile"],
       domande: ["Quanti posti? (proposta in demo: 150)", "Regalo d'ingresso: Simulazione gratis, codice sconto o niente?", "Quali 3 esami fissi, uno per anno?", "Il gruppo WhatsApp riceve qualcosa in più degli altri?", "Fino a quando vale l'anteprima?"],
-      storico: [["2026-10-07", "Nuova card dai commenti su S01 e dalla nota HQ del 7/10; form dell'anteprima già in home (v8)."]],
+      storico: [["2026-10-08", "Deciso da Matteo: registrazione aperta a tutti da subito (niente numero chiuso) e al lancio solo Economia Aziendale completa gratis. Referral e crediti dopo il lancio."], ["2026-10-07", "Nuova card dai commenti su S01 e dalla nota HQ del 7/10; form dell'anteprima già in home (v8)."]],
     },
     {
-      id: "L28", titolo: "Email per usare gli strumenti", gruppo: "Lancio", stato: "Da decidere", impatto: 3, sforzo: 2, area: "",
+      id: "L28", titolo: "Email per usare gli strumenti", gruppo: "Lancio", stato: "Deciso · 8/10", impatto: 3, sforzo: 2, area: "",
       origine: "Commento di Matteo su S01 (7/10, demo v6): «chiedere le mail per usare i tool, magari creare nell'account»",
       problema: "Gli strumenti portano traffico ma non lasciano un contatto: non sappiamo chi li usa e non possiamo riportarlo su UniLink.",
       proposta: "Tre livelli. 1) Lo strumento si usa libero e il risultato si vede subito. 2) Dopo il risultato: «salvalo nel tuo account» o «ricevilo via email» (PDF del calcolo, promemoria della scadenza Erasmus, avviso quando escono le graduatorie). 3) Le parti che vivono nell'area (libretto, Planner) restano con l'account.",
@@ -802,7 +834,7 @@ window.UL_CFG = {
       ],
       serve: ["Servizio email", "Testo privacy per l'email", "Un «dopo» per ogni strumento (cosa si salva o si riceve)"],
       domande: ["Quali strumenti hanno un «dopo» che vale un'email?", "Solo email (lista) o account completo?", "Che quota di chi usa uno strumento deve lasciare l'email per dire che funziona?"],
-      storico: [["2026-10-07", "Nuova card dal commento su S01 (demo v6)."]],
+      storico: [["2026-10-08", "Deciso da Matteo: gli strumenti si usano solo nella web app con l'account gratuito; nella landing c'è la vetrina."], ["2026-10-07", "Nuova card dal commento su S01 (demo v6)."]],
     },
   ],
 };

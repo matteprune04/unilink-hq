@@ -1,4 +1,4 @@
-# UniLink · demo navigabile della landing v8
+# UniLink · demo navigabile della landing v9
 
 Demo HTML statica della landing, costruita sull'architettura `architettura/UniLink_Architettura_Landing.pdf` (contesto compatto per l'AI: `architettura/CONTESTO_DEMO.md`). È un **riferimento per Framer**, non il sito vero.
 
@@ -19,7 +19,11 @@ Demo HTML statica della landing, costruita sull'architettura `architettura/UniLi
 | S90 | `decidere.html` | Sezione arancio **Da decidere**: card L01–L28 (stati aggiornati al meeting del 7/10) |
 | S91 | `archivio/index.html` | **Archivio** (solo founder): le parti tolte il 7/10, con perché, fonte e come rimetterle. Le pagine archiviate sono in `archivio/` (Guida, Community, Tesi, Dopo v7, hub Medicina, Prezzi) e usano `<base href="../">` |
 
-Navbar: **Hub ▾ · Materiali · Strumenti · Ambassador** + menu **Founder ▾** (Area personale, Da decidere, Archivio, Commenti) + **Accedi** (web app).
+Navbar: **Hub ▾ · Guida · Materiali · Strumenti · Ambassador** + menu **Founder ▾** (Area personale, Da decidere, Archivio, Commenti) + **Accedi** (web app).
+
+## v9 (8/10) · risposte di Matteo e PDF «Architettura della landing reale»
+Barra Hub ▾ · Guida · Materiali · Strumenti · Ambassador. Guida e hub Medicina «in arrivo» di nuovo nel sito. Registrazione aperta a tutti (niente anteprima a numero chiuso). Si paga solo nella web app: nella landing i pulsanti dicono «Sblocca» e portano all'area (costante `VENDE_QUI` in app.js). Strumenti in vetrina (`config.js → vetrina`: domanda, tempo, esempio, fonte, metrica sopra soglia; costante `FUNZIONANTI`), si usano nella web app (`#/app/strumenti/<id>`). Nuova pagina `ambassador.html` (profili con foto e nome, solo con liberatoria; candidatura). Footer: «Avvisami quando apre», link legali, dati del venditore da definire.
+Quello che nel sito vero non ci sarà resta nella demo, per i founder: **Founder → Archivio** (versioni v8 funzionanti in `archivio/*-v8.html`, Community, Tesi, profili dei founder, listino P2…).
 
 ## Decisioni del 7/10 applicate (v8)
 Listino di lancio (Simulazione 4,99 · Dispensa completa 12,99 · Pacchetto semestre 29,99 con 3 esami / 34,99 con 4, per percorso · Plus 14,99 o 7,99 con un pacchetto, in valutazione), prezzi mostrati come sconto con il prezzo pieno barrato, niente Appunti singoli / Pacchetto anno / «fuori sessione», Economia Aziendale gratis per tutti, dispense solo da leggere e annotare nell'area personale, ambassador solo a commissione (20%), niente profili dei founder, Guida / Community / Tesi / CV / Medicina archiviati. Tutto quello che è stato tolto è in **Founder → Archivio** (`config.js → archivio`).

@@ -42,9 +42,10 @@
       <a class="logo" href="index.html"><img src="img/logo-blu.png" alt="">unilink</a>
       <div class="menu">
         ${tend("Hub", "#", CFG.hub.map((h) => `<a href="${h.href}">${h.nome}${badge(h)}</a>`).join(""), pagina.startsWith("hub") || fasePagine.includes(pagina))}
+        <a class="${att(pagina === "guida")}" href="guida.html">${esc(NAV.guida || "Guida")}</a>
         <a class="${att(pagina === "materiali" || pagina === "preview")}" href="materiali.html">${esc(NAV.materiali || "Materiali")}</a>
         <a class="${att(pagina === "tools")}" href="tools.html">${esc(NAV.strumenti || "Strumenti")}</a>
-        <a href="index.html#ambassador">${esc(NAV.ambassador || "Ambassador")}</a>
+        <a class="${att(pagina === "ambassador")}" href="ambassador.html">${esc(NAV.ambassador || "Ambassador")}</a>
       </div>
       <span class="tendina fondatori"><a class="tend decpill ${att(["decidere", "area", "commenti", "archivio"].includes(pagina))}" href="#" title="Strumenti del team: solo in demo">${esc(NAV.founder || "Founder")} <span>${nDec}</span></a><div class="pan">${fondItems}</div></span>
       <a class="btn btn-p navcta" href="${APP}">${esc(NAV.accedi || "Accedi")}</a>
@@ -54,7 +55,7 @@
       <div class="mg">Hub</div>
       ${CFG.hub.map((h) => `<a href="${h.href}">${h.nome} ${badge(h)}</a>`).join("")}
       <div class="mg">UniLink</div>
-      <a href="materiali.html">${esc(NAV.materiali || "Materiali")}</a><a href="tools.html">${esc(NAV.strumenti || "Strumenti")}</a><a href="index.html#ambassador">${esc(NAV.ambassador || "Ambassador")}</a>
+      <a href="guida.html">${esc(NAV.guida || "Guida")}</a><a href="materiali.html">${esc(NAV.materiali || "Materiali")}</a><a href="tools.html">${esc(NAV.strumenti || "Strumenti")}</a><a href="ambassador.html">${esc(NAV.ambassador || "Ambassador")}</a>
       <a class="btn btn-p" href="${APP}">${esc(NAV.accedi || "Accedi")}</a>
       <div class="mg">${esc(NAV.founder || "Founder")} · solo demo</div>
       <a class="mdec" href="decidere.html">Da decidere · ${nDec}</a><a href="archivio/index.html">Archivio · ${nArc}</a><a href="area.html">Area personale · schermate</a>${COMM ? '<a href="commenti.html">Commenti del team</a>' : ""}
@@ -63,10 +64,10 @@
   const footHTML = `<footer>${onda("#172554")}<div class="wrap"><div class="fgrid">
       <div><a class="logo w" href="index.html"><img src="img/logo-white.png" alt="">unilink</a><p style="opacity:.75;font-size:15px;margin-top:14px;max-width:300px">Da studenti, per studenti. Da Firenze, un passo alla volta.</p></div>
       <div><h2 class="fh">Hub</h2>${CFG.hub.map((h) => `<a href="${h.href}">${h.nome}${h.stato === "attivo" ? "" : " · in arrivo"}</a>`).join("")}</div>
-      <div><h2 class="fh">In ogni hub</h2>${CFG.fasi.map((f) => `<a href="${f.href}">${f.tab}</a>`).join("")}<a href="materiali.html">${esc(NAV.materiali || "Materiali")}</a><a href="tools.html">Strumenti</a></div>
-      <div><h2 class="fh">UniLink</h2><a href="${WA}" target="_blank" rel="noopener">Gruppo WhatsApp</a><a href="index.html#ambassador">Diventa ambassador</a><a href="index.html#faq">FAQ</a><a href="${APP}">Accedi all’area personale</a><a href="decidere.html">Da decidere (founder)</a></div>
-      <div class="fnl"><h2 class="fh">Resta aggiornato</h2><p style="font-size:14.5px;opacity:.75">Una mail quando escono strumenti o hub nuovi. Niente spam.</p><form class="nl" id="nl"><input type="email" placeholder="La tua email" aria-label="La tua email" style="background:transparent;border:0;outline:0;color:#f4f1ea;font:inherit;flex:1;min-width:0"><button class="nlb" style="width:34px;height:34px;border-radius:50%;background:#cf7527;border:0;color:#fff;cursor:pointer">→</button></form></div>
-    </div><div class="fbase"><span>© 2026 UniLink Firenze · Progetto indipendente, non affiliato all'Università di Firenze</span><span>Demo v${CFG.versione.n} · ${new Date(CFG.versione.data).toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" })}</span></div></div></footer>
+      <div><h2 class="fh">In ogni hub</h2>${CFG.fasi.map((f) => `<a href="${f.href}">${f.tab}</a>`).join("")}<a href="guida.html">${esc(NAV.guida || "Guida")}</a><a href="materiali.html">${esc(NAV.materiali || "Materiali")}</a><a href="tools.html">Strumenti</a></div>
+      <div><h2 class="fh">UniLink</h2><a href="${WA}" target="_blank" rel="noopener">Gruppo WhatsApp</a><a href="ambassador.html">Diventa ambassador</a><a href="index.html#faq">FAQ</a><a href="${APP}">Accedi all’area personale</a><a href="decidere.html">Da decidere (founder)</a></div>
+      <div class="fnl"><h2 class="fh">Avvisami quando apre</h2><p style="font-size:14.5px;opacity:.75">Giurisprudenza o Medicina: una sola email, quando l'hub apre.</p><form class="nl" id="nl"><input type="email" placeholder="La tua email" aria-label="La tua email" style="background:transparent;border:0;outline:0;color:#f4f1ea;font:inherit;flex:1;min-width:0"><button class="nlb" style="width:34px;height:34px;border-radius:50%;background:#cf7527;border:0;color:#fff;cursor:pointer">→</button></form></div>
+    </div><div class="fbase"><span>© 2026 UniLink Firenze · Progetto indipendente, non affiliato all'Università di Firenze · Venditore: dati da definire (soggetto legale) · <a href="#" data-legale>Privacy</a> · <a href="#" data-legale>Cookie</a> · <a href="#" data-legale>Termini</a> · <a href="#" data-legale>Gestisci cookie</a></span><span>Demo v${CFG.versione.n} · ${new Date(CFG.versione.data).toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" })}</span></div></div></footer>
     <div class="toast" id="toast"></div>`;
   $("#ul-nav") && ($("#ul-nav").outerHTML = navHTML);
   $("#ul-foot") && ($("#ul-foot").outerHTML = footHTML);
@@ -74,7 +75,7 @@
   document.body.insertAdjacentHTML("afterbegin", '<a class="skip" href="#main">Vai al contenuto</a>');
   const mmenu = $(".mmenu"), foot = $("footer");
   if (mmenu && foot) { const main = document.createElement("main"); main.id = "main"; main.tabIndex = -1; let n = mmenu.nextElementSibling; while (n && n !== foot) { const nx = n.nextElementSibling; main.appendChild(n); n = nx; } mmenu.after(main); }
-  const CRUMB = { prima: [["Scegliere"]], durante: [["Studiare"]], dopo: [["Dopo la laurea"]], tesi: [["Dopo la laurea", "dopo.html"], ["Tesi e laurea"]], guida: [["Guida"]], materiali: [[NAV.materiali || "Materiali"]], preview: [[NAV.materiali || "Materiali", "materiali.html"], ["Anteprima"]], tools: [["Strumenti"]], area: [["Area personale"]], community: [["Community"]], prezzi: [["Prezzi (esempio)"]], decidere: [["Da decidere"]], commenti: [["Commenti del team"]], archivio: [["Archivio"]],
+  const CRUMB = { prima: [["Scegliere"]], durante: [["Studiare"]], dopo: [["Dopo la laurea"]], tesi: [["Dopo la laurea", "dopo.html"], ["Tesi e laurea"]], guida: [["Guida"]], materiali: [[NAV.materiali || "Materiali"]], preview: [[NAV.materiali || "Materiali", "materiali.html"], ["Anteprima"]], tools: [["Strumenti"]], area: [["Area personale"]], community: [["Community"]], prezzi: [["Prezzi (esempio)"]], decidere: [["Da decidere"]], commenti: [["Commenti del team"]], archivio: [["Archivio"]], ambassador: [["Ambassador"]],
     "hub-economia": [["Hub"], ["Economia"]], "hub-giurisprudenza": [["Hub"], ["Giurisprudenza"]], "hub-medicina": [["Hub"], ["Medicina"]] }[pagina];
   // pagine ARCHIVIATE (archivio/*.html, body data-archiviata="id"): briciole verso l'Archivio e banner con il perché
   const ARC = document.body.dataset.archiviata && (CFG.archivio || []).find((a) => a.id === document.body.dataset.archiviata);
@@ -112,6 +113,7 @@
   });
   $$(".tendina > a[href='#']").forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); a.parentElement.classList.toggle("open"); }));
   document.addEventListener("click", (e) => { if (!e.target.closest(".tendina")) $$(".tendina.open").forEach((t) => t.classList.remove("open")); });
+  $$("[data-legale]").forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); toast("Testi legali in preparazione (banner cookie e privacy prima del lancio)"); }));
   $("#nl")?.addEventListener("submit", (e) => { e.preventDefault(); const i = $("input", e.target); if (!/^\S+@\S+\.\S+$/.test(i.value)) { toast("Scrivi un'email valida"); return; } i.value = ""; toast("Demo: iscrizione simulata, nessuna email inviata."); });
 
   /* ---------- 3 · animazioni ---------- */
@@ -220,14 +222,19 @@
   // singoli, niente Pacchetto anno, niente «fuori sessione» (sono in archivio/). Il contenuto dei piani sta nella tabella «Cosa c'è dentro».
   // Pagamento con Stripe Checkout (simulato: checkout-stripe.js): dalla landing si paga senza account; lo sblocco arriva sull'email.
   const PERC = window.UL_PERCORSI;
-  const paga = (voci, cosa) => window.UL_CHECKOUT ? window.UL_CHECKOUT.apri({ voci, cosa, dove: "landing", dopo: "Vai all'area personale", onFatto: () => { location.href = APP; } }) : (location.href = APP);
+  // v9: si paga nella web app dopo il login (risposta di Matteo, PDF landing reale cap. 9). Nella landing «Sblocca» porta all'area.
+  // Il pagamento dalla landing della v8 resta per i founder nelle pagine archivio/*-v8.html (VENDE_QUI).
+  const VENDE_QUI = /-v8$/.test(document.body.dataset.archiviata || "");
+  const ACQ = VENDE_QUI ? "Acquista" : "Sblocca";
+  const slugApp = (s) => (s === "economia_aziendale" ? "economia-aziendale" : String(s).replace(/_/g, "-").replace("contabilitá", "contabilita"));
+  const paga = (voci, cosa, rotta) => VENDE_QUI && window.UL_CHECKOUT ? window.UL_CHECKOUT.apri({ voci, cosa, dove: "landing", dopo: "Vai all'area personale", onFatto: () => { location.href = APP; } }) : (location.href = APP + (rotta || "#/registrati"));
   const barr = (p) => `<s class="pz-pieno">${eur(p)}</s>`;
   const semPrezzo = (n) => LIS.prezzi.semestre[n >= 4 ? 4 : 3];
   const PIANI = () => { const P = LIS.prezzi; return [
     { id: "simulazione", tipo: "Singolo esame", nome: "Simulazione d'esame", p: P.simulazione[0], pieno: P.simulazione[1], d: "Una prova nel formato dell'appello, con correzione.", cta: ["Scegli l'esame", "materiali.html#collezione"] },
     { id: "completa", tipo: "Singolo esame", nome: "Dispensa completa", p: P.completa[0], pieno: P.completa[1], d: "Tutto per un esame: dispensa, quiz e simulazioni.", cta: ["Scegli l'esame", "materiali.html#collezione"] },
     { id: "semestre", tipo: "Pacchetto", nome: "Pacchetto semestre", p: P.semestre[3][0], pieno: P.semestre[3][1], d: `Il tuo semestre: 3 esami ${eur(P.semestre[3][0])}, 4 esami ${eur(P.semestre[4][0])}.`, top: true, cta: ["Calcola il tuo pacchetto", "materiali.html#calcola"] },
-    { id: "plus", tipo: "Il metodo · in valutazione", nome: "UniLink Plus", p: P.plus, d: `Una volta per sessione. Con un pacchetto: ${eur(P.plusConPacchetto)}.`, unaTantum: true, cta: ["Acquista Plus", "#dentro"], paga: true },
+    { id: "plus", tipo: "Il metodo · in valutazione", nome: "UniLink Plus", p: P.plus, d: `Una volta per sessione. Con un pacchetto: ${eur(P.plusConPacchetto)}.`, unaTantum: true, cta: [`${ACQ} Plus`, "#dentro"], paga: true },
   ]; };
   const lancioHTML = () => `<div class="li-quando"><div><span class="eyebrow">Prezzi di lancio</span><p class="small" style="margin-top:6px">${esc(LIS.lancio)}</p></div><p class="small"><span class="badge ok">${esc(LIS.stato)}</span></p></div>`;
   const listinoHTML = (compatto) => { if (!LIS) return "";
@@ -245,16 +252,16 @@
     const fee = (p) => window.UL_CHECKOUT ? window.UL_CHECKOUT.commissione(p) : Math.round((p * 0.015 + 0.25) * 100) / 100;
     const pc = (p) => (fee(p) / p * 100).toFixed(1).replace(".", ",") + "%";
     const LP = LIS.prezzi, righeFee = [["Simulazione d'esame", LP.simulazione[0]], ["Dispensa completa", LP.completa[0]], ["Pacchetto semestre · 3 esami", LP.semestre[3][0]], ["Pacchetto semestre · 4 esami", LP.semestre[4][0]], ["UniLink Plus", LP.plus], ["Plus con un pacchetto", LP.plusConPacchetto]];
-    const comeSiPaga = compatto ? "" : `<div class="pz-paga" id="pagamento"><div class="testa" style="margin:56px 0 22px"><div><span class="eyebrow">Pagamento</span><h2 style="margin-top:10px">Come si <span class="acc">paga</span></h2></div><p>Un clic su «Acquista», si paga su Stripe e la dispensa è subito nella tua area, da leggere e annotare. Senza abbonamenti, senza rinnovi.</p></div>
-      <ol class="pz-passi"><li><b>1</b><h3>Clicchi «Acquista»</h3><p>Qui sul sito o dentro l'area personale.</p></li><li><b>2</b><h3>Paghi su Stripe</h3><p>Carta di credito o debito, Apple Pay, Google Pay, Klarna (3 rate). La carta non passa da noi.</p></li><li><b>3</b><h3>È già sbloccato</h3><p>Stripe ci avvisa in automatico e la dispensa compare nella tua area personale: entra con la stessa email.</p></li></ol>
-      <div class="pz-metodi"><span>Visa</span><span>Mastercard</span><span>Maestro</span><span>Apple Pay</span><span>Google Pay</span><span>Klarna</span><button type="button" class="btn btn-s" data-paga-prova>Prova il pagamento</button></div>
-      <details class="pz-fee"><summary>Per i founder · commissioni Stripe sul listino del 7/10 (1,5% + 0,25 € a transazione, 0 € al mese)</summary>
+    const comeSiPaga = compatto ? "" : `<div class="pz-paga" id="pagamento"><div class="testa" style="margin:56px 0 22px"><div><span class="eyebrow">Pagamento</span><h2 style="margin-top:10px">Come si <span class="acc">paga</span></h2></div><p>${VENDE_QUI ? "Un clic su «Acquista», si paga su Stripe e la dispensa è subito nella tua area." : "Crei l'account gratis, scegli cosa sbloccare e paghi nell'area personale, su Stripe."} Senza abbonamenti, senza rinnovi.</p></div>
+      <ol class="pz-passi"><li><b>1</b><h3>${VENDE_QUI ? "Clicchi «Acquista»" : "Entri nell'area personale"}</h3><p>${VENDE_QUI ? "Qui sul sito o dentro l'area personale." : "Con l'account gratuito: lo crei in un minuto."}</p></li><li><b>2</b><h3>Paghi su Stripe</h3><p>Carta di credito o debito, Apple Pay, Google Pay, Klarna (3 rate). La carta non passa da noi.</p></li><li><b>3</b><h3>È già sbloccato</h3><p>Stripe ci avvisa in automatico e la dispensa compare nella tua area personale: entra con la stessa email.</p></li></ol>
+      <div class="pz-metodi"><span>Visa</span><span>Mastercard</span><span>Maestro</span><span>Apple Pay</span><span>Google Pay</span><span>Klarna</span>${VENDE_QUI ? '<button type="button" class="btn btn-s" data-paga-prova>Prova il pagamento</button>' : `<a class="btn btn-s" href="${APP}#/registrati">Crea l'account gratis</a>`}</div>
+      ${VENDE_QUI ? `<details class="pz-fee"><summary>Per i founder · commissioni Stripe sul listino del 7/10 (1,5% + 0,25 € a transazione, 0 € al mese)</summary>
         <div class="pz-tab-wrap"><table class="pz-tabella"><thead><tr><th>Prodotto</th><th>Prezzo</th><th>Commissione</th><th>Netto UniLink</th><th>Quota persa</th></tr></thead><tbody>${righeFee.map(([n, p]) => `<tr><th scope="row">${n}</th><td>${eur(p)}</td><td>${eur(fee(p))}</td><td>${eur(p - fee(p))}</td><td>${pc(p)}</td></tr>`).join("")}</tbody></table></div>
-        <p class="small">La quota fissa pesa di più sui prezzi bassi: sulla Simulazione a ${eur(LP.simulazione[0])} se ne va il ${pc(LP.simulazione[0])}, sul pacchetto da 4 esami il ${pc(LP.semestre[4][0])}. Più esami nello stesso carrello pagano una sola quota fissa. Klarna, carte premium o aziendali e carte non UE hanno tariffe più alte (da verificare sul listino Stripe Italia).</p></details></div>`;
+        <p class="small">La quota fissa pesa di più sui prezzi bassi: sulla Simulazione a ${eur(LP.simulazione[0])} se ne va il ${pc(LP.simulazione[0])}, sul pacchetto da 4 esami il ${pc(LP.semestre[4][0])}. Più esami nello stesso carrello pagano una sola quota fissa. Klarna, carte premium o aziendali e carte non UE hanno tariffe più alte (da verificare sul listino Stripe Italia).</p></details>` : ""}</div>`;
     return `<div class="pz-grid pz-4">${P.map(card).join("")}</div>${lancioHTML()}${tabella}${comeSiPaga}
       <p class="small li-n"><b>Gratis:</b> ${esc(LIS.gratis)} · <span class="badge">${esc(LIS.stato)}</span>${compatto ? ' · <a href="materiali.html#dentro"><u>Cosa c\'è dentro ogni piano</u></a>' : ""}</p>`; };
   $$("[data-listino]").forEach((el) => (el.innerHTML = listinoHTML(el.dataset.listino === "compatto")));
-  $$("[data-paga-piano]").forEach((b) => (b.onclick = () => paga([{ id: "plus", nome: "UniLink Plus", nota: "fino a fine sessione · una tantum", prezzo: LIS.prezzi.plus }], "UniLink Plus su tutti i tuoi esami")));
+  $$("[data-paga-piano]").forEach((b) => (b.onclick = () => paga([{ id: "plus", nome: "UniLink Plus", nota: "fino a fine sessione · una tantum", prezzo: LIS.prezzi.plus }], "UniLink Plus su tutti i tuoi esami", "#/app/abbonamento")));
   $$("[data-paga-prova]").forEach((b) => (b.onclick = () => paga([{ id: "simulazione:microeconomia", nome: "Simulazione d'esame · Microeconomia", nota: "prezzo di lancio, invece di " + eur(LIS.prezzi.simulazione[1]), prezzo: LIS.prezzi.simulazione[0] }], "Simulazione d'esame di Microeconomia")));
 
   /* ---------- 4b2 · home: anteprima a numero chiuso (nota di Matteo del 7/10: al posto di «scarica gli appunti») ---------- */
@@ -291,7 +298,29 @@
     box.innerHTML = `<div class="amb-grid"><ol class="amb-passi">${AMB.passi.map(([t, d], i) => `<li><b>${i + 1}</b><div><h3>${esc(t)}</h3><p>${esc(d)}</p></div></li>`).join("")}</ol>
       <div class="amb-box"><span class="eyebrow" style="color:#f0b37c">La regola · decisa il 7/10</span><div class="amb-pc"><b>${AMB.commissione}%</b><span>di ogni acquisto fatto con il tuo codice</span></div>
         <p>Esempio: ${AMB.esempio} amici prendono una dispensa completa a ${eur(es)} → ${eur(guad)} per te.</p><p class="small">${esc(AMB.nota)}</p>
-        <a class="btn btn-a" href="${WA}" target="_blank" rel="noopener">${esc(AMB.cta)}</a></div></div>`;
+        <a class="btn btn-a" href="${pagina === "ambassador" ? "#candidati" : "ambassador.html#candidati"}">${esc(AMB.cta)}</a></div></div>`;
+  });
+  // profili degli ambassador (v9: foto e nomi, solo con liberatoria) e candidatura (simulata: in produzione va in Supabase con anti-bot)
+  $$("[data-amb-profili]").forEach((box) => {
+    const P = (AMB && AMB.profili) || [];
+    box.innerHTML = `<div class="amb-cards">${P.map((x) => `<article class="amb-card"><div class="amb-foto">${x.foto ? `<img src="img/${esc(x.foto)}" alt="Foto di ${esc(x.nome)}">` : `<span aria-hidden="true">${esc(x.nome[0])}</span>`}</div>
+      <h3>${esc(x.nome)}</h3><p class="small">${esc(x.corso)} · ${esc(x.anno)}</p><p class="amb-frase">«${esc(x.frase)}»</p></article>`).join("")}</div>${AMB && AMB.segnaposto ? `<p class="small" style="margin-top:12px"><span class="badge">Esempio</span> ${esc(AMB.segnaposto)}</p>` : ""}`;
+  });
+  $$("[data-amb-form]").forEach((box) => {
+    const gia = store.get("candidatura", null);
+    const fatto = (x) => { box.innerHTML = `<div class="ante-ok"><div class="ok">✓</div><h3>Candidatura inviata, ${esc(x.nome)}!</h3><p>Ti scriviamo noi entro qualche giorno. Demo: niente viene inviato, resta solo in questo browser.</p></div>`; };
+    if (gia) return fatto(gia);
+    box.innerHTML = `<form class="ante-form" novalidate><div class="ante-campi"><label>Nome<input name="nome" autocomplete="given-name"></label><label>Email<input name="email" type="email" autocomplete="email" placeholder="nome.cognome@stud.unifi.it"></label>
+      <label>Corso<select name="corso"><option>Economia Aziendale</option><option>Economia e Commercio</option><option>Giurisprudenza</option><option>Medicina</option><option>Altro</option></select></label><label>Anno<select name="anno"><option>I</option><option>II</option><option>III</option><option>Magistrale</option></select></label></div>
+      <label class="ante-campi" style="grid-template-columns:1fr"><span class="small">Perché ti va? (facoltativo)</span><textarea name="perche" rows="3" maxlength="400" style="font:inherit;font-size:16px;border:1.5px solid var(--linea);border-radius:12px;padding:11px 12px;background:var(--crema)"></textarea></label>
+      <label class="ante-ck"><input type="checkbox" name="privacy"> Accetto l'informativa privacy: usiamo questi dati solo per la candidatura.</label>
+      <p class="small">Se vieni scelto, foto, nome e frase compaiono sul sito solo dopo che firmi la liberatoria (puoi ritirarla quando vuoi).</p>
+      <button class="btn btn-a" type="submit">Invia la candidatura <span class="freccia">→</span></button><p class="small msg" aria-live="polite"></p></form>`;
+    $("form", box).addEventListener("submit", (e) => { e.preventDefault(); const f = e.target, msg = $(".msg", f);
+      if (!f.nome.value.trim()) { msg.textContent = "Scrivi il tuo nome."; return; }
+      if (!/^\S+@\S+\.\S+$/.test(f.email.value.trim())) { msg.textContent = "Scrivi un'email valida."; return; }
+      if (!f.privacy.checked) { msg.textContent = "Serve il consenso privacy."; return; }
+      const x = { nome: f.nome.value.trim(), email: f.email.value.trim(), corso: f.corso.value, anno: f.anno.value, quando: new Date().toISOString() }; store.set("candidatura", x); fatto(x); });
   });
   // FAQ (H11) dalla configurazione: ogni risposta porta verso l'account o l'acquisto
   $$("[data-faq]").forEach((box) => {
@@ -361,9 +390,9 @@
               ${pac ? `<div class="cc-r ev"><span>Pacchetto semestre · ${n} esami ${barr(pac[1])}${sc.plus ? " + Plus" : ""}</span><b>${eur(totP)}</b></div><div class="cc-bar ev"><i style="width:${pct(totP)}%"></i></div>` : ""}
             </div>
             <div class="calc-cons ${forte ? "forte" : ""}"><span class="eyebrow">Il nostro consiglio</span><h3>${tit}</h3><p>${txt}</p></div>
-            ${pac ? `<button type="button" class="btn ${forte ? "btn-a" : "btn-p"}" data-cpaga="pac" style="justify-content:center">Acquista il pacchetto · ${eur(totP)}</button>` : ""}
-            ${n ? `<button type="button" class="btn btn-s" data-cpaga="sing" style="justify-content:center">${pac ? "oppure le singole" : "Acquista le singole"} · ${eur(totS)}</button>` : ""}
-            <p class="small">${esc(per)} · ${esc(LIS.stato)}. Si paga con Stripe, tutto in un solo pagamento (simulato nella demo).</p>
+            ${pac ? `<button type="button" class="btn ${forte ? "btn-a" : "btn-p"}" data-cpaga="pac" style="justify-content:center">${ACQ} il pacchetto · ${eur(totP)}</button>` : ""}
+            ${n ? `<button type="button" class="btn btn-s" data-cpaga="sing" style="justify-content:center">${pac ? "oppure le singole" : ACQ + " le singole"} · ${eur(totS)}</button>` : ""}
+            <p class="small">${esc(per)} · ${esc(LIS.stato)}. ${VENDE_QUI ? "Si paga con Stripe, tutto in un solo pagamento (simulato nella demo)." : "Si paga nell'area personale, con l'account gratuito."}</p>
           </div>`;
         const on = (sel, fn) => $$(sel, cal).forEach((b) => (b.onclick = () => { fn(b); draw(); }));
         on("[data-cc]", (b) => { sc.cds = b.dataset.cc; sc.curr = ""; sc.scelti = null; }); on("[data-cu]", (b) => { sc.curr = b.dataset.cu; sc.scelti = null; });
@@ -372,7 +401,7 @@
         $("[data-cp]", cal).onchange = (e) => { sc.plus = e.target.checked; draw(); };
         const vociPac = pac ? [{ id: "pacchetto:" + sc.cds + (sc.curr || "") + N[sc.anno] + sc.sem, nome: "Pacchetto semestre · " + per, nota: presi.map((d) => d.nome).join(", "), prezzo: pac[0] }].concat(sc.plus ? [{ id: "plus", nome: "UniLink Plus", nota: "con un pacchetto", prezzo: LIS.prezzi.plusConPacchetto }] : []) : [];
         const vociSing = presi.filter((d) => !gratisDi(d)).map((d) => ({ id: "completa:" + d.slug, nome: "Dispensa completa · " + d.nome, nota: "prezzo di lancio", prezzo: completaDi(d)[0] })).concat(sc.plus ? [{ id: "plus", nome: "UniLink Plus", nota: "fino a fine sessione", prezzo: LIS.prezzi.plus }] : []);
-        $$("[data-cpaga]", cal).forEach((b) => (b.onclick = () => b.dataset.cpaga === "pac" ? paga(vociPac, "Pacchetto semestre (" + per + ")") : vociSing.length ? paga(vociSing, presi.map((d) => d.nome).join(", ")) : toast("Queste dispense le hai già gratis")));
+        $$("[data-cpaga]", cal).forEach((b) => (b.onclick = () => b.dataset.cpaga === "pac" ? paga(vociPac, "Pacchetto semestre (" + per + ")", "#/app/abbonamento/calcola") : vociSing.length ? paga(vociSing, presi.map((d) => d.nome).join(", "), "#/app/materiali/catalogo") : toast("Queste dispense le hai già gratis")));
       };
       draw();
     }
@@ -389,7 +418,7 @@
         <div class="prev-cop2"><span class="eyebrow">Copertura del programma ufficiale</span><ul>${IND.copertura.map(([p, cap]) => `<li><span>${esc(p)}</span><b>${esc(cap)}</b></li>`).join("")}</ul><p class="small">${esc(IND.nota)}</p></div>`
       : arg ? `<ol class="prev-ind">${arg.map((a) => `<li>${esc(a)}</li>`).join("")}</ol><p class="small">Argomenti della banca di quiz di esempio. In produzione qui c'è l'indice vero della dispensa, capitolo per capitolo.</p>`
       : `<p class="small prev-vuoto">L'indice completo si legge dalla dispensa: in produzione appare qui, capitolo per capitolo, prima di comprare.</p>`;
-    const leggi = APP + "#/app/leggi/" + (d.slug === "economia_aziendale" ? "economia-aziendale" : d.slug.replace(/_/g, "-"));
+    const leggi = APP + "#/app/leggi/" + slugApp(d.slug);
     prevRoot.innerHTML = `<div class="prev">
       <div class="prev-cop"><img src="img/cop/${d.cop}" alt="Copertina della dispensa di ${esc(d.nome)}">${free ? '<span class="badge on prev-free">Gratis per tutti</span>' : ""}</div>
       <div class="prev-main"><span class="eyebrow">${d.anno} anno · ${SEM[d.sem] || ""} · ${esc(d.codice)}</span><h1 class="h2" style="margin:8px 0 10px">${esc(d.nome)}</h1>
@@ -405,11 +434,11 @@
         : `${s ? `<div class="li-card"><div class="r"><span>Simulazione d'esame</span><b>${eur(s[0])}</b></div><span class="small">invece di ${barr(s[1])} · prezzo di lancio</span></div>` : `<p class="small">La simulazione d'esame per questo esame è in preparazione.</p>`}
         <div class="li-card ev"><div class="r"><span>Dispensa completa</span><b>${eur(c[0])}</b></div><span class="small">invece di ${barr(c[1])} · dispensa, quiz e simulazioni</span></div>
         ${stessi.length >= 3 ? `<div class="li-card"><div class="r"><span>Nel pacchetto semestre</span><b>${eur(semPrezzo(3)[0])}</b></div><span class="small">3 esami del tuo percorso, ${eur(semPrezzo(4)[0])} con 4 · <a href="materiali.html#calcola"><u>calcola il tuo</u></a></span></div>` : ""}
-        ${s ? `<button type="button" class="btn btn-s" data-pv-paga="simulazione" style="justify-content:center">Acquista la Simulazione · ${eur(s[0])}</button>` : ""}<button type="button" class="btn btn-a" data-pv-paga="completa" style="justify-content:center;margin-top:8px">Acquista la Completa · ${eur(c[0])}</button>
-        <p class="small">Si legge e si annota nell'area personale: non si scarica. Paghi con carta, Apple Pay, Google Pay o Klarna su Stripe.</p><p class="small">${esc(LIS.gratis)}</p><span class="badge">${esc(LIS.stato)}</span>`}
+        ${s ? `<button type="button" class="btn btn-s" data-pv-paga="simulazione" style="justify-content:center">${ACQ} la Simulazione · ${eur(s[0])}</button>` : ""}<button type="button" class="btn btn-a" data-pv-paga="completa" style="justify-content:center;margin-top:8px">${ACQ} la Completa · ${eur(c[0])}</button>
+        <p class="small">Si legge e si annota nell'area personale: non si scarica. ${VENDE_QUI ? "Paghi con carta, Apple Pay, Google Pay o Klarna su Stripe." : "Si paga nell'area personale (Stripe), con l'account gratuito."}</p><p class="small">${esc(LIS.gratis)}</p><span class="badge">${esc(LIS.stato)}</span>`}
       </aside></div>`;
     $$("[data-pv-paga]", prevRoot).forEach((b) => (b.onclick = () => { const k = b.dataset.pvPaga, nome = (k === "completa" ? "Dispensa completa" : "Simulazione d'esame") + " · " + d.nome;
-      paga([{ id: k + ":" + d.slug, nome, nota: "prezzo di lancio", prezzo: (k === "completa" ? c : s)[0] }], nome); }));
+      paga([{ id: k + ":" + d.slug, nome, nota: "prezzo di lancio", prezzo: (k === "completa" ? c : s)[0] }], nome, "#/app/scheda/" + slugApp(d.slug)); }));
   }
 
   // link verso l'accesso alla web app (H06b, H12): data-app="#/rotta" o vuoto
@@ -487,11 +516,39 @@
     disegnaPl();
   }
 
-  /* ---------- 5 · strumenti (da tools.js, dentro la demo) ---------- */
+  /* ---------- 5 · strumenti ----------
+     v9 (risposte di Matteo + PDF «Architettura della landing reale», cap. 8): nella landing gli strumenti sono una VETRINA
+     (cosa ti dice, quanto ci metti, un risultato d'esempio, la fonte della regola, numeri veri solo sopra una soglia) e si usano
+     solo nella web app con l'account gratuito («Usalo gratis»). La versione funzionante della v8 resta per i founder:
+     archivio/tools-v8.html e archivio/index-v8.html (body data-archiviata «…-v8») e nelle schede «Da decidere». */
+  const FUNZIONANTI = /-v8$/.test(document.body.dataset.archiviata || "") || pagina === "decidere";
+  const VT = CFG.vetrina || {};
+  const usaloHref = (id) => APP + "#/app/strumenti/" + id;
+  const metrica = (v) => (v && v.metrica && v.metrica.valore != null && v.metrica.valore >= (VT.soglia || 50) ? `<p class="vt-num"><b>${esc(String(v.metrica.valore))}</b> ${esc(v.metrica.testo)}</p>` : "");
+  const vetrinaCard = (t, ricco) => { const v = (VT.tools || {})[t.id] || {};
+    return `<article class="vt-card"><div class="vt-top"><span class="ico">${esc(t.icona)}</span><div><h3>${esc(t.nome)}</h3><p class="small">${esc(v.domanda || t.desc)}</p></div></div>
+      ${ricco ? `<div class="vt-es"><span class="badge">Esempio</span><p>${esc(v.esempio || "")}</p></div>` : ""}
+      <div class="vt-piede"><span class="small">⏱ ${esc(v.tempo || "1 minuto")}${t.stato === "demo" ? " · regole da verificare" : ""}</span>${metrica(v)}</div>
+      ${ricco && v.fonte ? `<p class="vt-fonte">Fonte: ${esc(v.fonte)}</p>` : ""}
+      <a class="btn ${ricco ? "btn-a" : "btn-s"}" href="${usaloHref(t.id)}">Usalo gratis <span class="freccia">→</span></a></article>`; };
   $$("[data-toolshell]").forEach((root) => {
     const limit = +root.dataset.limit || 99;
     let hub = root.dataset.hub || "economia", sel = (location.hash || "").replace("#", "");
     const lista = $(".tlist", root), pan = $(".tpanel", root);
+    if (!FUNZIONANTI) {
+      // VETRINA: in home 4 card compatte, nella pagina Strumenti tutte le card dell'hub, ricche
+      const ricco = pagina === "tools";
+      const drawV = () => {
+        const ids = root.dataset.ids ? root.dataset.ids.split(",") : null;
+        let l = ids ? ids.map((i) => ULTools.trova(i)).filter(Boolean) : ULTools.lista(hub).slice(0, limit), ar = ids ? [] : ULTools.area(hub);
+        if (l.some((t) => t.id === "voto")) l = l.filter((t) => t.id !== "voto-cdl"); // un solo «Voto di laurea» per hub
+        root.className = "vt-grid" + (ricco ? " ricco" : "");
+        root.innerHTML = l.map((t) => vetrinaCard(t, ricco)).join("") + ar.map((t) => `<article class="vt-card area"><div class="vt-top"><span class="ico">${esc(t.icona)}</span><div><h3>${esc(t.nome)}</h3><p class="small">${esc(t.desc)}</p></div></div><a class="btn btn-s" href="${APP}${t.href || ""}">Nell'area personale →</a></article>`).join("");
+      };
+      const tabs = $("#hubtabs");
+      tabs && $$("span", tabs).forEach((s) => s.addEventListener("click", () => { $$("span", tabs).forEach((x) => x.classList.remove("on")); s.classList.add("on"); hub = s.dataset.hub; drawV(); }));
+      drawV(); return;
+    }
     const draw = () => {
       const ids = root.dataset.ids ? root.dataset.ids.split(",") : null;
       const l = ids ? ids.map((i) => ULTools.trova(i)).filter(Boolean) : ULTools.lista(hub).slice(0, limit), ar = root.dataset.limit || ids ? [] : ULTools.area(hub);

@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="it">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>UniLink · Studia, orientati, scegli</title>
+<meta charset="utf-8"><base href="../"><!-- VERSIONE v8 conservata per i founder: vedi config.js → archivio (id "index-v8") --><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Founder · v8 · Studia, orientati, scegli</title>
 <meta name="description" content="Dispense, quiz, simulazioni e strumenti per gli esami universitari, scritti da studenti. Parti da Economia UniFi: Giurisprudenza in arrivo.">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#172554">
@@ -28,7 +28,7 @@
   }
 </style>
 </head>
-<body data-page="home" data-cta="Trova la tua dispensa|#catalogo-home|Cerca il tuo esame">
+<body data-page="home" data-archiviata="index-v8" data-cta="Entra nell'anteprima|#anteprima|Posti limitati">
 
 <div id="ul-nav"></div>
 
@@ -38,8 +38,8 @@
     <span class="badge">Da studenti, per studenti · Economia UniFi</span>
     <h1 class="display" style="margin-top:24px">Studia, orientati,<br><span class="acc">scegli.<svg class="u" viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M3 13 C 55 4, 130 3, 197 9" stroke="#cf7527" stroke-width="4.5" fill="none" stroke-linecap="round"/><path d="M25 18 C 85 12, 145 12, 182 15" stroke="#cf7527" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".55"/></svg><svg class="s" viewBox="0 0 20 20"><path d="M3 17 L7 8 M10 18 L16 11 M12 5 L15 1" stroke="#cf7527" stroke-width="2.4" stroke-linecap="round"/></svg></span></h1>
     <p class="lead">Dispense, quiz e simulazioni per gli esami di Economia UniFi, scritti da chi li ha appena dati. Poi Erasmus, magistrali e quello che viene dopo.</p>
-    <div class="cta"><a class="btn btn-p" href="#catalogo-home">Trova la tua dispensa <span class="freccia">→</span></a><a class="btn btn-s" data-app="#/registrati" href="#">Crea l'account gratis</a></div>
-    <ul class="rassic" aria-label="Cosa devi sapere"><li>Gratis per iniziare</li><li>Senza account per esplorare</li><li>Fatto da studenti di UniFi</li></ul>
+    <div class="cta"><a class="btn btn-p" href="#anteprima">Entra nell'anteprima <span class="freccia">→</span></a><a class="btn btn-s" href="#catalogo-home">Trova la tua dispensa</a></div>
+    <ul class="rassic" aria-label="Cosa devi sapere"><li>Economia Aziendale gratis</li><li>Senza account per esplorare</li><li>Fatto da studenti di UniFi</li></ul>
     <div class="collage">
       <svg class="ribbon" viewBox="0 0 1500 240"><path id="rp" d="M-20 175 C 260 60, 470 40, 760 125 S 1260 215, 1530 70" stroke="#172554" stroke-width="54" fill="none"/><text font-family="Croogla" font-size="21" fill="#f4f1ea" dy="7" letter-spacing="1"><textPath href="#rp">Dispense · Quiz · Simulazioni · Erasmus · Magistrali · Voto di laurea · Dispense · Quiz · Simulazioni · Erasmus · Magistrali · Voto di laurea · Dispense · Quiz · Simulazioni</textPath></text></svg>
       <div class="foto f1"><img data-cfg-img="home.hero.foto.0" src="img/mani-appunti.jpg" alt="" decoding="async"></div>
@@ -66,13 +66,25 @@
   </div>
 </section>
 
-<!-- 05b anteprima a numero chiuso: tolta in v9 (registrazione aperta a tutti), conservata in archivio/index-v8.html -->
+<!-- 05b ANTEPRIMA A NUMERO CHIUSO (nota di Matteo del 7/10: al posto di «scarica gli appunti»). Cosa regalare: card L27 -->
+<section data-code="H05b" id="anteprima">
+  <div class="wrap ante">
+    <div>
+      <span class="eyebrow">Posti limitati · prima del lancio</span>
+      <h2 style="margin-top:10px">Entra nell'<span class="acc">anteprima</span></h2>
+      <p class="lead" style="margin-top:14px" data-cfg="lancio.testo">Prima del lancio apriamo l'area personale a un numero chiuso di studenti di Economia.</p>
+      <ul class="ante-ricevi" data-ante-ricevi></ul>
+    </div>
+    <div data-anteprima></div>
+  </div>
+</section>
+
 <!-- 04 HUB -->
 <section data-code="H04" id="hub">
   <div class="wrap">
     <div class="testa">
       <div><span class="eyebrow">Le scuole</span><h2 style="margin-top:10px">Scegli il tuo <span class="acc">hub<svg class="u" viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M3 13 C 55 4, 130 3, 197 9" stroke="#cf7527" stroke-width="5" fill="none" stroke-linecap="round"/></svg><svg class="s" viewBox="0 0 20 20"><path d="M3 17 L7 8 M10 18 L16 11 M12 5 L15 1" stroke="#cf7527" stroke-width="2.4" stroke-linecap="round"/></svg></span></h2></div>
-      <p>Un hub è lo spazio di un corso di studi: materiali, strumenti e community in un posto solo. Partiamo da Economia; Giurisprudenza e Medicina sono le prossime.</p>
+      <p>Un hub è lo spazio di un corso di studi: materiali, strumenti e community in un posto solo. Partiamo da Economia; Giurisprudenza è la prossima.</p>
     </div>
     <div class="hubs" data-hubs></div>
     <p class="altra">La tua scuola non c'è? <a href="https://chat.whatsapp.com/KdA4r1POh6MAiBbLmmES0L" target="_blank" rel="noopener"><u>Scrivici</u></a>, contiamo anche te.</p>
@@ -155,7 +167,7 @@
       <div>
         <div class="step"><span class="n">01</span><div><h3>Scegli il tuo esame <i>· 30 secondi</i></h3><p>Cerca per nome, anno o area. Vedi subito modalità d'esame e consigli.</p></div></div>
         <div class="step"><span class="n">02</span><div><h3>Leggi l'anteprima <i>· gratis</i></h3><p>Indice, prime pagine e data dell'ultimo aggiornamento, prima di decidere.</p></div></div>
-        <div class="step"><span class="n">03</span><div><h3>Studia con metodo <i>· fino all'appello</i></h3><p>La dispensa completa da leggere e annotare, quiz e simulazioni nel formato dell'esame: nell'area personale, dal telefono o dal PC.</p></div></div>
+        <div class="step"><span class="n">03</span><div><h3>Studia con metodo <i>· fino all'appello</i></h3><p>La dispensa completa da leggere e annotare, quiz e simulazioni nel formato dell'esame.</p></div></div>
       </div>
     </div>
     <div class="garanzie">
@@ -167,20 +179,19 @@
   </div>
 </section>
 
-<!-- 08 STRUMENTI · vetrina (v9): si usano nella web app con l'account gratuito -->
+<!-- 08 STRUMENTI (da tools.js, dentro la demo) -->
 <section data-code="H08">
   <div class="wrap">
-    <div class="testa"><div><span class="eyebrow">Gratis, con l'account</span><h2 style="margin-top:10px">Strumenti che fanno i <span class="acc">conti</span> per te</h2></div><p>Voto di laurea, media, tempo all'appello: li usi gratis nella tua area personale. Tutti gli strumenti <a href="tools.html"><u>nella pagina Strumenti</u></a>.</p></div>
+    <div class="testa"><div><span class="eyebrow">Gratis, per tutti</span><h2 style="margin-top:10px">Strumenti che fanno i <span class="acc">conti</span> per te</h2></div><p>Strumenti per tutti i corsi, compatti: funzionano davvero. Gli altri li trovi <a href="tools.html"><u>nella pagina Strumenti</u></a>.</p></div>
     <div class="tools compatti" data-toolshell data-hub="economia" data-ids="voto-cdl,peso,countdown,media"><div class="tlist"></div><div class="tpanel"></div></div>
   </div>
 </section>
 
-<!-- 09 STUDENTI COME TE → AMBASSADOR (v9, risposta di Matteo: foto e nomi degli ambassador, con liberatoria). Niente profili dei founder. -->
+<!-- 09 AMBASSADOR (al posto di «Studenti, come te»: i profili dei founder sono archiviati il 7/10). Regola: 20% sugli acquisti con il codice -->
 <section data-code="H09" class="bgn" id="ambassador">
   <div class="wrap">
-    <div class="testa"><div><span class="eyebrow">Gli ambassador di UniLink</span><h2 style="margin-top:10px">Studenti, come <span class="acc">te</span></h2></div><p>Fanno conoscere UniLink nel loro anno e ci dicono cosa manca. Il 20% di quello che compra chi usa il loro codice è loro.</p></div>
-    <div class="amb-profili" data-amb-profili></div>
-    <p class="altra">Vuoi portare UniLink nel tuo corso? <a href="ambassador.html"><u>Diventa ambassador</u></a></p>
+    <div class="testa"><div><span class="eyebrow">Ambassador</span><h2 style="margin-top:10px">Porta UniLink nel tuo <span class="acc">corso</span></h2></div><p>Studenti che fanno conoscere UniLink nel loro anno. Il 20% di quello che compra chi usa il loro codice è loro.</p></div>
+    <div data-ambassador></div>
   </div>
 </section>
 
