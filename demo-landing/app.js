@@ -30,34 +30,41 @@
   const badge = (h) => `<span class="badge ${h.stato === "attivo" ? "on" : ""}">${h.stato === "attivo" ? "Attivo" : "In arrivo"}</span>`;
   const tend = (label, href, items, on) => `<span class="tendina"><a class="tend ${att(on)}" href="${href}">${label}</a><div class="pan">${items}</div></span>`;
   const nDec = CFG.decidere.length;
+  const NAV = CFG.nav || {};
+  const COMM = CFG.commenti && CFG.commenti.attivi;
+  // menu «Founder»: strumenti di lavoro della demo, NON vanno nel sito finale (P7)
+  const fondItems = `<a href="area.html">Area personale · schermate</a><a href="decidere.html">Da decidere <span class="badge">${nDec}</span></a>${COMM ? '<a href="commenti.html">Commenti del team</a>' : ""}<a href="prezzi.html">Prezzi · pagina precedente</a>`;
+  const fasePagine = ["prima", "durante", "dopo", "tesi"];
   const navHTML = `
-    <div class="topbar" role="region" aria-label="Avviso demo">Demo navigabile v${CFG.versione.n} · contenuti in parte fittizi, nessun invio reale · <a href="area.html">anteprima area personale</a> · <a href="decidere.html">cosa è ancora da decidere</a>${CFG.commenti && CFG.commenti.attivi ? " · <b>commenta</b> con il pulsante in basso" : ""}</div>
+    <div class="topbar" role="region" aria-label="Avviso demo">Demo navigabile v${CFG.versione.n} · contenuti in parte fittizi, nessun invio reale · strumenti del team nel menu <b>${esc(NAV.founder || "Founder")}</b>${COMM ? " · <b>commenta</b> con il pulsante in basso" : ""}</div>
     <header class="navwrap"><div class="nav">
       <a class="logo" href="index.html"><img src="img/logo-blu.png" alt="">unilink</a>
       <div class="menu">
-        ${tend("Hub", "#", CFG.hub.map((h) => `<a href="${h.href}">${h.nome}${badge(h)}</a>`).join(""), pagina.startsWith("hub"))}
-        ${CFG.fasi.map((f) => tend(f.nome, f.href, f.voci.map((v) => `<a href="${v[1]}">${v[0]}</a>`).join(""), fasePag === f.id)).join("")}
-        <a class="${att(pagina === "tools")}" href="tools.html">Strumenti</a>
-        <a class="${att(pagina === "community")}" href="community.html">Community</a>
+        ${tend("Hub", "#", CFG.hub.map((h) => `<a href="${h.href}">${h.nome}${badge(h)}</a>`).join(""), pagina.startsWith("hub") || fasePagine.includes(pagina))}
+        <a class="${att(pagina === "guida")}" href="guida.html">${esc(NAV.guida || "Guida")}</a>
+        <a class="${att(pagina === "materiali" || pagina === "preview")}" href="materiali.html">${esc(NAV.materiali || "Materiali")}</a>
+        <a class="${att(pagina === "tools")}" href="tools.html">${esc(NAV.strumenti || "Strumenti")}</a>
+        <a class="${att(pagina === "community")}" href="community.html">${esc(NAV.community || "Community")}</a>
       </div>
-      <a class="decpill ${att(pagina === "decidere")}" href="decidere.html" title="Idee ancora da decidere: solo in demo">Da decidere <span>${nDec}</span></a>
-      <a class="btn btn-p navcta" href="area.html">Area personale</a>
+      <span class="tendina fondatori"><a class="tend decpill ${att(["decidere", "area", "commenti"].includes(pagina))}" href="#" title="Strumenti del team: solo in demo">${esc(NAV.founder || "Founder")} <span>${nDec}</span></a><div class="pan">${fondItems}</div></span>
+      <a class="btn btn-p navcta" href="${APP}">${esc(NAV.accedi || "Accedi")}</a>
       <button class="burger" aria-label="Apri il menu">≡</button>
     </div></header>
     <div class="mmenu"><button class="x" aria-label="Chiudi">✕</button>
       <div class="mg">Hub</div>
       ${CFG.hub.map((h) => `<a href="${h.href}">${h.nome} ${badge(h)}</a>`).join("")}
-      <div class="mg">Il tuo percorso</div>
-      ${CFG.fasi.map((f) => `<a href="${f.href}">${f.nome}<small>${f.titolo}</small></a>`).join("")}
-      <a href="tools.html">Strumenti</a><a href="community.html">Community</a><a href="area.html">Area personale</a>
-      <a class="mdec" href="decidere.html">Da decidere · ${nDec}</a>
+      <div class="mg">UniLink</div>
+      <a href="guida.html">${esc(NAV.guida || "Guida")}</a><a href="materiali.html">${esc(NAV.materiali || "Materiali")}</a><a href="tools.html">${esc(NAV.strumenti || "Strumenti")}</a><a href="community.html">${esc(NAV.community || "Community")}</a>
+      <a class="btn btn-p" href="${APP}">${esc(NAV.accedi || "Accedi")}</a>
+      <div class="mg">${esc(NAV.founder || "Founder")} · solo demo</div>
+      <a class="mdec" href="decidere.html">Da decidere · ${nDec}</a><a href="area.html">Area personale · schermate</a>${COMM ? '<a href="commenti.html">Commenti del team</a>' : ""}
       <a class="btn btn-a" href="${WA}" target="_blank" rel="noopener">Entra nel gruppo WhatsApp</a></div>`;
   const onda = (c) => `<svg class="top" viewBox="0 0 1440 60" preserveAspectRatio="none"><path fill="${c}" d="M0 60 L0 32 ${"a40 28 0 0 1 80 0 ".repeat(18)}L1440 60 Z"/></svg>`;
   const footHTML = `<footer>${onda("#172554")}<div class="wrap"><div class="fgrid">
       <div><a class="logo w" href="index.html"><img src="img/logo-white.png" alt="">unilink</a><p style="opacity:.75;font-size:15px;margin-top:14px;max-width:300px">Da studenti, per studenti. Da Firenze, un passo alla volta.</p></div>
       <div><h2 class="fh">Hub</h2>${CFG.hub.map((h) => `<a href="${h.href}">${h.nome}${h.stato === "attivo" ? "" : " · in arrivo"}</a>`).join("")}</div>
-      <div><h2 class="fh">Percorso</h2>${CFG.fasi.map((f) => `<a href="${f.href}">${f.titolo}</a>`).join("")}<a href="tools.html">Strumenti</a><a href="area.html">Area personale</a></div>
-      <div><h2 class="fh">UniLink</h2><a href="community.html">Community</a><a href="index.html#chi-siamo">Chi siamo</a><a href="index.html#faq">FAQ</a><a href="prezzi.html">Prezzi (esempio)</a><a href="decidere.html">Da decidere</a>${CFG.commenti && CFG.commenti.attivi ? '<a href="commenti.html">Commenti del team</a>' : ""}</div>
+      <div><h2 class="fh">In ogni hub</h2>${CFG.fasi.map((f) => `<a href="${f.href}">${f.tab}</a>`).join("")}<a href="guida.html">${esc(NAV.guida || "Guida")}</a><a href="materiali.html">${esc(NAV.materiali || "Materiali")}</a><a href="tools.html">Strumenti</a></div>
+      <div><h2 class="fh">UniLink</h2><a href="community.html">Community</a><a href="index.html#chi-siamo">Chi siamo</a><a href="index.html#faq">FAQ</a><a href="${APP}">Accedi all’area personale</a><a href="decidere.html">Da decidere (founder)</a></div>
       <div class="fnl"><h2 class="fh">Resta aggiornato</h2><p style="font-size:14.5px;opacity:.75">Una mail quando escono strumenti o hub nuovi. Niente spam.</p><form class="nl" id="nl"><input type="email" placeholder="La tua email" aria-label="La tua email" style="background:transparent;border:0;outline:0;color:#f4f1ea;font:inherit;flex:1;min-width:0"><button class="nlb" style="width:34px;height:34px;border-radius:50%;background:#cf7527;border:0;color:#fff;cursor:pointer">→</button></form></div>
     </div><div class="fbase"><span>© 2026 UniLink Firenze · Progetto indipendente, non affiliato all'Università di Firenze</span><span>Demo v${CFG.versione.n} · ${new Date(CFG.versione.data).toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" })}</span></div></div></footer>
     <div class="toast" id="toast"></div>`;
@@ -67,9 +74,19 @@
   document.body.insertAdjacentHTML("afterbegin", '<a class="skip" href="#main">Vai al contenuto</a>');
   const mmenu = $(".mmenu"), foot = $("footer");
   if (mmenu && foot) { const main = document.createElement("main"); main.id = "main"; main.tabIndex = -1; let n = mmenu.nextElementSibling; while (n && n !== foot) { const nx = n.nextElementSibling; main.appendChild(n); n = nx; } mmenu.after(main); }
-  const CRUMB = { prima: [["Prima"]], durante: [["Durante"]], dopo: [["Dopo"]], tesi: [["Dopo", "dopo.html"], ["Tesi e laurea"]], tools: [["Strumenti"]], area: [["Area personale"]], community: [["Community"]], prezzi: [["Prezzi (esempio)"]], decidere: [["Da decidere"]], commenti: [["Commenti del team"]],
+  const CRUMB = { prima: [["Scegliere"]], durante: [["Studiare"]], dopo: [["Dopo la laurea"]], tesi: [["Dopo la laurea", "dopo.html"], ["Tesi e laurea"]], guida: [["Guida"]], materiali: [[NAV.materiali || "Materiali"]], preview: [[NAV.materiali || "Materiali", "materiali.html"], ["Anteprima"]], tools: [["Strumenti"]], area: [["Area personale"]], community: [["Community"]], prezzi: [["Prezzi (esempio)"]], decidere: [["Da decidere"]], commenti: [["Commenti del team"]],
     "hub-economia": [["Hub"], ["Economia"]], "hub-giurisprudenza": [["Hub"], ["Giurisprudenza"]], "hub-medicina": [["Hub"], ["Medicina"]] }[pagina];
   if (CRUMB && $("#main")) { const it = [["Home", "index.html"], ...CRUMB]; $("#main").insertAdjacentHTML("afterbegin", `<nav class="crumbs" aria-label="Percorso"><div class="wrap">${it.map((c, i) => (i === it.length - 1 ? `<span aria-current="page">${esc(c[0])}</span>` : c[1] ? `<a href="${c[1]}">${esc(c[0])}</a>` : `<span>${esc(c[0])}</span>`)).join("<i>›</i>")}</div></nav>`); }
+  /* schede dell'hub (P7): le fasi non sono più nella barra, stanno dentro ogni hub. L'hub scelto si ricorda. */
+  const hubDaPag = (CFG.hub.find((h) => pagina === "hub-" + h.slug) || {}).slug;
+  if (hubDaPag) store.set("hub", hubDaPag);
+  const hubCorr = hubDaPag || new URLSearchParams(location.search).get("hub") || store.get("hub", "economia");
+  if ((hubDaPag || fasePagine.includes(pagina)) && $("#main")) {
+    const h = CFG.hub.find((x) => x.slug === hubCorr) || CFG.hub[0];
+    const voci = [["Panoramica", h.href, !!hubDaPag], ...CFG.fasi.map((f) => [f.tab, `${f.href}?hub=${h.slug}`, pagina === f.id || (f.id === "dopo" && pagina === "tesi")])];
+    const html = `<nav class="hubtabs" aria-label="Sezioni dell'hub ${esc(h.nome)}"><div class="wrap"><span class="hubnome">${esc(h.nome)}${h.stato === "attivo" ? "" : " · in arrivo"}</span>${voci.map(([t, href, on]) => `<a href="${href}" ${on ? 'aria-current="page" class="on"' : ""}>${esc(t)}</a>`).join("")}</div></nav>`;
+    const cr = $(".crumbs", $("#main")); cr ? cr.insertAdjacentHTML("afterend", html) : $("#main").insertAdjacentHTML("afterbegin", html);
+  }
   /* menu: tastiera, focus e blocco dello scorrimento */
   const burger = $(".burger");
   if (burger && mmenu) {
@@ -125,10 +142,15 @@
   // catalogo: le card aprono l'anteprima nell'area personale (le dispense vivono lì, non in landing)
   const SITOAPP = APP;
   const D = window.UL_DISPENSE || [];
-  const card = (d) => `<a class="disp" href="${SITOAPP}#/app/materiali/catalogo" title="Apri il catalogo nell'area personale (si entra con un account demo)">
+  const LIS = CFG.listino || null;
+  const eur = (n) => Number(n).toFixed(2).replace(".", ",") + " €";
+  // regola P2: Completa a prezzo pieno solo con le mappe, ridotta con appunti e quiz, assente se c'è solo «Appunti»
+  const completaDi = (d) => (!LIS || !d.tipi.includes("Quiz") ? null : d.tipi.includes("Mappe") ? LIS.prezzi.completa : LIS.prezzi.completaSenzaMappe);
+  window.UL_PREZZO = { eur, completaDi };
+  const card = (d) => `<a class="disp" href="preview.html?esame=${encodeURIComponent(d.slug)}" title="Apri l'anteprima di ${esc(d.nome)}">
       <div class="cop"><img src="img/cop/${d.cop}" alt="Copertina ${esc(d.nome)}" loading="lazy"><span class="badge on">${d.anno} anno</span></div>
       <h3>${esc(d.nome)}</h3><div class="meta"><span>${d.sem} semestre</span>${d.mod ? `<span>· ${esc(d.mod.length > 22 ? d.mod.split(" ")[0] + "…" : d.mod)}</span>` : ""}</div>
-      <div class="piede"><span class="tipi">${d.tipi.map((t) => `<span>${t}</span>`).join("")}</span><span>→</span></div></a>`;
+      <div class="piede"><span class="tipi">${d.tipi.map((t) => `<span>${t}</span>`).join("")}</span><span>${LIS ? "da " + eur(LIS.prezzi.appunti[0]) : "→"}</span></div></a>`;
   const norm = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
   function catalogo(box, { q = "", anno = "Tutti", area = "Tutte", limite = 99 } = {}) {
     const l = D.filter((d) => (anno === "Tutti" || d.anno === anno) && (area === "Tutte" || d.area === area) && (!q || norm(d.nome).includes(norm(q))));
@@ -157,18 +179,138 @@
     mostra("I");
   }
 
+  /* ---------- 4b · home: contenuti dalla configurazione (campi modificabili in Framer) ---------- */
+  // data-cfg="percorso.nel.config" → testo · data-cfg-img="percorso" → { img, alt } su un <img>
+  const dalCfg = (p) => p.split(".").reduce((o, k) => (o == null ? o : o[k]), CFG);
+  $$("[data-cfg]").forEach((el) => { const v = dalCfg(el.dataset.cfg); if (typeof v === "string") el.textContent = v; });
+  $$("[data-cfg-img]").forEach((el) => { const v = dalCfg(el.dataset.cfgImg); if (v && v.img) { el.src = "img/" + v.img; el.alt = v.alt || ""; } });
+  // card degli hub (H04) dalla configurazione: icona testuale o immagine (icoImg), foto, testi
+  $$("[data-hubs]").forEach((box) => {
+    box.innerHTML = CFG.hub.map((h) => { const on = h.stato === "attivo";
+      return `<a class="hub ${h.cls} ${on ? "" : "arrivo"}" href="${h.href}"><span class="badge ${on ? "on" : ""}">${on ? "Attivo" : "In arrivo"}</span><div class="ico">${h.icoImg ? `<img src="img/${esc(h.icoImg)}" alt="">` : esc(h.ico)}</div><h3>${esc(h.nome)}</h3><p>${esc(h.desc)}</p><div class="fasi">${h.tag.map((t) => `<span>${esc(t)}</span>`).join("")}</div><div class="img"><img src="img/${esc(h.img)}" alt="" loading="lazy"><div class="avv">${on ? `Entra nell'hub <span class="btn btn-p">Entra →</span>` : `Ti scriviamo quando parte <span class="btn btn-a">Avvisami</span>`}</div></div></a>`; }).join("");
+  });
+  // catalogo della home (H06): per hub, i corsi più scaricati e «Scopri la collezione completa» → Materiali
+  const catHome = $("#catalogo-home");
+  if (catHome) {
+    const box = $(".scroller", catHome), tutti = $("[data-tutti]", catHome), tabs = $("[data-hubcat-tabs]", catHome);
+    tabs.innerHTML = CFG.hub.map((h) => `<button type="button" class="chip" data-hubcat="${h.slug}">${esc(h.nome)}${h.stato === "attivo" ? "" : " · in arrivo"}</button>`).join("");
+    const draw = (slug) => {
+      const h = CFG.hub.find((x) => x.slug === slug); $$("[data-hubcat]", tabs).forEach((b) => { b.classList.toggle("on", b.dataset.hubcat === slug); b.setAttribute("aria-pressed", b.dataset.hubcat === slug); });
+      const lista = ((CFG.catalogo && CFG.catalogo.piuScaricati[slug]) || []).map((sl) => D.find((d) => d.slug === sl)).filter(Boolean);
+      box.innerHTML = lista.length ? lista.map(card).join("") : `<div class="vuoto">${esc(h.nome)} è in arrivo: le dispense nascono con chi studia lì. <a href="${h.href}"><u>Iscriviti alla lista d'attesa</u></a>.</div>`;
+      tutti.href = "materiali.html#" + slug; tutti.firstChild.textContent = `Tutta la collezione di ${h.nome} `; box.scrollLeft = 0;
+    };
+    $$("[data-hubcat]", tabs).forEach((b) => b.addEventListener("click", () => draw(b.dataset.hubcat)));
+    $$(".frecce span", catHome).forEach((f, i) => f.addEventListener("click", () => box.scrollBy({ left: (i ? 1 : -1) * box.clientWidth * 0.8, behavior: "smooth" })));
+    draw(store.get("hub", "economia"));
+  }
+  // listino (proposta P2): singoli · pacchetti · Plus, prezzo fuori sessione e in sessione. Usato in home e in Materiali.
+  const listinoHTML = () => { if (!LIS) return ""; const P = LIS.prezzi;
+    const due = (n, a) => `<div class="li-card ${a.top ? "ev" : ""}"><div class="r"><span>${n}</span><b>${eur(a.p[0])}</b></div><p class="small">${a.d}</p><div class="r"><span class="badge ok">prezzo fuori sessione</span><span class="small">in sessione ${eur(a.p[1])}</span></div></div>`;
+    return `<div class="listino">
+      <div><h3 class="li-h">Singoli esami</h3>${due("Appunti", { p: P.appunti, d: "Appunti/Sbobine di un esame, con filigrana personale." })}${due("Dispensa completa", { p: P.completa, d: "Appunti + mappe + quiz e simulazioni dell'appello.", top: true })}<p class="small li-n">Dove le mappe non ci sono, la completa costa ${eur(P.completaSenzaMappe[0])}: ogni esame dice cosa include.</p></div>
+      <div><h3 class="li-h">Pacchetti</h3><div class="li-card ev"><div class="r"><span>Pacchetto semestre <span class="badge">il più scelto</span></span><b>${eur(P.semestre)}</b></div><p class="small">Tutte le dispense complete del tuo semestre (3–4 esami). Comprate una per una: da ${eur(P.completa[0] * 3)} a ${eur(P.completa[0] * 4)}.</p></div><div class="li-card"><div class="r"><span>Pacchetto anno</span><b>${eur(P.anno)}</b></div><p class="small">I due semestri. Il momento giusto: settembre–ottobre.</p></div></div>
+      <div><h3 class="li-h">Il metodo</h3><div class="li-card plus"><div class="r"><span>UniLink Plus</span><b>${eur(P.plus)}</b></div><p class="small">Una volta per sessione, nessun abbonamento. Planner per tutti gli esami, simulazioni, registro errori, CV benchmark. Con un pacchetto: ${eur(P.plusConPacchetto)}.</p></div>
+        <div class="li-card"><span class="small">QUANDO CONVIENE COMPRARE</span><div class="li-mesi" role="img" aria-label="Mesi di sessione e fuori sessione">${LIS.mesi.map(([m, ses]) => `<span class="${ses ? "s" : ""}"><i></i>${m}</span>`).join("")}</div><p class="small"><span class="badge ok">fuori sessione</span> costa meno · <span class="badge">in sessione</span> costa di più</p></div></div>
+    </div><p class="small li-n"><b>Gratis:</b> ${esc(LIS.gratis)} · <span class="badge">${esc(LIS.stato)}</span></p>`; };
+  $$("[data-listino]").forEach((el) => (el.innerHTML = listinoHTML()));
+  // founder (H09): scheda personale con breve presentazione e LinkedIn (foto e testi: segnaposto da sostituire)
+  $$("[data-team]").forEach((box) => {
+    const T = CFG.team || [];
+    box.innerHTML = T.map((p, i) => `<button type="button" class="persona p${i + 1}" data-pid="${p.id}" aria-haspopup="dialog"><div class="av">${p.foto ? `<img src="img/${esc(p.foto)}" alt="">` : esc(p.nome[0])}</div><h3>${esc(p.nome.split(" ")[0])}</h3><p>Founder · ${esc(p.corso)}</p><p>${esc(p.ruolo)}</p><span class="small" style="text-decoration:underline">Profilo →</span></button>`).join("");
+    $$("[data-pid]", box).forEach((b) => b.addEventListener("click", () => {
+      const p = T.find((x) => x.id === b.dataset.pid);
+      document.body.insertAdjacentHTML("beforeend", `<div class="prof-bg" role="dialog" aria-modal="true" aria-label="Profilo di ${esc(p.nome)}"><div class="prof"><button type="button" class="prof-x" aria-label="Chiudi">✕</button>
+        <div class="prof-top"><div class="av">${p.foto ? `<img src="img/${esc(p.foto)}" alt="">` : esc(p.nome[0])}</div><div><span class="eyebrow">Founder · ${esc(p.corso)}</span><h2>${esc(p.nome)}</h2><p class="small">${esc(p.ruolo)}</p></div></div>
+        <p>${esc(p.bio)}</p><ul class="prof-p">${p.punti.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
+        <a class="btn btn-p" href="${esc(p.linkedin)}" target="_blank" rel="noopener">Profilo LinkedIn ↗</a><p class="small" style="margin-top:10px">Foto, testo e link sono segnaposto: si sostituiscono in config.js (team).</p></div></div>`);
+      const bg = $(".prof-bg"), chiudi = () => { bg.remove(); document.removeEventListener("keydown", k); b.focus(); }, k = (e) => { if (e.key === "Escape") chiudi(); };
+      bg.addEventListener("click", (e) => { if (e.target === bg) chiudi(); }); $(".prof-x", bg).addEventListener("click", chiudi); document.addEventListener("keydown", k); $(".prof-x", bg).focus();
+    }));
+  });
+  // FAQ (H11) dalla configurazione: ogni risposta porta verso l'account o l'acquisto
+  $$("[data-faq]").forEach((box) => {
+    box.innerHTML = (CFG.faq || []).map(([d, r, t, h], i) => `<div class="qa ${i ? "" : "open"}"><div class="d">${esc(d)}<span>${i ? "+" : "−"}</span></div><div class="r">${esc(r)}${t ? ` <a class="faq-cta" href="${h === "@app" ? APP : esc(h)}">${esc(t)} →</a>` : ""}</div></div>`).join("");
+    $$(".qa", box).forEach((q) => $(".d", q).addEventListener("click", () => { const ap = !q.classList.contains("open"); $$(".qa", box).forEach((x) => { x.classList.remove("open"); $(".d span", x).textContent = "+"; }); if (ap) { q.classList.add("open"); $(".d span", q).textContent = "−"; } }));
+  });
+  /* ---------- 4c · Materiali (P2) e Anteprima dell'esame ---------- */
+  const SEM = { I: "I semestre", II: "II semestre" };
+  const prezziEsame = (d) => { if (!LIS) return ""; const c = completaDi(d);
+    return `<div class="pz"><span>Appunti <b>${eur(LIS.prezzi.appunti[0])}</b></span>${c ? `<span>Completa <b>${eur(c[0])}</b></span>` : ""}</div>`; };
+  const matRoot = $("#mat-top");
+  if (matRoot) {
+    const tabs = $("[data-mat-hub]"), arrivo = $("[data-mat-arrivo]"), lista = $("[data-mat-lista]"), st = { q: "", anno: "Tutti" };
+    let hub = (location.hash || "").replace("#", "") || store.get("hub", "economia"); if (!CFG.hub.find((h) => h.slug === hub)) hub = "economia";
+    tabs.innerHTML = CFG.hub.map((h) => `<button type="button" class="chip" data-mh="${h.slug}">${esc(h.nome)}${h.stato === "attivo" ? "" : " · in arrivo"}</button>`).join("");
+    const disegna = () => {
+      const h = CFG.hub.find((x) => x.slug === hub), on = h.stato === "attivo";
+      $$("[data-mh]", tabs).forEach((b) => { b.classList.toggle("on", b.dataset.mh === hub); b.setAttribute("aria-pressed", b.dataset.mh === hub); });
+      arrivo.innerHTML = on ? "" : `<div class="dec-banner" style="margin-bottom:20px"><span><b>${esc(h.nome)} è in arrivo.</b> I materiali nascono con chi studia lì: il listino qui sotto è quello che varrà anche per ${esc(h.nome)}. <a href="${h.href}"><u>Iscriviti alla lista d'attesa</u></a>.</span></div>`;
+      $("[data-mat-nome]").firstChild.textContent = h.nome;
+      const l = on ? D.filter((d) => (st.anno === "Tutti" || d.anno === st.anno) && (!st.q || norm(d.nome).includes(norm(st.q)))) : [];
+      lista.innerHTML = !on ? `<div class="vuoto">La collezione di ${esc(h.nome)} non c'è ancora. <a href="${h.href}"><u>Avvisami quando parte</u></a>.</div>`
+        : l.length ? l.map((d) => `<a class="mat-card" href="preview.html?esame=${encodeURIComponent(d.slug)}"><img src="img/cop/${d.cop}" alt="" loading="lazy"><div><span class="eyebrow">${d.anno} anno · ${SEM[d.sem] || ""}</span><h3>${esc(d.nome)}</h3><p class="small">${d.tipi.join(" · ")} · ${esc(d.mod)}</p>${prezziEsame(d)}<span class="go">Anteprima →</span></div></a>`).join("")
+        : `<div class="vuoto">Nessun esame trovato per "${esc(st.q)}". <a href="${WA}" target="_blank" rel="noopener"><u>Chiedi questo esame</u></a>: è un dato su cosa manca.</div>`;
+    };
+    $$("[data-mh]", tabs).forEach((b) => b.addEventListener("click", () => { hub = b.dataset.mh; store.set("hub", hub); history.replaceState(null, "", "#" + hub); disegna(); }));
+    const inp = $("[data-mat-cerca] input"); inp.addEventListener("input", () => { st.q = inp.value.trim(); disegna(); });
+    $("[data-mat-cerca]").addEventListener("submit", (e) => { e.preventDefault(); st.q = inp.value.trim(); disegna(); });
+    $$("[data-mat-anni] .chip").forEach((c) => c.addEventListener("click", () => { $$("[data-mat-anni] .chip").forEach((x) => x.classList.remove("on")); c.classList.add("on"); st.anno = c.dataset.anno; disegna(); }));
+    // calcolatore del pacchetto semestre: esami del semestre con la loro Completa contro il prezzo del pacchetto
+    const cal = $("[data-calcola]");
+    if (cal && LIS) {
+      const sc = { anno: "I", sem: "II" };
+      const draw = () => {
+        const es = D.filter((d) => d.anno === sc.anno && d.sem === sc.sem), somma = es.reduce((n, d) => n + (completaDi(d) || LIS.prezzi.appunti)[0], 0), risp = somma - LIS.prezzi.semestre;
+        cal.innerHTML = `<div class="calc-sel"><div class="tl-l">Anno</div><div class="seg-cal">${["I", "II", "III"].map((a) => `<button type="button" data-ca="${a}" class="${a === sc.anno ? "on" : ""}" aria-pressed="${a === sc.anno}">${a} anno</button>`).join("")}</div><div class="tl-l">Semestre</div><div class="seg-cal">${["I", "II"].map((x) => `<button type="button" data-cs="${x}" class="${x === sc.sem ? "on" : ""}" aria-pressed="${x === sc.sem}">${x} semestre</button>`).join("")}</div></div>
+          <div class="calc-out"><ul>${es.map((d) => `<li><span>${esc(d.nome)}</span><b>${eur((completaDi(d) || LIS.prezzi.appunti)[0])}</b></li>`).join("")}</ul>
+          <div class="calc-tot"><span>Comprati uno per uno</span><b>${eur(somma)}</b></div><div class="calc-tot big"><span>Pacchetto semestre</span><b>${eur(LIS.prezzi.semestre)}</b></div>
+          <p class="small">${risp > 0 ? `Risparmi ${eur(risp)} su ${es.length} esami.` : `Con ${es.length} esami conviene comprarli singoli: il pacchetto conviene da 3 esami in su.`} Prezzi fuori sessione, in valutazione.</p></div>`;
+        $$("[data-ca]", cal).forEach((b) => (b.onclick = () => { sc.anno = b.dataset.ca; draw(); })); $$("[data-cs]", cal).forEach((b) => (b.onclick = () => { sc.sem = b.dataset.cs; draw(); }));
+      };
+      draw();
+    }
+    disegna();
+  }
+  const prevRoot = $("[data-preview]");
+  if (prevRoot) {
+    const slug = new URLSearchParams(location.search).get("esame"), d = D.find((x) => x.slug === slug) || D[0], A = CFG.anteprima || {}, arg = (A.argomenti || {})[d.slug];
+    const c = completaDi(d), stessi = D.filter((x) => x.anno === d.anno && x.sem === d.sem);
+    document.title = `UniLink · Anteprima di ${d.nome}`;
+    prevRoot.innerHTML = `<div class="prev">
+      <div class="prev-cop"><img src="img/cop/${d.cop}" alt="Copertina della dispensa di ${esc(d.nome)}"></div>
+      <div class="prev-main"><span class="eyebrow">${d.anno} anno · ${SEM[d.sem] || ""} · ${esc(d.codice)}</span><h1 class="h2" style="margin:8px 0 10px">${esc(d.nome)}</h1>
+        <div class="chips" style="margin:0 0 18px">${d.tipi.map((t) => `<span class="chip on">${t}</span>`).join("")}<span class="chip">${esc(d.mod)}</span></div>
+        <h2 class="prev-h">Indice</h2>
+        ${arg ? `<ol class="prev-ind">${arg.map((a) => `<li>${esc(a)}</li>`).join("")}</ol><p class="small">Argomenti della banca di quiz di esempio. In produzione qui c'è l'indice vero del PDF, capitolo per capitolo.</p>` : `<p class="small prev-vuoto">L'indice completo si legge dal PDF della dispensa: in produzione appare qui, capitolo per capitolo, prima di comprare.</p>`}
+        <h2 class="prev-h">Perché la dispensa ${c ? "completa" : "UniLink"}</h2><ul class="prev-ok">${(A.perche || []).map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
+        <h2 class="prev-h">Tips per passare l'esame</h2>
+        <div class="prev-lock"><ul>${(A.tips || []).map((x) => `<li>${esc(x)}</li>`).join("")}</ul><div class="prev-lock-v"><p>Le tips su prof ed esame sono per chi ha l'account.</p><a class="btn btn-a" href="${APP}">Accedi per scoprirle</a></div></div>
+      </div>
+      <aside class="prev-buy"><h2 class="li-h">Studia ${esc(d.nome)}</h2>
+        ${LIS ? `<div class="li-card"><div class="r"><span>Appunti</span><b>${eur(LIS.prezzi.appunti[0])}</b></div><span class="small">in sessione ${eur(LIS.prezzi.appunti[1])}</span></div>
+        ${c ? `<div class="li-card ev"><div class="r"><span>Dispensa completa</span><b>${eur(c[0])}</b></div><span class="small">in sessione ${eur(c[1])}${d.tipi.includes("Mappe") ? "" : " · senza mappe per questo esame"}</span></div>` : `<p class="small">Per questo esame ci sono gli Appunti: mappe e quiz non ancora.</p>`}
+        ${stessi.length >= 3 ? `<div class="li-card"><div class="r"><span>Nel pacchetto semestre</span><b>${eur(LIS.prezzi.semestre)}</b></div><span class="small">${stessi.length} esami del ${SEM[d.sem]} del ${d.anno} anno · <a href="materiali.html#calcola"><u>calcola</u></a></span></div>` : ""}
+        <a class="btn btn-p" href="${APP}" style="justify-content:center">Compra · accedi o crea l'account</a><p class="small">${esc(LIS.gratis)}</p><span class="badge">${esc(LIS.stato)}</span>` : ""}
+      </aside></div>`;
+  }
+
+  // link verso l'accesso alla web app (H06b, H12): data-app="#/rotta" o vuoto
+  $$("[data-app]").forEach((a) => (a.href = APP + (a.dataset.app || "")));
+
   /* ---------- 5 · strumenti (da tools.js, dentro la demo) ---------- */
   $$("[data-toolshell]").forEach((root) => {
     const limit = +root.dataset.limit || 99;
     let hub = root.dataset.hub || "economia", sel = (location.hash || "").replace("#", "");
     const lista = $(".tlist", root), pan = $(".tpanel", root);
     const draw = () => {
-      const l = ULTools.lista(hub).slice(0, limit), ar = root.dataset.limit ? [] : ULTools.area(hub);
+      const ids = root.dataset.ids ? root.dataset.ids.split(",") : null;
+      const l = ids ? ids.map((i) => ULTools.trova(i)).filter(Boolean) : ULTools.lista(hub).slice(0, limit), ar = root.dataset.limit || ids ? [] : ULTools.area(hub);
       if (!l.find((t) => t.id === sel)) sel = l[0] && l[0].id;
       lista.innerHTML = l.map((t) => `<div class="tool ${t.id === sel ? "sel" : ""}" data-id="${t.id}" tabindex="0" role="button"><div class="ico">${esc(t.icona)}</div><div><h3 aria-level="${pagina === "tools" ? 2 : 3}">${esc(t.nome)}${t.stato === "demo" ? ' <span class="badge" style="font-size:11px;padding:2px 8px;margin-left:4px">Esempio</span>' : ""}</h3><p>${esc(t.desc)}</p></div><span class="go">→</span></div>`).join("")
         + ar.map((t) => `<a class="tool lock" href="${APP}${t.href || ""}"><div class="ico">${esc(t.icona)}</div><div><h3 aria-level="${pagina === "tools" ? 2 : 3}">${esc(t.nome)} <span class="badge on" style="font-size:11px;padding:2px 8px;margin-left:4px">Nell'area</span></h3><p>${esc(t.desc)}</p></div><span class="go">↗</span></a>`).join("");
       const t = ULTools.trova(sel);
-      pan.innerHTML = t ? `<span class="eyebrow">Provalo qui · ${esc(window.UL_HUB_NOMI[hub] || "")}</span><h3 style="margin:6px 0 16px">${esc(t.nome)}</h3><div class="tl-mount"></div>` : `<p class="small">Per questo hub gli strumenti arrivano con l'hub.</p>`;
+      pan.innerHTML = t ? `<span class="eyebrow">Provalo qui${root.dataset.ids ? " · per tutti i corsi" : " · " + esc(window.UL_HUB_NOMI[hub] || "")}</span><h3 style="margin:6px 0 16px">${esc(t.nome)}</h3><div class="tl-mount"></div>` : `<p class="small">Per questo hub gli strumenti arrivano con l'hub.</p>`;
       if (t) ULTools.monta($(".tl-mount", pan), t.id);
       $$(".tool[data-id]", lista).forEach((x) => { const go = () => { sel = x.dataset.id; history.replaceState(null, "", "#" + sel); draw(); }; x.addEventListener("click", go); x.addEventListener("keydown", (e) => { if (e.key === "Enter") go(); }); });
     };

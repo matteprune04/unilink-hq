@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UniLink · Materiali</title>
+<meta name="description" content="Dispense, pacchetti e Plus per hub: compra prima della sessione e paghi meno. Prezzi in valutazione.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#172554">
+<meta property="og:type" content="website"><meta property="og:title" content="UniLink · Materiali"><meta property="og:description" content="Dispense, pacchetti e Plus per hub: compra prima della sessione e paghi meno. Prezzi in valutazione."><meta property="og:image" content="img/render-dispense.jpg">
+<link rel="preload" href="fonts/Croogla4F.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="icon" href="img/logo-blu.png"><link rel="stylesheet" href="ul.css"><link rel="stylesheet" href="tools.css"><link rel="stylesheet" href="commenti.css"></head>
+<body data-page="materiali">
+<div id="ul-nav"></div>
+<section style="padding-top:70px" id="mat-top">
+  <span class="demo-tag">PROPOSTA P2 · PREZZI NON DECISI</span>
+  <div class="wrap">
+    <div class="testa"><div><span class="eyebrow">Materiali</span><h1 class="h2" style="margin-top:10px">Compra prima, <span class="acc">paghi meno</span></h1></div><p>Singoli esami, pacchetti e il metodo, divisi per hub. Fuori sessione i prezzi sono più bassi: ti diciamo sempre fino a quando valgono.</p></div>
+    <div class="chips" data-mat-hub aria-label="Scegli l'hub"></div>
+    <div data-mat-arrivo></div>
+    <div data-listino></div>
+  </div>
+</section>
+<section class="bg2" id="calcola">
+  <div class="wrap">
+    <div class="testa"><div><span class="eyebrow">Pacchetto semestre</span><h2 style="margin-top:10px">Calcola il tuo <span class="acc">pacchetto</span></h2></div><p>Scegli anno e semestre: vedi gli esami inclusi e quanto risparmi rispetto a comprarli uno per uno.</p></div>
+    <div class="calc-pac" data-calcola></div>
+  </div>
+</section>
+<section id="collezione">
+  <div class="wrap">
+    <div class="testa"><div><span class="eyebrow">Collezione completa</span><h2 style="margin-top:10px">Tutti gli esami di <span class="acc" data-mat-nome>Economia</span></h2></div><p>Tocca un esame per l'anteprima: indice, cosa contiene, come si passa.</p></div>
+    <form class="cerca" data-mat-cerca><span class="lente">⌕</span><input type="search" placeholder="Cerca un esame, es. Statistica" aria-label="Cerca un esame"><button class="btn btn-p">Cerca</button></form>
+    <div class="chips" data-mat-anni><span class="chip on" data-anno="Tutti">Tutti</span><span class="chip" data-anno="I">I anno</span><span class="chip" data-anno="II">II anno</span><span class="chip" data-anno="III">III anno</span></div>
+    <div class="mat-grid" data-mat-lista></div>
+  </div>
+</section>
+<div id="ul-foot"></div>
+<script src="config.js"></script>
+<script src="data.js"></script>
+<script src="tools.js"></script>
+<script src="app.js"></script>
+<script src="commenti.js"></script>
+</body></html>

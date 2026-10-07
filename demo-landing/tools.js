@@ -25,6 +25,10 @@
     { id: "media", nome: "Media e voto obiettivo", desc: "Che voto serve negli esami che restano.", hub: ["tutti"], stato: "live", dove: "landing", icona: "Ø" },
     { id: "piano", nome: "Piano per l'appello", desc: "Argomenti e giorni: quanto ripassare ogni giorno.", hub: ["tutti"], stato: "live", dove: "landing", icona: "◷" },
     { id: "erasmus", nome: "Punteggio Erasmus", desc: "Una stima del tuo punteggio per il bando.", hub: ["economia"], stato: "demo", dove: "landing", icona: "✈" },
+    // strumenti universali della home (proposta P6): compatti, uguali per tutti, regole per corso dove servono
+    { id: "voto-cdl", nome: "Voto di laurea", desc: "Scegli il tuo corso: si applicano le sue regole.", hub: ["tutti"], stato: "live", dove: "landing", icona: "110" },
+    { id: "peso", nome: "Quanto pesa questo esame", desc: "Come cambia la media con il prossimo voto.", hub: ["tutti"], stato: "live", dove: "landing", icona: "±" },
+    { id: "countdown", nome: "Quanto manca all'appello", desc: "Giorni, ore utili e sessioni fino all'esame.", hub: ["tutti"], stato: "live", dove: "landing", icona: "⏳" },
     { id: "voto-lmg", nome: "Voto di laurea · ciclo unico", desc: "Media, tesi e bonus per Giurisprudenza.", hub: ["giurisprudenza"], stato: "demo", dove: "landing", icona: "§" },
     { id: "filtro", nome: "Piano semestre filtro", desc: "Settimane, ore e materie fino all'appello.", hub: ["medicina"], stato: "demo", dove: "landing", icona: "+" },
   ];
@@ -158,6 +162,47 @@
       [["f-sett", "sett"], ["f-ore", "ore"], ["f-f", "f"], ["f-c", "c"], ["f-b", "b"]].forEach(([id, k]) => ($("#" + id, el).oninput = (e) => { st[k] = +e.target.value; up(); }));
       up();
     },
+  };
+
+  // ---------- strumenti universali (P6) ----------
+  // Voto di laurea per corso di laurea: ogni corso ha le sue regole; quelle non verificate sono marcate «esempio»
+  IMPL["voto-cdl"] = (el) => {
+    const CORSI = [["voto", "Economia (EA · EC)", ""], ["voto-lmg", "Giurisprudenza", "esempio"], ["", "Medicina", "in arrivo"], ["", "Altri corsi", "in arrivo"]];
+    let cur = "voto";
+    el.innerHTML = `<div class="tl-r" style="margin-bottom:6px"><span class="tl-l">Il tuo corso di laurea</span><div class="tl-seg" data-k="cdl">${CORSI.map(([id, t, b]) => `<button type="button" data-v="${id}" class="${id === cur ? "on" : ""}" ${id ? "" : "disabled"}>${t}${b ? ` <small>· ${b}</small>` : ""}</button>`).join("")}</div></div><div class="tl-sub"></div>`;
+    const sub = $(".tl-sub", el);
+    const mount = () => { sub.innerHTML = ""; IMPL[cur](sub); $$("input[type=range]", sub).forEach((r) => { paint(r); r.addEventListener("input", () => paint(r)); }); };
+    $$("[data-k=cdl] button", el).forEach((b) => (b.onclick = () => { if (!b.dataset.v) return; $$("[data-k=cdl] button", el).forEach((x) => x.classList.remove("on")); b.classList.add("on"); cur = b.dataset.v; mount(); }));
+    mount();
+  };
+  // Quanto pesa il prossimo esame sulla media ponderata (e sulla base del voto di laurea, ×110/30)
+  IMPL.peso = (el) => {
+    const st = { media: 26.5, cfu: 60, voto: 28, cfuE: 9 };
+    el.innerHTML = `<div class="tl-in">${range("p-media", "La tua media ora", 18, 30, 0.1, st.media, (v) => fmt(v))}${range("p-cfu", "CFU con voto", 3, 177, 3, st.cfu, (v) => v)}
+      ${range("p-voto", "Voto del prossimo esame", 18, 31, 1, st.voto, (v) => (v > 30 ? "30L" : v))}${range("p-cfue", "CFU dell'esame", 3, 18, 1, st.cfuE, (v) => v)}</div>
+      <div class="tl-out"><div class="tl-k big"><span>Nuova media</span><b id="p-nuova"></b></div><div class="tl-k"><span>Differenza</span><b id="p-diff"></b></div><div class="tl-k"><span>Base del voto di laurea (×110/30)</span><b id="p-base"></b></div>
+      ${nota("Media ponderata sui CFU; la lode conta come 30. La base del voto di laurea è media × 110 / 30: i bonus dipendono dal corso.")}</div>`;
+    const up = () => { const v = Math.min(30, st.voto), n = (st.media * st.cfu + v * st.cfuE) / (st.cfu + st.cfuE), d = n - st.media;
+      $("#p-media-o", el).textContent = fmt(st.media); $("#p-cfu-o", el).textContent = st.cfu; $("#p-voto-o", el).textContent = st.voto > 30 ? "30L" : st.voto; $("#p-cfue-o", el).textContent = st.cfuE;
+      $("#p-nuova", el).textContent = fmt(n, 2); $("#p-diff", el).textContent = (d >= 0 ? "+" : "−") + fmt(Math.abs(d), 2); $("#p-base", el).textContent = fmt((n * 110) / 30); };
+    [["p-media", "media"], ["p-cfu", "cfu"], ["p-voto", "voto"], ["p-cfue", "cfuE"]].forEach(([id, k]) => ($("#" + id, el).oninput = (e) => { st[k] = +e.target.value; up(); }));
+    up();
+  };
+  // Quanto manca all'appello: ore utili con margine 15–20% e sessioni da 45 minuti (la stessa logica del planner, P3)
+  IMPL.countdown = (el) => {
+    const oggi = new Date(); const def = new Date(oggi.getTime() + 28 * 864e5).toISOString().slice(0, 10);
+    const st = { data: def, ore: 2.5, giorni: 6 };
+    el.innerHTML = `<div class="tl-in"><label class="tl-r"><span class="tl-l">Data dell'appello</span><input type="date" id="c-data" value="${def}" class="tl-date"></label>
+      ${range("c-ore", "Ore nette al giorno", 0.5, 8, 0.5, st.ore, (v) => fmt(v))}${range("c-gg", "Giorni di studio a settimana", 1, 7, 1, st.giorni, (v) => v)}</div>
+      <div class="tl-out"><div class="tl-k"><span>Giorni all'appello</span><b id="c-giorni"></b></div><div class="tl-k big"><span>Ore utili (margine 18%)</span><b id="c-utili"></b></div><div class="tl-k"><span>Sessioni da 45 minuti</span><b id="c-sess"></b></div>
+      ${nota("Margine del 18% per imprevisti (consigliato 15–20%). Il piano completo per fasi e sessioni è il planner dell'area personale.")}</div>`;
+    const up = () => { const g = Math.max(0, Math.ceil((new Date(st.data) - new Date(oggi.toDateString())) / 864e5)), studio = Math.floor((g * st.giorni) / 7), ore = studio * st.ore * 0.82;
+      $("#c-ore-o", el).textContent = fmt(st.ore); $("#c-gg-o", el).textContent = st.giorni;
+      $("#c-giorni", el).textContent = g; $("#c-utili", el).textContent = fmt(ore, 0) + " h"; $("#c-sess", el).textContent = Math.floor(ore / 0.75); };
+    $("#c-data", el).oninput = (e) => { st.data = e.target.value; up(); };
+    $("#c-ore", el).oninput = (e) => { st.ore = +e.target.value; up(); };
+    $("#c-gg", el).oninput = (e) => { st.giorni = +e.target.value; up(); };
+    up();
   };
 
   // API: montare uno strumento in un contenitore (rispetta lo stile della demo che lo ospita)

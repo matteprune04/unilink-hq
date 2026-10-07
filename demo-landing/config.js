@@ -57,22 +57,105 @@ window.UL_CFG = {
   },
 
   hub: [
-    { slug: "economia", nome: "Economia", stato: "attivo", href: "hub-economia.html", ico: "€", cls: "eco", img: "novoli-piazza.jpg",
+    { slug: "economia", icoImg: "", nome: "Economia", stato: "attivo", href: "hub-economia.html", ico: "€", cls: "eco", img: "novoli-piazza.jpg",
       desc: "34 esami di EA ed EC con appunti, mappe e quiz. Strumenti per Erasmus, media e laurea.", tag: ["Matricole", "Esami", "Dopo la laurea"] },
-    { slug: "giurisprudenza", nome: "Giurisprudenza", stato: "in_arrivo", href: "hub-giurisprudenza.html", ico: "§", cls: "giu", img: "palazzo.jpg",
+    { slug: "giurisprudenza", icoImg: "", nome: "Giurisprudenza", stato: "in_arrivo", href: "hub-giurisprudenza.html", ico: "§", cls: "giu", img: "palazzo.jpg",
       desc: "Lo stesso metodo, per un ciclo unico di cinque anni. Lo costruiamo con chi studia lì.", tag: ["Primo anno", "Esami", "Professioni legali"] },
-    { slug: "medicina", nome: "Medicina", stato: "in_arrivo", href: "hub-medicina.html", ico: "+", cls: "med", img: "aula.jpg",
+    { slug: "medicina", icoImg: "", nome: "Medicina", stato: "in_arrivo", href: "hub-medicina.html", ico: "+", cls: "med", img: "aula.jpg",
       desc: "Dal semestre filtro (Fisica, Chimica, Biologia) agli esami del corso. Stiamo raccogliendo interesse.", tag: ["Semestre filtro", "Esami", "Tirocini"] },
+  ],
+
+  // ===========================================================================================================
+  // DA QUI: dati aggiunti con le modifiche A del 7 ottobre (commenti dei founder + PDF «Proposte», P2 e P7).
+  // Ogni testo e ogni immagine qui sotto corrisponde a un campo che in Framer va reso modificabile
+  // (proprietà del componente o collezione CMS): l'elenco completo è in LEGGIMI.md, sezione «Campi per Framer».
+  // ===========================================================================================================
+
+  // Barra di navigazione (P7). «materiali» è il nome proposto al posto di «Market»: si cambia qui.
+  nav: { guida: "Guida", materiali: "Materiali", strumenti: "Strumenti", community: "Community", accedi: "Accedi", founder: "Founder" },
+
+  // HOME · testi e immagini (H02 hero, H03 numeri, H04 scuole). I numeri restano quelli veri di «numeri».
+  home: {
+    hero: {
+      foto: [
+        { img: "mani-appunti.jpg", alt: "Appunti a mano su un quaderno" },
+        { img: "render-dispense.jpg", alt: "Le dispense UniLink: appunti, mappe e quiz" },
+        { img: "campus-portico.jpg", alt: "Il portico del campus di Novoli" },
+        { img: "laurea.jpg", alt: "Il giorno della laurea" },
+      ],
+      sticker1: { titolo: "Dal programma UniFi", testo: "ogni dispensa segue il syllabus" },
+      sticker2: "Scritte da chi l'ha appena dato",
+    },
+    numeri: {
+      voci: { utenti: "studenti hanno usato UniLink nell'ultimo mese", pagine: "pagine consultate in 28 giorni", esami: "esami di Economia con la loro dispensa" },
+      img: "atrio.jpg", alt: "L'atrio della Scuola di Economia e Management a Novoli",
+    },
+  },
+
+  // CATALOGO in home (H06): per hub, i corsi più scaricati, poi «Scopri la collezione completa» → Materiali.
+  // ATTENZIONE: oggi non abbiamo i dati di download per esame: l'elenco è scelto a mano (primo anno + più cercati)
+  // e va sostituito con i dati veri quando ci saranno (Google Analytics o backend).
+  catalogo: {
+    piuScaricati: { economia: ["microeconomia", "economia_aziendale", "statistica", "diritto_pubblico", "matematica-per-applicazioni-economiche-i", "macroeconomia"] },
+    nota: "Selezione a mano: diventerà «i più scaricati» con i dati veri.",
+  },
+
+  // LISTINO (proposta P2, non deciso): prezzi del report del 4 ottobre, prezzo più basso fuori sessione.
+  // Regola della Completa: 12,99 € dove ci sono le mappe, 9,99 € dove ci sono appunti e quiz; solo Appunti dove c'è solo quello.
+  listino: {
+    stato: "Proposta P2 · prezzi non decisi",
+    titolo: "Compra prima, *paghi meno*",
+    sotto: "Fuori sessione i prezzi sono più bassi: ti diciamo sempre fino a quando valgono.",
+    prezzi: { appunti: [4.99, 9.99], completa: [12.99, 18.99], completaSenzaMappe: [9.99, 14.99], semestre: 29.99, anno: 49.99, plus: 14.99, plusConPacchetto: 4.99 },
+    gratis: "Con l'account gratis scegli 1 Appunti tra 3 esami, e un altro in regalo quando un amico invitato conferma l'email.",
+    // mesi di sessione (UniFi Economia: invernale gen–feb, estiva giu–lug, autunnale set). Date vere: calendario degli appelli.
+    mesi: [["ott", 0], ["nov", 0], ["dic", 0], ["gen", 1], ["feb", 1], ["mar", 0], ["apr", 0], ["mag", 0], ["giu", 1], ["lug", 1], ["ago", 0], ["set", 1]],
+    plusNota: "Plus: da decidere se al lancio o quando planner e simulatore coprono un semestre (P2).",
+  },
+
+  // ANTEPRIMA dell'esame (preview.html): cosa si mostra prima di comprare. L'indice vero si legge dal PDF in produzione;
+  // in demo ci sono solo gli argomenti dei 3 esami con la banca di quiz di esempio della web app (js/data-quiz.js).
+  anteprima: {
+    argomenti: {
+      microeconomia: ["Elasticità", "Scelte del consumatore", "Produzione e costi", "Concorrenza perfetta", "Monopolio", "Teoria dei giochi", "Esternalità"],
+      economia_aziendale: ["Patrimonio", "Reddito", "Partita doppia", "Assestamento", "Analisi dei costi", "Indici di bilancio", "Azienda"],
+      statistica: ["Statistica descrittiva", "Variabilità", "Probabilità", "Variabili casuali", "Inferenza", "Regressione"],
+    },
+    perche: ["Segue il programma ufficiale di quest'anno, non quello di tre anni fa", "Ha versione e data: se esce una revisione la riscarichi gratis", "La scrive chi ha appena dato l'esame, con i punti dove si sbaglia", "Mappe per ripassare e quiz nel formato dell'appello"],
+    tips: ["Come si comporta il prof all'orale", "Le domande che tornano più spesso", "Cosa studiare per primo se hai poco tempo"],
+  },
+
+  // FOUNDER (H09). Foto e testi sono SEGNAPOSTO da sostituire con i profili LinkedIn veri.
+  team: [
+    { id: "matteo", nome: "Matteo Prunecchi", ruolo: "Sito, prodotto e strumenti", corso: "Economia UniFi", foto: "", linkedin: "https://www.linkedin.com/search/results/people/?keywords=Matteo%20Prunecchi",
+      bio: "Testo da compilare dal profilo LinkedIn: chi è, cosa studia, cosa ha fatto prima di UniLink (2–3 frasi).", punti: ["Studi: da compilare", "Esperienze: da compilare", "In UniLink: sito, prodotto, strumenti e Framer"] },
+    { id: "cosimo", nome: "Cosimo Pucci", ruolo: "Strategia e nuovi hub", corso: "Economia UniFi", foto: "", linkedin: "https://www.linkedin.com/search/results/people/?keywords=Cosimo%20Pucci",
+      bio: "Testo da compilare dal profilo LinkedIn: chi è, cosa studia, cosa ha fatto prima di UniLink (2–3 frasi).", punti: ["Studi: da compilare", "Esperienze: da compilare", "In UniLink: strategia e nuovi hub"] },
+    { id: "niccolo", nome: "Niccolò Giusti", ruolo: "Dispense e materiali", corso: "Economia UniFi", foto: "", linkedin: "https://www.linkedin.com/search/results/people/?keywords=Niccol%C3%B2%20Giusti",
+      bio: "Testo da compilare dal profilo LinkedIn: chi è, cosa studia, cosa ha fatto prima di UniLink (2–3 frasi).", punti: ["Studi: da compilare", "Esperienze: da compilare", "In UniLink: dispense e materiali"] },
+    { id: "gianmarco", nome: "Gianmarco Campigli", ruolo: "Community e ambassador", corso: "Economia UniFi", foto: "", linkedin: "https://www.linkedin.com/search/results/people/?keywords=Gianmarco%20Campigli",
+      bio: "Testo da compilare dal profilo LinkedIn: chi è, cosa studia, cosa ha fatto prima di UniLink (2–3 frasi).", punti: ["Studi: da compilare", "Esperienze: da compilare", "In UniLink: community e ambassador"] },
+  ],
+
+  // FAQ della home (H11): ogni risposta porta verso l'account o l'acquisto. [domanda, risposta, testo del link, link]
+  faq: [
+    ["Cosa trovo gratis su UniLink?", "Anteprime, informazioni su ogni esame e gli strumenti. Con l'account, gratis, scegli anche una dispensa Appunti tra tre esami.", "Crea l'account gratis", "@app"],
+    ["Perché la dispensa UniLink e non appunti presi qua e là?", "Segue il programma ufficiale di quest'anno, è datata e aggiornata, la scrive chi ha appena dato l'esame e ha mappe e quiz nel formato dell'appello.", "Guarda un'anteprima", "materiali.html"],
+    ["Quanto costa?", "Dagli Appunti di un esame ai pacchetti per semestre e anno. Fuori sessione costa meno: conviene comprare prima. Prezzi in valutazione.", "Vedi i materiali", "materiali.html"],
+    ["Cosa c'è nell'area personale?", "I tuoi esami con data e obiettivo, le dispense che hai, le esercitazioni con il ripasso degli errori. Il planner è in arrivo.", "Accedi", "@app"],
+    ["Le dispense sono aggiornate?", "Ogni dispensa ha versione e data. Quando esce una nuova versione, chi l'ha comprata la riscarica gratis.", "Vedi i materiali", "materiali.html"],
+    ["UniLink è solo per Economia?", "Oggi i materiali sono per Economia UniFi. Giurisprudenza e Medicina sono in arrivo: iscriviti alla lista d'attesa e sarai tra i primi.", "Scegli il tuo hub", "index.html#hub"],
+    ["UniLink è affiliato all'Università di Firenze?", "No, è un progetto indipendente fatto da studenti.", "", ""],
   ],
 
   // Le tre fasi (stesso modello in ogni hub: cambiano i contenuti, non la struttura).
   // I nomi sono volutamente generici ("Dopo", non "Dopo la triennale"): valgono anche per i cicli unici.
   fasi: [
-    { id: "prima", nome: "Prima", href: "prima.html", titolo: "Prima di iscriverti", sotto: "Scegliere bene, senza perdersi tra bandi e scadenze.",
+    { id: "prima", nome: "Prima", tab: "Scegliere", href: "prima.html", titolo: "Prima di iscriverti", sotto: "Scegliere bene, senza perdersi tra bandi e scadenze.",
       voci: [["Scegliere il corso", "prima.html#scegliere"], ["Come funziona l'università", "prima.html#funziona"], ["Borse e tasse", "prima.html#borse"], ["Test d'ingresso", "prima.html#test"]] },
-    { id: "durante", nome: "Durante", href: "durante.html", titolo: "Durante gli studi", sotto: "Esami, metodo, Erasmus: quello che serve ogni settimana.",
+    { id: "durante", nome: "Durante", tab: "Studiare", href: "durante.html", titolo: "Durante gli studi", sotto: "Esami, metodo, Erasmus: quello che serve ogni settimana.",
       voci: [["Il tuo semestre", "durante.html#semestre"], ["Strumenti", "tools.html"], ["Metodo e piano", "durante.html#metodo"], ["Erasmus", "durante.html#erasmus"], ["La tua area personale", "area.html"]] },
-    { id: "dopo", nome: "Dopo", href: "dopo.html", titolo: "Dopo e verso la laurea", sotto: "Tesi, magistrali, master e primi passi di carriera.",
+    { id: "dopo", nome: "Dopo", tab: "Dopo la laurea", href: "dopo.html", titolo: "Dopo e verso la laurea", sotto: "Tesi, magistrali, master e primi passi di carriera.",
       voci: [["Tesi e laurea", "tesi.html"], ["Magistrali e master", "dopo.html#magistrali"], ["Carriera e CV", "dopo.html#carriera"]] },
   ],
 

@@ -15,7 +15,7 @@
   const PAGE = document.body.dataset.page || "home";
   const FILE = location.pathname.split("/").pop() || "index.html";
   const KEY = CFG.commenti.chiave || "ul-commenti-v1";
-  const PAGINE = { home: ["S01", "Home"], "hub-economia": ["S02", "Hub Economia"], "hub-giurisprudenza": ["S03", "Hub Giurisprudenza"], "hub-medicina": ["S04", "Hub Medicina"], prima: ["S05", "Prima"], durante: ["S06", "Durante"], dopo: ["S07", "Dopo"], tesi: ["S08", "Tesi e laurea"], tools: ["S09", "Strumenti"], area: ["S10", "Area personale"], community: ["S11", "Community"], prezzi: ["S12", "Prezzi (esempio)"], decidere: ["S90", "Da decidere"], commenti: ["—", "Commenti"] };
+  const PAGINE = { home: ["S01", "Home"], "hub-economia": ["S02", "Hub Economia"], "hub-giurisprudenza": ["S03", "Hub Giurisprudenza"], "hub-medicina": ["S04", "Hub Medicina"], prima: ["S05", "Scegliere (Prima)"], durante: ["S06", "Studiare (Durante)"], dopo: ["S07", "Dopo la laurea"], tesi: ["S08", "Tesi e laurea"], tools: ["S09", "Strumenti"], area: ["S10", "Area personale"], community: ["S11", "Community"], prezzi: ["S12", "Prezzi (esempio)"], decidere: ["S90", "Da decidere"], commenti: ["—", "Commenti"], guida: ["S14", "Guida"], materiali: ["S15", "Materiali"], preview: ["S16", "Anteprima esame"] };
   const TIPI = [["testo", "Testo"], ["grafica", "Grafica"], ["struttura", "Struttura"], ["idea", "Idea"], ["errore", "Errore"], ["domanda", "Domanda"]];
   const TIPO = Object.fromEntries(TIPI);
   const dispositivo = () => (innerWidth <= 700 ? "telefono" : innerWidth <= 1100 ? "tablet" : "desktop");
