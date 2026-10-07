@@ -149,6 +149,21 @@
    "id": "webapp",
    "versioni": [
     {
+     "n": 7,
+     "tag": "webapp-v7",
+     "data": "2026-10-07T13:03+00:00",
+     "autore": "Claude",
+     "nota": "Web app: etichetta login v5",
+     "commit": "b8e0930",
+     "demo_v": 5,
+     "demo_data": "2026-10-07",
+     "impronta": "f5a067040e1542ba",
+     "kb": 379,
+     "file": "UniLink_webapp_demo-v5_backup7_2026-10-07.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/webapp-v7/UniLink_webapp_demo-v5_backup7_2026-10-07.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v7/demo-webapp"
+    },
+    {
      "n": 6,
      "tag": "webapp-v6",
      "data": "2026-10-07T13:00+00:00",
@@ -246,5 +261,5 @@
    "url": "https://matteprune04.github.io/unilink-hq/demo-webapp/"
   }
  ],
- "aggiornato": "2026-10-07T13:00+00:00"
+ "aggiornato": "2026-10-07T13:03+00:00"
 }
