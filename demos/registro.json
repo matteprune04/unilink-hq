@@ -4,6 +4,21 @@
    "id": "landing",
    "versioni": [
     {
+     "n": 13,
+     "tag": "landing-v13",
+     "data": "2026-10-07T22:08+00:00",
+     "autore": "Claude",
+     "nota": "Web app v9: libretto con regole ufficiali, «Com'è andato l'esame?», percorso nelle proposte",
+     "commit": "0da39fb",
+     "demo_v": 9,
+     "demo_data": "2026-10-08",
+     "impronta": "9fbb7b8812f2aa89",
+     "kb": 5628,
+     "file": "UniLink_landing_demo-v9_backup13_2026-10-07.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v13/UniLink_landing_demo-v9_backup13_2026-10-07.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v13/demo-landing"
+    },
+    {
      "n": 12,
      "tag": "landing-v12",
      "data": "2026-10-07T21:50+00:00",
@@ -194,6 +209,21 @@
    "id": "webapp",
    "versioni": [
     {
+     "n": 11,
+     "tag": "webapp-v11",
+     "data": "2026-10-07T22:08+00:00",
+     "autore": "Claude",
+     "nota": "Web app v9: libretto con regole ufficiali, «Com'è andato l'esame?», percorso nelle proposte",
+     "commit": "0da39fb",
+     "demo_v": 9,
+     "demo_data": "2026-10-08",
+     "impronta": "7bb47768d446d7f9",
+     "kb": 454,
+     "file": "UniLink_webapp_demo-v9_backup11_2026-10-07.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/webapp-v11/UniLink_webapp_demo-v9_backup11_2026-10-07.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v11/demo-webapp"
+    },
+    {
      "n": 10,
      "tag": "webapp-v10",
      "data": "2026-10-07T22:03+00:00",
@@ -351,5 +381,5 @@
    "url": "https://matteprune04.github.io/unilink-hq/demo-webapp/"
   }
  ],
- "aggiornato": "2026-10-07T22:03+00:00"
+ "aggiornato": "2026-10-07T22:08+00:00"
 }
