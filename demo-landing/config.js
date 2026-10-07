@@ -148,6 +148,26 @@ window.UL_CFG = {
     ["UniLink è affiliato all'Università di Firenze?", "No, è un progetto indipendente fatto da studenti.", "", ""],
   ],
 
+  // PLANNER · esempio solo da guardare in «Studiare» (S06), dalla proposta P3 del PDF «Proposte» (7 ottobre).
+  // Il piano si calcola UNA volta (niente ricalcolo), metodo standard per esame e fascia di voto.
+  // Numeri del PDF, inventati per il mockup: le sessioni per fascia vanno calibrate con i dati veri.
+  // ore utili = giorni × ore nette × (1 − margine); capitoli = anteprima.argomenti[esame].
+  planner: {
+    stato: "Esempio · dati inventati · proposta P3",
+    esame: "microeconomia", nome: "Microeconomia", cfu: 9, appello: "20 gennaio", gruppo: "Modelli economici",
+    giorni: 26, oreNette: 2.5, margine: 0.18, minuti: 45, riposo: "domenica", fascia: "ottimo", fatte: 21,
+    fasce: [
+      { id: "passare", nome: "Passare", voto: "18–21", sessioni: 40, cosa: "Lezione + un esercizio per capitolo, 2 simulazioni" },
+      { id: "buono", nome: "Buono", voto: "22–25", sessioni: 52, cosa: "+ ripassi di blocco, 3 simulazioni" },
+      { id: "ottimo", nome: "Ottimo", voto: "26–28", sessioni: 64, cosa: "+ seconda sessione di esercizi, 4 simulazioni, registro errori" },
+      { id: "massimo", nome: "Massimo", voto: "29–30L", sessioni: 78, cosa: "+ approfondimenti, domande d'orale, 6 simulazioni" },
+    ],
+    fasi: [["Avvio", 0.06], ["Basi", 0.32], ["Approfondimento", 0.27], ["Allenamento d'esame", 0.23], ["Rifinitura", 0.12]],
+    disclaimer: "Le fasce dicono quanto lavoro prevede il metodo per quel voto: non garantiamo il risultato.",
+    oggi: [["Lezione", "Produzione e costi · dispensa pp. 61–70"], ["Esercizi", "Produzione e costi · esercizi 1–8"], ["Ripasso", "Registro errori · Scelte del consumatore"]],
+    completate: [["Simulazione breve", "Scelte del consumatore", "Così così", 2, "ieri"], ["Esercizi", "Scelte del consumatore", "Sicuro", 0, "ieri"], ["Lezione", "Scelte del consumatore", "Sicuro", 0, "2 giorni fa"], ["Esercizi", "Elasticità", "Da rivedere", 3, "3 giorni fa"]],
+  },
+
   // Le tre fasi (stesso modello in ogni hub: cambiano i contenuti, non la struttura).
   // I nomi sono volutamente generici ("Dopo", non "Dopo la triennale"): valgono anche per i cicli unici.
   fasi: [

@@ -298,6 +298,78 @@
   // link verso l'accesso alla web app (H06b, H12): data-app="#/rotta" o vuoto
   $$("[data-app]").forEach((a) => (a.href = APP + (a.dataset.app || "")));
 
+  /* ---------- 4d · Planner: esempio solo da guardare (P3), dati in CFG.planner ---------- */
+  const PL = CFG.planner, plRoot = $("[data-planner]");
+  if (PL && plRoot) {
+    const caps = (CFG.anteprima?.argomenti || {})[PL.esame] || [];
+    const st = { fascia: PL.fascia, vista: "variabili" };
+    const VISTE = [["variabili", "Variabili"], ["percorso", "Percorso"], ["calendario", "Calendario"], ["dafare", "Da fare"], ["completate", "Completate"]];
+    const n1 = (x) => x.toLocaleString("it-IT", { maximumFractionDigits: 1 });
+    const fx = () => PL.fasce.find((f) => f.id === st.fascia) || PL.fasce[0];
+    const utili = PL.giorni * PL.oreNette * (1 - PL.margine);
+    const perFase = (tot) => { const r = PL.fasi.map(([, q]) => Math.round(tot * q)); r[r.length - 1] += tot - r.reduce((a, b) => a + b, 0); return r; };
+    const alGiorno = Math.floor((PL.oreNette * 60) / PL.minuti);
+    const TIPI = { Lezione: "t-lez", Esercizi: "t-ese", Ripasso: "t-rip", Simulazione: "t-sim", "Simulazione breve": "t-sim" };
+    const ESITO = { "Da rivedere": "no", "Così così": "mid", Sicuro: "ok" };
+    const bar = (p) => `<div class="pl-bar"><i style="width:${Math.max(0, Math.min(100, p))}%"></i></div>`;
+
+    const indicatore = () => {
+      const f = fx(), serve = (f.sessioni * PL.minuti) / 60, diff = utili - serve, ok = diff >= 0;
+      return `<div class="pl-ind ${ok ? "ok" : "no"}"><span class="g-k">Ci stai nei tempi?</span><b>${ok ? `Sì, con ${n1(diff)} h di margine` : `No: mancano ${n1(-diff)} h`}</b>${bar((serve / utili) * 100)}
+        <p>Servono <b>${n1(serve)} h</b> (${f.sessioni} sessioni da ${PL.minuti}′). Hai <b>${n1(utili)} h</b> utili: ${PL.giorni} giorni × ${n1(PL.oreNette)} h nette, meno il ${Math.round(PL.margine * 100)}% di margine per gli imprevisti.</p>
+        ${ok ? "" : "<p>Aggiungi giorni o ore, oppure scegli una fascia più bassa.</p>"}</div>`;
+    };
+    const V = {
+      variabili: () => `<div class="pl-2">
+        <div><dl class="pl-var">${[["Esame", `${PL.nome} · ${PL.cfu} CFU`], ["Appello", PL.appello], ["Gruppo d'esame", PL.gruppo], ["Giorni di studio", `${PL.giorni} · riposo la ${PL.riposo}`], ["Ore nette al giorno", `${n1(PL.oreNette)} h · ${alGiorno} sessioni`], ["Margine", `${Math.round(PL.margine * 100)}%`]].map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>
+          <span class="g-k" style="margin-top:18px">Obiettivo di voto</span>
+          <div class="pl-fasce" role="radiogroup" aria-label="Fascia di voto">${PL.fasce.map((f) => `<button type="button" role="radio" aria-checked="${f.id === st.fascia}" data-fascia="${f.id}" class="${f.id === st.fascia ? "on" : ""}"><b>${esc(f.nome)}</b><span>${esc(f.voto)}</span><small>${f.sessioni} sessioni</small></button>`).join("")}</div>
+          <p class="pl-cosa">${esc(fx().cosa)}</p><p class="pl-disc">${esc(PL.disclaimer)}</p></div>
+        <div>${indicatore()}</div></div>`,
+      percorso: () => {
+        const f = fx(), pf = perFase(f.sessioni); let resto = PL.fatte; let corrente = -1;
+        const righe = PL.fasi.map(([nome], i) => { const fatte = Math.min(resto, pf[i]); resto -= fatte; if (corrente < 0 && fatte < pf[i]) corrente = i;
+          return `<li class="${fatte === pf[i] ? "fatta" : i === corrente ? "ora" : ""}"><span class="pl-fn">${i + 1}</span><div><b>${esc(nome)}</b>${i === corrente ? ' <span class="badge" style="font-size:11px;padding:2px 8px">in corso</span>' : ""}${bar((fatte / pf[i]) * 100)}<small>${fatte}/${pf[i]} sessioni</small></div></li>`; }).join("");
+        return `<div class="pl-2"><ol class="pl-fasi">${righe}</ol><div class="pl-stat">
+          <div><span class="g-k">Sessioni fatte</span><b>${Math.min(PL.fatte, f.sessioni)}/${f.sessioni}</b></div>
+          <div><span class="g-k">Ore studiate</span><b>${n1((Math.min(PL.fatte, f.sessioni) * PL.minuti) / 60)} h</b></div>
+          <div class="pl-wide"><span class="g-k">Rispetto al piano</span><b>1 sessione indietro</b><small>Il piano non si ricalcola da solo: puoi rigenerarlo tu.</small></div>
+          <div class="pl-next"><span class="g-k">Prossima sessione</span><b>${esc(PL.oggi[0][0])} · ${esc(PL.oggi[0][1])}</b></div></div></div>`;
+      },
+      calendario: () => {
+        const G = ["lun", "mar", "mer", "gio", "ven", "sab", "dom"], seq = ["Lezione", "Esercizi", "Ripasso"];
+        const celle = Array.from({ length: 14 }, (_, d) => {
+          const g = G[d % 7], num = 14 + d, oggi = d === 3;
+          if (g === "dom") return `<div class="pl-day riposo"><span>${g} ${num}</span><em>riposo</em></div>`;
+          const bl = Array.from({ length: alGiorno }, (_, k) => (g === "sab" && k === 0 ? "Simulazione" : seq[(d + k) % 3]));
+          return `<div class="pl-day${oggi ? " oggi" : ""}${d < 3 ? " passato" : ""}"><span>${g} ${num}${oggi ? " · oggi" : ""}</span>${bl.map((t) => `<i class="${TIPI[t]}" title="${t}">${t}</i>`).join("")}</div>`;
+        }).join("");
+        return `<div class="pl-cal-h"><b>Dicembre · settimane 3 e 4</b><span class="pl-leg">${["Lezione", "Esercizi", "Ripasso", "Simulazione"].map((t) => `<i class="${TIPI[t]}"></i>${t}`).join("")}</span></div>
+          <div class="pl-cal">${G.map((g) => `<span class="pl-gh">${g}</span>`).join("")}${celle}</div>
+          <p class="small" style="margin-top:10px">Le sessioni sono fissate alla creazione del piano: il calendario non si riorganizza da solo.</p>`;
+      },
+      dafare: () => `<div class="pl-2"><div><span class="g-k">Oggi · ${PL.oggi.length} sessioni da ${PL.minuti}′</span>
+          <ul class="pl-task">${PL.oggi.map(([t, d], i) => `<li class="${i === 0 ? "ora" : ""}"><i class="${TIPI[t]}"></i><div><b>${esc(t)}</b><small>${esc(d)}</small></div><span>${i === 0 ? "Inizia →" : PL.minuti + "′"}</span></li>`).join("")}</ul></div>
+        <div><span class="g-k">Questa settimana</span><div class="pl-sett"><b>7/15</b> sessioni${bar((7 / 15) * 100)}</div>
+          <span class="g-k" style="margin-top:16px">Capitoli dell'esame</span><ol class="pl-caps">${caps.map((c, i) => `<li class="${i < 2 ? "fatto" : i === 2 ? "ora" : ""}">${esc(c)}</li>`).join("")}</ol></div></div>`,
+      completate: () => `<div class="pl-2"><ul class="pl-task fatte">${PL.completate.map(([t, c, e, err, q]) => `<li><i class="${TIPI[t]}"></i><div><b>${esc(t)} · ${esc(c)}</b><small>${esc(q)}${err ? ` · ${err} errori nel registro` : ""}</small></div><span class="pl-esito ${ESITO[e]}">${esc(e)}</span></li>`).join("")}</ul>
+        <div><span class="g-k">Dopo ogni test</span><p class="small" style="margin:6px 0 12px">Segni com'è andata: «Da rivedere», «Così così», «Sicuro». Gli errori finiscono nel registro e tornano nei ripassi.</p>
+          <div class="pl-stat"><div><span class="g-k">Errori nel registro</span><b>${PL.completate.reduce((a, x) => a + x[3], 0)}</b></div><div><span class="g-k">Capitoli sicuri</span><b>1 di ${caps.length}</b></div></div></div></div>`,
+    };
+    const disegnaPl = () => {
+      plRoot.innerHTML = `<div class="pl-top"><div><span class="badge">${esc(PL.stato)}</span><h3>UniLink Planner · ${esc(PL.nome)}</h3></div>
+          <div class="pl-tabs" role="tablist" aria-label="Sezioni del planner">${VISTE.map(([id, t]) => `<button type="button" role="tab" aria-selected="${id === st.vista}" data-vista="${id}" class="${id === st.vista ? "on" : ""}">${t}</button>`).join("")}</div></div>
+        <div class="pl-body" role="tabpanel">${V[st.vista]()}</div>
+        <div class="pl-foot"><p>Il piano si calcola una volta, sui tuoi giorni e sulle tue ore. Nell'area personale lo crei per ogni esame (serve la dispensa Completa o Plus).</p><a class="btn btn-a" href="${APP}">Crea il tuo piano <span class="freccia">→</span></a></div>`;
+    };
+    plRoot.addEventListener("click", (e) => {
+      const v = e.target.closest("[data-vista]"), f = e.target.closest("[data-fascia]");
+      if (v) st.vista = v.dataset.vista; else if (f) st.fascia = f.dataset.fascia; else return;
+      disegnaPl(); (v ? $(`[data-vista="${st.vista}"]`, plRoot) : $(`[data-fascia="${st.fascia}"]`, plRoot))?.focus();
+    });
+    disegnaPl();
+  }
+
   /* ---------- 5 · strumenti (da tools.js, dentro la demo) ---------- */
   $$("[data-toolshell]").forEach((root) => {
     const limit = +root.dataset.limit || 99;
