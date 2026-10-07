@@ -4,6 +4,21 @@
    "id": "landing",
    "versioni": [
     {
+     "n": 7,
+     "tag": "landing-v7",
+     "data": "2026-10-07T11:42+00:00",
+     "autore": "Claude",
+     "nota": "Landing v5: prezzi con card pulite, «Cosa c'è dentro» e calcolatore del pacchetto con il consiglio",
+     "commit": "23f222c",
+     "demo_v": 5,
+     "demo_data": "2026-10-07",
+     "impronta": "3c521da0d561de33",
+     "kb": 5355,
+     "file": "UniLink_landing_demo-v5_backup7_2026-10-07.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v7/UniLink_landing_demo-v5_backup7_2026-10-07.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v7/demo-landing"
+    },
+    {
      "n": 6,
      "tag": "landing-v6",
      "data": "2026-10-07T11:29+00:00",
@@ -171,5 +186,5 @@
    "url": "https://matteprune04.github.io/unilink-hq/demo-webapp/"
   }
  ],
- "aggiornato": "2026-10-07T11:29+00:00"
+ "aggiornato": "2026-10-07T11:42+00:00"
 }
