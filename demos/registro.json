@@ -4,6 +4,21 @@
    "id": "landing",
    "versioni": [
     {
+     "n": 11,
+     "tag": "landing-v11",
+     "data": "2026-10-07T21:35+00:00",
+     "autore": "Claude",
+     "nota": "Landing v8 e web app v7: decisioni del 7/10, commenti v7 e archivio dei founder",
+     "commit": "2bf169e",
+     "demo_v": 8,
+     "demo_data": "2026-10-07",
+     "impronta": "b1fefb0c88584456",
+     "kb": 5613,
+     "file": "UniLink_landing_demo-v8_backup11_2026-10-07.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v11/UniLink_landing_demo-v8_backup11_2026-10-07.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v11/demo-landing"
+    },
+    {
      "n": 10,
      "tag": "landing-v10",
      "data": "2026-10-07T20:17+00:00",
@@ -164,6 +179,21 @@
    "id": "webapp",
    "versioni": [
     {
+     "n": 9,
+     "tag": "webapp-v9",
+     "data": "2026-10-07T21:35+00:00",
+     "autore": "Claude",
+     "nota": "Landing v8 e web app v7: decisioni del 7/10, commenti v7 e archivio dei founder",
+     "commit": "2bf169e",
+     "demo_v": 7,
+     "demo_data": "2026-10-07",
+     "impronta": "50fdd76d802bb309",
+     "kb": 400,
+     "file": "UniLink_webapp_demo-v7_backup9_2026-10-07.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/webapp-v9/UniLink_webapp_demo-v7_backup9_2026-10-07.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v9/demo-webapp"
+    },
+    {
      "n": 8,
      "tag": "webapp-v8",
      "data": "2026-10-07T20:17+00:00",
@@ -291,5 +321,5 @@
    "url": "https://matteprune04.github.io/unilink-hq/demo-webapp/"
   }
  ],
- "aggiornato": "2026-10-07T20:17+00:00"
+ "aggiornato": "2026-10-07T21:35+00:00"
 }
