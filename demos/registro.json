@@ -4,6 +4,19 @@
    "id": "landing",
    "versioni": [
     {
+     "n": 5,
+     "tag": "landing-v5",
+     "data": "2026-10-07T10:03+00:00",
+     "autore": "Claude",
+     "nota": "Commenti: allo scarico i commenti vengono archiviati, con storico delle esportazioni",
+     "commit": "e479045",
+     "impronta": "f7913f0b3ac35aac",
+     "kb": 5313,
+     "file": "UniLink_landing_v5_2026-10-07.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v5/UniLink_landing_v5_2026-10-07.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v5/demo-landing"
+    },
+    {
      "n": 4,
      "tag": "landing-v4",
      "data": "2026-10-06T21:23+00:00",
@@ -125,5 +138,5 @@
    "url": "https://matteprune04.github.io/unilink-hq/demo-webapp/"
   }
  ],
- "aggiornato": "2026-10-06T21:23+00:00"
+ "aggiornato": "2026-10-07T10:03+00:00"
 }
