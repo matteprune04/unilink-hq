@@ -14,7 +14,9 @@
      "kb": 5352,
      "file": "UniLink_landing_v6_2026-10-07.zip",
      "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v6/UniLink_landing_v6_2026-10-07.zip",
-     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v6/demo-landing"
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v6/demo-landing",
+     "demo_v": 4,
+     "demo_data": "2026-10-07"
     },
     {
      "n": 5,
@@ -27,7 +29,9 @@
      "kb": 5313,
      "file": "UniLink_landing_v5_2026-10-07.zip",
      "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v5/UniLink_landing_v5_2026-10-07.zip",
-     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v5/demo-landing"
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v5/demo-landing",
+     "demo_v": 3,
+     "demo_data": "2026-10-06"
     },
     {
      "n": 4,
@@ -40,7 +44,9 @@
      "kb": 5311,
      "file": "UniLink_landing_v4_2026-10-06.zip",
      "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v4/UniLink_landing_v4_2026-10-06.zip",
-     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v4/demo-landing"
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v4/demo-landing",
+     "demo_v": 3,
+     "demo_data": "2026-10-06"
     },
     {
      "n": 3,
@@ -53,7 +59,9 @@
      "kb": 5294,
      "file": "UniLink_landing_v3_2026-10-06.zip",
      "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v3/UniLink_landing_v3_2026-10-06.zip",
-     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v3/demo-landing"
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v3/demo-landing",
+     "demo_v": 3,
+     "demo_data": "2026-10-06"
     },
     {
      "n": 2,
@@ -66,7 +74,9 @@
      "kb": 5901,
      "file": "UniLink_landing_v2_2026-10-06.zip",
      "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v2/UniLink_landing_v2_2026-10-06.zip",
-     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v2/demo-landing"
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v2/demo-landing",
+     "demo_v": 2,
+     "demo_data": "2026-10-06"
     },
     {
      "n": 1,
@@ -79,7 +89,9 @@
      "kb": 5651,
      "file": "UniLink_landing_v1_2026-10-06.zip",
      "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v1/UniLink_landing_v1_2026-10-06.zip",
-     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v1/demo-landing"
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v1/demo-landing",
+     "demo_v": null,
+     "demo_data": null
     }
    ],
    "titolo": "Landing",
@@ -102,7 +114,9 @@
      "kb": 278,
      "file": "UniLink_webapp_v4_2026-10-06.zip",
      "download": "https://github.com/matteprune04/unilink-hq/releases/download/webapp-v4/UniLink_webapp_v4_2026-10-06.zip",
-     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v4/demo-webapp"
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v4/demo-webapp",
+     "demo_v": null,
+     "demo_data": null
     },
     {
      "n": 3,
@@ -115,7 +129,9 @@
      "kb": 266,
      "file": "UniLink_webapp_v3_2026-10-06.zip",
      "download": "https://github.com/matteprune04/unilink-hq/releases/download/webapp-v3/UniLink_webapp_v3_2026-10-06.zip",
-     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v3/demo-webapp"
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v3/demo-webapp",
+     "demo_v": null,
+     "demo_data": null
     },
     {
      "n": 2,
@@ -128,7 +144,9 @@
      "kb": 1101,
      "file": "UniLink_webapp_v2_2026-10-06.zip",
      "download": "https://github.com/matteprune04/unilink-hq/releases/download/webapp-v2/UniLink_webapp_v2_2026-10-06.zip",
-     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v2/demo-webapp"
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v2/demo-webapp",
+     "demo_v": null,
+     "demo_data": null
     },
     {
      "n": 1,
@@ -141,7 +159,9 @@
      "kb": 1082,
      "file": "UniLink_webapp_v1_2026-10-06.zip",
      "download": "https://github.com/matteprune04/unilink-hq/releases/download/webapp-v1/UniLink_webapp_v1_2026-10-06.zip",
-     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v1/demo-webapp"
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v1/demo-webapp",
+     "demo_v": null,
+     "demo_data": null
     }
    ],
    "titolo": "Web app · area personale",

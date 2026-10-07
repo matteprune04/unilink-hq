@@ -12,6 +12,7 @@ Uso locale (senza pubblicare release):  python _src/demo_snapshot.py --prova
 import hashlib
 import json
 import os
+import re
 import subprocess
 import sys
 import zipfile
@@ -53,9 +54,24 @@ def impronta(cartella):
     return h.hexdigest()[:16]
 
 
-def crea_zip(d, n, giorno):
+CONFIG = {"demo-landing": "demo-landing/config.js", "demo-webapp": "demo-webapp/js/config.js"}
+RE_VER = re.compile(r'versione:\s*\{\s*n:\s*(\d+),\s*data:\s*"([^"]+)"')
+
+
+def versione_demo(cartella, rev=None):
+    """La versione scritta dalla demo stessa (UL_CFG.versione in config.js), quella che compare nel footer.
+    Il numero di backup (n) conta i push; questo conta le versioni della demo: servono tutti e due."""
+    rel = CONFIG.get(cartella)
+    if not rel:
+        return None, None
+    testo = git("show", f"{rev}:{rel}") if rev else ((REPO / rel).read_text(encoding="utf-8") if (REPO / rel).exists() else "")
+    m = RE_VER.search(testo or "")
+    return (int(m.group(1)), m.group(2)) if m else (None, None)
+
+
+def crea_zip(d, n, giorno, dv=None):
     OUT.mkdir(exist_ok=True)
-    nome = f"UniLink_{d['id']}_v{n}_{giorno}.zip"
+    nome = f"UniLink_{d['id']}_demo-v{dv}_backup{n}_{giorno}.zip" if dv else f"UniLink_{d['id']}_v{n}_{giorno}.zip"
     with zipfile.ZipFile(OUT / nome, "w", zipfile.ZIP_DEFLATED) as z:
         for p in file_di(d["cartella"]):
             z.write(p, Path(d["cartella"]) / p.relative_to(REPO / d["cartella"]))
@@ -81,27 +97,28 @@ def main():
             continue
         n = (voce["versioni"][0]["n"] + 1) if voce["versioni"] else 1
         ora = datetime.now(timezone.utc)
-        z = crea_zip(d, n, ora.strftime("%Y-%m-%d"))
+        dv, dd = versione_demo(d["cartella"])
+        z = crea_zip(d, n, ora.strftime("%Y-%m-%d"), dv)
         tag = f"{d['id']}-v{n}"
         autore = git("log", "-1", "--format=%an", "--", d["cartella"]) or "n/d"
         nota = git("log", "-1", "--format=%s", "--", d["cartella"]) or "Nuova versione"
         commit = git("log", "-1", "--format=%h", "--", d["cartella"])
         voce["versioni"].insert(0, {
             "n": n, "tag": tag, "data": ora.isoformat(timespec="minutes"), "autore": autore, "nota": nota,
-            "commit": commit, "impronta": imp, "kb": z.stat().st_size // 1024, "file": z.name,
+            "commit": commit, "demo_v": dv, "demo_data": dd, "impronta": imp, "kb": z.stat().st_size // 1024, "file": z.name,
             "download": f"https://github.com/{GH_REPO}/releases/download/{tag}/{z.name}",
             "sorgente": f"https://github.com/{GH_REPO}/tree/{tag}/{d['cartella']}",
         })
-        cambiate.append((d, n, tag, z, nota))
-        print(f"{d['titolo']}: nuova versione v{n} ({z.stat().st_size // 1024} KB) — {nota}")
+        cambiate.append((d, n, tag, z, nota, dv))
+        print(f"{d['titolo']}: backup {n}{f' (demo v{dv})' if dv else ''} ({z.stat().st_size // 1024} KB) — {nota}")
 
     if not cambiate:
         print("Nessuna demo cambiata.")
         return
     if not prova:
-        for d, n, tag, z, nota in cambiate:
+        for d, n, tag, z, nota, dv in cambiate:
             subprocess.run(["gh", "release", "create", tag, str(z), "--repo", GH_REPO,
-                            "--title", f"{d['titolo']} · v{n}", "--notes", f"Backup automatico della demo.\n\n{nota}",
+                            "--title", f"{d['titolo']} · demo v{dv} · backup {n}" if dv else f"{d['titolo']} · v{n}", "--notes", f"Backup automatico della demo.\n\n{nota}",
                             "--target", git("rev-parse", "HEAD"), "--latest=false"], check=True)
     reg["aggiornato"] = datetime.now(timezone.utc).isoformat(timespec="minutes")
     dest = OUT / "registro_prova.json" if prova else REGISTRO  # in prova non tocca il registro vero
