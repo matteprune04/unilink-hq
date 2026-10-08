@@ -1,4 +1,4 @@
-/* js/views/studio.js — web app v8 · «I MIEI ESAMI» COME UNICA MACROSEZIONE DI STUDIO (commento 11 del 7/10).
+/* js/views/studio.js — web app v13 (studio: Riprendi, Programma e progressi, capitolo come collegamento, progressi credibili, note con etichette) · nato in v8 · «I MIEI ESAMI» COME UNICA MACROSEZIONE DI STUDIO (commento 11 del 7/10).
    Prima: «I miei esami», «Materiali» ed «Esercitazioni» erano tre voci separate. Ora si entra nell'esame e dentro ci sono:
      Panoramica · Dispensa (lettore: evidenziatore a colori, note, flashcard dalla pagina, filigrana sotto il numero di pagina)
      · Flashcard (stile Anki, algoritmo SM-2) · Esercizi (banca per macroargomento → capitolo, tempo per domanda, registro errori)
@@ -82,11 +82,12 @@
       const disegna = () => {
         const k = coda[i], rest = coda.slice(i), nN = rest.filter((x) => !F.s[x.id]).length, nI = rest.filter((x) => F.s[x.id] && F.s[x.id].rep === 0).length;
         ov.innerHTML = `<div class="fc-f-top"><span>${esc(c.title)} · ${esc(d.nome)}</span><span class="fc-f-n"><b class="fc-n nu">${nN}</b><b class="fc-n im">${nI}</b><b class="fc-n ri">${rest.length - nN - nI}</b></span><button class="btn btn-sm btn-ghost" data-esci>Esci (Esc)</button></div>
-          ${k ? `<div class="fc-f-carta"><span class="sq-label">${esc(nomeCap(c.slug, k.cap))}</span><p class="fc-f-fronte">${esc(k.f)}</p>${girata ? `<hr class="divider"><p class="fc-f-retro">${esc(k.b)}</p>` : ""}</div>
+          ${k ? `<div class="fc-f-carta"><span class="sq-label">${esc(nomeCap(c.slug, k.cap))}</span><p class="fc-f-fronte">${esc(k.f)}</p>${girata ? `<hr class="divider"><p class="fc-f-retro">${esc(k.b)}</p>${(k.pag || B.capPag(u, c.slug)[k.cap]) ? `<button class="link small fc-orig" data-fc-orig="${k.pag || B.capPag(u, c.slug)[k.cap]}">${icon("book")} ${k.pag ? "Apri il passaggio originale · p. " + k.pag : "Rileggi il capitolo nella dispensa"}</button>` : ""}` : ""}</div>
             <div class="fc-f-azioni">${girata ? [[1, "Di nuovo", "1"], [3, "Difficile", "2"], [4, "Bene", "3"], [5, "Facile", "4"]].map(([q, tx, tk]) => `<button class="fc-voto v${q}" data-q="${q}"><small>${anteprimaInt(F.s[k.id], q)}</small>${tx}<kbd>${tk}</kbd></button>`).join("") : `<button class="btn btn-primary fc-gira" data-gira>Mostra la risposta <kbd>spazio</kbd></button>`}</div>`
             : `<div class="fc-f-carta fine"><h2>Mazzo finito per oggi ${icon("check")}</h2><p class="muted">Le carte tornano quando serve. Domani riprendi da qui.</p><button class="btn btn-primary" data-esci>Torna ai mazzi</button></div>`}`;
         ov.querySelectorAll("[data-esci]").forEach((b) => (b.onclick = esci));
         const g = ov.querySelector("[data-gira]"); g && (g.onclick = () => { girata = true; disegna(); });
+        const og = ov.querySelector("[data-fc-orig]"); og && (og.onclick = () => { (u.activity.letture = u.activity.letture || {})[c.slug] = Number(og.dataset.fcOrig); UL.store.save(); ov.remove(); document.body.style.overflow = ""; document.removeEventListener("keydown", tasti); UL.app.go(`#/app/esami/${c.slug}/dispensa`); });
         ov.querySelectorAll("[data-q]").forEach((b) => (b.onclick = () => vota(Number(b.dataset.q))));
       };
       const vota = (q) => { const k = coda[i], nuova = !F.s[k.id]; F.s[k.id] = sm2(F.s[k.id], q); if (nuova) F.nuoveOggi.n++; if (q < 3) coda.push(k); UL.store.save(); i++; girata = false; disegna(); };
@@ -94,6 +95,7 @@
       document.addEventListener("keydown", tasti); disegna(); ov.querySelector("button") && ov.querySelector("button").focus();
     };
     root.querySelectorAll("[data-fc-studia]").forEach((b) => b.addEventListener("click", () => studia(b.dataset.fcStudia)));
+    if (u.activity.fcAvvia) { const id = u.activity.fcAvvia; delete u.activity.fcAvvia; UL.store.save(); setTimeout(() => studia(id), 0); }
     const fn = root.querySelector("[data-fc-nuova]");
     fn && fn.addEventListener("submit", (e) => { e.preventDefault(); const f = fn.f.value.trim(), b = fn.b.value.trim(); if (!f || !b) return UL.ui.toast("Scrivi fronte e retro");
       F.mie.push({ id: "mia-" + Date.now().toString(36), f, b, cap: Number(fn.cap.value) || 0, at: new Date().toISOString() }); UL.store.save(); UL.ui.toast("Carta aggiunta"); UL.app.refresh(); });
@@ -158,8 +160,10 @@
           box.querySelectorAll(".opt").forEach((x) => { x.disabled = true; if (Number(x.dataset.o) === q.a) x.classList.add("ok"); }); if (!ok) b.classList.add("ko");
           box.querySelector("[data-es-dopo]").innerHTML = `<p class="small" style="margin-top:12px">${ok ? "Giusta" : "Sbagliata"} · ${t} secondi${t <= ob ? "" : " · più lento dell'esame"}</p>
             ${q.x ? `<div class="explain"><b>Spiegazione</b><br>${esc(q.x)}</div>` : ""}
+            ${!ok && q.cap && B.capPag(u, c.slug)[q.cap] ? `<button class="btn btn-sm btn-ghost es-rileggi" data-es-rileggi="${q.cap}">${icon("book")} Rileggi nella dispensa · cap. ${q.cap}, p. ${B.capPag(u, c.slug)[q.cap]}</button>` : ""}
             ${ok ? "" : `<p class="sq-label" style="margin-top:12px">Perché hai sbagliato?</p><div class="chips">${CAUSE.map(([k, t2]) => `<button class="chip" data-causa="${k}">${t2}</button>`).join("")}</div>`}
             <div class="row" style="justify-content:flex-end;margin-top:14px"><button class="btn btn-primary" data-es-avanti>${i < lista.length - 1 ? "Prossima" : "Vedi il risultato"}</button></div>`;
+          const rl = box.querySelector("[data-es-rileggi]"); rl && (rl.onclick = () => { stop(); UL.store.save(); (u.activity.letture = u.activity.letture || {})[c.slug] = B.capPag(u, c.slug)[rl.dataset.esRileggi]; UL.app.go(`#/app/esami/${c.slug}/dispensa`); });
           box.querySelectorAll("[data-causa]").forEach((x) => (x.onclick = () => { voce.causa = x.dataset.causa; box.querySelectorAll("[data-causa]").forEach((y) => y.classList.toggle("on", y === x)); UL.store.save(); }));
           box.querySelector("[data-es-avanti]").onclick = () => { i++; i < lista.length ? mostra() : fine(); };
           UL.store.save();
@@ -167,31 +171,83 @@
       };
       mostra(); box.scrollIntoView({ behavior: "smooth", block: "start" });
     };
+    // v13: arrivo da «Riprendi», dal programma o dalla fine di un capitolo nel lettore → l'esercizio parte subito
+    const av = u.activity.esAvvia; if (av) { delete u.activity.esAvvia; UL.store.save();
+      if (av === "errori") corri(Q.filter((q) => inErrore(u, q)).slice(0, 15));
+      else { const [, n, k] = av.split(":"), l = Q.filter((q) => q.cap === Number(n)), nuove = l.filter((q) => !B.stat(u, q.id).seen); corri(B.shuffle(nuove.length >= (Number(k) || 10) ? nuove : l).slice(0, Number(k) || 10)); } }
   }
 
-  /* ---------- scheda Mappa del corso · v10 essenziale (commento 3 del 8/10): un capitolo = una riga, uno stato, una barra ---------- */
+  /* ---------- v13 · scheda «Programma e progressi» (ex «Mappa del corso»): il CAPITOLO collega tutto ----------
+     Per ogni capitolo, nella stessa riga: quanto l'hai letto (pagine aperte), come rispondi alle sue domande, e tre azioni dirette:
+     Leggi (apre la dispensa all'inizio del capitolo) · Carte (il mazzo del capitolo) · Domande (esercizi del capitolo).
+     Lo stato si calcola da solo (letto ≥ 80% e ≥ 70% di risposte giuste = fatto); chi vuole lo forza con un tocco. */
+  const statoCap = (u, c, k) => { const M = ((u.activity.mappa || {})[c.slug]) || {}, Q = B.banca(c.slug).filter((q) => q.cap === k.n), giuste = Q.filter((q) => B.stat(u, q.id).streak > 0).length, letto = B.lettoCap(u, c.slug, k.n);
+    const auto = letto >= 80 && (!Q.length || giuste / Q.length >= 0.7) ? "fatto" : letto > 0 || Q.some((q) => B.stat(u, q.id).seen) ? "corso" : "";
+    return { st: M[k.n] || auto, manuale: !!M[k.n], letto, Q, giuste }; };
   function mappa(u, c) {
-    const S = STR(c.slug), M = ((u.activity.mappa = u.activity.mappa || {})[c.slug] = (u.activity.mappa[c.slug] || {}));
-    if (!S) return `<div class="card empty">${icon("map")}<p>La mappa di ${esc(c.title)} nasce dall'indice della dispensa: per questo esame non l'abbiamo ancora caricato.</p></div>`;
-    const Q = B.banca(c.slug), D = B.mazzo(c.slug, u), F = fcStato(u, c.slug);
-    const pct = (n) => { const q = Q.filter((x) => x.cap === n), k = D.filter((x) => x.cap === n), a = q.filter((x) => B.stat(u, x.id).streak > 0).length + k.filter((x) => F.s[x.id] && F.s[x.id].rep > 0).length; return q.length + k.length ? Math.round((a / (q.length + k.length)) * 100) : 0; };
-    const ST = { "": ["Da studiare", ""], corso: ["In corso", "corso"], fatto: ["Fatto", "fatto"] };
-    const fatti = S.moduli.flatMap((m) => m.capitoli).filter((k) => M[k.n] === "fatto").length, totCap = S.moduli.flatMap((m) => m.capitoli).length;
-    return `<div class="mp-testa"><b>${fatti} di ${totCap} capitoli fatti</b><span class="es-bar"><i style="width:${(fatti / totCap) * 100}%"></i></span><span class="small muted">Tocca lo stato per cambiarlo. La barra è quanto sai di quel capitolo (esercizi e flashcard).</span></div>
+    const S = STR(c.slug);
+    if (!S) return `<div class="card empty">${icon("map")}<p>Il programma di ${esc(c.title)} nasce dall'indice della dispensa: per questo esame non l'abbiamo ancora caricato.</p></div>`;
+    const D = B.mazzo(c.slug, u), CP = B.capPag(u, c.slug), caps = capitoliDi(c.slug);
+    const ST = { "": ["Da iniziare", ""], corso: ["In corso", "corso"], fatto: ["Fatto", "fatto"] };
+    const fatti = caps.filter((k) => statoCap(u, c, k).st === "fatto").length;
+    return `<div class="mp-testa"><b>${fatti} di ${caps.length} capitoli fatti</b><span class="es-bar"><i style="width:${(fatti / caps.length) * 100}%"></i></span>
+        <span class="small muted">Un capitolo è fatto quando l'hai letto e rispondi bene alle sue domande. Dalla riga apri subito pagine, carte o domande.</span></div>
+      ${Object.keys(CP).length ? "" : `<p class="small pg-avviso">${icon("info")} Apri la dispensa una volta: colleghiamo ogni capitolo alla sua pagina e il pulsante «Leggi» ti porta lì.</p>`}
       <div class="mp-mappa">${S.moduli.map((m, i) => `<section class="mp-mod"><h3><span>${i + 1}</span>${esc(m.titolo)}</h3>
-        <ul class="mp-lista">${m.capitoli.map((k) => { const st = M[k.n] || "", p = pct(k.n); return `<li class="${ST[st][1]}"><span class="mp-tit">${k.n} · ${esc(k.titolo)}</span><span class="es-bar" title="${p}% che sai"><i style="width:${p}%"></i></span><button class="mp-stato ${ST[st][1]}" data-mp="${k.n}">${ST[st][0]}</button></li>`; }).join("")}</ul></section>`).join("")}</div>`;
+        <ul class="pp-lista">${m.capitoli.map((k) => { const x = statoCap(u, c, k), carte = D.filter((d) => d.cap === k.n).length;
+          return `<li class="${ST[x.st][1]}"><div class="pp-tit"><b>${k.n} · ${esc(k.titolo)}</b>
+              <span class="pp-num"><span title="Pagine del capitolo aperte almeno una volta">${icon("book")} letto ${x.letto}%</span>${x.Q.length ? `<span>${icon("quiz")} ${x.giuste}/${x.Q.length} giuste</span>` : ""}</span></div>
+            <div class="pp-az">${CP[k.n] ? `<button class="btn btn-sm btn-ghost" data-vai-cap="${k.n}">Leggi · p. ${CP[k.n]}</button>` : ""}${carte ? `<button class="btn btn-sm btn-ghost" data-avvia-fc="c${k.n}">Carte · ${carte}</button>` : ""}${x.Q.length ? `<button class="btn btn-sm btn-ghost" data-avvia-es="c:${k.n}:10">Domande · ${x.Q.length}</button>` : ""}
+              <button class="mp-stato ${ST[x.st][1]}" data-mp="${k.n}" title="Tocca per cambiare lo stato${x.manuale ? " (impostato da te)" : " (calcolato)"}">${ST[x.st][0]}</button></div></li>`; }).join("")}</ul></section>`).join("")}</div>`;
   }
 
-  /* ---------- scheda Note: note ed evidenziazioni della dispensa, per pagina ---------- */
+  /* ---------- v13 · «Riprendi»: una card, un pulsante, la prossima cosa da fare (sopra tutto, nella Panoramica) ---------- */
+  function riprendi(u, c) {
+    const pag = (u.activity.letture || {})[c.slug] || 0, n = pag ? B.capDiPagina(u, c.slug, pag) : 0, Q = B.banca(c.slug), F = fcStato(u, c.slug), t = oggi();
+    const carte = B.mazzo(c.slug, u).filter((k) => F.s[k.id] && F.s[k.id].due <= t).length, err = Q.filter((q) => inErrore(u, q)).length;
+    const letto = n ? B.lettoCap(u, c.slug, n) : 0, qCap = n ? Q.filter((q) => q.cap === n) : [], provate = qCap.filter((q) => B.stat(u, q.id).seen).length;
+    let tit, riga, bott;
+    if (!pag) { tit = `Inizia ${esc(c.title)}`; riga = "Parti dal primo capitolo: lo leggi qui, poi 5 domande per fissarlo."; bott = `<a class="btn btn-white btn-arrow" href="#/app/esami/${c.slug}/dispensa">Inizia a studiare <span class="arr">${icon("arrow")}</span></a>`; }
+    else if (n && letto >= 80 && qCap.length && provate < Math.min(5, qCap.length)) { tit = `Capitolo ${esc(nomeCap(c.slug, n))}: letto`; riga = "Prima di andare avanti, verifica: 5 domande sul capitolo, con la spiegazione."; bott = `<button class="btn btn-white btn-arrow" data-avvia-es="c:${n}:5">Prova 5 domande <span class="arr">${icon("arrow")}</span></button>`; }
+    else { tit = `Riprendi ${esc(c.title)}`; riga = `${n ? `Capitolo ${esc(nomeCap(c.slug, n))} · ` : ""}eri arrivato a pagina ${pag}. Continua la lettura${qCap.length ? ", poi prova 5 domande sul capitolo" : ""}.`; bott = `<a class="btn btn-white btn-arrow" href="#/app/esami/${c.slug}/dispensa">Continua a studiare <span class="arr">${icon("arrow")}</span></a>`; }
+    return `<section class="card navy rp-card"><span class="badge badge-orange">Cosa faccio adesso</span><h2>${tit}</h2><p>${riga}</p>
+      <div class="row rp-az">${bott}${carte ? `<button class="btn btn-sm rp-sec" data-avvia-fc="tutto">${icon("layers")} Ripassa le ${carte} carte di oggi</button>` : ""}${err ? `<button class="btn btn-sm rp-sec" data-avvia-es="errori">${icon("alert")} Recupera ${err === 1 ? "1 errore" : err + " errori"}</button>` : ""}</div></section>`;
+  }
+
+  /* ---------- v13 · progressi credibili: quattro numeri separati e una frase concreta, al posto di «pronto al 72%» ---------- */
+  function progressi(u, c) {
+    const caps = capitoliDi(c.slug), Q = B.banca(c.slug), QM = Object.fromEntries(Q.map((q) => [q.id, q])), F = fcStato(u, c.slug), t = oggi();
+    const affr = caps.filter((k) => statoCap(u, c, k).st !== "").length;
+    const log = ES(u).log.filter((x) => QM[x.id]), rec = log.slice(-20), ok = rec.filter((x) => x.ok).length;
+    const err = Q.filter((q) => inErrore(u, q)).length, scad = B.mazzo(c.slug, u).filter((k) => F.s[k.id] && F.s[k.id].due <= t).length;
+    const sims = ((u.activity.quiz || {}).sessions || []).filter((x) => x.slug === c.slug && (x.mode === "sim" || /simul/i.test(x.modeLabel || "")));
+    const ul = sims[0];
+    // il capitolo più debole: almeno 2 errori nelle ultime 5 risposte
+    const perCap = {}; log.forEach((x) => { const k = QM[x.id].cap; (perCap[k] = perCap[k] || []).push(x.ok); });
+    const debole = Object.entries(perCap).map(([k, l]) => [Number(k), l.slice(-5)]).map(([k, l]) => [k, l.filter((v) => !v).length, l.length]).filter((x) => x[1] >= 2).sort((a, b) => b[1] - a[1])[0];
+    const frase = debole ? `Sul capitolo ${esc(nomeCap(c.slug, debole[0]))} hai sbagliato ${debole[1]} delle ultime ${debole[2]} domande: rileggilo e rifai le domande.`
+      : rec.length >= 5 ? `Nelle ultime ${rec.length} risposte ne hai azzeccate ${ok}: ${ok / rec.length >= 0.8 ? "tieni il ritmo e prova una simulazione." : "rifai gli errori prima di andare avanti."}`
+      : "Ancora poche risposte per dirti dove sei debole: dopo il primo capitolo, prova le sue domande.";
+    const box = (k, v, s2) => `<div class="pg-box"><span class="k">${k}</span><b>${v}</b><span class="s">${s2}</span></div>`;
+    return `<section class="card pg-card"><div class="card-head"><h3>${icon("target")} A che punto sei</h3><span class="small muted">quattro misure separate, non un voto</span></div>
+      <div class="pg-grid">${box("Programma affrontato", `${affr}<small>/${caps.length || "—"}</small>`, "capitoli letti o allenati")}${box("Risultati recenti", rec.length ? `${Math.round((ok / rec.length) * 100)}<small>%</small>` : "—", rec.length ? (rec.length === 1 ? "la tua prima risposta" : `giuste nelle ultime ${rec.length} risposte`) : "nessuna domanda ancora")}
+        ${box("Da consolidare", `${err + scad}`, `${err === 1 ? "1 errore" : err + " errori"} · ${scad === 1 ? "1 carta" : scad + " carte"} in scadenza`)}${box("Simulazioni", ul ? `${ul.correct}<small>/${ul.n}</small>` : "—", ul ? `ultima, ${fmtDate(ul.at || ul.date || new Date().toISOString())}` : "non ancora fatte")}</div>
+      <div class="pg-frase">${icon("info")} <span>${frase}</span>${debole ? `<span class="row" style="gap:6px">${B.capPag(u, c.slug)[debole[0]] ? `<button class="btn btn-sm btn-ghost" data-vai-cap="${debole[0]}">Rileggi</button>` : ""}<button class="btn btn-sm btn-primary" data-avvia-es="c:${debole[0]}:10">Rifai le domande</button></span>` : ""}</div></section>`;
+  }
+
+  /* ---------- v13 · scheda Note: una lista che si filtra per etichetta (Non ho capito · Da ricordare · Da chiedere · Esempio utile) ---------- */
   function note(u, c) {
-    const N = ((u.activity.note || {})[c.slug]) || {}, E = ((u.activity.evid || {})[c.slug]) || {};
-    const pagine = [...new Set(Object.keys(N).concat(Object.keys(E)))].map(Number).sort((a, b) => a - b);
-    if (!pagine.length) return `<div class="card empty">${icon("edit")}<p>Ancora niente. Nella scheda Dispensa evidenzi a colori e scrivi note su ogni pagina: le ritrovi tutte qui.</p><a class="btn btn-primary" style="margin-top:12px" href="#/app/esami/${c.slug}/dispensa">Apri la dispensa</a></div>`;
-    const COL = { g: "giallo", v: "verde", a: "azzurro", r: "rosa" };
-    return `<div class="card"><div class="card-head"><h3>${icon("edit")} Le tue note su ${esc(c.title)}</h3><span class="small muted">${pagine.length} pagine</span></div>
-      <ul class="feed">${pagine.map((p) => `<li><span class="ic">${icon("file")}</span><div><button class="link small" data-vai-pag="${p}">Pagina ${p} →</button>
-        ${(E[p] || []).length ? `<span class="tiny muted"> · ${E[p].length} evidenziazioni (${[...new Set(E[p].map((x) => COL[x.c] || x.c))].join(", ")})</span>` : ""}
-        ${(N[p] || []).map((x) => `<p class="small" style="margin-top:4px">${esc(x.testo)}</p>`).join("")}</div></li>`).join("")}</ul></div>`;
+    const N = ((u.activity.note || {})[c.slug]) || {}, E = ((u.activity.evid || {})[c.slug]) || {}, P = (u.activity.pref = u.activity.pref || {}), filtro = P.noteFiltro || "";
+    const tutte = Object.entries(N).flatMap(([p, l]) => l.map((x) => Object.assign({ p: Number(p) }, x))).sort((a, b) => a.p - b.p);
+    const nEv = Object.values(E).reduce((n, l) => n + l.length, 0);
+    if (!tutte.length && !nEv) return `<div class="card empty">${icon("edit")}<p>Ancora niente. Nella Dispensa selezioni una frase e la evidenzi, la commenti o la trasformi in flashcard: qui le ritrovi, filtrate per etichetta.</p><a class="btn btn-primary" style="margin-top:12px" href="#/app/esami/${c.slug}/dispensa">Apri la dispensa</a></div>`;
+    const conta = (k) => tutte.filter((x) => (k ? x.tag === k : true) && !(k === "dubbio" && x.risolto)).length;
+    const lista = tutte.filter((x) => (filtro ? x.tag === filtro : true) && !(filtro === "dubbio" && x.risolto));
+    return `<div class="card"><div class="card-head"><h3>${icon("edit")} Le tue note su ${esc(c.title)}</h3><span class="small muted">${tutte.length} note · ${nEv} evidenziazioni</span></div>
+      <div class="chips nt-filtri"><button class="chip ${filtro ? "" : "on"}" data-nt-f="">Tutte · ${conta("")}</button>${UL.NOTE_TAG.map(([k, t]) => `<button class="chip t-${k} ${filtro === k ? "on" : ""}" data-nt-f="${k}">${k === "dubbio" ? "Dubbi ancora aperti" : t} · ${conta(k)}</button>`).join("")}</div>
+      <ul class="nt-lista">${lista.map((x) => `<li class="${x.risolto ? "risolto" : ""}"><div class="nt-top"><button class="link small" data-vai-pag="${x.p}">p. ${x.p}${B.capDiPagina(u, c.slug, x.p) ? " · cap. " + B.capDiPagina(u, c.slug, x.p) : ""} →</button>${UL.pillTag(x.tag)}</div>
+        ${x.cit ? `<q class="lt-cit">${esc(x.cit.length > 160 ? x.cit.slice(0, 160) + "…" : x.cit)}</q>` : ""}<p class="small">${esc(x.testo)}</p>
+        ${x.tag === "dubbio" ? `<button class="btn btn-sm ${x.risolto ? "btn-ghost" : "btn-primary"}" data-nt-ok="${x.p}|${x.id}">${x.risolto ? "Riapri il dubbio" : "Ho capito: risolto"}</button>` : ""}</li>`).join("") || '<li class="small muted">Nessuna nota con questa etichetta.</li>'}</ul></div>`;
   }
 
   /* ---------- «Pronto per l'esame?» (v10, parte del valore di Plus e della Completa): esercizi 50% · flashcard 30% · mappa 20% ---------- */
@@ -207,7 +263,7 @@
 
   /* ---------- la macrosezione ---------- */
   // v10: la simulazione è dentro «Esercizi» (una scheda in meno)
-  const SCHEDE = [["panoramica", "Panoramica", "home"], ["dispensa", "Dispensa", "book"], ["flashcard", "Flashcard", "layers"], ["esercizi", "Esercizi e simulazioni", "quiz"], ["mappa", "Mappa del corso", "map"], ["note", "Note", "edit"]];
+  const SCHEDE = [["panoramica", "Panoramica", "home"], ["mappa", "Programma e progressi", "map"], ["dispensa", "Dispensa", "book"], ["esercizi", "Esercizi e simulazioni", "quiz"], ["flashcard", "Flashcard", "layers"], ["note", "Note", "edit"]];
   const SENZA = (c) => `<div class="card section">${U.lock("Con la dispensa completa di " + c.title, `Dispensa da leggere e annotare, flashcard, esercizi per capitolo e simulazioni: ${B.eur(B.prezzo("completa", c))} (invece di ${B.eur(B.prezzoPieno("completa"))}) o nel pacchetto del tuo semestre`, `data-sblocca="${c.slug}"`)}</div>`;
   UL.views.studioU = {
     title: (p) => (p[0] && B.course(p[0]) ? B.course(p[0]).title : "I miei esami"),
@@ -249,7 +305,7 @@
           <span class="badge ${own ? "badge-green" : lv === "simulazione" ? "badge-yellow" : "badge-soft"}">${B.gratisPerTutti(c.slug) ? "Gratis per tutti" : own ? "Dispensa completa" : lv === "simulazione" ? "Simulazione" : "Solo anteprima"}</span></div>
         <div class="tabs st-tabs" style="overflow-x:auto">${SCHEDE.map(([k, l, i]) => `<a href="#/app/esami/${c.slug}/${k}" class="${k === tab ? "on" : ""}">${icon(!own && ["dispensa", "flashcard", "esercizi", "note"].includes(k) ? "lock" : i)} ${l}</a>`).join("")}</div>`;
       let body;
-      if (tab === "panoramica") body = (own ? pronto(u, c) : "") + UL.views.esamiB.render(u, [c.slug]).replace(/^\s*<a href="#\/app\/esami"[^>]*>[^<]*<\/a>/, "");
+      if (tab === "panoramica") body = (own ? riprendi(u, c) + progressi(u, c) : "") + UL.views.esamiB.render(u, [c.slug]).replace(/^\s*<a href="#\/app\/esami"[^>]*>[^<]*<\/a>/, "");
       else if (tab === "dispensa") body = own ? UL.views.lettoreU.render(u, [c.slug]).replace(/<a href="#\/app\/materiali"[\s\S]*?<div class="lt-wrap/, '<div class="lt-wrap') : SENZA(c);
       else if (tab === "flashcard") body = own ? flashcard(u, c) : SENZA(c);
       else if (tab === "esercizi") body = own ? esercizi(u, c) : (B.ownsSimulazione(u, c.slug) || B.hasQuiz(c.slug) ? UL.views.praticaB.render(u, [c.slug]).replace(/<a href="#\/app\/esercitazioni"[^>]*>[^<]*<\/a>/, "") : "") + SENZA(c);
@@ -267,7 +323,13 @@
       else if (tab === "flashcard" && own) montaFlashcard(root, u, c);
       else if (tab === "esercizi" && own) montaEsercizi(root, u, c);
       else if (tab === "esercizi" && !own) UL.views.praticaB.mount && UL.views.praticaB.mount(root, u, [c.slug]);
-      root.querySelectorAll("[data-mp]").forEach((b) => b.addEventListener("click", () => { const M = (u.activity.mappa = u.activity.mappa || {}), m = (M[c.slug] = M[c.slug] || {}), giro = { "": "corso", corso: "fatto", fatto: "" }; m[b.dataset.mp] = giro[m[b.dataset.mp] || ""]; UL.store.save(); UL.app.refresh(); }));
+      root.querySelectorAll("[data-mp]").forEach((b) => b.addEventListener("click", () => { const M = (u.activity.mappa = u.activity.mappa || {}), m = (M[c.slug] = M[c.slug] || {}), giro = { "": "corso", corso: "fatto", fatto: "" }; const k = capitoliDi(c.slug).find((x) => x.n === Number(b.dataset.mp)), ora = k ? statoCap(u, c, k).st : (m[b.dataset.mp] || ""); m[b.dataset.mp] = giro[ora] || ""; if (!m[b.dataset.mp]) delete m[b.dataset.mp]; UL.store.save(); UL.app.refresh(); }));
+      const vaiTab = (t) => { const h = `#/app/esami/${c.slug}/${t}`; if (location.hash === h) UL.app.refresh(); else UL.app.go(h); };
+      root.querySelectorAll("[data-avvia-es]").forEach((b) => b.addEventListener("click", () => { u.activity.esAvvia = b.dataset.avviaEs; UL.store.save(); vaiTab("esercizi"); }));
+      root.querySelectorAll("[data-avvia-fc]").forEach((b) => b.addEventListener("click", () => { u.activity.fcAvvia = b.dataset.avviaFc; UL.store.save(); vaiTab("flashcard"); }));
+      root.querySelectorAll("[data-vai-cap]").forEach((b) => b.addEventListener("click", () => { const p = B.capPag(u, c.slug)[b.dataset.vaiCap]; if (!p) return; (u.activity.letture = u.activity.letture || {})[c.slug] = p; UL.store.save(); vaiTab("dispensa"); }));
+      root.querySelectorAll("[data-nt-f]").forEach((b) => b.addEventListener("click", () => { (u.activity.pref = u.activity.pref || {}).noteFiltro = b.dataset.ntF; UL.store.save(); UL.app.refresh(); }));
+      root.querySelectorAll("[data-nt-ok]").forEach((b) => b.addEventListener("click", () => { const [p, id] = b.dataset.ntOk.split("|"), x = (((u.activity.note || {})[c.slug] || {})[p] || []).find((y) => y.id === id); if (x) { x.risolto = !x.risolto; UL.store.save(); UL.app.refresh(); } }));
       root.querySelectorAll("[data-vai-pag]").forEach((b) => b.addEventListener("click", () => { (u.activity.letture = u.activity.letture || {})[c.slug] = Number(b.dataset.vaiPag); UL.store.save(); UL.app.go(`#/app/esami/${c.slug}/dispensa`); }));
     },
   };
