@@ -36,7 +36,8 @@
   };
 
   /* ---------- 3 · primo accesso (dopo la registrazione): 6 passi, l'ultimo è la scelta del piano ---------- */
-  const PASSI = ["Area di studio", "Ateneo, corso e anno", "Da dove partire", "Dopo la laurea", "Ritmo e avvisi", "Il tuo piano"];
+  // v11 (commenti del 8/10): niente ateneo (è Firenze), esami per anno a scomparsa, via «Ritmo e avvisi» (non serviva), piano consigliato dagli esami scelti
+  const PASSI = ["Area di studio", "Corso e anno", "I tuoi esami", "Dopo la laurea", "Il primo esame", "Il tuo piano"];
   UL.views.onboardingU = {
     title: "Primo accesso",
     render: () => `
@@ -46,7 +47,7 @@
     mount(root, user) {
       const p = user.profile;
       // stato del wizard in memoria (si perde solo ricaricando la pagina)
-      const o = U.onb || (U.onb = { n: 0, area: p.area || "economia", ateneo: p.ateneo || "unifi", cds: p.cds || "EA", anno: p.anno || "1", corso: p.corso || "", esami: new Set(user.activity.exams.map((e) => e.slug)), dopo: p.dopoLaurea || "", minuti: 60, avvisi: true, novita: false, attesa: "", piano: "free", sem: "2" });
+      const o = U.onb || (U.onb = { n: 0, area: p.area || "economia", ateneo: p.ateneo || "unifi", cds: p.cds || "EA", anno: p.anno || "1", corso: p.corso || "", esami: new Set(user.activity.exams.map((e) => e.slug)), extra: (p.esamiManuali || []).slice(), sessione: p.primaSessione || "", dopo: p.dopoLaurea || "", minuti: 60, avvisi: true, novita: false, attesa: "", piano: "free", sem: "2" });
       const box = root.querySelector("[data-onb]");
       const a = () => AREE.find((x) => x.slug === o.area);
       const unifi = () => o.ateneo === "unifi";
@@ -56,37 +57,42 @@
         if (n === 0) body = `<h2 style="margin:10px 0 6px">Ciao ${esc(p.nome)}, cosa studi?</h2><p class="muted" style="margin-bottom:18px">L'area decide materiali, corsi e strumenti. Puoi cambiarla dal profilo.</p>
           <div class="stack" style="gap:10px">${AREE.map((x) => `<button class="mode ${o.area === x.slug ? "focus" : ""}" data-area="${x.slug}" style="text-align:left;cursor:pointer"><div class="row between"><h3>${esc(x.nome)}</h3><span class="badge ${x.stato === "attiva" ? "badge-green" : x.stato === "in_arrivo" ? "badge-yellow" : "badge-soft"}">${x.stato === "attiva" ? "Attiva" : x.stato === "in_arrivo" ? "In arrivo" : "Dicci quale"}</span></div>
             <p>${x.stato === "attiva" ? esc(x.corsi.join(" · ")) : x.stato === "in_arrivo" ? "Ti registri ora e ti avvisiamo quando parte: intanto esami, libretto e strumenti per tutti." : "Le richieste decidono le prossime aree."}</p></button>`).join("")}</div>`;
-        if (n === 1) body = `<h2 style="margin:10px 0 6px">Ateneo, corso e anno</h2><p class="muted" style="margin-bottom:18px">Per filtrare esami e materiali del tuo anno.</p>
-          <div class="grid-2"><div class="field"><label>Ateneo</label><select class="select" data-k="ateneo"><option value="unifi" ${unifi() ? "selected" : ""}>Università di Firenze</option><option value="altro" ${unifi() ? "" : "selected"}>Altro ateneo (in arrivo)</option></select></div>
-            <div class="field"><label>Corso</label>${o.area === "economia" && unifi() ? `<select class="select" data-k="cds"><option value="EA" ${o.cds === "EA" ? "selected" : ""}>Economia Aziendale</option><option value="EC" ${o.cds === "EC" ? "selected" : ""}>Economia e Commercio</option></select>` : `<input class="input" data-k="corso" value="${esc(o.corso || a().corsi[0] || "")}">`}</div>
-            <div class="field"><label>Anno</label><select class="select" data-k="anno">${[["1", "I anno"], ["2", "II anno"], ["3", "III anno"], ["FC", "Fuori corso"]].map(([v, l]) => `<option value="${v}" ${o.anno === v ? "selected" : ""}>${l}</option>`).join("")}</select></div></div>
-          ${unifi() ? "" : `<div class="banner" style="margin-top:14px">${icon("info")}<span>Oggi UniLink copre UniFi. Gli altri atenei sono una proposta in valutazione (D12): ti registri lo stesso e usi gli strumenti per tutti.</span></div>`}`;
+        if (n === 1) { o.ateneo = "unifi"; body = `<h2 style="margin:10px 0 6px">Corso e anno</h2><p class="muted" style="margin-bottom:18px">Università di Firenze. Ci servono per mostrarti i tuoi esami.</p>
+          <div class="grid-2"><div class="field"><label>Corso</label>${o.area === "economia" ? `<select class="select" data-k="cds"><option value="EA" ${o.cds === "EA" ? "selected" : ""}>Economia Aziendale</option><option value="EC" ${o.cds === "EC" ? "selected" : ""}>Economia e Commercio</option></select>` : `<input class="input" data-k="corso" value="${esc(o.corso || a().corsi[0] || "")}">`}</div>
+            <div class="field"><label>Anno</label><select class="select" data-k="anno">${[["1", "I anno"], ["2", "II anno"], ["3", "III anno"], ["FC", "Fuori corso"]].map(([v, l]) => `<option value="${v}" ${o.anno === v ? "selected" : ""}>${l}</option>`).join("")}</select></div></div>`; }
         if (n === 2) {
           if (a().stato !== "attiva") body = `<h2 style="margin:10px 0 6px">${esc(a().nome)} sta arrivando</h2><p class="muted" style="margin-bottom:18px">Non abbiamo ancora materiali per ${esc(a().nome)}: ti mettiamo in lista d'attesa. È il numero che decide quale area parte prima.</p>
             <div class="field"><label>${esc(a().domanda || "A che anno sei?")}</label><input class="input" data-k="attesa" value="${esc(o.attesa)}"></div>`;
           else { const y = Math.min(3, Math.max(1, Number(o.anno) || 1));
-            body = `<h2 style="margin:10px 0 6px">Quali esami stai preparando?</h2><p class="muted" style="margin-bottom:18px">Scegli gli esami del tuo anno: la dashboard partirà da questi.</p>
-            <div class="chips">${B.courses().filter((c) => c.anno === y && c.cds.includes(o.cds)).map((c) => `<span class="chip ${o.esami.has(c.slug) ? "on" : ""}" data-es="${c.slug}">${esc(c.title)}${B.hasQuiz(c.slug) ? ` ${icon("quiz")}` : ""}</span>`).join("")}</div>`; }
+            body = `<h2 style="margin:10px 0 6px">Quali esami stai preparando?</h2><p class="muted" style="margin-bottom:14px">Tocca quelli che vuoi preparare: ti diciamo noi se conviene la dispensa singola o il pacchetto.</p>
+            ${[1, 2, 3].map((yy) => { const L = B.courses().filter((c) => c.anno === yy && c.cds.includes(o.cds)), k = L.filter((c) => o.esami.has(c.slug)).length;
+              return `<details class="onb-anno" ${yy === y ? "open" : ""}><summary><b>${UL.ui.ROMAN[yy]} anno</b><span class="small muted">${L.length} esami${k ? ` · <b style="color:var(--orange);font-weight:400">${k} scelti</b>` : ""}</span></summary>
+                <div class="chips">${L.map((c) => `<span class="chip ${o.esami.has(c.slug) ? "on" : ""}" data-es="${c.slug}">${esc(c.title)}</span>`).join("")}</div></details>`; }).join("")}
+            <div class="onb-extra"><label class="small muted" for="onb-x">Manca un esame? Scrivilo</label><div class="row"><input class="input" id="onb-x" placeholder="es. Diritto del lavoro" style="max-width:320px"><button class="btn btn-ghost btn-sm" data-xadd>Aggiungi</button></div>
+              ${o.extra.length ? `<div class="chips" style="margin-top:8px">${o.extra.map((x, i) => `<span class="chip on">${esc(x)} <button class="link" data-xdel="${i}" aria-label="Togli">✕</button></span>`).join("")}</div>` : ""}</div>`; }
         }
         if (n === 3) body = `<h2 style="margin:10px 0 6px">E dopo la laurea?</h2><p class="muted" style="margin-bottom:18px">Serve a «Il mio percorso» per proporti magistrali, Erasmus e i prossimi passi. Puoi non saperlo ancora.</p>
           <div class="chips">${Object.entries(UL.ui.DOPO).map(([k, l]) => `<span class="chip ${o.dopo === k ? "on" : ""}" data-dopo="${k}">${esc(l)}</span>`).join("")}</div>`;
-        if (n === 4) body = `<h2 style="margin:10px 0 6px">Il tuo ritmo</h2><p class="muted" style="margin-bottom:18px">Per proporti le sessioni giuste. Niente di vincolante.</p>
-          <div class="field"><label>Quanto tempo al giorno?</label><div class="seg">${[30, 45, 60, 90].map((m) => `<button class="${o.minuti === m ? "on" : ""}" data-min="${m}">${m} min</button>`).join("")}</div></div>
-          <label class="check" style="margin-top:16px"><input type="checkbox" data-k="avvisi" ${o.avvisi ? "checked" : ""}> Email quando esce o si aggiorna una dispensa che segui</label>
-          <label class="check" style="margin-top:8px"><input type="checkbox" data-k="novita" ${o.novita ? "checked" : ""}> Email con le novità di UniLink (al massimo una al mese)</label>`;
+        if (n === 4) body = `<h2 style="margin:10px 0 6px">Quando dai il primo esame?</h2><p class="muted" style="margin-bottom:18px">Così ti ricordiamo cosa fare al momento giusto.</p>
+          <div class="chips">${[["inverno", "Sessione invernale · gen–feb"], ["estate", "Sessione estiva · giu–lug"], ["autunno", "Sessione autunnale · set"], ["nonso", "Non lo so ancora"]].map(([k, l]) => `<span class="chip ${o.sessione === k ? "on" : ""}" data-ses="${k}">${l}</span>`).join("")}</div>`;
         if (n === 5) {
-          const anno = Math.min(3, Math.max(1, Number(o.anno) || 1));
-          const semOk = a().stato === "attiva" && unifi();
-          body = `<h2 style="margin:10px 0 6px">Come vuoi iniziare?</h2><p class="muted" style="margin-bottom:18px">Si parte gratis. Puoi anche prendere subito un pacchetto o Plus: lo cambi quando vuoi da «Abbonamento». Nessun rinnovo automatico. ${esc(UL.PIANI.stato)}.</p>
-          <div class="pricing three">
-            ${[["free", "Gratuito", "0 €", "per sempre", ["Schede, quiz di prova, libretto e strumenti", "Economia Aziendale completa, gratis per tutti", "Metodo standard del Planner"]],
-              ["semester", `Pacchetto ${ROMAN[anno]} anno · ${ROMAN[o.sem]} sem.`, B.eur(B.prezzo("semester", null, Math.min(4, B.semesterCourses(o.cds, anno, o.sem).length))), "prezzo di lancio", B.semesterCourses(o.cds, anno, o.sem).slice(0, 4).map((c) => c.title)],
-              ["plus", "UniLink Plus", B.eur(B.PRICES.plus), "una tantum · fino a fine sessione", B.plusItem().incl.slice(0, 4)]].filter(([k]) => k !== "semester" || (semOk && B.semesterCourses(o.cds, anno, o.sem).length >= 3)).map(([k, t, pr, s, incl]) => `
-              <div class="plan ${o.piano === k ? "hot" : ""}" data-hot="Scelto"><h3>${esc(t)}</h3><div class="price">${pr} <small>${esc(s)}</small></div>
-                <ul>${incl.slice(0, 5).map((x) => `<li>${icon("check")}${esc(x)}</li>`).join("")}</ul>
-                ${k === "semester" ? `<div class="seg" style="align-self:flex-start">${[1, 2].map((v) => `<button class="${String(o.sem) === String(v) ? "on" : ""}" data-sem="${v}">${ROMAN[v]} sem.</button>`).join("")}</div>` : ""}
-                <button class="btn ${o.piano === k ? "btn-orange" : "btn-ghost"}" data-piano="${k}">${o.piano === k ? "Scelto" : "Scegli"}</button></div>`).join("")}
-          </div>${semOk ? "" : `<div class="banner" style="margin-top:16px">${icon("info")}<span>Il pacchetto semestre riguarda gli esami di Economia UniFi: per te conviene partire gratis, e passare a un pacchetto quando la tua area o il tuo ateneo saranno attivi.</span></div>`}`;
+          // consiglio dal numero di esami scelti nello stesso semestre del percorso: 3 o più → pacchetto; meno → dispense singole
+          const scelti = B.courses().filter((c) => o.esami.has(c.slug) && !B.gratisPerTutti(c.slug)), gruppi = {};
+          scelti.forEach((c) => { const k = c.anno + "|" + c.sem; (gruppi[k] = gruppi[k] || []).push(c); });
+          const top = Object.entries(gruppi).sort((x, y) => y[1].length - x[1].length)[0];
+          let rec = null;
+          if (top) { const [an, se] = top[0].split("|").map(Number), tutti = B.semesterCourses(o.cds, an, se, p.curriculum || ""), n3 = Math.min(UL.PIANI.maxEsamiPacchetto || 4, tutti.length);
+            const sing = scelti.length * B.prezzo("completa"), pac = n3 >= 3 ? B.prezzo("semester", null, n3) : null;
+            rec = pac != null && top[1].length >= 2 && pac <= sing + 6 ? { tipo: "semester", anno: an, sem: se, titolo: `Pacchetto ${UL.ui.ROMAN[an]} anno · ${UL.ui.ROMAN[se]} sem.`, prezzo: pac, perche: `Hai scelto ${top[1].length} esami di questo semestre: con il pacchetto hai le ${n3} dispense complete a ${B.eur(pac)} invece di ${B.eur(n3 * B.prezzo("completa"))}.`, incl: tutti.slice(0, n3).map((c) => c.title) }
+              : { tipo: "singole", titolo: scelti.length === 1 ? "La dispensa del tuo esame" : `Le dispense dei tuoi ${scelti.length} esami`, prezzo: sing, perche: `Per ${scelti.length === 1 ? "un esame" : "pochi esami"} conviene la dispensa singola (${B.eur(B.prezzo("completa"))} l'una) invece del pacchetto.`, incl: scelti.map((c) => c.title) }; }
+          if (rec && o.piano === "free" && !o.pianoScelto) o.piano = rec.tipo;
+          const card = (k, t, pr, sub, incl, hot) => `<div class="plan ${o.piano === k ? "hot" : ""}" data-hot="${hot ? "Consigliato per te" : "Scelto"}"><h3>${esc(t)}</h3><div class="price">${pr} <small>${esc(sub)}</small></div>
+            <ul>${incl.slice(0, 4).map((x) => `<li>${icon("check")}${esc(x)}</li>`).join("")}</ul><button class="btn ${o.piano === k ? "btn-orange" : "btn-ghost"}" data-piano="${k}">${o.piano === k ? "Scelto" : "Scegli"}</button></div>`;
+          body = `<h2 style="margin:10px 0 6px">Come vuoi iniziare?</h2><p class="muted" style="margin-bottom:12px">${rec ? esc(rec.perche) : "Non hai scelto esami: parti gratis, Economia Aziendale è completa per tutti."}</p>
+          <div class="pricing three">${card("free", "Gratuito", "0 €", "per sempre", ["Schede, quiz di prova, libretto e strumenti", "Economia Aziendale completa", "Il giudizio «ci stai nei tempi?»"])}
+            ${rec ? card(rec.tipo, rec.titolo, B.eur(rec.prezzo), "prezzo di lancio", rec.incl, true) : ""}
+            ${card("plus", "UniLink Plus", B.eur(B.PRICES.plus), "fino a fine sessione", B.plusItem().incl.slice(0, 3))}</div>`;
+          o.rec = rec;
         }
         box.innerHTML = `<div class="row between"><span class="sq-label">Primo accesso · passo ${n + 1} di ${PASSI.length} · ${PASSI[n]}</span>${n ? `<a href="#" class="small display" data-back>← Indietro</a>` : ""}</div>
           <div class="steps" style="margin-top:14px">${PASSI.map((_, i) => `<i class="${i <= n ? "on" : ""}"></i>`).join("")}</div>${body}
@@ -97,22 +103,26 @@
       const read = () => box.querySelectorAll("[data-k]").forEach((el) => { o[el.dataset.k] = el.type === "checkbox" ? el.checked : el.value; });
       const finish = () => {
         const eco = o.area === "economia" && unifi();
-        Object.assign(p, { area: o.area, ateneo: o.ateneo, cds: eco ? o.cds : "", corso: eco ? "" : o.corso, anno: o.anno, dopoLaurea: o.dopo, newsletter: !!o.novita, colore: p.colore || U.COLORI[(p.nome.length + p.cognome.length) % U.COLORI.length] });
+        Object.assign(p, { area: o.area, ateneo: "unifi", cds: eco ? o.cds : "", corso: eco ? "" : o.corso, anno: o.anno, dopoLaurea: o.dopo, esamiManuali: o.extra.slice(), primaSessione: o.sessione, newsletter: !!o.novita, colore: p.colore || U.COLORI[(p.nome.length + p.cognome.length) % U.COLORI.length] });
         if (eco) o.esami.forEach((s) => user.activity.exams.some((e) => e.slug === s) || user.activity.exams.push({ slug: s, partizione: "", appello: "", obiettivo: "", status: "doing" }));
         if (o.attesa) user.activity.waitlist[o.area] = o.attesa;
         const done = () => { UL.store.markOnboarded(user); B.track("registrazione"); U.onb = null; UL.ui.toast("Il tuo spazio è pronto"); UL.app.go("#/app/dashboard"); };
         if (o.piano === "free") return done();
-        const anno = Math.min(3, Math.max(1, Number(o.anno) || 1));
-        B.checkout(user, o.piano === "plus" ? B.plusItem(user) : B.semItem(o.cds, anno, o.sem), done);
+        if (o.piano === "singole") { const c0 = B.courses().find((c) => o.esami.has(c.slug) && !B.gratisPerTutti(c.slug)); return c0 ? B.checkout(user, B.completaItem(c0), () => { done(); }) : done(); }
+        if (o.piano === "semester" && o.rec) return B.checkout(user, B.semItem(o.cds, o.rec.anno, o.rec.sem, p.curriculum || ""), done);
+        B.checkout(user, B.plusItem(user), done);
       };
       function bind() {
         box.querySelectorAll("[data-area]").forEach((b) => b.addEventListener("click", () => { o.area = b.dataset.area; if (o.area !== "economia" && o.piano === "semester") o.piano = "free"; draw(); }));
         box.querySelectorAll('[data-k="ateneo"]').forEach((s) => s.addEventListener("change", () => { read(); if (!unifi() && o.piano === "semester") o.piano = "free"; draw(); }));
-        box.querySelectorAll("[data-es]").forEach((b) => b.addEventListener("click", () => { o.esami.has(b.dataset.es) ? o.esami.delete(b.dataset.es) : o.esami.add(b.dataset.es); b.classList.toggle("on"); }));
+        box.querySelectorAll("[data-es]").forEach((b) => b.addEventListener("click", () => { o.esami.has(b.dataset.es) ? o.esami.delete(b.dataset.es) : o.esami.add(b.dataset.es); o.pianoScelto = false; o.piano = "free"; b.classList.toggle("on"); const d = b.closest("details"), k = d && d.querySelectorAll(".chip.on").length; }));
         box.querySelectorAll("[data-dopo]").forEach((b) => b.addEventListener("click", () => { o.dopo = b.dataset.dopo; draw(); }));
         box.querySelectorAll("[data-min]").forEach((b) => b.addEventListener("click", () => { read(); o.minuti = Number(b.dataset.min); draw(); }));
         box.querySelectorAll("[data-sem]").forEach((b) => b.addEventListener("click", () => { o.sem = b.dataset.sem; o.piano = "semester"; draw(); }));
-        box.querySelectorAll("[data-piano]").forEach((b) => b.addEventListener("click", () => { o.piano = b.dataset.piano; draw(); }));
+        box.querySelectorAll("[data-piano]").forEach((b) => b.addEventListener("click", () => { o.piano = b.dataset.piano; o.pianoScelto = true; draw(); }));
+        box.querySelectorAll("[data-ses]").forEach((b) => b.addEventListener("click", () => { o.sessione = b.dataset.ses; draw(); }));
+        const xa = box.querySelector("[data-xadd]"); xa && xa.addEventListener("click", () => { const v = box.querySelector("#onb-x").value.trim(); if (v) { o.extra.push(v); draw(); } });
+        box.querySelectorAll("[data-xdel]").forEach((b) => b.addEventListener("click", () => { o.extra.splice(Number(b.dataset.xdel), 1); draw(); }));
         const back = box.querySelector("[data-back]"); back && back.addEventListener("click", (e) => { e.preventDefault(); read(); o.n--; draw(); });
         box.querySelector("[data-skip]").addEventListener("click", (e) => { e.preventDefault(); if (o.n < PASSI.length - 1) { o.n++; draw(); } });
         box.querySelector("[data-next]").addEventListener("click", () => { read(); if (o.n < PASSI.length - 1) { o.n++; draw(); } else finish(); });

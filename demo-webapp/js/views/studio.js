@@ -250,7 +250,7 @@
         <div class="tabs st-tabs" style="overflow-x:auto">${SCHEDE.map(([k, l, i]) => `<a href="#/app/esami/${c.slug}/${k}" class="${k === tab ? "on" : ""}">${icon(!own && ["dispensa", "flashcard", "esercizi", "note"].includes(k) ? "lock" : i)} ${l}</a>`).join("")}</div>`;
       let body;
       if (tab === "panoramica") body = (own ? pronto(u, c) : "") + UL.views.esamiB.render(u, [c.slug]).replace(/^\s*<a href="#\/app\/esami"[^>]*>[^<]*<\/a>/, "");
-      else if (tab === "dispensa") body = own ? UL.views.lettoreU.render(u, [c.slug]).replace(/<a href="#\/app\/materiali"[\s\S]*?<div class="lt-wrap"/, '<div class="lt-wrap"') : SENZA(c);
+      else if (tab === "dispensa") body = own ? UL.views.lettoreU.render(u, [c.slug]).replace(/<a href="#\/app\/materiali"[\s\S]*?<div class="lt-wrap/, '<div class="lt-wrap') : SENZA(c);
       else if (tab === "flashcard") body = own ? flashcard(u, c) : SENZA(c);
       else if (tab === "esercizi") body = own ? esercizi(u, c) : (B.ownsSimulazione(u, c.slug) || B.hasQuiz(c.slug) ? UL.views.praticaB.render(u, [c.slug]).replace(/<a href="#\/app\/esercitazioni"[^>]*>[^<]*<\/a>/, "") : "") + SENZA(c);
       else if (tab === "mappa") body = mappa(u, c);

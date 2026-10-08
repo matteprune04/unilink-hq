@@ -275,3 +275,42 @@ kbd { font-size: 10.5px; border: 1px solid var(--line); border-radius: 5px; padd
 .ul-tools .tl-l { font-size: 15.5px; } .ul-tools .tl-k { font-size: 15px; } .ul-tools .tl-nota { font-size: 14px; }
 @media (max-width: 980px) { .lt-wrap { grid-template-columns: 1fr; } .es-scelte, .me-offerta > div { grid-template-columns: 1fr 1fr; } .mp-testa { grid-template-columns: 1fr; } }
 @media (max-width: 700px) { .es-scelte, .me-offerta > div { grid-template-columns: 1fr; } .mp-lista li { grid-template-columns: 1fr auto; } .mp-lista li .es-bar { grid-column: 1 / -1; grid-row: 2; } .es-lista li { grid-template-columns: 1fr auto; } .es-lista .es-bar { display: none; } }
+
+/* ===================== v11 · UNA SCALA SOLA DI GRANDEZZE (commento 5 del 8/10: armonia testo/riquadri su PC e telefono) =====================
+   Titolo di pagina 34 · titolo di sezione 22 · titolo di card 18 · testo 15,5 · testo piccolo 13,5. Riquadri: padding 20 (16 su telefono). */
+:root { --t-h1: clamp(26px, 2.6vw, 34px); --t-h2: clamp(19px, 1.8vw, 22px); --t-h3: 17.5px; --t-body: 15.5px; --t-small: 13.5px; --pad: 20px; }
+body { font-size: var(--t-body); line-height: 1.55; }
+h1, .page-head h1, .st-testa h1 { font-size: var(--t-h1); }
+h2, .st-corpo h2, .me-h { font-size: var(--t-h2); }
+h3, .st-corpo h3, .me-card h3, .card-head h3, .mode h3, .plan h3 { font-size: var(--t-h3); }
+.lead, .page-head p.lead { font-size: 16px; line-height: 1.55; }
+.small, .card p, .me-card p { font-size: var(--t-small); }
+.card, .me-card, .mode, .stat, .es-scelta { padding: var(--pad); }
+.page-head { margin-bottom: 18px; } .page-head .eyebrow { font-size: 12.5px; }
+.stat .v { font-size: clamp(24px, 2.4vw, 30px); }
+.exam-hero h1 { font-size: var(--t-h1); }
+.quiz-q { font-size: 18px; }
+@media (max-width: 700px) { :root { --pad: 16px; --t-body: 15px; } .tabs a { font-size: 14px; padding: 10px 12px; } }
+
+/* ===================== v11 · lettore: la pagina intera nello schermo, note a scomparsa, schermo intero ===================== */
+.lt-wrap { grid-template-columns: minmax(0, 1fr) 320px; }
+.lt-wrap.note-chiuse { grid-template-columns: minmax(0, 1fr); } .lt-wrap.note-chiuse .lt-note { display: none; }
+.lt-main { padding: 10px 12px 12px; }
+.lt-bar { gap: 6px; padding: 0 2px 8px; }
+.lt-ind { width: auto; max-width: 220px; padding: 6px 10px; min-height: 0; font-size: 13.5px; }
+.lt-pp { white-space: nowrap; } .lt-num { width: 58px; padding: 5px 6px; }
+.lt-bar .btn-sm { padding: 6px 12px; font-size: 13px; } .lt-bar .cnt { background: var(--beige); border-radius: 99px; padding: 0 7px; font-size: 12px; margin-left: 4px; }
+.lt-avanz { height: 3px; background: var(--beige); border-radius: 99px; margin: 0 2px 8px; } .lt-avanz i { display: block; height: 100%; width: 0; background: var(--orange); border-radius: 99px; transition: width .2s; }
+.lt-pagina { min-height: 0; overflow: hidden; background: var(--cream); padding: 8px 0 4px; }
+.lt-wrap.lt-focus { position: fixed; inset: 0; z-index: 8500; background: #2b2f38; margin: 0; grid-template-columns: minmax(0, 1fr) 320px; padding: 10px; gap: 10px; }
+.lt-wrap.lt-focus.note-chiuse { grid-template-columns: minmax(0, 1fr); }
+.lt-wrap.lt-focus .lt-main { background: #2b2f38; box-shadow: none; } .lt-wrap.lt-focus .lt-pagina { background: transparent; }
+.lt-wrap.lt-focus .lt-bar { background: var(--white); border-radius: 14px; padding: 6px 8px; } .lt-wrap.lt-focus .lt-wm { color: rgba(255,255,255,.55); }
+.lt-wrap.lt-focus .lt-note { max-height: calc(100vh - 20px); overflow: auto; }
+@media (max-width: 980px) { .lt-wrap, .lt-wrap.lt-focus { grid-template-columns: 1fr; } .lt-bar .lt-colori { order: 9; } }
+/* primo accesso: esami per anno a scomparsa */
+.onb-anno { border: 1.5px solid var(--line); border-radius: 14px; padding: 10px 14px; margin-bottom: 8px; background: var(--white); }
+.onb-anno summary { cursor: pointer; display: flex; justify-content: space-between; gap: 10px; list-style: none; } .onb-anno summary b { font-family: var(--font-display); font-weight: 400; color: var(--navy); }
+.onb-anno .chips { margin-top: 10px; } .onb-extra { margin-top: 12px; display: grid; gap: 6px; }
+/* v11 · card del primo accesso: prezzo e nota su righe pulite */
+.onb .plan h3, .plan h3 { line-height: 1.25; } .plan .price small { display: block; margin-top: 2px; }
