@@ -4,6 +4,21 @@
    "id": "landing",
    "versioni": [
     {
+     "n": 17,
+     "tag": "landing-v17",
+     "data": "2026-10-08T08:51+00:00",
+     "autore": "Claude",
+     "nota": "Landing v12: Simulazione a 5,99, strumenti ed Erasmus visivi e con meno testo",
+     "commit": "98f4d1d",
+     "demo_v": 12,
+     "demo_data": "2026-10-08",
+     "impronta": "6a1f3f3ad3a954a5",
+     "kb": 5639,
+     "file": "UniLink_landing_demo-v12_backup17_2026-10-08.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v17/UniLink_landing_demo-v12_backup17_2026-10-08.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v17/demo-landing"
+    },
+    {
      "n": 16,
      "tag": "landing-v16",
      "data": "2026-10-08T08:26+00:00",
@@ -254,6 +269,21 @@
    "id": "webapp",
    "versioni": [
     {
+     "n": 14,
+     "tag": "webapp-v14",
+     "data": "2026-10-08T08:51+00:00",
+     "autore": "Claude",
+     "nota": "Landing v12: Simulazione a 5,99, strumenti ed Erasmus visivi e con meno testo",
+     "commit": "98f4d1d",
+     "demo_v": 10,
+     "demo_data": "2026-10-08",
+     "impronta": "04aef9084d879135",
+     "kb": 458,
+     "file": "UniLink_webapp_demo-v10_backup14_2026-10-08.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/webapp-v14/UniLink_webapp_demo-v10_backup14_2026-10-08.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v14/demo-webapp"
+    },
+    {
      "n": 13,
      "tag": "webapp-v13",
      "data": "2026-10-08T08:21+00:00",
@@ -456,5 +486,5 @@
    "url": "https://matteprune04.github.io/unilink-hq/demo-webapp/"
   }
  ],
- "aggiornato": "2026-10-08T08:26+00:00"
+ "aggiornato": "2026-10-08T08:51+00:00"
 }
