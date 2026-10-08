@@ -4,6 +4,21 @@
    "id": "landing",
    "versioni": [
     {
+     "n": 21,
+     "tag": "landing-v21",
+     "data": "2026-10-08T20:04+00:00",
+     "autore": "Claude",
+     "nota": "Web app v13: studio con Riprendi, A che punto sei, Programma e progressi, capitoli collegati a dispensa, carte e domande, note con etichette",
+     "commit": "815233a",
+     "demo_v": 13,
+     "demo_data": "2026-10-08",
+     "impronta": "e005ab2dcf0b38a9",
+     "kb": 5642,
+     "file": "UniLink_landing_demo-v13_backup21_2026-10-08.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v21/UniLink_landing_demo-v13_backup21_2026-10-08.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v21/demo-landing"
+    },
+    {
      "n": 20,
      "tag": "landing-v20",
      "data": "2026-10-08T09:35+00:00",
@@ -314,6 +329,21 @@
    "id": "webapp",
    "versioni": [
     {
+     "n": 18,
+     "tag": "webapp-v18",
+     "data": "2026-10-08T20:04+00:00",
+     "autore": "Claude",
+     "nota": "Web app v13: studio con Riprendi, A che punto sei, Programma e progressi, capitoli collegati a dispensa, carte e domande, note con etichette",
+     "commit": "815233a",
+     "demo_v": 13,
+     "demo_data": "2026-10-08",
+     "impronta": "abfe8c108771cd3f",
+     "kb": 474,
+     "file": "UniLink_webapp_demo-v13_backup18_2026-10-08.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/webapp-v18/UniLink_webapp_demo-v13_backup18_2026-10-08.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v18/demo-webapp"
+    },
+    {
      "n": 17,
      "tag": "webapp-v17",
      "data": "2026-10-08T09:35+00:00",
@@ -576,5 +606,5 @@
    "url": "https://matteprune04.github.io/unilink-hq/demo-webapp/"
   }
  ],
- "aggiornato": "2026-10-08T09:35+00:00"
+ "aggiornato": "2026-10-08T20:04+00:00"
 }
