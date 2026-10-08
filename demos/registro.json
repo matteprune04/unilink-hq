@@ -4,6 +4,21 @@
    "id": "landing",
    "versioni": [
     {
+     "n": 16,
+     "tag": "landing-v16",
+     "data": "2026-10-08T08:26+00:00",
+     "autore": "Claude",
+     "nota": "Landing v11: commenti v10 (home senza numeri, icone hub, richieste scuole, orientatori, Studiare ed Erasmus, Plus = coach, inviti)",
+     "commit": "2d45db2",
+     "demo_v": 11,
+     "demo_data": "2026-10-08",
+     "impronta": "e50d2cd7c0e56e03",
+     "kb": 5638,
+     "file": "UniLink_landing_demo-v11_backup16_2026-10-08.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v16/UniLink_landing_demo-v11_backup16_2026-10-08.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v16/demo-landing"
+    },
+    {
      "n": 15,
      "tag": "landing-v15",
      "data": "2026-10-08T08:21+00:00",
@@ -441,5 +456,5 @@
    "url": "https://matteprune04.github.io/unilink-hq/demo-webapp/"
   }
  ],
- "aggiornato": "2026-10-08T08:21+00:00"
+ "aggiornato": "2026-10-08T08:26+00:00"
 }
