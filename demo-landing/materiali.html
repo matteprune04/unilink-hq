@@ -26,10 +26,15 @@
 </section>
 <section id="collezione">
   <div class="wrap">
-    <div class="testa"><div><span class="eyebrow">Collezione completa</span><h2 style="margin-top:10px">Tutti gli esami di <span class="acc" data-mat-nome>Economia</span></h2></div><p>Tocca un esame per l'anteprima: indice, cosa contiene, come si passa.</p></div>
-    <form class="cerca" data-mat-cerca><span class="lente">⌕</span><input type="search" placeholder="Cerca un esame, es. Statistica" aria-label="Cerca un esame"><button class="btn btn-p">Cerca</button></form>
-    <div class="chips" data-mat-anni><span class="chip on" data-anno="Tutti">Tutti</span><span class="chip" data-anno="I">I anno</span><span class="chip" data-anno="II">II anno</span><span class="chip" data-anno="III">III anno</span></div>
-    <div class="mat-grid" data-mat-lista></div>
+    <div class="testa"><div><span class="eyebrow">Collezione completa</span><h2 style="margin-top:10px">Tutti gli esami <span class="acc">UniLink</span></h2></div><p>Scegli area e corso, poi anno e semestre. Tocca un esame per l'anteprima.</p></div>
+    <div class="col-vant" data-col-vant></div>
+    <div class="col-filtri">
+      <div class="col-f"><span class="col-l">Area</span><div class="col-seg" data-col-area></div></div>
+      <div class="col-f"><span class="col-l">Corso</span><div class="col-seg" data-col-corso></div></div>
+      <div class="col-f col-f2"><div><span class="col-l">Anno</span><div class="col-seg" data-col-anno></div></div><div><span class="col-l">Semestre</span><div class="col-seg" data-col-sem></div></div></div>
+      <form class="cerca" data-mat-cerca><span class="lente">⌕</span><input type="search" placeholder="Cerca un esame in tutte le aree, es. Statistica" aria-label="Cerca un esame"><button class="btn btn-p">Cerca</button></form>
+    </div>
+    <div data-mat-lista></div>
   </div>
 </section>
 <div id="ul-foot"></div>

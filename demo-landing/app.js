@@ -335,23 +335,46 @@
     return `<div class="pz">${s ? `<span>Simulazione <b>${eur(s[0])}</b></span>` : ""}<span>Completa <b>${eur(c[0])}</b> ${barr(c[1])}</span></div>`; };
   const matRoot = $("#mat-top");
   if (matRoot) {
-    const tabs = $("[data-mat-hub]"), arrivo = $("[data-mat-arrivo]"), lista = $("[data-mat-lista]"), st = { q: "", anno: "Tutti" };
+    const tabs = $("[data-mat-hub]"), arrivo = $("[data-mat-arrivo]"), lista = $("[data-mat-lista]"), COL = CFG.collezione || { corsi: {} };
+    const st = { q: "", anno: "Tutti", sem: "Tutti", corso: {} };
     let hub = (location.hash || "").replace("#", "") || store.get("hub", "economia"); if (!CFG.hub.find((h) => h.slug === hub)) hub = "economia";
     tabs.innerHTML = CFG.hub.map((h) => `<button type="button" class="chip" data-mh="${h.slug}">${esc(h.nome)}${h.stato === "attivo" ? "" : " · in arrivo"}</button>`).join("");
+    // v13 (commento S15.3): area → corso → anno e semestre; la ricerca cerca in tutte le aree. Schede: copertina grande, vantaggio in alto.
+    const vant = $("[data-col-vant]"); if (vant && COL.vantaggi) vant.innerHTML = COL.vantaggi.map(([n, t, d]) => `<div><b>${esc(n)}</b><span>${esc(t)}</span><small>${esc(d)}</small></div>`).join("");
+    const nelCorso = (d, cds) => (PERC && PERC.esami[d.codice] || []).some((x) => x === cds || x.startsWith(cds + "-"));
+    const scheda = (d) => { const g = gratisDi(d), c = completaDi(d), pc = c ? Math.round((1 - c[0] / c[1]) * 100) : 0;
+      return `<a class="col-card ${g ? "gratis" : ""}" href="${g ? APP + "#/app/esami/economia-aziendale/dispensa" : "preview.html?esame=" + encodeURIComponent(d.slug)}">
+        <div class="col-cop"><img src="img/cop/${d.cop}" alt="" loading="lazy"><span class="col-rib">${g ? "GRATIS" : "−" + pc + "%"}</span></div>
+        <div class="col-txt"><span class="col-meta">${d.anno} anno · ${d.sem} sem.${/^da verificare/i.test(d.mod) ? "" : " · " + esc(d.mod.split(" + ")[0])}</span><h3>${esc(d.nome)}</h3>
+          ${g ? `<p class="col-free">${esc(COL.gratis || "Completa e gratis per tutti.")}</p><span class="col-pr"><b>0 €</b> ${c ? barr(c[1]) : ""}</span><span class="col-go">Leggila gratis →</span>`
+              : `<span class="col-pr"><b>${c ? eur(c[0]) : ""}</b> ${c ? barr(c[1]) : ""}</span><span class="col-go">Anteprima →</span>`}</div></a>`; };
+    const seg = (k, v, t, on, off) => `<button type="button" data-${k}="${v}" class="${on ? "on" : ""} ${off ? "off" : ""}" aria-pressed="${on}">${t}</button>`;
     const disegna = () => {
-      const h = CFG.hub.find((x) => x.slug === hub), on = h.stato === "attivo";
+      const h = CFG.hub.find((x) => x.slug === hub), on = h.stato === "attivo", corsi = COL.corsi[hub] || [];
+      if (!st.corso[hub]) st.corso[hub] = (corsi.find((x) => x[2] === "attivo") || corsi[0] || [""])[0];
+      const cs = corsi.find((x) => x[0] === st.corso[hub]) || ["", h.nome, h.stato], csOn = on && cs[2] === "attivo";
       $$("[data-mh]", tabs).forEach((b) => { b.classList.toggle("on", b.dataset.mh === hub); b.setAttribute("aria-pressed", b.dataset.mh === hub); });
       arrivo.innerHTML = on ? "" : `<div class="dec-banner" style="margin-bottom:20px"><span><b>${esc(h.nome)} è in arrivo.</b> I materiali nascono con chi studia lì: il listino qui sotto è quello che varrà anche per ${esc(h.nome)}. <a href="${h.href}"><u>Iscriviti alla lista d'attesa</u></a>.</span></div>`;
-      $("[data-mat-nome]").firstChild.textContent = h.nome;
-      const l = on ? D.filter((d) => (st.anno === "Tutti" || d.anno === st.anno) && (!st.q || norm(d.nome).includes(norm(st.q)))) : [];
-      lista.innerHTML = !on ? `<div class="vuoto">La collezione di ${esc(h.nome)} non c'è ancora. <a href="${h.href}"><u>Avvisami quando parte</u></a>.</div>`
-        : l.length ? l.map((d) => `<a class="mat-card" href="preview.html?esame=${encodeURIComponent(d.slug)}"><img src="img/cop/${d.cop}" alt="" loading="lazy"><div><span class="eyebrow">${d.anno} anno · ${SEM[d.sem] || ""}</span><h3>${esc(d.nome)}</h3><p class="small">${d.tipi.join(" · ")} · ${esc(d.mod)}</p>${prezziEsame(d)}<span class="go">Anteprima →</span></div></a>`).join("")
-        : `<div class="vuoto">Nessun esame trovato per "${esc(st.q)}". <a href="${WA}" target="_blank" rel="noopener"><u>Chiedi questo esame</u></a>: è un dato su cosa manca.</div>`;
+      $("[data-col-area]").innerHTML = CFG.hub.map((x) => seg("ca2", x.slug, `${esc(x.ico)} ${esc(x.nome)}${x.stato === "attivo" ? "" : " <small>in arrivo</small>"}`, x.slug === hub, x.stato !== "attivo")).join("");
+      $("[data-col-corso]").innerHTML = corsi.map(([k, n, s2]) => seg("cco", k, `${esc(n)}${s2 === "attivo" ? "" : " <small>in arrivo</small>"}`, k === st.corso[hub], s2 !== "attivo")).join("");
+      $("[data-col-anno]").innerHTML = ["Tutti", "I", "II", "III"].map((a2) => seg("can", a2, a2 === "Tutti" ? "Tutti" : a2 + " anno", a2 === st.anno)).join("");
+      $("[data-col-sem]").innerHTML = ["Tutti", "I", "II"].map((a2) => seg("cse", a2, a2 === "Tutti" ? "Tutti" : a2 + " sem.", a2 === st.sem)).join("");
+      let l, titolo = "";
+      if (st.q) { l = D.filter((d) => norm(d.nome).includes(norm(st.q))); titolo = `${l.length} ${l.length === 1 ? "esame trovato" : "esami trovati"} per «${esc(st.q)}» · tutte le aree`; }
+      else l = csOn ? D.filter((d) => nelCorso(d, cs[0]) && (st.anno === "Tutti" || d.anno === st.anno) && (st.sem === "Tutti" || d.sem === st.sem)) : [];
+      if (!st.q && !csOn) { lista.innerHTML = `<div class="col-vuoto"><b>${esc(cs[1])} è in arrivo.</b><span>I materiali nascono con chi studia lì.</span><a class="btn btn-p" href="${h.href}">Avvisami quando parte</a></div>`; return; }
+      if (!l.length) { lista.innerHTML = `<div class="col-vuoto"><b>Nessun esame trovato.</b><a class="btn btn-s" href="${WA}" target="_blank" rel="noopener">Chiedi questo esame</a></div>`; return; }
+      // raggruppati per anno e semestre: si legge come un piano di studi
+      const gr = {}; l.forEach((d) => (gr[d.anno + "|" + d.sem] = gr[d.anno + "|" + d.sem] || []).push(d));
+      lista.innerHTML = (titolo ? `<p class="col-tit">${titolo}</p>` : "") + Object.entries(gr).sort((x, y) => { const R = { I: 1, II: 2, III: 3 }, [a1, s1] = x[0].split("|"), [a2, s2] = y[0].split("|"); return R[a1] - R[a2] || R[s1] - R[s2]; }).map(([k, L]) => { const [an, se] = k.split("|");
+        return `<div class="col-gr"><h3 class="col-h"><span>${an} anno</span> · ${se} semestre <small>${L.length} ${L.length === 1 ? "esame" : "esami"}</small></h3><div class="col-grid">${L.map(scheda).join("")}</div></div>`; }).join("");
     };
-    $$("[data-mh]", tabs).forEach((b) => b.addEventListener("click", () => { hub = b.dataset.mh; store.set("hub", hub); history.replaceState(null, "", "#" + hub); disegna(); }));
+    const vaiHub = (x) => { hub = x; store.set("hub", hub); history.replaceState(null, "", "#" + hub); disegna(); };
+    $$("[data-mh]", tabs).forEach((b) => b.addEventListener("click", () => vaiHub(b.dataset.mh)));
+    $("#collezione").addEventListener("click", (e) => { const b = e.target.closest("button[data-ca2],button[data-cco],button[data-can],button[data-cse]"); if (!b) return;
+      if (b.dataset.ca2) return vaiHub(b.dataset.ca2); if (b.dataset.cco) st.corso[hub] = b.dataset.cco; if (b.dataset.can) st.anno = b.dataset.can; if (b.dataset.cse) st.sem = b.dataset.cse; disegna(); });
     const inp = $("[data-mat-cerca] input"); inp.addEventListener("input", () => { st.q = inp.value.trim(); disegna(); });
     $("[data-mat-cerca]").addEventListener("submit", (e) => { e.preventDefault(); st.q = inp.value.trim(); disegna(); });
-    $$("[data-mat-anni] .chip").forEach((c) => c.addEventListener("click", () => { $$("[data-mat-anni] .chip").forEach((x) => x.classList.remove("on")); c.classList.add("on"); st.anno = c.dataset.anno; disegna(); }));
     // calcolatore del pacchetto semestre per PERCORSO (commento S15 di Matteo): corso → anno → curriculum → semestre; si vede quali
     // dispense sono incluse e il prezzo dipende da quante sono (3 → 29,99 · 4 → 34,99). Con più di 4 esami si scelgono i 4 del
     // proprio piano di studi; con meno di 3 il pacchetto non c'è (conviene la dispensa singola). Dati: percorsi.js (catalogo UniFi).
