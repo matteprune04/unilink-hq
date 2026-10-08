@@ -129,17 +129,18 @@
   $$(".qa").forEach((q) => $(".d", q).addEventListener("click", () => { const ap = !q.classList.contains("open"); $$(".qa", q.parentElement).forEach((x) => { x.classList.remove("open"); $(".d span", x).textContent = "+"; }); if (ap) { q.classList.add("open"); $(".d span", q).textContent = "−"; } }));
 
   const FASI = {
-    matricola: { k: "Per le matricole", t: "Tre cose da fare nel primo mese", r: [["Prima", "Come funziona l'università, passo per passo", "prima.html#funziona"], ["Strumenti", "Piano per il tuo primo appello", "tools.html#piano"], ["Community", "Il gruppo WhatsApp del tuo anno", WA]] },
-    esame: { k: "Prepari un esame", t: "Parti dalla dispensa giusta", r: [["Area personale", "Le tue dispense e i tuoi esami", "area.html"], ["Metodo", "Un piano dalla data dell'appello", "durante.html#metodo"], ["Strumenti", "Media e voto che ti serve", "tools.html#media"]] },
-    erasmus: { k: "Pensi all'Erasmus", t: "Arriva al bando preparato", r: [["Punteggio", "Stima del tuo punteggio per il bando", "tools.html#erasmus"], ["Durante", "Learning Agreement senza panico", "durante.html#erasmus"], ["WhatsApp", "Chiedi a chi ci è già stato, nel gruppo", WA]] },
-    dopo: { k: "Pensi al dopo", t: "Scegli con più elementi", r: [["Voto di laurea", "Da dove parti alla discussione", "tools.html#voto"], ["Magistrali", "Confronta i percorsi prima di scegliere", "dopo.html#magistrali"], ["Media", "Il voto che ti serve agli esami che restano", "tools.html#media"]] },
+    // v11 (commento H05): ogni fase porta a tre cose precise, sempre nello stesso ordine: una guida da leggere, uno strumento, cosa trovi nell'area
+    matricola: { k: "Per le matricole", t: "Tre cose da fare nel primo mese", r: [["Leggi", "La Guida: come funzionano corso, esami e sessioni", "guida.html?facolta=economia"], ["Usa", "Che media mi serve? Imposta il tuo obiettivo", "tools.html"], ["Entra", "Economia Aziendale completa, gratis per tutti", APP + "#/registrati"]] },
+    esame: { k: "Prepari un esame", t: "Parti dalla dispensa giusta", r: [["Leggi", "L'anteprima del tuo esame: indice e cosa c'è dentro", "materiali.html#collezione"], ["Usa", "Il Planner: un piano dalla data dell'appello", "durante.html#metodo"], ["Sblocca", "Dispensa, flashcard, esercizi e simulazioni", "materiali.html"]] },
+    erasmus: { k: "Pensi all'Erasmus", t: "Arriva al bando preparato", r: [["Leggi", "Perché partire e come funziona il bando", "durante.html#erasmus"], ["Usa", "Erasmus: il tuo punteggio e le mete", "tools.html"], ["Entra", "Le tue mete salvate nell'area personale", APP + "#/registrati"]] },
+    dopo: { k: "Pensi al dopo", t: "Scegli con più elementi", r: [["Scopri", "Che carriera fa per te? Quattro domande", "dopo.html#carriera"], ["Usa", "Quanto prendo alla laurea?", "tools.html"], ["Leggi", "Magistrali e master: cosa guardare", "dopo.html#magistrali"]] },
   };
   const risp = $("#risposta");
   $$(".liv[data-fase]").forEach((l) => l.addEventListener("click", () => {
     $$(".liv").forEach((x) => x.classList.remove("sel")); l.classList.add("sel");
     const f = FASI[l.dataset.fase]; risp.style.opacity = 0;
     setTimeout(() => {
-      risp.innerHTML = `<div><span class="eyebrow" style="color:#f0b37c">${f.k}</span><h3 style="margin-top:6px">${f.t}</h3></div>` + f.r.map(([s, t, h]) => `<a class="r" href="${h}" ${h.startsWith("http") ? 'target="_blank" rel="noopener"' : ""}><small>${s}</small>${t} →</a>`).join("");
+      risp.innerHTML = `<div><span class="eyebrow" style="color:#f0b37c">${f.k}</span><h3 style="margin-top:6px">${f.t}</h3></div>` + f.r.map(([s, t, h]) => `<a class="r r-${s.toLowerCase()}" href="${h}" ${h.startsWith("http") ? 'target="_blank" rel="noopener"' : ""}><small>${s}</small>${t} <span class="freccia">→</span></a>`).join("");
       risp.style.opacity = 1;
     }, 180);
   }));
@@ -196,7 +197,7 @@
   // card degli hub (H04) dalla configurazione: icona testuale o immagine (icoImg), foto, testi
   $$("[data-hubs]").forEach((box) => {
     box.innerHTML = CFG.hub.map((h) => { const on = h.stato === "attivo";
-      return `<a class="hub ${h.cls} ${on ? "" : "arrivo"}" href="${h.href}"><span class="badge ${on ? "on" : ""}">${on ? "Attivo" : "In arrivo"}</span><div class="ico">${h.icoImg ? `<img src="img/${esc(h.icoImg)}" alt="">` : esc(h.ico)}</div><h3>${esc(h.nome)}</h3><p>${esc(h.desc)}</p><div class="fasi">${h.tag.map((t) => `<span>${esc(t)}</span>`).join("")}</div><div class="img"><img src="img/${esc(h.img)}" alt="" loading="lazy"><div class="avv">${on ? `Entra nell'hub <span class="btn btn-p">Entra →</span>` : `Ti scriviamo quando parte <span class="btn btn-a">Avvisami</span>`}</div></div></a>`; }).join("");
+      return `<a class="hub ${h.cls} ${on ? "" : "arrivo"}" href="${h.href}"><span class="badge ${on ? "on" : ""}">${on ? "Attivo" : "In arrivo"}</span><div class="ico">${h.icoImg ? `<img src="img/${esc(h.icoImg)}" alt="">` : (CFG.icoHub || {})[h.slug] || esc(h.ico)}</div><h3>${esc(h.nome)}</h3><p>${esc(h.desc)}</p><div class="fasi">${h.tag.map((t) => `<span>${esc(t)}</span>`).join("")}</div><div class="img"><img src="img/${esc(h.img)}" alt="" loading="lazy"><div class="avv">${on ? `Entra nell'hub <span class="btn btn-p">Entra →</span>` : `Ti scriviamo quando parte <span class="btn btn-a">Avvisami</span>`}</div></div></a>`; }).join("");
   });
   // catalogo della home (H06): per hub, i corsi più scaricati e «Scopri la collezione completa» → Materiali
   const catHome = $("#catalogo-home");
@@ -367,7 +368,8 @@
         const tutti = base.concat(altri.filter((d) => sc.extra.includes(d.slug)));
         if (!sc.scelti || sc.scelti.some((s) => !tutti.find((d) => d.slug === s))) sc.scelti = tutti.slice(0, MAX).map((d) => d.slug);
         const presi = tutti.filter((d) => sc.scelti.includes(d.slug)), n = presi.length;
-        const singoli = presi.reduce((t, d) => t + (gratisDi(d) ? 0 : completaDi(d)[0]), 0), pac = n >= 3 ? semPrezzo(n) : null;
+        // v11 (commento S15.2): il confronto si fa con le dispense singole al PREZZO PIENO; sotto si dice quanto costano oggi in sconto
+        const singoli = presi.reduce((t, d) => t + (gratisDi(d) ? 0 : completaDi(d)[1]), 0), singoliLancio = presi.reduce((t, d) => t + (gratisDi(d) ? 0 : completaDi(d)[0]), 0), pac = n >= 3 ? semPrezzo(n) : null;
         const totS = singoli + (sc.plus ? LIS.prezzi.plus : 0), totP = pac ? pac[0] + (sc.plus ? LIS.prezzi.plusConPacchetto : 0) : null;
         const pct = (x) => Math.max(6, Math.round((x / Math.max(totS, totP || 0, 1)) * 100));
         const nomeCurr = serveCurr ? " · " + PERC.nomeCurr(sc.cds, sc.curr) : "", per = `${sc.anno} anno, ${sc.sem} semestre · ${PERC.corsi[sc.cds].nome}${nomeCurr}`;
@@ -385,13 +387,13 @@
             <div class="tl-l">Le dispense incluse${tutti.length > MAX ? ` · il semestre ne ha ${tutti.length}: scegli le ${MAX} del tuo piano di studi` : ""}</div>
             ${altri.length ? `<div class="calc-scelta"><label class="small" for="calc-extra">Hai un esame a scelta?</label><select id="calc-extra" data-extra><option value="">Aggiungi un esame a scelta del ${sc.anno} anno…</option>${altri.filter((d) => !sc.extra.includes(d.slug)).map((d) => `<option value="${d.slug}">${esc(d.nome)}</option>`).join("")}</select></div>` : ""}
             <ul class="calc-esami">${tutti.map((d) => { const on = sc.scelti.includes(d.slug); return `<li class="${on ? "" : "off"}"><span class="n">${esc(d.nome)}${sc.extra.includes(d.slug) ? '<span class="tag-scelta">a scelta</span>' : ""}<small>${esc(d.codice)}${gratisDi(d) ? " · gratis per tutti" : ""}</small></span>
-              <span class="seg-mini">${seg("ce", d.slug, on ? "✓ Inclusa" : "Aggiungi", on)}</span><b>${gratisDi(d) ? "0 €" : eur(completaDi(d)[0])}</b></li>`; }).join("") || '<li class="off"><span class="n">Nessuna dispensa per questo semestre</span></li>'}</ul>
+              <span class="seg-mini">${seg("ce", d.slug, on ? "✓ Inclusa" : "Aggiungi", on)}</span><b>${gratisDi(d) ? "0 €" : eur(completaDi(d)[1])}</b></li>`; }).join("") || '<li class="off"><span class="n">Nessuna dispensa per questo semestre</span></li>'}</ul>
             <p class="small" style="margin:8px 0 0">${esc(PERC.fonte)}. Gli esami del III anno spesso sono a scelta: controlla il tuo piano di studi.</p>
             <label class="calc-plus"><input type="checkbox" data-cp ${sc.plus ? "checked" : ""}> Aggiungi UniLink Plus</label>
           </div>
           <div class="calc-out">
             <div class="calc-conf">
-              <div class="cc-r"><span>Una per una · ${n} ${n === 1 ? "dispensa" : "dispense"}${sc.plus ? " + Plus" : ""}</span><b>${eur(totS)}</b></div><div class="cc-bar"><i style="width:${pct(totS)}%"></i></div>
+              <div class="cc-r"><span>Una per una a prezzo pieno · ${n} ${n === 1 ? "dispensa" : "dispense"}${sc.plus ? " + Plus" : ""}<small class="cc-oggi">oggi in sconto di lancio: ${eur(singoliLancio + (sc.plus ? LIS.prezzi.plus : 0))}</small></span><b>${eur(totS)}</b></div><div class="cc-bar"><i style="width:${pct(totS)}%"></i></div>
               ${pac ? `<div class="cc-r ev"><span>Pacchetto semestre · ${n} esami ${barr(pac[1])}${sc.plus ? " + Plus" : ""}</span><b>${eur(totP)}</b></div><div class="cc-bar ev"><i style="width:${pct(totP)}%"></i></div>` : ""}
             </div>
             <div class="calc-cons ${forte ? "forte" : ""}"><span class="eyebrow">Il nostro consiglio</span><h3>${tit}</h3><p>${txt}</p></div>
@@ -536,6 +538,7 @@
     return `<article class="vt-card"><div class="vt-top"><span class="ico">${esc(t.icona)}</span><div><h3>${esc(t.nome)}</h3><p class="small">${esc(v.domanda || t.desc)}</p></div></div>
       ${ricco ? `<div class="vt-es"><span class="badge">Esempio</span><p>${esc(v.esempio || "")}</p></div>` : ""}
       <div class="vt-piede"><span class="small">⏱ ${esc(v.tempo || "1 minuto")}${t.stato === "demo" ? " · regole da verificare" : ""}</span>${metrica(v)}</div>
+      ${ricco ? `<ol class="vt-passi"><li>Entra gratis</li><li>Inserisci ${esc(v.inserisci || "i tuoi dati")}</li><li>Leggi il risultato e salvalo</li></ol>` : ""}
       ${ricco && v.fonte ? `<p class="vt-fonte">Fonte: ${esc(v.fonte)}</p>` : ""}
       <a class="btn ${ricco ? "btn-a" : "btn-s"}" href="${usaloHref(t.id)}">Usalo gratis <span class="freccia">→</span></a></article>`; };
   $$("[data-toolshell]").forEach((root) => {
@@ -550,7 +553,8 @@
         let l = ids ? ids.map((i) => ULTools.trova(i)).filter(Boolean) : ULTools.lista(hub).slice(0, limit), ar = []; // v10: «Erasmus completo» e «Media completa» sono dentro i 4 strumenti
         if (l.some((t) => t.id === "voto")) l = l.filter((t) => t.id !== "voto-cdl"); // un solo «Voto di laurea» per hub
         root.className = "vt-grid" + (ricco ? " ricco" : "");
-        root.innerHTML = l.map((t) => vetrinaCard(t, ricco)).join("") + ar.map((t) => `<article class="vt-card area"><div class="vt-top"><span class="ico">${esc(t.icona)}</span><div><h3>${esc(t.nome)}</h3><p class="small">${esc(t.desc)}</p></div></div><a class="btn btn-s" href="${APP}${t.href || ""}">Nell'area personale →</a></article>`).join("");
+        const PLN = VT.planner;
+        root.innerHTML = l.map((t) => vetrinaCard(t, ricco)).join("") + (PLN && hub === "economia" ? `<article class="vt-card vt-plus"><div class="vt-top"><span class="ico">◷</span><div><h3>${esc(PLN.titolo)}</h3><p class="small">${esc(PLN.testo)}</p></div></div><a class="btn btn-a" href="${PLN.href}">${esc(PLN.cta)} <span class="freccia">→</span></a></article>` : "") + ar.map((t) => `<article class="vt-card area"><div class="vt-top"><span class="ico">${esc(t.icona)}</span><div><h3>${esc(t.nome)}</h3><p class="small">${esc(t.desc)}</p></div></div><a class="btn btn-s" href="${APP}${t.href || ""}">Nell'area personale →</a></article>`).join("");
       };
       const tabs = $("#hubtabs");
       tabs && $$("span", tabs).forEach((s) => s.addEventListener("click", () => { $$("span", tabs).forEach((x) => x.classList.remove("on")); s.classList.add("on"); hub = s.dataset.hub; drawV(); }));
@@ -811,6 +815,69 @@
         ${a.team ? `<div class="arc-team">${T.map((p) => `<div class="arc-persona"><div class="av">${esc(p.nome[0])}</div><div><b>${esc(p.nome)}</b><span class="small">${esc(p.ruolo)} · ${esc(p.corso)}</span><span class="small">${esc(p.bio)}</span></div></div>`).join("")}</div>` : ""}
         <p class="small arc-rimetti"><b>Per rimetterla:</b> ${esc(a.rimettere)}</p></article>`).join("")}</div>`;
   }
+  /* ---------- 12 · v11: richiesta di una scuola, orientatori, inviti (commenti v10 dell'8/10) ---------- */
+  // «La tua scuola non c'è?» e «Avvisami» degli hub in arrivo: un modulo (nome, email, scuola, corso, consenso) al posto di WhatsApp.
+  // Demo: le richieste restano in questo browser (ul-demo-richieste). Nel sito vero: tabella Supabase, esportabile in Excel dal Pannello.
+  const apriRichiesta = (pre) => {
+    const S = CFG.scuole || [], old = $(".rq-bg"); old && old.remove();
+    document.body.insertAdjacentHTML("beforeend", `<div class="prof-bg rq-bg" role="dialog" aria-modal="true" aria-label="Avvisami quando apre"><div class="prof rq"><button type="button" class="prof-x" aria-label="Chiudi">✕</button>
+      <span class="eyebrow">${pre ? "Hub in arrivo" : "La tua scuola non c'è?"}</span><h2 style="margin:6px 0 8px">${pre ? `Ti scriviamo quando apre ${esc(pre)}` : "Dicci quale vorresti"}</h2>
+      <p class="small">Contiamo le richieste: le scuole più chieste sono le prossime che apriamo. Una sola email, quando apre.</p>
+      <form class="ante-form" novalidate style="box-shadow:none;padding:0;margin-top:12px"><div class="ante-campi"><label>Nome<input name="nome" autocomplete="given-name"></label><label>Email<input name="email" type="email" autocomplete="email"></label>
+        <label>Scuola che vorresti<select name="scuola">${S.map((x) => `<option ${x === pre ? "selected" : ""}>${esc(x)}</option>`).join("")}</select></label><label>Il tuo corso (facoltativo)<input name="corso" placeholder="es. Ingegneria gestionale"></label></div>
+        <label class="ante-ck"><input type="checkbox" name="privacy"> Accetto l'informativa: usiamo l'email solo per avvisarti quando apre.</label>
+        <button class="btn btn-a" type="submit">Avvisami</button><p class="small msg" aria-live="polite"></p></form></div></div>`);
+    const bg = $(".rq-bg"), chiudi = () => { bg.remove(); document.removeEventListener("keydown", k); }, k = (e) => { if (e.key === "Escape") chiudi(); };
+    bg.addEventListener("click", (e) => { if (e.target === bg) chiudi(); }); $(".prof-x", bg).onclick = chiudi; document.addEventListener("keydown", k);
+    $("form", bg).addEventListener("submit", (e) => { e.preventDefault(); const f = e.target, msg = $(".msg", f), em = f.email.value.trim();
+      if (!/^\S+@\S+\.\S+$/.test(em)) { msg.textContent = "Scrivi un'email valida."; return; } if (!f.privacy.checked) { msg.textContent = "Serve il consenso per scriverti."; return; }
+      const l = store.get("richieste", []); l.push({ nome: f.nome.value.trim(), email: em, scuola: f.scuola.value, corso: f.corso.value.trim(), quando: new Date().toISOString() }); store.set("richieste", l);
+      $(".rq", bg).innerHTML = `<div class="ante-ok" style="box-shadow:none"><div class="ok">✓</div><h3>Fatto!</h3><p>Ti scriviamo quando apre ${esc(f.scuola.value)}. Demo: niente email inviata.</p></div>`; setTimeout(chiudi, 2400); });
+    $("input", bg).focus();
+  };
+  $$("[data-richiesta]").forEach((b) => b.addEventListener("click", (e) => { e.preventDefault(); apriRichiesta(b.dataset.richiesta || ""); }));
+  $$("[data-hubs] .hub.arrivo").forEach((a) => a.addEventListener("click", (e) => { if (e.target.closest(".avv")) { e.preventDefault(); apriRichiesta(($("h3", a) || {}).textContent || ""); } }));
+
+  // ORIENTATORI: una domanda alla volta, poi email e corso, poi il risultato con il perché (CFG.orientatori)
+  $$("[data-orientatore]").forEach((box) => {
+    const O = (CFG.orientatori || {})[box.dataset.orientatore]; if (!O) return;
+    const chiave = "orient-" + box.dataset.orientatore, risposte = [];
+    const risultato = (r) => { const pt = {}; r.forEach((i, q) => Object.entries(O.domande[q][1][i][1]).forEach(([k, v]) => (pt[k] = (pt[k] || 0) + v)));
+      const ord = Object.entries(pt).sort((a, b) => b[1] - a[1]); return { primo: ord[0][0], secondo: ord[1] && ord[1][1] > 0 ? ord[1][0] : null }; };
+    const mostraRis = (salvato) => { const R = risultato(salvato.r), x = O.risultati[R.primo], y = R.secondo && O.risultati[R.secondo];
+      box.innerHTML = `<div class="or-ris"><span class="eyebrow">Il tuo risultato</span><h3>${esc(x.nome)}</h3><p>${esc(x.perche)}</p><p class="small">${esc(x.poi)}</p>
+        ${y ? `<p class="small or-anche">Ti piacerebbe anche: <b>${esc(y.nome)}</b></p>` : ""}<p class="small muted">${esc(O.nota)}</p>
+        <div class="or-az">${x.link ? `<a class="btn btn-p" href="${x.link}">Vai all'hub</a>` : ""}<button type="button" class="btn btn-s" data-or-rifai>Rifallo</button></div></div>`;
+      $("[data-or-rifai]", box).onclick = () => { store.set(chiave, null); risposte.length = 0; passo(); }; };
+    const passo = () => {
+      const q = risposte.length;
+      if (q < O.domande.length) { const [dom, opz] = O.domande[q];
+        box.innerHTML = `<div class="or-q"><div class="or-prog">${O.domande.map((_, i) => `<i class="${i < q ? "on" : i === q ? "ora" : ""}"></i>`).join("")}</div><span class="eyebrow">Domanda ${q + 1} di ${O.domande.length}</span><h3>${esc(dom)}</h3>
+          <div class="or-opz">${opz.map(([t], i) => `<button type="button" data-or="${i}">${esc(t)}</button>`).join("")}</div>${q ? '<button type="button" class="or-indietro" data-or-back>← Indietro</button>' : ""}</div>`;
+        $$("[data-or]", box).forEach((b) => (b.onclick = () => { risposte.push(Number(b.dataset.or)); passo(); }));
+        const bk = $("[data-or-back]", box); bk && (bk.onclick = () => { risposte.pop(); passo(); }); return; }
+      box.innerHTML = `<form class="or-gate" novalidate><span class="eyebrow">Ultimo passo</span><h3>Dove ti mandiamo il risultato?</h3><p class="small">Lo vedi subito qui; ti scriviamo solo se ci chiedi un consiglio.</p>
+        <div class="ante-campi"><label>Email<input name="email" type="email" autocomplete="email"></label><label>Il tuo corso o la tua scuola<input name="corso" placeholder="es. V anno, liceo scientifico"></label></div>
+        <label class="ante-ck"><input type="checkbox" name="privacy"> Accetto l'informativa privacy.</label><button class="btn btn-a" type="submit">Vedi il risultato</button><p class="small msg" aria-live="polite"></p></form>`;
+      $("form", box).addEventListener("submit", (e) => { e.preventDefault(); const f = e.target, msg = $(".msg", f);
+        if (!/^\S+@\S+\.\S+$/.test(f.email.value.trim())) { msg.textContent = "Scrivi un'email valida."; return; } if (!f.corso.value.trim()) { msg.textContent = "Scrivi il tuo corso."; return; } if (!f.privacy.checked) { msg.textContent = "Serve il consenso privacy."; return; }
+        const s = { r: risposte.slice(), email: f.email.value.trim(), corso: f.corso.value.trim(), quando: new Date().toISOString() }; store.set(chiave, s); mostraRis(s); });
+    };
+    const gia = store.get(chiave, null); gia && gia.r ? mostraRis(gia) : passo();
+  });
+  // «Scegliere»: contenuti diversi per ogni hub (CFG.scegliere[hub]); l'orientatore solo dove c'è (oggi Economia)
+  $$("[data-scegliere]").forEach((box) => {
+    const H = CFG.hub.find((x) => x.slug === hubCorr) || CFG.hub[0], X = (CFG.scegliere || {})[H.slug] || (CFG.scegliere || {}).economia; if (!X) return;
+    box.innerHTML = `<div class="testa"><div><span class="eyebrow">Scegliere il corso · ${esc(H.nome)}</span><h2 style="margin-top:10px">${acc(X.titolo)}</h2></div><p>${esc(X.sotto)}</p></div>
+      <div class="cds">${X.carte.map(([t, d], i) => `<div class="cd"><div class="ico">${i + 1}</div><h3>${esc(t)}</h3><p>${esc(d)}</p></div>`).join("")}</div>`;
+    const or = $("#orienta"); if (or && !X.orientatore) or.hidden = true;
+  });
+
+  // PROGRAMMA INVITI (pagina Ambassador): proposta per dopo il lancio
+  $$("[data-inviti]").forEach((box) => { const I = CFG.inviti; if (!I) return;
+    box.innerHTML = `<div class="testa"><div><span class="eyebrow">Programma inviti · in arrivo</span><h2 style="margin-top:10px">${acc(I.titolo)}</h2></div><p>${esc(I.sotto)}</p></div>
+      <div class="inv-livelli">${I.livelli.map(([q, t], i) => `<div class="inv-l l${i}"><b>${esc(q)}</b><span>${esc(t)}</span></div>`).join("")}</div><p class="small" style="margin-top:12px"><span class="badge">Proposta</span> ${esc(I.nota)}</p>`; });
+
   // le dimensioni dei dispositivi cambiano al ridimensionamento: la pagina intera non deve scorrere di lato
   document.documentElement.style.overflowX = "hidden";
 })();

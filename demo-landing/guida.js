@@ -18,6 +18,9 @@
   };
   const ico = (k) => `<svg viewBox="0 0 24 24" aria-hidden="true">${P[k] || P.bussola}</svg>`;
 
+  // v11 (commento S14.1): nella Guida restano le facoltà attive o in arrivo; le altre «in architettura» solo per i founder (?tutte=1)
+  const VISIBILI = ["economia", "giurisprudenza", "medicina"];
+  if (!/tutte/.test(location.search) && !document.body.dataset.archiviata) G.facolta = G.facolta.filter((f) => VISIBILI.includes(f.id));
   const fac = () => {
     const q = new URLSearchParams(location.search).get("facolta") || mem.get("ul-guida-fac") || "economia";
     return G.facolta.find((f) => f.id === q) || G.facolta[0];

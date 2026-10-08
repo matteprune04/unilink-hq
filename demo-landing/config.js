@@ -12,7 +12,7 @@
 //   Gli strumenti stanno in tools.js (condiviso con la web app).
 // -----------------------------------------------------------------------------
 window.UL_CFG = {
-  versione: { n: 10, data: "2026-10-08", nota: "Landing v10 · commenti v9: Guida più leggibile (testo più grande, più aria, contrasto pieno), Materiali con lo sconto in evidenza (−% e «Risparmi») e tabella più chiara, calcolatore con gli esami a scelta, 4 strumenti per tutti (Quanto prendo alla laurea?, Che media mi serve?, Ci stai nei tempi?, Erasmus: punteggio e mete), gli altri nell'archivio dei founder. Prima, v9 · risposte di Matteo e PDF «Architettura della landing reale»: barra Hub · Guida · Materiali · Strumenti · Ambassador, Guida e Medicina «in arrivo» di nuovo nel sito, registrazione aperta a tutti (niente anteprima a numero chiuso), si paga solo nella web app, strumenti in vetrina (si usano nella web app), pagina Ambassador con profili, footer con avvisi e link legali. La v8 (anteprima, pagamento e strumenti funzionanti nella landing) resta per i founder in Archivio. Prima, v8: · decisioni del meeting del 7/10 e commenti v7: listino di lancio (Simulazione 4,99, Dispensa completa 12,99, Pacchetto semestre 29,99 o 34,99 per percorso, Plus 14,99 o 7,99), Economia Aziendale gratis, niente download, anteprima a numero chiuso in home, Ambassador al 20% al posto dei profili dei founder, calcolatore per corso e curriculum, indice completo di Economia Aziendale. Archiviati (Founder → Archivio): Guida, Community e mentor, Tesi, Carriera e CV, hub Medicina, profili dei founder, listino P2. Prima, v7: pagamento con Stripe Checkout (simulato) da Plus, calcolatore e anteprima esame, sezione «Come si paga» con le commissioni sul listino P2. Prima, v6: Planner nella tabella dei piani (piano personale con la Completa o con Plus, come nella web app v4). Prima, v5: prezzi con card pulite, «Cosa c'è dentro» e calcolatore del pacchetto con il consiglio. Prima, v4: barra Hub · Guida · Materiali · Strumenti · Community, menu Founder, Materiali e Anteprima (P2), Planner di esempio (P3), tab Scegliere (P4), Guida per facoltà, founder e FAQ da config." },
+  versione: { n: 11, data: "2026-10-08", nota: "Landing v11 · commenti v10: via i numeri in home, icone vere degli hub, modulo «la tua scuola non c'è?», «Parti da dove sei» con destinazioni chiare, Plus = il coach (Planner stile TTP, errori, pronto per l'esame), strumenti in vetrina con «come si usa» e il Planner come Plus, orientatori per corso e carriera, Studiare con strumenti, Planner ed Erasmus, Guida con le sole facoltà attive, Ambassador con il programma inviti, calcolatore con le singole a prezzo pieno. Prima, v10 · commenti v9: Guida più leggibile (testo più grande, più aria, contrasto pieno), Materiali con lo sconto in evidenza (−% e «Risparmi») e tabella più chiara, calcolatore con gli esami a scelta, 4 strumenti per tutti (Quanto prendo alla laurea?, Che media mi serve?, Ci stai nei tempi?, Erasmus: punteggio e mete), gli altri nell'archivio dei founder. Prima, v9 · risposte di Matteo e PDF «Architettura della landing reale»: barra Hub · Guida · Materiali · Strumenti · Ambassador, Guida e Medicina «in arrivo» di nuovo nel sito, registrazione aperta a tutti (niente anteprima a numero chiuso), si paga solo nella web app, strumenti in vetrina (si usano nella web app), pagina Ambassador con profili, footer con avvisi e link legali. La v8 (anteprima, pagamento e strumenti funzionanti nella landing) resta per i founder in Archivio. Prima, v8: · decisioni del meeting del 7/10 e commenti v7: listino di lancio (Simulazione 4,99, Dispensa completa 12,99, Pacchetto semestre 29,99 o 34,99 per percorso, Plus 14,99 o 7,99), Economia Aziendale gratis, niente download, anteprima a numero chiuso in home, Ambassador al 20% al posto dei profili dei founder, calcolatore per corso e curriculum, indice completo di Economia Aziendale. Archiviati (Founder → Archivio): Guida, Community e mentor, Tesi, Carriera e CV, hub Medicina, profili dei founder, listino P2. Prima, v7: pagamento con Stripe Checkout (simulato) da Plus, calcolatore e anteprima esame, sezione «Come si paga» con le commissioni sul listino P2. Prima, v6: Planner nella tabella dei piani (piano personale con la Completa o con Plus, come nella web app v4). Prima, v5: prezzi con card pulite, «Cosa c'è dentro» e calcolatore del pacchetto con il consiglio. Prima, v4: barra Hub · Guida · Materiali · Strumenti · Community, menu Founder, Materiali e Anteprima (P2), Planner di esempio (P3), tab Scegliere (P4), Guida per facoltà, founder e FAQ da config." },
   wa: "https://chat.whatsapp.com/KdA4r1POh6MAiBbLmmES0L",
   // Commenti del team sulle pagine e sulle sezioni (solo demo). Si salvano nel browser e si esportano in PDF/Markdown/JSON.
   // In produzione (Framer): attivi: false.
@@ -113,7 +113,7 @@ window.UL_CFG = {
     gratisEsame: "economia_aziendale",
     gratis: "schede degli esami, quiz di prova, strumenti e la dispensa completa di Economia Aziendale (I anno), gratis per tutti come esempio.",
     gratisNota: "È l'esempio dell'offerta UniLink: la dispensa completa, gratis per tutti.",
-    plusNota: "Plus è in stand-by (7/10): si può comprare a parte o con un pacchetto.",
+    plusNota: "Plus è il coach: il Planner stile TTP su tutti gli esami, l'analisi degli errori e «pronto per l'esame?» (proposta D51 della web app).",
     // «Cosa c'è dentro» (Materiali): colonne Simulazione · Dispensa completa · Pacchetto semestre · Plus. 1 = sì, 0 = no, testo = condizione.
     dentro: [
       ["Materiali · da leggere e annotare nell'area personale", [
@@ -125,8 +125,10 @@ window.UL_CFG = {
         ["Aggiornamenti della stessa edizione", 1, 1, 1, 0],
       ]],
       ["Il metodo", [
-        ["UniLink Planner · piano personale", 0, "per quell'esame", "esami del pacchetto", "tutti gli esami"],
-        ["Ripasso del registro errori", 0, 0, 0, 1],
+        ["«Ci stai nei tempi?» e metodo standard", 1, 1, 1, 1],
+        ["Planner stile TTP: piano personale, calendario, «oggi»", 0, 0, 0, "tutti gli esami"],
+        ["Analisi degli errori e «pronto per l'esame?»", 0, "per quell'esame", "esami del pacchetto", "tutti gli esami"],
+        ["Ripasso degli errori mescolato tra gli esami", 0, 0, 0, 1],
       ]],
       ["Come si usa", [
         ["Si scarica?", "no, si legge qui", "no, si legge qui", "no, si legge qui", "—"],
@@ -169,16 +171,17 @@ window.UL_CFG = {
   // la regola · metrica = numero vero dalla web app (Supabase), mostrato solo se valore ≥ soglia (oggi nessun dato: valore null).
   vetrina: {
     soglia: 50,
+    planner: { titolo: "Il Planner · UniLink Plus", testo: "Il tuo piano di studio stile TTP: dalla data dell'appello e dal voto che vuoi, sessioni da 45 minuti giorno per giorno, su tutti i tuoi esami.", cta: "Come funziona", href: "durante.html#metodo" },
     tools: {
-      "voto": { domanda: "Con la mia media, che voto prendo alla laurea?", tempo: "1 minuto", esempio: "Media 27,4 · 2 lodi · tesi buona · in corso · 40+ CFU l'anno → presentazione 101,1 · voto stimato 108", fonte: "regole ufficiali della prova finale della Scuola di Economia e Management UniFi (20/6/2017, integrate il 22/5/2018)", metrica: { valore: null, testo: "voti di laurea calcolati questo mese" } },
+      "voto": { inserisci: "la media (o la prendiamo dal libretto), lodi, quando ti laurei", domanda: "Con la mia media, che voto prendo alla laurea?", tempo: "1 minuto", esempio: "Media 27,4 · 2 lodi · tesi buona · in corso · 40+ CFU l'anno → presentazione 101,1 · voto stimato 108", fonte: "regole ufficiali della prova finale della Scuola di Economia e Management UniFi (20/6/2017, integrate il 22/5/2018)", metrica: { valore: null, testo: "voti di laurea calcolati questo mese" } },
       "voto-cdl": { domanda: "Che voto di laurea posso prendere, con le regole del mio corso?", tempo: "1 minuto", esempio: "Economia · media 27,4 · 2 lodi → voto stimato 105", fonte: "regole del proprio corso di laurea (Economia: Scuola di Economia UniFi)", metrica: { valore: null, testo: "voti di laurea calcolati questo mese" } },
-      "media": { domanda: "Che voto mi serve negli esami che restano per arrivare alla media che voglio?", tempo: "2 minuti", esempio: "Media 26,1 su 96 CFU · obiettivo 27 · restano 84 CFU → ti serve 28,0 di media", fonte: "media ponderata sui CFU (calcolo esatto)", metrica: { valore: null, testo: "obiettivi calcolati questo mese" } },
+      "media": { inserisci: "i voti che hai e i CFU che restano", domanda: "Che voto mi serve negli esami che restano per arrivare alla media che voglio?", tempo: "2 minuti", esempio: "Media 26,1 su 96 CFU · obiettivo 27 · restano 84 CFU → ti serve 28,0 di media", fonte: "media ponderata sui CFU (calcolo esatto)", metrica: { valore: null, testo: "obiettivi calcolati questo mese" } },
       "peso": { domanda: "Quanto si muove la mia media con il prossimo esame?", tempo: "30 secondi", esempio: "Media 26,5 su 60 CFU · esame da 9 CFU con 30 → nuova media 26,96", fonte: "media ponderata sui CFU (calcolo esatto)", metrica: { valore: null, testo: "simulazioni questo mese" } },
       "countdown": { domanda: "Quanto tempo utile ho davvero fino all'appello?", tempo: "30 secondi", esempio: "26 giorni · 2,5 ore al giorno, 6 giorni su 7 → 46 ore utili, 61 sessioni da 45 minuti", fonte: "margine del 18% per imprevisti (metodo del Planner)", metrica: { valore: null, testo: "conti alla rovescia attivi" } },
       "piano": { domanda: "Ci sto nei tempi per l'appello? Quanto devo fare ogni giorno?", tempo: "2 minuti", esempio: "12 argomenti · 20 giorni → 0,6 argomenti al giorno, ripasso finale di 3 giorni", fonte: "metodo del Planner UniLink", metrica: { valore: null, testo: "piani creati questo mese" } },
-      "erasmus": { domanda: "Che punteggio avrei nel bando Erasmus, e quali mete posso puntare?", tempo: "2 minuti", esempio: "Media 27 · 120 CFU · B2 → punteggio stimato 71/100", fonte: "regole di ESEMPIO: vanno prese dal bando ufficiale prima del lancio", metrica: { valore: null, testo: "stime Erasmus questo mese" } },
-      "voto-lmg": { domanda: "Che voto di laurea posso prendere a Giurisprudenza?", tempo: "1 minuto", esempio: "Media 27 · tesi 5 punti → voto stimato 104", fonte: "regole di ESEMPIO del ciclo unico, da verificare", metrica: { valore: null, testo: "voti calcolati" } },
-      "filtro": { domanda: "Come organizzo il semestre filtro di Medicina?", tempo: "2 minuti", esempio: "10 settimane · 3 materie → 14 ore a settimana per materia", fonte: "regole di ESEMPIO, da verificare con il bando ministeriale", metrica: { valore: null, testo: "piani creati" } },
+      "erasmus": { inserisci: "media, CFU e certificazione di lingua", domanda: "Che punteggio avrei nel bando Erasmus, e quali mete posso puntare?", tempo: "2 minuti", esempio: "Media 27 · 120 CFU · B2 → punteggio stimato 71/100", fonte: "regole di ESEMPIO: vanno prese dal bando ufficiale prima del lancio", metrica: { valore: null, testo: "stime Erasmus questo mese" } },
+      "voto-lmg": { inserisci: "media e punti della tesi", domanda: "Che voto di laurea posso prendere a Giurisprudenza?", tempo: "1 minuto", esempio: "Media 27 · tesi 5 punti → voto stimato 104", fonte: "regole di ESEMPIO del ciclo unico, da verificare", metrica: { valore: null, testo: "voti calcolati" } },
+      "filtro": { inserisci: "settimane e materie", domanda: "Come organizzo il semestre filtro di Medicina?", tempo: "2 minuti", esempio: "10 settimane · 3 materie → 14 ore a settimana per materia", fonte: "regole di ESEMPIO, da verificare con il bando ministeriale", metrica: { valore: null, testo: "piani creati" } },
     },
   },
 
@@ -309,12 +312,88 @@ window.UL_CFG = {
   },
 
   // ===========================================================================================================
+  // v11 · commenti v10 dell'8/10
+  // ===========================================================================================================
+  // ICONE DEGLI HUB (commento H04): un disegno per scuola, al posto dei simboli €, §, +. SVG a linea, colori UniLink.
+  icoHub: {
+    economia: '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 38h32"/><path d="M12 34V24M20 34V16M28 34V20M36 34V10"/><path d="M10 18l9-7 8 5 11-9"/><path d="M33 7h5v5"/></svg>',
+    giurisprudenza: '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M24 8v32M14 40h20"/><path d="M10 14h28"/><path d="M14 14l-6 12a6 6 0 0 0 12 0z"/><path d="M34 14l-6 12a6 6 0 0 0 12 0z"/></svg>',
+    medicina: '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M14 8v12a8 8 0 0 0 16 0V8"/><path d="M22 28v4a8 8 0 0 0 16 0v-6"/><circle cx="38" cy="22" r="4"/><path d="M11 8h6M27 8h6"/></svg>',
+  },
+  // RICHIESTA DI UNA SCUOLA (commento H04: «La tua scuola non c'è?» → modulo, non WhatsApp). Le scuole sono quelle della Guida.
+  // Demo: le richieste restano nel browser (ul-demo-richieste); nel sito vero vanno su Supabase e si esportano in Excel dal Pannello.
+  scuole: ["Economia", "Giurisprudenza", "Medicina", "Ingegneria", "Scienze", "Architettura", "Psicologia", "Scienze Politiche", "Studi Umanistici", "Agraria", "Altro"],
+  // ORIENTATORI (commenti S02, S05, S07): poche domande, un risultato con il perché. Si usano nella landing lasciando email e corso
+  // (l'unico strumento della landing che si usa qui, come chiesto). Pesi e testi: orientamento, non una scelta definitiva.
+  orientatori: {
+    corso: {
+      titolo: "Quale corso di Economia fa per te?", sotto: "Quattro domande per orientarti tra Economia Aziendale, Economia e Commercio, Sustainable Business e SECI.",
+      domande: [
+        ["Cosa ti incuriosisce di più?", [["Come si guida e si organizza un'impresa", { EA: 3 }], ["Come funzionano mercati, finanza ed economia di un paese", { EC: 3 }], ["Imprese sostenibili e impatto sociale", { SUSBUS: 3 }], ["Sviluppo, cooperazione e rapporti tra paesi", { SECI: 3 }]]],
+        ["Le materie che ti piacciono", [["Contabilità, marketing, organizzazione", { EA: 2 }], ["Matematica, statistica, modelli", { EC: 2, EA: 1 }], ["Lingue: studiare in inglese mi va bene", { SUSBUS: 2, SECI: 1 }], ["Storia, politica, società", { SECI: 2, EC: 1 }]]],
+        ["Dove ti vedi dopo la laurea?", [["In azienda o in consulenza", { EA: 2 }], ["In banca, nella finanza o nelle istituzioni", { EC: 2 }], ["In una startup o nella sostenibilità (ESG)", { SUSBUS: 2 }], ["In un'organizzazione internazionale o una ONG", { SECI: 2 }]]],
+        ["In che lingua vuoi studiare?", [["In italiano", { EA: 1, EC: 1, SECI: 1 }], ["Tutto in inglese", { SUSBUS: 2 }]]],
+      ],
+      risultati: {
+        EA: { nome: "Economia Aziendale", perche: "Ti interessa capire e guidare un'impresa: contabilità, bilancio, marketing, organizzazione.", poi: "Al III anno scegli il curriculum: Management (gestione e finanza d'impresa) o Marketing, internazionalizzazione e qualità.", link: "hub-economia.html" },
+        EC: { nome: "Economia e Commercio", perche: "Ti attirano mercati, finanza e politica economica, con più matematica e statistica.", poi: "Curriculum: Economia politica e mercati finanziari, Economia e diritto, oppure Economics and data.", link: "hub-economia.html" },
+        SUSBUS: { nome: "Sustainable Business for Societal Challenges", perche: "Vuoi imprese sostenibili e impatto sociale, e ti va di studiare tutto in inglese (numero programmato).", poi: "Condivide con Economia Aziendale le basi: contabilità, diritto, statistica.", link: "hub-economia.html" },
+        SECI: { nome: "Sviluppo sostenibile, cooperazione e gestione dei conflitti (SECI)", perche: "Ti interessano sviluppo, cooperazione e rapporti tra paesi: un corso di scienze sociali con l'economia dentro.", poi: "Al III anno tre curricula; con EA ed EC coincide poco.", link: "hub-economia.html" },
+      },
+      nota: "È un orientamento, non una scelta: controlla piani di studio e accesso sul sito UniFi.",
+    },
+    carriera: {
+      titolo: "Che carriera fa per te?", sotto: "Quattro domande per capire verso quale lavoro ti porta quello che ti piace di Economia.",
+      domande: [
+        ["Cosa ti diverte di più?", [["Numeri, mercati e investimenti", { fin: 3, ric: 1 }], ["Risolvere i problemi di un'azienda", { con: 3 }], ["Persone, brand e comunicazione", { mkt: 3 }], ["Precisione, conti e regole", { ctr: 3 }], ["Politiche e dati sull'economia", { ric: 3 }], ["Creare qualcosa di mio", { imp: 3 }]]],
+        ["Il lavoro ideale", [["Ritmo intenso, carriera veloce", { fin: 2, con: 2 }], ["Creatività", { mkt: 2, imp: 1 }], ["Stabilità e orari chiari", { ctr: 2, ric: 1 }], ["Impatto sulla società", { ric: 2, imp: 1 }]]],
+        ["Gli esami che ti vengono meglio", [["Finanza aziendale, matematica finanziaria", { fin: 2 }], ["Strategia, organizzazione", { con: 2 }], ["Marketing", { mkt: 2 }], ["Contabilità, bilancio", { ctr: 2 }], ["Macro, politica economica, econometria", { ric: 2 }]]],
+        ["Lavoro di squadra o da solo?", [["In squadra, con clienti", { con: 2, mkt: 1 }], ["Da solo, su analisi", { fin: 1, ric: 2, ctr: 1 }], ["Un po' e un po'", { imp: 2, mkt: 1 }]]],
+      ],
+      risultati: {
+        fin: { nome: "Banca, finanza e investimenti", perche: "Ti piacciono mercati e numeri: analisi finanziaria, investimenti, rischio.", poi: "Esami chiave: Finanza aziendale, Matematica finanziaria, Banca e sistema finanziario." },
+        con: { nome: "Consulenza e strategia", perche: "Ti piace risolvere problemi per le aziende, in squadra e con i clienti.", poi: "Esami chiave: Strategia d'impresa, Organizzazione aziendale, Pianificazione e controllo." },
+        mkt: { nome: "Marketing e comunicazione", perche: "Ti interessano persone, brand e mercato.", poi: "Esami chiave: Marketing, Marketing internazionale, Economia e gestione delle imprese." },
+        ctr: { nome: "Amministrazione, controllo e revisione", perche: "Ti trovi bene con conti, regole e precisione.", poi: "Esami chiave: Contabilità, Bilancio d'esercizio, Pianificazione e controllo di gestione." },
+        ric: { nome: "Economia pubblica, dati e ricerca", perche: "Ti interessano politiche economiche e analisi dei dati.", poi: "Esami chiave: Macroeconomia, Politica economica, Introduzione all'econometria." },
+        imp: { nome: "Impresa e startup", perche: "Vuoi costruire qualcosa di tuo.", poi: "Esami chiave: Economia e gestione delle imprese, Strategia d'impresa, Finanza aziendale." },
+      },
+      nota: "È un orientamento basato su quello che ti piace, non una previsione: parlane con chi lavora in quel settore.",
+    },
+  },
+  // «SCEGLIERE» DIVERSO PER OGNI HUB (commento S05.2): titolo, tre carte con le cose utili di quel corso, e l'orientatore se c'è.
+  scegliere: {
+    economia: { titolo: "Quale *Economia* fa per te", sotto: "A Firenze sono quattro corsi diversi: stesso primo anno per EA ed EC, strade che si separano dopo.",
+      carte: [["EA o EC?", "Economia Aziendale guarda dentro l'impresa (bilancio, marketing, organizzazione); Economia e Commercio guarda i mercati e l'economia di un paese, con più matematica."],
+        ["Il curriculum arriva al III anno", "In EA: Management o Marketing. In EC: mercati finanziari, economia e diritto, oppure Economics and data. Non è un contratto: orienta, non chiude porte."],
+        ["E se vuoi l'inglese o il sociale", "Sustainable Business è tutto in inglese e a numero programmato; SECI è un corso di scienze sociali su sviluppo e cooperazione."]], orientatore: true },
+    giurisprudenza: { titolo: "Giurisprudenza: *cinque anni* insieme", sotto: "Un ciclo unico: nessuna scelta a metà strada, ma tante dopo.",
+      carte: [["Ciclo unico", "Cinque anni senza laurea triennale in mezzo: il piano di studi è lungo e molto codificato."], ["Le professioni legali", "Avvocato, notaio, magistrato: ognuna ha il suo percorso dopo la laurea (pratica, scuole, concorsi)."], ["Non solo tribunali", "Aziende, pubblica amministrazione, organizzazioni internazionali: il diritto serve ovunque."]], orientatore: false },
+    medicina: { titolo: "Medicina: prima il *semestre filtro*", sotto: "L'accesso cambia: si parte con un semestre comune e la graduatoria nazionale.",
+      carte: [["Semestre filtro", "Fisica, chimica e biologia, uguali in tutta Italia, con esami che contano per la graduatoria."], ["La graduatoria", "Si entra in base ai risultati: conviene capire presto come funziona il punteggio (bando ministeriale)."], ["E dopo", "Sei anni, tirocini in reparto, poi specializzazione: un percorso lungo da pianificare."]], orientatore: false },
+  },
+
+  // PROGRAMMA INVITI (commento sulla pagina Ambassador): un incentivo per iscriversi e invitare. PROPOSTA, in arrivo dopo il lancio (card L27).
+  inviti: {
+    titolo: "Porta i tuoi compagni, *sblocchi* di più",
+    sotto: "Ognuno ha un codice personale. Più amici si iscrivono con il tuo codice, più cose sblocchi.",
+    livelli: [["1 amico", "Ti si sblocca una Simulazione d'esame a scelta"], ["3 amici", "Una settimana di UniLink Plus: il Planner sui tuoi esami"], ["5 amici", "Una dispensa completa a scelta"]],
+    nota: "Proposta per dopo il lancio: premi e soglie sono da decidere (card L27).",
+  },
+
+  // ===========================================================================================================
   // ARCHIVIO (solo founder: menu Founder → Archivio, pagina archivio/index.html). Le parti tolte dopo le decisioni dei founder
   // NON si cancellano: le pagine sono in archivio/ (con <base href="../"> per usare file e immagini della landing) e qui c'è,
   // per ognuna, cosa era, perché è stata tolta (con la fonte) e come si rimette. Aggiungere una voce: una riga qui.
   // ===========================================================================================================
 
   archivio: [
+    { id: "numeri", titolo: "Numeri in home (studenti, pagine, esami)", file: "archivio/index-v8.html", quando: "2026-10-08", tipo: "Sezione della home (H03)",
+      perche: "Commento H03: «così non ha senso, togli questa sezione e passa direttamente all'hub». I numeri restano in config.js → numeri.", fonte: "Commento di Matteo su H03 (demo v10)",
+      rimettere: "Rimettere la sezione H03 in index.html (è nella versione archivio/index-v8.html)." },
+    { id: "guida-altre", titolo: "Guida: le facoltà ancora «in architettura»", file: "guida.html?tutte=1", quando: "2026-10-08", tipo: "Parte della pagina",
+      perche: "Commento S14.1: nella Guida restano Economia (completa), Giurisprudenza e Medicina; le altre facoltà si vedono solo da qui.", fonte: "Commento di Matteo su S14.1 (demo v10)",
+      rimettere: "In guida.js togliere il filtro VISIBILI." },
     { id: "tools-extra", titolo: "Strumenti tolti dalla vetrina: Voto di laurea per corso, Quanto pesa questo esame, Quanto manca all'appello", file: "archivio/tools-v8.html", quando: "2026-10-08", tipo: "Strumenti",
       perche: "Commento S09: tenere pochi strumenti utili per tutti. «Quanto pesa» è dentro «Che media mi serve?», «Quanto manca» dentro «Ci stai nei tempi?»; il voto per corso torna quando aprono gli altri hub.", fonte: "Commento di Matteo su S09 (demo v9)",
       rimettere: "In tools.js togliere «archiviato: true» dalla voce." },
