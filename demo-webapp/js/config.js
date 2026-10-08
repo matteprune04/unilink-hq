@@ -17,7 +17,7 @@ UL.VERSIONE = { n: 10, data: "2026-10-08", nota: "Commenti del 8/10: I miei esam
    Le dispense NON si scaricano: si leggono e si annotano solo qui (lettore, js/views/lettore.js). Cambiarli qui li cambia ovunque. */
 UL.PIANI = {
   stato: "Prezzi di lancio · decisi il 7/10",
-  prezzi: { simulazione: [4.99, 9.99], completa: [12.99, 18.99], semestre: { 3: [29.99, 39.99], 4: [34.99, 44.99] }, plus: 14.99, plusConPacchetto: 7.99 },
+  prezzi: { simulazione: [5.99, 9.99], completa: [12.99, 18.99], semestre: { 3: [29.99, 39.99], 4: [34.99, 44.99] }, plus: 14.99, plusConPacchetto: 7.99 },
   maxEsamiPacchetto: 4,
   // fine della sessione in corso o della prossima: fino a quando vale Plus (una tantum)
   fineSessioni: ["02-28", "07-31", "09-30"],
@@ -26,7 +26,7 @@ UL.PIANI = {
     testo: "Gratis per tutti: schede degli esami, quiz di prova, strumenti e la dispensa completa di Economia Aziendale (I anno), per vedere com'è fatta prima di comprare." },
   lista: [
     { k: "free", nome: "Gratuito", tipo: "Account", prezzo: "0 €", sub: "per sempre", d: "Schede, quiz di prova, libretto e strumenti. Economia Aziendale completa, gratis." },
-    { k: "simulazione", prezzo: "4,99 € · invece di 9,99 €", nome: "Simulazione d'esame", tipo: "Singolo esame", d: "Una prova nel formato dell'appello, con correzione e spiegazioni." },
+    { k: "simulazione", prezzo: "5,99 € · invece di 9,99 €", nome: "Simulazione d'esame", tipo: "Singolo esame", d: "Una prova nel formato dell'appello, con correzione e spiegazioni." },
     { k: "completa", prezzo: "12,99 € · invece di 18,99 €", nome: "Dispensa completa", tipo: "Singolo esame", d: "Tutto per un esame: dispensa, quiz e simulazioni, da leggere e annotare qui." },
     { k: "semester", prezzo: "29,99 € o 34,99 €", nome: "Pacchetto semestre", tipo: "Pacchetto", d: "Le dispense complete del semestre del tuo percorso: 3 esami 29,99 €, 4 esami 34,99 €.", hot: true },
     { k: "plus", prezzo: "14,99 € · 7,99 € con un pacchetto", nome: "UniLink Plus", tipo: "Il coach", d: "Planner stile TTP su tutti gli esami, analisi degli errori, «pronto per l'esame?». Una volta per sessione." },

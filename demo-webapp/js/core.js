@@ -31,7 +31,7 @@
 
   /* ---------- v7 · livelli di accesso per esame (decisioni del 7/10) ----------
      "none"        → solo scheda e quiz di prova
-     "simulazione" → + la simulazione d'esame di quell'esame (acquisto «simulazione», 4,99 €)
+     "simulazione" → + la simulazione d'esame di quell'esame (acquisto «simulazione», 5,99 €)
      "completa"    → dispensa da leggere e annotare nell'app, quiz, simulazioni, piano personale del Planner.
      La Completa arriva da: acquisto «completa», pacchetto semestre che include l'esame, team, ed è GRATIS per tutti
      per l'esame di UL.PIANI.gratis.esame (Economia Aziendale). Plus NON dà materiali.

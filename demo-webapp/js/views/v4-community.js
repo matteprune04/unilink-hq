@@ -112,7 +112,7 @@
      Cosa ricevono gli altri studenti per un invito non è deciso: card L27 della landing (Founder → Da decidere).
      Dati: activity.referral { code, invited, confirmed, vendite: [{ cosa, prezzo, at }] } · activity.ambassador ("" | "inviata" | "attivo") */
   const COMM = 0.2;
-  const VENDITE_DEMO = [["Dispensa completa · Microeconomia", 12.99], ["Pacchetto semestre · I anno, II semestre", 29.99], ["Simulazione d'esame · Statistica", 4.99]];
+  const VENDITE_DEMO = [["Dispensa completa · Microeconomia", 12.99], ["Pacchetto semestre · I anno, II semestre", 29.99], ["Simulazione d'esame · Statistica", 5.99]];
   UL.views.ambassadorU = {
     title: "Ambassador",
     render(u, params) {

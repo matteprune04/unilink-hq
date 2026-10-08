@@ -548,13 +548,21 @@
     if (!FUNZIONANTI) {
       // VETRINA: in home 4 card compatte, nella pagina Strumenti tutte le card dell'hub, ricche
       const ricco = pagina === "tools";
+      // v12 (commenti H08 e S09): una grande illustrazione, il nome, a cosa serve in una riga, il link. Niente altro a prima vista.
+      // In home: tessere; nella pagina Strumenti: una riga per strumento con in più la domanda e un esempio di risultato.
       const drawV = () => {
         const ids = root.dataset.ids ? root.dataset.ids.split(",") : null;
-        let l = ids ? ids.map((i) => ULTools.trova(i)).filter(Boolean) : ULTools.lista(hub).slice(0, limit), ar = []; // v10: «Erasmus completo» e «Media completa» sono dentro i 4 strumenti
-        if (l.some((t) => t.id === "voto")) l = l.filter((t) => t.id !== "voto-cdl"); // un solo «Voto di laurea» per hub
-        root.className = "vt-grid" + (ricco ? " ricco" : "");
-        const PLN = VT.planner;
-        root.innerHTML = l.map((t) => vetrinaCard(t, ricco)).join("") + (PLN && hub === "economia" ? `<article class="vt-card vt-plus"><div class="vt-top"><span class="ico">◷</span><div><h3>${esc(PLN.titolo)}</h3><p class="small">${esc(PLN.testo)}</p></div></div><a class="btn btn-a" href="${PLN.href}">${esc(PLN.cta)} <span class="freccia">→</span></a></article>` : "") + ar.map((t) => `<article class="vt-card area"><div class="vt-top"><span class="ico">${esc(t.icona)}</span><div><h3>${esc(t.nome)}</h3><p class="small">${esc(t.desc)}</p></div></div><a class="btn btn-s" href="${APP}${t.href || ""}">Nell'area personale →</a></article>`).join("");
+        let l = ids ? ids.map((i) => ULTools.trova(i)).filter(Boolean) : ULTools.lista(hub).slice(0, limit);
+        if (l.some((t) => t.id === "voto")) l = l.filter((t) => t.id !== "voto-cdl");
+        const IL = CFG.illus || {}, PR = CFG.perche || {};
+        const items = l.map((t) => { const v = (VT.tools || {})[t.id] || {}; return { id: t.id, nome: t.nome, dom: v.domanda || t.desc, perche: PR[t.id] || t.desc, es: v.esempio, href: usaloHref(t.id), cta: "Usalo gratis", demo: t.stato === "demo" }; });
+        if (VT.planner && hub === "economia") items.push({ id: "planner", nome: "Il Planner", plus: true, dom: VT.planner.testo, perche: PR.planner || VT.planner.testo, href: VT.planner.href, cta: "Scopri il Planner" });
+        const badge = (x) => (x.plus ? '<span class="badge vt-bplus">UniLink Plus</span>' : '<span class="badge on">Gratis con l\'account</span>');
+        root.className = ricco ? "vt-righe" : "vt-show";
+        root.innerHTML = items.map((x) => ricco
+          ? `<article class="vt-riga ${x.plus ? "plus" : ""}"><div class="vt-ill">${IL[x.id] || ""}</div><div class="vt-txt">${badge(x)}<h3>${esc(x.nome)}</h3><p class="vt-dom">${esc(x.plus ? x.perche : x.dom)}</p>
+              ${x.es ? `<div class="vt-es2"><span>Esempio</span>${esc(x.es)}</div>` : ""}<a class="btn ${x.plus ? "btn-p" : "btn-a"}" href="${x.href}">${x.cta} <span class="freccia">→</span></a>${x.demo ? '<p class="small">Regole d\'esempio, da verificare sul bando.</p>' : ""}</div></article>`
+          : `<a class="vt-tile ${x.plus ? "plus" : ""}" href="${x.href}"><div class="vt-ill">${IL[x.id] || ""}</div><div class="vt-txt">${badge(x)}<h3>${esc(x.nome)}</h3><p>${esc(x.perche)}</p><span class="vt-link">${x.cta} →</span></div></a>`).join("");
       };
       const tabs = $("#hubtabs");
       tabs && $$("span", tabs).forEach((s) => s.addEventListener("click", () => { $$("span", tabs).forEach((x) => x.classList.remove("on")); s.classList.add("on"); hub = s.dataset.hub; drawV(); }));
