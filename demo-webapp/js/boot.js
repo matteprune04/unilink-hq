@@ -15,14 +15,14 @@
       { g: "Studio", items: [
         { k: "dashboard", l: "Dashboard", i: "home", to: "#/app/dashboard" },
         { k: "esami", l: "I miei esami", i: "book", to: "#/app/esami" },
-        { k: "materiali", l: "Catalogo e pacchetti", i: "layers", to: "#/app/materiali/catalogo", soloAttiva: true },
-        { k: "planner", l: "Planner", i: "target", to: "#/app/planner", soloAttiva: true },
+        { k: "planner", l: "Planner · Plus", i: "target", to: "#/app/planner", soloAttiva: true },
         { k: "strumenti", l: "Strumenti", i: "calc", to: "#/app/strumenti" },
         // «Guida» archiviata il 7/10; «Aula studio» e «Ambassador» spostate nelle proposte l'8/10 (D45, D46)
       ] },
       // «Dopo gli esami» (Il mio percorso) è una proposta dall'8/10 (D50); il libretto è in «I miei esami»
       { g: "Account", items: [
-        { k: "abbonamento", l: "Abbonamento", i: "euro", to: "#/app/abbonamento" },
+        { k: "materiali", l: "Catalogo e acquisti", i: "layers", to: "#/app/materiali/catalogo", soloAttiva: true },   // v10: vicino ad Abbonamento
+        { k: "abbonamento", l: "Piani e abbonamento", i: "euro", to: "#/app/abbonamento" },
         { k: "account", l: "Profilo e account", i: "user", to: "#/app/account" },
       ] },
     ],
@@ -92,7 +92,7 @@
     key: "ul_unilink_v4",
     name: "UniLink",
     tag: "Area Personale",
-    flag: "DEMO v9 · dati di esempio",
+    flag: "DEMO v10 · dati di esempio",
     home: "#/app/dashboard",
     homeKey: "dashboard",
     onboarding: "onboardingU",

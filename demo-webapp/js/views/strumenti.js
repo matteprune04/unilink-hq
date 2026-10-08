@@ -3,7 +3,7 @@
    La landing li mostra in vetrina e il pulsante «Usalo gratis» porta qui: #/app/strumenti/<id>. Servono l'account (anche gratuito).
    I numeri d'uso (activity.tool[id]) alimenteranno le metriche della vetrina, mostrate solo sopra una soglia. */
 (function () {
-  const UL = window.UL, B = UL.B;
+  const UL = window.UL, B = UL.B, U = UL.U;
   const { icon, esc } = UL.ui;
   const HUB = { economia: "economia", giurisprudenza: "giurisprudenza", medicina: "medicina" };
   UL.views.strumentiU = {
@@ -14,13 +14,15 @@
       const L = window.ULTools.lista(hub).filter((t, i, a) => !(t.id === "voto-cdl" && a.some((x) => x.id === "voto")));
       const sel = L.find((t) => t.id === params[0]) || L[0];
       return `<div class="page-head"><div><div class="eyebrow">${icon("calc")} Studio</div><h1>Strumenti che fanno i <span class="accent">conti</span></h1>
-          <p class="lead">Gratis con il tuo account. Le regole vengono dalla Scuola di Economia UniFi; quelle segnate «da verificare» sono di esempio.</p></div></div>
+          <p class="lead">Gratis con il tuo account. Partono già dai voti del tuo libretto: cambi solo quello che vuoi simulare.</p></div></div>
         <div class="st-tool ul-tools"><nav class="st-tlist" aria-label="Strumenti">${L.map((t) => `<a href="#/app/strumenti/${t.id}" class="${t.id === sel.id ? "on" : ""}"><span class="ico">${esc(t.icona)}</span><span><b>${esc(t.nome)}</b><small>${esc(t.desc)}${t.stato === "demo" ? " · da verificare" : ""}</small></span></a>`).join("")}</nav>
           <section><h2 style="margin-bottom:12px">${esc(sel.nome)}</h2><div data-tool-qui></div>
             <p class="tiny muted" style="margin-top:10px">Il risultato è una stima: decide sempre l'Ateneo. Per salvare media ed esami usa <a href="#/app/percorso/libretto">Il mio percorso</a>.</p></section></div>`;
     },
     mount(root, u, params) {
       const el = root.querySelector("[data-tool-qui]"); if (!el || !window.ULTools) return;
+      // v10: gli strumenti partono dai tuoi dati (libretto), così sono completi senza ricopiare niente
+      if (U.calcoloLaurea) { const R = U.calcoloLaurea(u); window.UL_PREFILL = { media: R.media ? Math.round(R.media * 10) / 10 : null, lodi: R.lodi, esami: R.F.map((x) => [Number(x.e.voto), ((UL.ORE && UL.ORE.esami[x.c.code]) || {}).cfu || x.c.cfu || 9]), rest: R.resto, obiettivo: 27 }; }
       const hub = HUB[u.profile.area] || "economia", L = window.ULTools.lista(hub), sel = L.find((t) => t.id === params[0]) || L[0];
       window.ULTools.monta(el, sel.id);
       const T = (u.activity.tool = u.activity.tool || {}); T[sel.id] = (T[sel.id] || 0) + 1; UL.store.save(); B.track("tool-" + sel.id);

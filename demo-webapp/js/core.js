@@ -159,7 +159,7 @@
   B.plusItem = (user) => {
     const pr = user ? B.prezzoPlus(user) : B.PRICES.plus, fino = B.fineSessione();
     return { type: "plus", price: pr, label: "UniLink Plus · fino al " + fino.toLocaleDateString("it-IT", { day: "numeric", month: "long" }),
-      incl: ["UniLink Planner personalizzato su tutti i tuoi esami", "Missioni, calendario, «oggi» e completate", "Ripasso del registro errori su tutti gli esami", "Una volta per sessione, nessun rinnovo automatico" + (user && B.haPacchetto(user) ? " · prezzo con pacchetto" : ""), "In valutazione: decisione del 7/10, Plus in stand-by"] };
+      incl: ["Planner stile TTP su tutti i tuoi esami: piano, calendario, «oggi», ritardi", "Analisi degli errori su tutti gli esami: cause, tempi, capitoli deboli", "«Pronto per l'esame?»: quanto sei pronto per ogni appello", "Ripasso degli errori mescolato tra gli esami", "Una volta per sessione, nessun rinnovo automatico" + (user && B.haPacchetto(user) ? " · prezzo con pacchetto" : "")] };
   };
   B.cancelPlus = (user) => {
     user.activity.plus = Object.assign(user.activity.plus || {}, { active: false, cancelAt: new Date().toISOString() });

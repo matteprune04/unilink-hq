@@ -62,7 +62,7 @@
     }
     if (!o.length) return UL.ui.toast("Hai già tutto quello che serve qui");
     const m = UL.ui.modal(`
-      <div class="modal-head"><div><span class="sq-label">Sblocca</span><h2 style="margin-top:8px">${esc(opz.plus ? "Con UniLink Plus" : opz.pianifica ? "Il piano di " + (c ? c.title : "questo esame") : c ? c.title : "")}</h2><p class="small muted" style="margin-top:4px">${opz.plus ? "Plus è il metodo: Planner personale e ripasso degli errori su tutti gli esami. Le dispense si comprano a parte." : opz.pianifica ? "Il piano personale si crea con la dispensa completa dell'esame (o un pacchetto che lo include), oppure con Plus per tutti i tuoi esami." : "Scegli tu cosa ti serve. " + esc(P.stato) + "."}</p></div>
+      <div class="modal-head"><div><span class="sq-label">Sblocca</span><h2 style="margin-top:8px">${esc(opz.plus ? "Con UniLink Plus" : opz.pianifica ? "Il piano di " + (c ? c.title : "questo esame") : c ? c.title : "")}</h2><p class="small muted" style="margin-top:4px">${opz.plus ? "Plus è il metodo: Planner personale e ripasso degli errori su tutti gli esami. Le dispense si comprano a parte." : opz.pianifica ? "Il piano personale stile TTP è di UniLink Plus, su tutti i tuoi esami." : "Scegli tu cosa ti serve. " + esc(P.stato) + "."}</p></div>
         <button class="icon-btn" data-close aria-label="Chiudi">${icon("x")}</button></div>
       <div class="pricing" style="grid-template-columns:repeat(${o.length},1fr)">${o.map((x, i) => `<div class="plan ${x.hot ? "hot" : ""}" data-hot="${esc(x.tag || "")}"><h3>${esc(x.t)}</h3><div class="price">${x.p ? eur(x.p) : "Gratis"} <small>${esc(x.s)}</small></div>
         <ul>${x.incl.map((y) => `<li>${icon("check")}${esc(y)}</li>`).join("")}</ul><button class="btn ${x.hot ? "btn-orange" : "btn-primary"}" data-pick="${i}">Scegli</button></div>`).join("")}</div>
@@ -205,7 +205,8 @@
   };
   const n1 = (x) => Number(x).toLocaleString("it-IT", { maximumFractionDigits: 1 });
   // chi può creare il piano personale di un esame: Completa di quell'esame (anche da pacchetto) oppure Plus (tutti gli esami)
-  B.puoPianificare = (user, slug) => B.plus(user) || B.ownsCompleta(user, slug);
+  // v10 (commenti 4 e 7 del 8/10): il piano personale stile TTP è ESCLUSIVO di Plus; per tutti resta il giudizio «ci stai nei tempi?»
+  B.puoPianificare = (user) => B.plus(user);
   const fascia = (id) => PL.fasce.find((f) => f.id === id) || PL.fasce[2];
   const capitoli = (c) => { const t = [...new Set(B.questions(c.slug).map((q) => q.topic))]; return t.length ? t : Array.from({ length: Math.max(5, Math.round((c.cfu || 6) * 0.8)) }, (_, i) => "Capitolo " + (i + 1)); };
   // ore ufficiali di studio individuale dell'esame (UniFi: 17 h per CFU) e ore che servono per fascia e situazione dello studente
@@ -269,7 +270,7 @@
           ${st.giudizio[1] === "Fattibile" ? "" : `<p class="small" style="margin-top:8px">${st.giudizio[1] === "Non realistico" ? "Con questi tempi l'obiettivo non è realistico: scegli una fascia più bassa, sposta l'appello o aggiungi giorni e ore." : "Aggiungi giorni o ore, oppure scegli una fascia più bassa."}</p>`}
           <p class="tiny muted" style="margin-top:8px">Fattibile ≥ 110% · Tirato 90–110% · Difficile 70–90% · Non realistico &lt; 70%. Le fasce moltiplicano le ore ufficiali (ipotesi da calibrare con i tempi veri).</p></div>
         ${plus ? `<button class="btn btn-orange btn-arrow btn-block" data-crea>${piani(user)[c.slug] ? "Rigenera il piano" : "Crea il piano"} <span class="arr">${icon("arrow")}</span></button><p class="tiny muted">Il piano si calcola una volta sola: ${piani(user)[c.slug] ? "rigenerarlo azzera le date (le sessioni fatte restano fatte)." : "se salti una sessione, le missioni restano in ordine e vedi il ritardo."}</p>`
-          : U.lock("Il piano personale di " + c.title, B.haCompleta(c) ? `Con la dispensa completa (${eur(B.prezzo("completa", c))}) o con Plus per tutti gli esami (${eur(B.prezzoPlus(user))})` : `Con Plus (${eur(B.prezzoPlus(user))}): per questo esame la completa non c'è ancora`, `data-v4plan="${c.slug}"`)}</section></div>`;
+          : U.lock("Il piano personale di " + c.title, `Con UniLink Plus: piano stile TTP su tutti i tuoi esami, ${eur(B.prezzoPlus(user))} una tantum`, `data-v4plan="${c.slug}"`)}</section></div>`;
   }
   function metodoStandard(c) {
     const caps = capitoli(c);
@@ -334,7 +335,7 @@
     return `<div class="v4-blur"><div class="v4-blur-in" aria-hidden="true">
         <div class="stats"><div class="stat"><span class="k">Completato</span><span class="v">38%</span></div><div class="stat"><span class="k">Ore studiate</span><span class="v">18 h</span></div><div class="stat"><span class="k">Rispetto al piano</span><span class="v">In linea</span></div><div class="stat"><span class="k">Appello</span><span class="v">26 giorni</span></div></div>
         <div class="v4-fasi big" style="margin-top:14px">${PL.fasi.map(([n], i) => `<div class="${i < 2 ? "fatta" : i === 2 ? "ora" : ""}"><span class="sq-label">Fase ${i + 1}</span><b>${n}</b><div class="v4-bar"><i style="width:${[100, 100, 20, 0, 0][i]}%"></i></div></div>`).join("")}</div></div>
-      <div class="v4-blur-msg"><span class="badge badge-orange">Completa o Plus</span><h3>Il piano di ${esc(c.title)}, sui tuoi giorni</h3><p class="small">Percorso per fasi, missioni da spuntare, calendario, «oggi» e completate. Si crea con la dispensa completa di ${esc(c.title)}, oppure con Plus per tutti i tuoi esami. Qui sopra un esempio.</p>
+      <div class="v4-blur-msg"><span class="badge badge-orange">UniLink Plus</span><h3>Il piano di ${esc(c.title)}, sui tuoi giorni</h3><p class="small">Percorso per fasi, missioni da spuntare, calendario, «oggi» e completate, su tutti i tuoi esami. È il cuore di Plus. Qui sopra un esempio.</p>
         <button class="btn btn-orange" data-v4plan="${c.slug}">Sblocca il piano</button><span class="tiny muted">una tantum, fino al ${B.fineSessione().toLocaleDateString("it-IT", { day: "numeric", month: "long" })}${B.haPacchetto(user) ? "" : ` · con un pacchetto ${eur(P.prezzi.plusConPacchetto)}`}</span></div></div>`;
   }
   UL.views.plannerU = {
@@ -350,7 +351,7 @@
       const v = VISTE.some((x) => x[0] === params[1]) ? params[1] : p && puoi ? "percorso" : "variabili";
       U.plCfg = U.plCfg && U.plCfg.slug === slug ? U.plCfg : { slug, appello: (p && p.appello) || (user.activity.exams.find((e) => e.slug === slug) || {}).appello || iso(new Date(Date.now() + 40 * 864e5)), fascia: (p && p.fascia) || "ottimo", giorni: (p && p.giorni) || [1, 2, 3, 4, 5, 6], ore: (p && p.ore) || 2.5, margine: (p && p.margine) || 0.18 };
       const cfg = U.plCfg;
-      return `${head("Studio · UniLink Planner", "target", `Il tuo <span class="accent">piano</span>`, "Il metodo standard e «Ci stai nei tempi?» sono per tutti. Il piano personale, calcolato una volta sui tuoi giorni e diviso in fasi e sessioni da 45 minuti, si crea con la dispensa completa dell'esame o con Plus per tutti gli esami.", plus ? `<span class="badge badge-orange">Plus · tutti gli esami</span>` : puoi ? `<span class="badge badge-green">Completa · piano attivabile</span>` : `<span class="badge badge-soft">${icon("lock")} Piano personale: Completa o Plus</span>`)}
+      return `${head("Studio · UniLink Planner", "target", `Il tuo <span class="accent">piano</span>`, "Per tutti: il metodo standard e il giudizio «ci stai nei tempi?». Con Plus: il piano personale stile TTP, calcolato sui tuoi giorni, diviso in fasi e sessioni da 45 minuti, su tutti i tuoi esami.", plus ? `<span class="badge badge-orange">Plus · tutti gli esami</span>` : `<span class="badge badge-soft">${icon("lock")} Piano personale: con Plus</span>`)}
         ${Object.keys(PI).length ? `<div class="chips" style="margin-bottom:12px">${Object.keys(PI).filter((s) => B.course(s)).map((s) => `<a class="chip ${s === slug ? "on" : ""}" href="#/app/planner/${s}">${esc(B.course(s).title)}</a>`).join("")}<a class="chip" href="#/app/planner/${(esami.find((e) => !PI[e.slug]) || {}).slug || slug}/variabili">${icon("plus")} Nuovo piano</a></div>` : ""}
         <div class="tabs">${VISTE.map(([k, l, i]) => { const bloccata = k !== "variabili" && !puoi; return `<a href="#/app/planner/${slug}/${k}" class="${k === v ? "on" : ""}">${icon(bloccata ? "lock" : i)} ${l}</a>`; }).join("")}</div>
         ${v === "variabili" ? variabiliForm(user, c, cfg, puoi) + metodoStandard(c)

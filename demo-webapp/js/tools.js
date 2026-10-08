@@ -23,7 +23,7 @@
   window.UL_TOOLS = [
     { id: "voto", nome: "Quanto prendo alla laurea?", desc: "Dalla media al voto finale, con le regole ufficiali della Scuola.", hub: ["economia"], stato: "live", dove: "landing", icona: "110" },
     { id: "media", nome: "Che media mi serve?", desc: "Che voti servono negli esami che restano per l'obiettivo che vuoi.", hub: ["tutti"], stato: "live", dove: "landing", icona: "Ø" },
-    { id: "piano", nome: "Ci stai nei tempi?", desc: "Giorni e argomenti fino all'appello: quanto fare ogni giorno. È l'assaggio gratuito del Planner.", hub: ["tutti"], stato: "live", dove: "landing", icona: "◷" },
+    { archiviato: true, id: "piano", nome: "Ci stai nei tempi?", desc: "Giorni e argomenti fino all'appello: quanto fare ogni giorno. È l'assaggio gratuito del Planner.", hub: ["tutti"], stato: "live", dove: "landing", icona: "◷" },
     { id: "erasmus", nome: "Erasmus: punteggio e mete", desc: "Il tuo punteggio per il bando e le mete con la media dell'ultima graduatoria.", hub: ["economia"], stato: "demo", dove: "landing", icona: "✈" },
     // strumenti universali della home (proposta P6): compatti, uguali per tutti, regole per corso dove servono
     { id: "voto-cdl", nome: "Voto di laurea (per corso)", desc: "Scegli il tuo corso: si applicano le sue regole.", hub: ["tutti"], stato: "live", dove: "landing", icona: "110", archiviato: true },
@@ -50,7 +50,8 @@
     // web app (views/libretto.js): presentazione = media·110/30 + 0,333 per lode; produttività 0–3; rapidità 0–2; tesi 1–3;
     // arrotondamento all'intero; lode con 110, presentazione ≥ 104,5 e tesi Ottima.
     voto(el) {
-      const st = { media: 27.4, lodi: 2, tesi: 2, corso: 2, prod: 3 };
+      const PF = window.UL_PREFILL || {}; // v10: nella web app i dati arrivano dal libretto (strumenti «completi»)
+      const st = { media: PF.media || 27.4, lodi: PF.lodi != null ? PF.lodi : 2, tesi: 2, corso: 2, prod: 3 };
       el.innerHTML = `<div class="tl-in">${range("t-media", "Media ponderata", 18, 30, 0.1, st.media, (v) => fmt(v))}${range("t-lodi", "Lodi", 0, 10, 1, st.lodi, (v) => v)}
         ${seg("tesi", "Tesi", [[1, "Sufficiente"], [2, "Buona"], [3, "Ottima"]], st.tesi)}${seg("corso", "Quando ti laurei", [[2, "Entro il 31/12 del III anno"], [1, "Entro il 30/4"], [0, "Più tardi"]], st.corso)}${seg("prod", "Produttività (CFU ogni anno)", [[3, "40+ ogni anno"], [2, "Quasi sempre 40+"], [1, "20–39"], [0, "Meno"]], st.prod)}</div>
         <div class="tl-out"><div class="tl-k"><span>Voto di presentazione</span><b id="t-pres"></b></div><div class="tl-k big"><span>Voto finale stimato</span><b id="t-fin"></b></div><p class="tl-nota" id="t-nota"></p>
@@ -69,8 +70,9 @@
 
     // Media ponderata sui CFU e voto necessario nei CFU che restano (matematica esatta)
     media(el) {
-      const righe = [[28, 9], [26, 6], [30, 12]];
-      const st = { rest: 90, ob: 27 };
+      const PF = window.UL_PREFILL || {};
+      const righe = PF.esami && PF.esami.length ? PF.esami.map((x) => x.slice()) : [[28, 9], [26, 6], [30, 12]];
+      const st = { rest: PF.rest != null ? PF.rest : 90, ob: PF.obiettivo || 27 };
       el.innerHTML = `<div class="tl-in"><div class="tl-l">I tuoi esami (voto · CFU)</div><div id="m-righe"></div>
         <button type="button" class="tl-add" id="m-add">+ Aggiungi esame</button>
         ${range("m-rest", "CFU che ti restano", 0, 180, 3, st.rest, (v) => v)}${range("m-ob", "Media obiettivo", 18, 30, 0.1, st.ob, (v) => fmt(v))}</div>

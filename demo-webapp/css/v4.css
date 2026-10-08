@@ -204,3 +204,74 @@
 .colori-cerchio input:checked + .avatar::after { content: "✓"; position: absolute; right: -6px; bottom: -6px; width: 18px; height: 18px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 11px; display: grid; place-items: center; }
 .colori-cerchio input:focus-visible + .avatar { outline: 3px dashed var(--orange); }
 @media (max-width: 700px) { .lb-anni, .lb-parti { grid-template-columns: 1fr 1fr; } }
+
+/* ===================== v10 · commenti del 8/10: meno sovraccarico, grandezze armoniche ===================== */
+/* I miei esami: elenco per quello che puoi fare */
+.me-h { font-size: 20px; margin: 22px 0 10px; display: flex; gap: 8px; align-items: center; } .me-h .cnt { font-size: 13px; background: var(--beige); border-radius: 99px; padding: 2px 9px; }
+.me-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
+.me-card { background: var(--white); border: 1.5px solid var(--line); border-radius: var(--r-lg); padding: 18px; display: grid; gap: 8px; align-content: start; }
+.me-card.own { border-color: var(--navy); }
+.me-card h3 { font-size: 20px; } .me-top { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+.me-oggi { display: flex; flex-wrap: wrap; gap: 8px; } .me-oggi span { display: inline-flex; gap: 6px; align-items: center; background: var(--cream); border-radius: 99px; padding: 4px 10px; font-size: 13.5px; }
+.me-fatti { display: flex; flex-wrap: wrap; gap: 8px; } .me-fatti a { display: inline-flex; gap: 10px; background: var(--white); border: 1.5px solid var(--line); border-radius: 99px; padding: 6px 14px; text-decoration: none; color: var(--ink); font-size: 14px; } .me-fatti a span { color: var(--green); font-family: var(--font-display); }
+.me-offerta { margin-top: 26px; background: var(--beige); border-radius: var(--r-lg); padding: 16px 18px; display: grid; gap: 10px; }
+.me-offerta > div { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.me-offerta > div > div { background: var(--white); border-radius: 14px; padding: 10px 12px; display: grid; gap: 2px; font-size: 13.5px; } .me-offerta b { font-family: var(--font-display); font-weight: 400; color: var(--navy); }
+.me-offerta .ev { outline: 2px solid var(--navy); } .me-offerta .plus { background: var(--navy); color: #fff; } .me-offerta .plus b { color: #fff; }
+/* scheda dell'esame: testi e titoli della stessa scala ovunque */
+.st-corpo { font-size: 15.5px; } .st-corpo h3 { font-size: 18px; } .st-corpo h2 { font-size: 24px; }
+.st-tabs a { font-size: 15px; }
+/* dispensa e note proporzionate */
+.lt-wrap { grid-template-columns: minmax(0, 1fr) 340px; }
+.lt-note h3 { font-size: 17px; } .lt-lista p { font-size: 15px; } .lt-note textarea { font-size: 15px; }
+/* «Pronto per l'esame?» */
+.pr-card { display: flex; gap: 18px; align-items: center; margin-bottom: 16px; }
+.pr-num { width: 92px; height: 92px; border-radius: 50%; background: var(--navy); color: #fff; display: grid; place-items: center; align-content: center; flex: none; }
+.pr-num b { font-family: var(--font-display); font-weight: 400; font-size: 28px; line-height: 1; } .pr-num span { font-size: 11px; opacity: .8; }
+.pr-parti { display: flex; gap: 8px; flex-wrap: wrap; } .pr-parti span { background: var(--cream); border-radius: 99px; padding: 3px 10px; font-size: 13px; }
+/* flashcard stile Anki: mazzi + ripasso a pagina intera */
+.fc-overview { display: grid; gap: 14px; max-width: 900px; }
+.fc-oggi { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; } .fc-oggi h2 { margin: 4px 0; }
+.fc-n { font-family: var(--font-display); font-weight: 400; } .fc-n.nu { color: #2563eb; } .fc-n.im { color: #c2410c; } .fc-n.ri { color: #15803d; } .fc-n.zero { color: var(--muted); opacity: .5; }
+.fc-mazzi { width: 100%; border-collapse: collapse; } .fc-mazzi th { text-align: left; font-size: 12.5px; color: var(--muted); font-weight: 400; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+.fc-mazzi td { padding: 10px 8px; border-bottom: 1px solid var(--line); font-size: 15px; } .fc-mazzi td small { display: block; font-size: 12px; color: var(--muted); }
+.fc-mazzi td:nth-child(2), .fc-mazzi td:nth-child(3), .fc-mazzi td:nth-child(4), .fc-mazzi th:nth-child(n+2) { text-align: center; width: 76px; }
+.fc-mazzi tr.liv1 td:first-child { font-family: var(--font-display); color: var(--navy); } .fc-mazzi tr.liv2 td:first-child { padding-left: 26px; }
+.fc-agg summary { cursor: pointer; list-style: none; } .fc-form { display: grid; gap: 8px; margin-top: 10px; }
+.fc-focus { position: fixed; inset: 0; z-index: 9000; background: var(--cream); display: grid; grid-template-rows: auto 1fr auto; padding: 18px; gap: 16px; }
+.fc-f-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-family: var(--font-display); color: var(--navy); }
+.fc-f-n { display: flex; gap: 14px; font-size: 20px; }
+.fc-f-carta { align-self: center; justify-self: center; width: min(760px, 100%); background: var(--white); border-radius: 26px; box-shadow: var(--shadow-lg); padding: 40px 36px; text-align: center; display: grid; gap: 14px; }
+.fc-f-fronte { font-family: var(--font-display); font-size: clamp(22px, 3vw, 32px); color: var(--navy); } .fc-f-retro { font-size: 18px; line-height: 1.6; }
+.fc-f-azioni { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; padding-bottom: 8px; }
+.fc-gira { min-width: 280px; justify-content: center; }
+.fc-voto { display: grid; gap: 2px; min-width: 130px; padding: 10px 14px; border-radius: 16px; border: 1.5px solid var(--line); background: var(--white); font: inherit; font-family: var(--font-display); cursor: pointer; color: var(--navy); }
+.fc-voto small { font-size: 12px; color: var(--muted); font-family: var(--font-body); } .fc-voto.v1 { border-color: #f1b8a8; } .fc-voto.v4 { background: var(--navy); color: #fff; } .fc-voto.v4 small { color: rgba(255,255,255,.75); }
+kbd { font-size: 10.5px; border: 1px solid var(--line); border-radius: 5px; padding: 0 5px; margin-left: 6px; color: var(--muted); background: var(--white); }
+/* esercizi: prima scegli cosa fare */
+.es-scelte { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.es-scelta { display: grid; gap: 6px; text-align: left; background: var(--white); border: 1.5px solid var(--line); border-radius: var(--r-lg); padding: 18px; cursor: pointer; font: inherit; color: var(--ink); text-decoration: none; }
+.es-scelta:hover { border-color: var(--navy); } .es-scelta.spenta { opacity: .55; cursor: default; }
+.es-scelta .ic { width: 42px; height: 42px; border-radius: 12px; background: var(--navy); color: #fff; display: grid; place-items: center; }
+.es-scelta b { font-family: var(--font-display); font-weight: 400; font-size: 18px; color: var(--navy); } .es-scelta span:last-child { font-size: 14px; color: var(--muted); }
+.es-riass { margin: 10px 0 14px; }
+.es-lista { list-style: none; padding: 0; margin: 0; } .es-lista li { display: grid; grid-template-columns: 1fr 120px auto; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.es-lista li.liv1 > span:first-child { font-family: var(--font-display); color: var(--navy); } .es-lista li.liv2 > span:first-child { padding-left: 18px; }
+.es-lista small { display: block; font-size: 12px; color: var(--muted); font-family: var(--font-body); }
+.es-bar { display: block; height: 8px; border-radius: 99px; background: var(--beige); overflow: hidden; } .es-bar i { display: block; height: 100%; background: var(--green); border-radius: 99px; }
+.es-q { max-width: 820px; } .es-q-top { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; } .es-q .timer.lento { color: var(--red); }
+.es-prog { height: 4px; background: var(--beige); border-radius: 99px; margin: 10px 0 16px; } .es-prog i { display: block; height: 100%; background: var(--orange); border-radius: 99px; }
+.es-fine { max-width: 820px; }
+/* mappa del corso essenziale */
+.mp-testa { display: grid; grid-template-columns: auto 200px 1fr; gap: 14px; align-items: center; margin-bottom: 14px; }
+.mp-mod h3 { display: flex; gap: 10px; align-items: center; } .mp-mod h3 span { width: 28px; height: 28px; border-radius: 50%; background: var(--navy); color: #fff; display: grid; place-items: center; font-size: 14px; }
+.mp-lista { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.mp-lista li { display: grid; grid-template-columns: 1fr 140px 110px; gap: 12px; align-items: center; background: var(--white); border-radius: 12px; padding: 10px 12px; border-left: 4px solid var(--line); }
+.mp-lista li.corso { border-left-color: var(--orange); } .mp-lista li.fatto { border-left-color: var(--green); }
+.mp-tit { font-size: 15px; }
+.mp-stato { font: inherit; font-size: 13px; border-radius: 99px; padding: 5px 10px; border: 1.5px solid var(--line); background: var(--white); cursor: pointer; color: var(--ink); }
+.mp-stato.corso { background: var(--orange-soft); border-color: var(--orange); } .mp-stato.fatto { background: var(--green-soft); border-color: var(--green); color: var(--green); }
+/* strumenti più leggibili */
+.ul-tools .tl-l { font-size: 15.5px; } .ul-tools .tl-k { font-size: 15px; } .ul-tools .tl-nota { font-size: 14px; }
+@media (max-width: 980px) { .lt-wrap { grid-template-columns: 1fr; } .es-scelte, .me-offerta > div { grid-template-columns: 1fr 1fr; } .mp-testa { grid-template-columns: 1fr; } }
+@media (max-width: 700px) { .es-scelte, .me-offerta > div { grid-template-columns: 1fr; } .mp-lista li { grid-template-columns: 1fr auto; } .mp-lista li .es-bar { grid-column: 1 / -1; grid-row: 2; } .es-lista li { grid-template-columns: 1fr auto; } .es-lista .es-bar { display: none; } }

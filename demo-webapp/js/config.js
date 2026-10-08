@@ -7,7 +7,7 @@
    Caricato PRIMA di store.js: chiavi del database, MODELLO DATI (default di profilo e attività) e testi del login. */
 window.UL = window.UL || {};
 
-UL.VERSIONE = { n: 9, data: "2026-10-08", nota: "Commenti «Il mio percorso» del 7/10: libretto e voto di laurea dentro «I miei esami» con le regole ufficiali della Scuola di Economia (prova finale 2017/2018), «Com'è andato l'esame?» obbligatorio in Dashboard il giorno dopo l'appello con le risposte nel database del team, «Il mio percorso» nelle proposte (D50), colore del cerchio che si vede prima di salvare. Prima, v8: I miei esami come macrosezione di studio, Planner con ore ufficiali, Strumenti." };
+UL.VERSIONE = { n: 10, data: "2026-10-08", nota: "Commenti del 8/10: I miei esami diviso in «pronti da studiare», «da sbloccare», «superati» con cosa ottieni per ogni piano; flashcard stile Anki (mazzi e ripasso a pagina intera); esercizi in tre scelte; mappa essenziale; dispensa e note proporzionate; «pronto per l'esame?»; Planner personale solo con Plus (D51); barra in alto senza link; Catalogo vicino ad Abbonamento; strumenti partono dal libretto, «Ci stai nei tempi?» nel Planner. Prima, v9: libretto, questionario dopo l'esame." };
 
 /* PIANI — decisi nel meeting del 7/10/2026 (HQ → Decisioni «MEETING 7/10»), uguali alla landing v8 (demo-landing/config.js → listino).
    Prezzi comunicati come SCONTO DI LANCIO: [prezzo di lancio, prezzo pieno barrato]. Niente prezzi «in sessione / fuori sessione».
@@ -29,7 +29,7 @@ UL.PIANI = {
     { k: "simulazione", prezzo: "4,99 € · invece di 9,99 €", nome: "Simulazione d'esame", tipo: "Singolo esame", d: "Una prova nel formato dell'appello, con correzione e spiegazioni." },
     { k: "completa", prezzo: "12,99 € · invece di 18,99 €", nome: "Dispensa completa", tipo: "Singolo esame", d: "Tutto per un esame: dispensa, quiz e simulazioni, da leggere e annotare qui." },
     { k: "semester", prezzo: "29,99 € o 34,99 €", nome: "Pacchetto semestre", tipo: "Pacchetto", d: "Le dispense complete del semestre del tuo percorso: 3 esami 29,99 €, 4 esami 34,99 €.", hot: true },
-    { k: "plus", prezzo: "14,99 € · 7,99 € con un pacchetto", nome: "UniLink Plus", tipo: "Il metodo · in valutazione", d: "Planner personalizzato su tutti gli esami e ripasso degli errori. Una volta per sessione." },
+    { k: "plus", prezzo: "14,99 € · 7,99 € con un pacchetto", nome: "UniLink Plus", tipo: "Il coach", d: "Planner stile TTP su tutti gli esami, analisi degli errori, «pronto per l'esame?». Una volta per sessione." },
   ],
   // «Cosa c'è dentro»: colonne Gratuito · Simulazione · Completa · Semestre · Plus. 1 sì, 0 no, testo = condizione.
   dentro: [
@@ -38,7 +38,6 @@ UL.PIANI = {
       ["Quiz di prova (5 domande)", 1, 1, 1, 1, 1],
       ["Economia Aziendale completa", 1, 1, 1, 1, 1],
       ["I miei esami, libretto e voto di laurea", 1, 1, 1, 1, 1],
-      ["Metodo standard del Planner e «Ci stai nei tempi?»", 1, 1, 1, 1, 1],
     ]],
     ["Materiali · da leggere e annotare nell'app", [
       ["Dispensa completa (appunti e sbobine)", 0, 0, 1, 1, 0],
@@ -48,8 +47,10 @@ UL.PIANI = {
       ["Aggiornamenti della stessa edizione", 0, 1, 1, 1, 0],
     ]],
     ["Il metodo", [
-      ["UniLink Planner: piano personale (percorso, missioni, calendario)", 0, 0, "per quell'esame", "esami del pacchetto", "tutti gli esami"],
-      ["Ripasso del registro errori su tutti gli esami", 0, 0, 0, 0, 1],
+      ["Giudizio «ci stai nei tempi?» e metodo standard", 1, 1, 1, 1, 1],
+      ["Planner stile TTP: piano personale, calendario, «oggi»", 0, 0, 0, 0, "tutti gli esami"],
+      ["Analisi degli errori e «pronto per l'esame?»", 0, 0, "per quell'esame", "esami del pacchetto", "tutti gli esami"],
+      ["Ripasso degli errori mescolato tra gli esami", 0, 0, 0, 0, 1],
     ]],
   ],
 };
@@ -92,7 +93,7 @@ UL.CONFIG = {
   },
 
   auth: {
-    flag: "Demo · UniLink v9",
+    flag: "Demo · UniLink v10",
     title: 'La tua <span class="accent">Area Personale</span> UniLink',
     sub: "Accedi per ritrovare le tue dispense, i tuoi esami e gli strumenti per scegliere. Da studenti, per studenti.",
     regTitle: 'Il tuo spazio, <span class="accent">gratis</span>',

@@ -111,7 +111,7 @@
         <a class="brand" href="${C.home}"><img src="img/logo-blu.png" alt=""><span>unilink</span><small>${esc(C.tag)}</small></a>
       </div>
       <div class="navpill">
-        ${SITE_LINKS.map((l) => `<a class="lnk" href="${l.to}" target="_blank" rel="noopener">${esc(l.l)}</a>`).join("")}
+        ${"" /* v10: niente link al sito nella barra (commento 6 del 8/10): restano campanella e nome */}
         <div class="dropdown" data-dd>
           <button class="icon-btn" style="background:transparent;border-color:rgba(255,255,255,.25);color:#fff" data-dd-btn aria-label="Notifiche">${icon("bell")}${unread ? '<span class="dot"></span>' : ""}</button>
           <div class="dropdown-menu" style="min-width:320px">

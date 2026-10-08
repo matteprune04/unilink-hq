@@ -39,141 +39,127 @@
   const anteprimaInt = (st, q) => { const s = sm2(st, q); return q < 3 ? "ora" : s.int === 1 ? "1 giorno" : s.int + " giorni"; };
   const NUOVE_AL_GIORNO = 15;
 
-  /* ---------- scheda Flashcard ---------- */
+  /* ---------- scheda Flashcard · v10 stile Anki (commento 5 del 8/10) ----------
+     Panoramica dei MAZZI (tutto l'esame, ogni macroargomento, ogni capitolo, le tue carte) con i tre numeri di Anki:
+     Nuove (blu) · Da imparare (rosso) · Da ripassare (verde). «Studia» apre la sessione A PAGINA INTERA: solo la carta, i voti e i tasti
+     (spazio = gira, 1–4 = voto, Esc = esci). Sotto: aggiungi una carta e sfoglia le tue. */
+  const conta = (u, slug, carte) => { const F = fcStato(u, slug), t = oggi(); let nuove = 0, imp = 0, rip = 0;
+    carte.forEach((k) => { const s = F.s[k.id]; if (!s) nuove++; else if (s.due <= t) (s.rep === 0 ? imp++ : rip++); });
+    return { nuove: Math.min(nuove, Math.max(0, NUOVE_AL_GIORNO - (F.nuoveOggi.data === t ? F.nuoveOggi.n : 0))), imp, rip, tot: carte.length }; };
+  const mazzi = (u, c) => { const M = B.mazzo(c.slug, u), S = STR(c.slug), L = [{ id: "tutto", nome: "Tutto l'esame", carte: M, liv: 0 }];
+    (S ? S.moduli : []).forEach((m) => { const caps = m.capitoli.map((k) => k.n), cm = M.filter((k) => caps.includes(k.cap)); if (!cm.length) return;
+      L.push({ id: m.id, nome: m.titolo, carte: cm, liv: 1 }); m.capitoli.forEach((k) => { const ck = M.filter((x) => x.cap === k.n); if (ck.length) L.push({ id: "c" + k.n, nome: `${k.n} · ${k.titolo}`, carte: ck, liv: 2 }); }); });
+    const gen = M.filter((k) => !k.cap); if (gen.length) L.push({ id: "c0", nome: nomeCap(c.slug, 0), carte: gen, liv: 1 });
+    const mie = M.filter((k) => k.mia); if (mie.length) L.push({ id: "mie", nome: "Le tue carte", carte: mie, liv: 1 });
+    return L; };
   function flashcard(u, c) {
-    const F = fcStato(u, c.slug), M = B.mazzo(c.slug, u), t = oggi();
-    const nuove = M.filter((k) => !F.s[k.id]), daRip = M.filter((k) => F.s[k.id] && F.s[k.id].due <= t), imparate = M.filter((k) => F.s[k.id] && F.s[k.id].int >= 21);
-    const fatteOggi = F.nuoveOggi.data === t ? F.nuoveOggi.n : 0;
-    const perCap = {}; M.forEach((k) => { const p = (perCap[k.cap] = perCap[k.cap] || { tot: 0, ok: 0 }); p.tot++; if (F.s[k.id] && F.s[k.id].rep > 0) p.ok++; });
-    return `<div class="grid g-ov"><section class="card c-8" data-fc-box>
-        <div class="card-head"><h3>${icon("layers")} Ripasso di oggi</h3><span class="small muted">${daRip.length} da ripassare · ${Math.max(0, Math.min(nuove.length, NUOVE_AL_GIORNO - fatteOggi))} nuove</span></div>
-        <div class="row" style="gap:8px;margin-bottom:12px"><label class="small muted" for="fc-cap">Capitolo</label><select class="select" id="fc-cap" style="max-width:340px"><option value="">Tutti</option>${[...new Set(M.map((k) => k.cap))].sort((a, b) => a - b).map((n) => `<option value="${n}">${esc(nomeCap(c.slug, n))}</option>`).join("")}</select></div>
-        <div data-fc-sessione></div></section>
-      <section class="c-4 stack">
-        <div class="stat"><span class="k">${icon("layers")} Il mazzo</span><span class="v">${M.length}</span><span class="s">${M.filter((k) => k.std).length} carte UniLink${c.slug === "economia-aziendale" ? " (dal glossario vero)" : " (dalle domande)"} · ${F.mie.length} tue</span></div>
-        <div class="stat"><span class="k">${icon("check")} Imparate</span><span class="v">${imparate.length}</span><span class="s">intervallo di almeno 21 giorni · ${M.length - nuove.length} viste almeno una volta</span></div>
-        <div class="card"><span class="sq-label">Per capitolo</span><div class="bars-mini" style="margin-top:8px">${Object.entries(perCap).sort((a, b) => a[0] - b[0]).map(([n, p]) => `<div class="r"><span>${esc(nomeCap(c.slug, Number(n)).slice(0, 28))}</span><span class="t"><i style="width:${(p.ok / p.tot) * 100}%"></i></span><b>${p.ok}/${p.tot}</b></div>`).join("")}</div></div>
-        <div class="card beige"><span class="sq-label">Crea una carta</span>
-          <form data-fc-nuova style="display:grid;gap:8px;margin-top:8px"><input class="input" name="f" placeholder="Fronte: domanda o termine" maxlength="200"><textarea class="textarea" name="b" rows="2" placeholder="Retro: risposta" maxlength="600"></textarea>
-            <select class="select" name="cap">${capitoliDi(c.slug).map((k) => `<option value="${k.n}">${esc(nomeCap(c.slug, k.n))}</option>`).join("") || '<option value="0">Generale</option>'}</select><button class="btn btn-sm btn-primary">Aggiungi al mazzo</button></form>
-          ${F.mie.length ? `<details style="margin-top:8px"><summary class="small">Le tue carte (${F.mie.length})</summary><ul class="lt-lista">${F.mie.map((k) => `<li><p><b style="font-weight:400">${esc(k.f)}</b></p><span class="tiny muted">${esc(k.b)}${k.pag ? " · dalla p. " + k.pag : ""}</span><button class="icon-btn" data-fc-del="${k.id}" aria-label="Cancella la carta">${icon("trash")}</button></li>`).join("")}</ul></details>` : ""}</div>
-        <p class="tiny muted">Algoritmo SM-2 (lo stesso storico di Anki): ogni carta torna dopo 1 giorno, poi 6, poi a intervalli che crescono con la facilità. Si salva da solo.</p></section></div>`;
+    const F = fcStato(u, c.slug), L = mazzi(u, c), tot = conta(u, c.slug, L[0].carte);
+    const n = (x, cl) => `<b class="fc-n ${cl} ${x ? "" : "zero"}">${x}</b>`;
+    return `<div class="fc-overview">
+      <div class="fc-oggi card"><div><span class="sq-label">Oggi</span><h2>${tot.nuove + tot.imp + tot.rip ? `${tot.nuove + tot.imp + tot.rip} carte da fare` : "Hai finito per oggi"}</h2>
+        <p class="small muted">${n(tot.nuove, "nu")} nuove · ${n(tot.imp, "im")} da imparare · ${n(tot.rip, "ri")} da ripassare</p></div>
+        <button class="btn btn-orange btn-arrow" data-fc-studia="tutto" ${tot.nuove + tot.imp + tot.rip ? "" : "disabled"}>Studia <span class="arr">${icon("arrow")}</span></button></div>
+      <div class="card"><table class="fc-mazzi"><thead><tr><th>Mazzo</th><th title="Nuove">Nuove</th><th title="Da imparare">Imparare</th><th title="Da ripassare">Ripasso</th><th></th></tr></thead><tbody>
+        ${L.slice(1).map((d) => { const k = conta(u, c.slug, d.carte); return `<tr class="liv${d.liv}"><td>${esc(d.nome)}<small>${d.carte.length} carte</small></td><td>${n(k.nuove, "nu")}</td><td>${n(k.imp, "im")}</td><td>${n(k.rip, "ri")}</td><td><button class="btn btn-sm ${k.nuove + k.imp + k.rip ? "btn-primary" : "btn-ghost"}" data-fc-studia="${d.id}" ${k.nuove + k.imp + k.rip ? "" : "disabled"}>Studia</button></td></tr>`; }).join("")}
+      </tbody></table></div>
+      <details class="card fc-agg"><summary><b>${icon("plus")} Aggiungi una carta</b><span class="small muted"> · ${F.mie.length} tue</span></summary>
+        <form data-fc-nuova class="fc-form"><input class="input" name="f" placeholder="Fronte: domanda o termine" maxlength="200"><textarea class="textarea" name="b" rows="2" placeholder="Retro: risposta" maxlength="600"></textarea>
+          <select class="select" name="cap">${capitoliDi(c.slug).map((k) => `<option value="${k.n}">${esc(nomeCap(c.slug, k.n))}</option>`).join("") || '<option value="0">Generale</option>'}</select><button class="btn btn-sm btn-primary">Aggiungi</button></form>
+        ${F.mie.length ? `<ul class="lt-lista">${F.mie.map((k) => `<li><p><b style="font-weight:400">${esc(k.f)}</b></p><span class="tiny muted">${esc(k.b)}${k.pag ? " · dalla p. " + k.pag : ""}</span><button class="icon-btn" data-fc-del="${k.id}" aria-label="Cancella la carta">${icon("trash")}</button></li>`).join("")}</ul>` : ""}</details>
+      <p class="tiny muted">Come Anki: ogni carta torna dopo 1 giorno, poi 6, poi a intervalli che crescono con la facilità (algoritmo SM-2). ${NUOVE_AL_GIORNO} carte nuove al giorno.${c.slug === "economia-aziendale" ? " Il mazzo viene dal glossario vero della dispensa." : ""}</p></div>`;
   }
   function montaFlashcard(root, u, c) {
-    const box = root.querySelector("[data-fc-sessione]"); if (!box) return;
-    const F = fcStato(u, c.slug), sel = root.querySelector("#fc-cap");
-    let coda = [], i = 0, girata = false;
-    const prepara = () => {
-      const t = oggi(), cap = sel.value, M = B.mazzo(c.slug, u).filter((k) => cap === "" || String(k.cap) === cap);
-      if (F.nuoveOggi.data !== t) F.nuoveOggi = { data: t, n: 0 };
-      const rip = M.filter((k) => F.s[k.id] && F.s[k.id].due <= t).sort((a, b) => (F.s[a.id].due < F.s[b.id].due ? -1 : 1));
-      const nuove = M.filter((k) => !F.s[k.id]).slice(0, Math.max(0, NUOVE_AL_GIORNO - F.nuoveOggi.n));
-      coda = rip.concat(nuove); i = 0; girata = false; disegna();
+    const F = fcStato(u, c.slug);
+    const studia = (id) => {
+      const d = mazzi(u, c).find((x) => x.id === id); if (!d) return;
+      const t = oggi(); if (F.nuoveOggi.data !== t) F.nuoveOggi = { data: t, n: 0 };
+      const rip = d.carte.filter((k) => F.s[k.id] && F.s[k.id].due <= t).sort((a, b) => (F.s[a.id].due < F.s[b.id].due ? -1 : 1));
+      const coda = rip.concat(d.carte.filter((k) => !F.s[k.id]).slice(0, Math.max(0, NUOVE_AL_GIORNO - F.nuoveOggi.n)));
+      let i = 0, girata = false;
+      const ov = document.createElement("div"); ov.className = "fc-focus"; ov.setAttribute("role", "dialog"); ov.setAttribute("aria-modal", "true"); ov.setAttribute("aria-label", "Ripasso flashcard");
+      document.body.appendChild(ov); document.body.style.overflow = "hidden";
+      const esci = () => { ov.remove(); document.body.style.overflow = ""; document.removeEventListener("keydown", tasti); UL.app.refresh(); };
+      const disegna = () => {
+        const k = coda[i], rest = coda.slice(i), nN = rest.filter((x) => !F.s[x.id]).length, nI = rest.filter((x) => F.s[x.id] && F.s[x.id].rep === 0).length;
+        ov.innerHTML = `<div class="fc-f-top"><span>${esc(c.title)} · ${esc(d.nome)}</span><span class="fc-f-n"><b class="fc-n nu">${nN}</b><b class="fc-n im">${nI}</b><b class="fc-n ri">${rest.length - nN - nI}</b></span><button class="btn btn-sm btn-ghost" data-esci>Esci (Esc)</button></div>
+          ${k ? `<div class="fc-f-carta"><span class="sq-label">${esc(nomeCap(c.slug, k.cap))}</span><p class="fc-f-fronte">${esc(k.f)}</p>${girata ? `<hr class="divider"><p class="fc-f-retro">${esc(k.b)}</p>` : ""}</div>
+            <div class="fc-f-azioni">${girata ? [[1, "Di nuovo", "1"], [3, "Difficile", "2"], [4, "Bene", "3"], [5, "Facile", "4"]].map(([q, tx, tk]) => `<button class="fc-voto v${q}" data-q="${q}"><small>${anteprimaInt(F.s[k.id], q)}</small>${tx}<kbd>${tk}</kbd></button>`).join("") : `<button class="btn btn-primary fc-gira" data-gira>Mostra la risposta <kbd>spazio</kbd></button>`}</div>`
+            : `<div class="fc-f-carta fine"><h2>Mazzo finito per oggi ${icon("check")}</h2><p class="muted">Le carte tornano quando serve. Domani riprendi da qui.</p><button class="btn btn-primary" data-esci>Torna ai mazzi</button></div>`}`;
+        ov.querySelectorAll("[data-esci]").forEach((b) => (b.onclick = esci));
+        const g = ov.querySelector("[data-gira]"); g && (g.onclick = () => { girata = true; disegna(); });
+        ov.querySelectorAll("[data-q]").forEach((b) => (b.onclick = () => vota(Number(b.dataset.q))));
+      };
+      const vota = (q) => { const k = coda[i], nuova = !F.s[k.id]; F.s[k.id] = sm2(F.s[k.id], q); if (nuova) F.nuoveOggi.n++; if (q < 3) coda.push(k); UL.store.save(); i++; girata = false; disegna(); };
+      const tasti = (e) => { if (e.key === "Escape") return esci(); if (!coda[i]) return; if (e.code === "Space" && !girata) { e.preventDefault(); girata = true; disegna(); } else if (girata && ["1", "2", "3", "4"].includes(e.key)) vota([1, 3, 4, 5][Number(e.key) - 1]); };
+      document.addEventListener("keydown", tasti); disegna(); ov.querySelector("button") && ov.querySelector("button").focus();
     };
-    const disegna = () => {
-      const k = coda[i];
-      if (!k) { box.innerHTML = `<div class="fc-fine"><h3>Per oggi hai finito ${icon("check")}</h3><p class="small muted">Le carte tornano quando serve. Domani: ${B.mazzo(c.slug, u).filter((x) => F.s[x.id] && F.s[x.id].due === piuGiorni(1)).length} da ripassare.</p></div>`; return; }
-      const st = F.s[k.id];
-      box.innerHTML = `<div class="fc-carta ${girata ? "girata" : ""}"><span class="sq-label">${esc(nomeCap(c.slug, k.cap))} · ${st ? "ripasso" : "nuova"} · ${i + 1} di ${coda.length}</span>
-          <p class="fc-f">${esc(k.f)}</p>${girata ? `<hr class="divider"><p class="fc-b">${esc(k.b)}</p>` : ""}</div>
-        ${girata ? `<div class="fc-voti">${[[1, "Di nuovo"], [3, "Difficile"], [4, "Bene"], [5, "Facile"]].map(([q, t]) => `<button class="btn btn-sm ${q === 1 ? "btn-ghost" : q === 4 ? "btn-primary" : "btn-ghost"}" data-q="${q}">${t}<small>${anteprimaInt(st, q)}</small></button>`).join("")}</div>`
-          : `<button class="btn btn-primary btn-block" data-gira>Mostra la risposta <span class="tiny">(spazio)</span></button>`}`;
-      const g = box.querySelector("[data-gira]"); g && (g.onclick = () => { girata = true; disegna(); });
-      box.querySelectorAll("[data-q]").forEach((b) => (b.onclick = () => vota(Number(b.dataset.q))));
-    };
-    const vota = (q) => {
-      const k = coda[i], nuova = !F.s[k.id];
-      F.s[k.id] = sm2(F.s[k.id], q); if (nuova) F.nuoveOggi.n++;
-      if (q < 3) coda.push(k); // «Di nuovo»: torna in fondo alla sessione di oggi
-      UL.store.save(); i++; girata = false; disegna();
-    };
-    const tasti = (e) => { if (!document.body.contains(box)) return document.removeEventListener("keydown", tasti); if (e.target.closest("input,textarea,select")) return;
-      if (e.code === "Space" && !girata && coda[i]) { e.preventDefault(); girata = true; disegna(); } else if (girata && ["1", "2", "3", "4"].includes(e.key)) vota([1, 3, 4, 5][Number(e.key) - 1]); };
-    document.addEventListener("keydown", tasti);
-    sel.onchange = prepara;
+    root.querySelectorAll("[data-fc-studia]").forEach((b) => b.addEventListener("click", () => studia(b.dataset.fcStudia)));
     const fn = root.querySelector("[data-fc-nuova]");
     fn && fn.addEventListener("submit", (e) => { e.preventDefault(); const f = fn.f.value.trim(), b = fn.b.value.trim(); if (!f || !b) return UL.ui.toast("Scrivi fronte e retro");
       F.mie.push({ id: "mia-" + Date.now().toString(36), f, b, cap: Number(fn.cap.value) || 0, at: new Date().toISOString() }); UL.store.save(); UL.ui.toast("Carta aggiunta"); UL.app.refresh(); });
     root.querySelectorAll("[data-fc-del]").forEach((b) => b.addEventListener("click", () => { F.mie = F.mie.filter((k) => k.id !== b.dataset.fcDel); delete F.s[b.dataset.fcDel]; UL.store.save(); UL.app.refresh(); }));
-    prepara();
   }
 
-  /* ---------- scheda Esercizi: banca per macroargomento → capitolo, tempo per domanda, registro errori ---------- */
+  /* ---------- scheda Esercizi · v10 più semplice (commento 2 del 8/10) ----------
+     Prima scegli COSA fare con tre carte grandi (per capitolo · rifai gli errori · simulazione d'esame); poi, se serve, il capitolo
+     da un elenco unico. Durante l'esercizio: una domanda alla volta, tempo rispetto all'esame, spiegazione e causa dell'errore. */
   const formato = (slug) => (UL.ESAME_FORMATO || {})[slug] || (UL.ESAME_FORMATO || {})._default || { domande: 12, minuti: 20 };
   const secObiettivo = (slug) => Math.round((formato(slug).minuti * 60) / formato(slug).domande);
   const inErrore = (u, q) => { const s = B.stat(u, q.id); return s.wrong > 0 && s.streak < 2; };
   const ES = (u) => (u.activity.es = Object.assign({ log: [] }, u.activity.es || {}));
-  const ultimo = (u, id) => ES(u).log.slice().reverse().find((l) => l.id === id);
   const CAUSE = [["concetto", "Non sapevo il concetto"], ["calcolo", "Errore di calcolo"], ["lettura", "Ho letto male"], ["tempo", "Andavo di fretta"]];
+  const perc = (u, lista) => { const f = lista.filter((q) => B.stat(u, q.id).seen); return { fatte: f.length, giuste: lista.filter((q) => B.stat(u, q.id).streak > 0).length, tot: lista.length }; };
   function esercizi(u, c) {
-    const Q = B.banca(c.slug), caps = capitoliDi(c.slug), err = Q.filter((q) => inErrore(u, q)), ob = secObiettivo(c.slug);
-    const cnt = (f) => Q.filter(f).length, fatte = (f) => Q.filter((q) => f(q) && B.stat(u, q.id).seen).length;
-    const moduli = (STR(c.slug) || { moduli: [] }).moduli;
-    const L = ES(u).log.filter((l) => Q.some((q) => q.id === l.id)), tMedio = L.length ? Math.round(L.reduce((n, l) => n + l.t, 0) / L.length) : 0;
-    return `<div class="grid g-ov"><section class="card c-8">
-        <div class="card-head"><h3>${icon("quiz")} Banca esercizi</h3><span class="small muted">${Q.length} domande${c.slug === "economia-aziendale" ? " · 70 dalla raccolta vera di Economia Aziendale" : ""}</span></div>
-        <p class="small muted" style="margin-bottom:10px">Scegli un macroargomento intero o un solo capitolo, come preferisci studiare. ${(STR(c.slug) || {}).vera ? "Capitoli = indice della dispensa." : "Struttura di esempio: diventerà l'indice della dispensa."}</p>
-        <div class="es-filtri">
-          <label class="sq-label">Macroargomento</label><div class="chips" data-es-mod><button class="chip on" data-m="">Tutti · ${Q.length}</button>${moduli.map((m) => `<button class="chip" data-m="${m.id}">${esc(m.titolo)} · ${cnt((q) => caps.some((k) => k.n === q.cap && k.modulo === m.id))}</button>`).join("")}${cnt((q) => !q.cap) ? `<button class="chip" data-m="0">Generale · ${cnt((q) => !q.cap)}</button>` : ""}</div>
-          <label class="sq-label">Capitolo</label><div class="chips" data-es-cap></div>
-          <label class="sq-label">Quali domande</label><div class="seg" data-es-tipo><button class="on" data-t="tutte">Tutte</button><button data-t="nuove">Mai fatte</button><button data-t="errori">Registro errori</button></div>
-          <label class="sq-label">Quante</label><div class="seg" data-es-n><button data-n="5">5</button><button class="on" data-n="10">10</button><button data-n="20">20</button><button data-n="999">Tutte</button></div>
-        </div>
-        <div class="row between" style="margin-top:14px"><span class="small" data-es-conta></span><button class="btn btn-orange" data-es-via>Inizia</button></div>
-        <div data-es-run style="margin-top:16px"></div></section>
-      <section class="c-4 stack">
-        <div class="stat"><span class="k">${icon("clock")} Tempo per domanda</span><span class="v">${tMedio ? tMedio + "″" : "—"}</span><span class="s">obiettivo ${ob}″ (${formato(c.slug).domande} domande in ${formato(c.slug).minuti}′${formato(c.slug).vero ? "" : ", formato d'esempio da verificare"})</span></div>
-        <div class="stat"><span class="k">${icon("check")} Fatte almeno una volta</span><span class="v">${fatte(() => true)} / ${Q.length}</span><span class="s">${L.length} risposte registrate</span></div>
-        <div class="card"><div class="card-head"><h3>${icon("alert")} Registro errori</h3><span class="badge ${err.length ? "badge-red" : "badge-soft"}">${err.length}</span></div>
-          ${err.length ? `<ul class="feed">${err.slice(0, 6).map((q) => { const l = ultimo(u, q.id) || {}; return `<li><span class="ic">${icon("x")}</span><div>${esc(q.q.slice(0, 80))}${q.q.length > 80 ? "…" : ""}<time>${esc(nomeCap(c.slug, q.cap))}${l.causa ? " · " + esc((CAUSE.find((x) => x[0] === l.causa) || [])[1] || "") : ""}${l.t ? " · " + l.t + "″" : ""}</time></div></li>`; }).join("")}</ul>
-            <button class="btn btn-sm btn-primary" style="margin-top:10px" data-es-rifai>Rifai le sbagliate (${err.length})</button>` : '<p class="small muted">Nessun errore da rifare. Le domande sbagliate restano qui finché non le indovini due volte di fila.</p>'}</div>
-        ${(() => { const per = {}; ES(u).log.filter((l) => l.causa && Q.some((q) => q.id === l.id)).forEach((l) => (per[l.causa] = (per[l.causa] || 0) + 1)); const tot = Object.values(per).reduce((a, b) => a + b, 0);
-          return tot ? `<div class="card"><span class="sq-label">Perché sbagli</span><div class="bars-mini" style="margin-top:8px">${CAUSE.map(([k, t]) => `<div class="r"><span>${t}</span><span class="t"><i style="width:${((per[k] || 0) / tot) * 100}%"></i></span><b>${per[k] || 0}</b></div>`).join("")}</div></div>` : ""; })()}
-      </section></div>`;
+    const Q = B.banca(c.slug), err = Q.filter((q) => inErrore(u, q)), ob = secObiettivo(c.slug), S = STR(c.slug), P = perc(u, Q);
+    const riga = (titolo, lista, attr, liv) => { const p = perc(u, lista); return lista.length ? `<li class="liv${liv}"><span>${esc(titolo)}<small>${lista.length} domande · ${p.giuste} giuste</small></span><span class="es-bar"><i style="width:${p.tot ? (p.giuste / p.tot) * 100 : 0}%"></i></span><button class="btn btn-sm ${liv === 1 ? "btn-ghost" : "btn-primary"}" ${attr}>Inizia</button></li>` : ""; };
+    return `<div class="es-scelte">
+        <button class="es-scelta" data-es-vai="cap"><span class="ic">${icon("layers")}</span><b>Esercizi per capitolo</b><span>Scegli un capitolo o un macroargomento intero</span></button>
+        <button class="es-scelta ${err.length ? "" : "spenta"}" data-es-rifai ${err.length ? "" : "disabled"}><span class="ic">${icon("alert")}</span><b>Rifai gli errori${err.length ? ` (${err.length})` : ""}</b><span>${err.length ? "Le domande sbagliate, finché non le indovini due volte" : "Nessun errore da rifare"}</span></button>
+        <a class="es-scelta" href="#/app/esercitazioni/${c.slug}/simulazione"><span class="ic">${icon("target")}</span><b>Simulazione d'esame</b><span>${formato(c.slug).domande} domande in ${formato(c.slug).minuti} minuti, voto in trentesimi</span></a>
+      </div>
+      <p class="small muted es-riass">${P.tot} domande${c.slug === "economia-aziendale" ? " (70 dalla raccolta vera di Economia Aziendale)" : ""} · ${P.fatte} fatte · obiettivo ${ob} secondi a domanda${formato(c.slug).vero ? "" : " (formato d'esempio)"}</p>
+      <div class="card es-capitoli" data-es-caps hidden><div class="card-head"><h3>${icon("layers")} Scegli cosa ripassare</h3><span class="small muted">10 domande per volta</span></div>
+        <ul class="es-lista">${riga("Tutto l'esame", Q, 'data-es-q="tutto"', 1)}${(S ? S.moduli : []).map((m) => riga(m.titolo, Q.filter((q) => m.capitoli.some((k) => k.n === q.cap)), `data-es-q="m:${m.id}"`, 1) + m.capitoli.map((k) => riga(`${k.n} · ${k.titolo}`, Q.filter((q) => q.cap === k.n), `data-es-q="c:${k.n}"`, 2)).join("")).join("")}${riga(nomeCap(c.slug, 0), Q.filter((q) => !q.cap), 'data-es-q="c:0"', 1)}</ul></div>
+      <div data-es-run></div>`;
   }
   let esTimer = null;
   function montaEsercizi(root, u, c) {
     const box = root.querySelector("[data-es-run]"); if (!box) return;
-    const Q = B.banca(c.slug), caps = capitoliDi(c.slug), ob = secObiettivo(c.slug);
-    const f = { m: "", cap: "", tipo: "tutte", n: 10 };
-    const filtra = () => Q.filter((q) => (f.m === "" || (f.m === "0" ? !q.cap : caps.some((k) => k.n === q.cap && k.modulo === f.m))) && (f.cap === "" || String(q.cap) === f.cap)
-      && (f.tipo === "tutte" || (f.tipo === "nuove" ? !B.stat(u, q.id).seen : inErrore(u, q))));
-    const capBox = root.querySelector("[data-es-cap]"), conta = root.querySelector("[data-es-conta]");
-    const ridisegna = () => {
-      const visibili = caps.filter((k) => f.m === "" || k.modulo === f.m);
-      capBox.innerHTML = `<button class="chip ${f.cap === "" ? "on" : ""}" data-c="">Tutti</button>` + visibili.map((k) => `<button class="chip ${f.cap === String(k.n) ? "on" : ""}" data-c="${k.n}">${esc(nomeCap(c.slug, k.n))} · ${Q.filter((q) => q.cap === k.n).length}</button>`).join("");
-      capBox.querySelectorAll("[data-c]").forEach((b) => (b.onclick = () => { f.cap = b.dataset.c; ridisegna(); }));
-      conta.textContent = `${Math.min(f.n, filtra().length)} domande su ${filtra().length} disponibili con questi filtri`;
-    };
-    const gruppo = (sel, k, cb) => root.querySelectorAll(sel + " button").forEach((b) => (b.onclick = () => { root.querySelectorAll(sel + " button").forEach((x) => x.classList.toggle("on", x === b)); f[k] = b.dataset[cb]; if (k === "m") f.cap = ""; ridisegna(); }));
-    gruppo("[data-es-mod]", "m", "m"); gruppo("[data-es-tipo]", "tipo", "t"); gruppo("[data-es-n]", "n", "n");
+    const Q = B.banca(c.slug), S = STR(c.slug), ob = secObiettivo(c.slug);
+    const caps = root.querySelector("[data-es-caps]");
+    root.querySelector('[data-es-vai="cap"]').onclick = () => { caps.hidden = !caps.hidden; caps.hidden || caps.scrollIntoView({ behavior: "smooth", block: "start" }); };
+    const scegli = (k) => { if (k === "tutto") return Q; const [t, v] = k.split(":"); if (t === "c") return Q.filter((q) => q.cap === Number(v)); const m = S.moduli.find((x) => x.id === v); return Q.filter((q) => m.capitoli.some((x) => x.n === q.cap)); };
+    root.querySelectorAll("[data-es-q]").forEach((b) => (b.onclick = () => { const l = scegli(b.dataset.esQ), nuove = l.filter((q) => !B.stat(u, q.id).seen); corri(B.shuffle(nuove.length >= 5 ? nuove : l).slice(0, 10)); }));
+    const rf = root.querySelector("[data-es-rifai]"); rf && (rf.onclick = () => corri(Q.filter((q) => inErrore(u, q)).slice(0, 15)));
     const corri = (lista) => {
-      if (!lista.length) return UL.ui.toast("Nessuna domanda con questi filtri");
+      if (!lista.length) return UL.ui.toast("Nessuna domanda qui");
+      caps.hidden = true; root.querySelector(".es-scelte").hidden = true; root.querySelector(".es-riass").hidden = true;
       const R = []; let i = 0, t0 = 0;
       const stop = () => { if (esTimer) { clearInterval(esTimer); esTimer = null; } };
       const fine = () => { stop(); UL.store.save();
-        const ok = R.filter((r) => r.ok).length, tm = Math.round(R.reduce((n, r) => n + r.t, 0) / R.length), perCap = {};
-        R.forEach((r) => { const p = (perCap[r.cap] = perCap[r.cap] || { n: 0, ok: 0 }); p.n++; if (r.ok) p.ok++; });
-        box.innerHTML = `<div class="card beige"><h3>${ok} giuste su ${R.length}</h3><p class="small" style="margin-top:6px">Tempo medio ${tm}″ per domanda · obiettivo ${ob}″ · <b style="font-weight:400;color:${tm <= ob ? "var(--green)" : "var(--red)"}">${tm <= ob ? "sei in linea con i tempi dell'esame" : "sei più lento dell'esame: allena la velocità"}</b></p>
-          <div class="table-wrap" style="margin-top:10px"><table class="table"><thead><tr><th>Capitolo</th><th class="num">Giuste</th></tr></thead><tbody>${Object.entries(perCap).map(([n, p]) => `<tr><td>${esc(nomeCap(c.slug, Number(n)))}</td><td class="num">${p.ok}/${p.n}</td></tr>`).join("")}</tbody></table></div>
-          <div class="row" style="margin-top:12px">${R.some((r) => !r.ok) ? `<button class="btn btn-primary btn-sm" data-es-rifai2>Rifai le ${R.filter((r) => !r.ok).length} sbagliate</button>` : ""}<button class="btn btn-ghost btn-sm" data-es-chiudi>Aggiorna i numeri</button></div></div>`;
+        const ok = R.filter((r) => r.ok).length, tm = Math.round(R.reduce((n, r) => n + r.t, 0) / R.length);
+        box.innerHTML = `<div class="card es-fine"><span class="sq-label">Risultato</span><h2>${ok} giuste su ${R.length}</h2>
+          <p>Tempo medio ${tm} secondi a domanda · ${tm <= ob ? '<span class="badge badge-green">in linea con l\'esame</span>' : '<span class="badge badge-orange">più lento dell\'esame</span>'}</p>
+          <div class="row" style="margin-top:14px">${R.some((r) => !r.ok) ? `<button class="btn btn-primary" data-es-rifai2>Rifai le ${R.filter((r) => !r.ok).length} sbagliate</button>` : ""}<button class="btn btn-ghost" data-es-chiudi>Torna agli esercizi</button></div></div>`;
         const r2 = box.querySelector("[data-es-rifai2]"); r2 && (r2.onclick = () => corri(lista.filter((q) => R.some((r) => r.id === q.id && !r.ok))));
-        box.querySelector("[data-es-chiudi]").onclick = () => UL.app.refresh();
-      };
+        box.querySelector("[data-es-chiudi]").onclick = () => UL.app.refresh(); };
       const mostra = () => {
         stop(); const q = lista[i]; t0 = Date.now();
-        box.innerHTML = `<div class="quiz" style="max-width:none"><div class="quiz-top"><span class="sq-label">${i + 1} di ${lista.length} · ${esc(nomeCap(c.slug, q.cap))}</span><span class="timer">${icon("clock")} <span data-t>0″</span> / ${ob}″</span></div>
-          <p class="quiz-q">${esc(q.q)}</p><div class="opts">${q.opts.map((o, j) => `<button class="opt" data-o="${j}"><span class="k">${"ABCD"[j]}</span><span>${esc(o)}</span></button>`).join("")}</div><div data-es-dopo></div></div>`;
-        const tt = box.querySelector("[data-t]"); esTimer = setInterval(() => { const s = Math.round((Date.now() - t0) / 1000); tt.textContent = s + "″"; tt.style.color = s > ob ? "var(--red)" : ""; }, 500);
+        box.innerHTML = `<div class="card es-q"><div class="es-q-top"><span class="sq-label">Domanda ${i + 1} di ${lista.length} · ${esc(nomeCap(c.slug, q.cap))}</span><span class="timer">${icon("clock")} <span data-t>0</span> s · obiettivo ${ob} s</span></div>
+          <div class="es-prog"><i style="width:${(i / lista.length) * 100}%"></i></div>
+          <p class="quiz-q">${esc(q.q)}</p><div class="opts">${q.opts.map((o, j) => `<button class="opt" data-o="${j}"><span class="k">${"ABCD"[j]}</span><span>${esc(o)}</span></button>`).join("")}</div><div data-es-dopo></div>
+          <button class="btn btn-sm btn-ghost" style="margin-top:12px" data-es-chiudi>Interrompi</button></div>`;
+        box.querySelector("[data-es-chiudi]").onclick = () => { stop(); UL.app.refresh(); };
+        const tt = box.querySelector("[data-t]"); esTimer = setInterval(() => { const s = Math.round((Date.now() - t0) / 1000); tt.textContent = s; tt.parentElement.classList.toggle("lento", s > ob); }, 500);
         box.querySelectorAll(".opt").forEach((b) => (b.onclick = () => {
           stop(); const t = Math.round((Date.now() - t0) / 1000), ok = Number(b.dataset.o) === q.a;
           B.answer(u, q.id, ok); const voce = { id: q.id, ok, t, at: new Date().toISOString() }; const L = ES(u).log; L.push(voce); if (L.length > 600) L.splice(0, L.length - 600);
-          R.push({ id: q.id, ok, t, cap: q.cap });
+          R.push({ id: q.id, ok, t });
           box.querySelectorAll(".opt").forEach((x) => { x.disabled = true; if (Number(x.dataset.o) === q.a) x.classList.add("ok"); }); if (!ok) b.classList.add("ko");
-          box.querySelector("[data-es-dopo]").innerHTML = `<p class="small" style="margin-top:10px">${t}″ · ${t <= ob ? '<span class="badge badge-green">in linea con l\'esame</span>' : '<span class="badge badge-orange">più lento dell\'esame</span>'}</p>
+          box.querySelector("[data-es-dopo]").innerHTML = `<p class="small" style="margin-top:12px">${ok ? "Giusta" : "Sbagliata"} · ${t} secondi${t <= ob ? "" : " · più lento dell'esame"}</p>
             ${q.x ? `<div class="explain"><b>Spiegazione</b><br>${esc(q.x)}</div>` : ""}
-            ${ok ? "" : `<p class="sq-label" style="margin-top:10px">Perché hai sbagliato? (resta nel registro)</p><div class="chips">${CAUSE.map(([k, t2]) => `<button class="chip" data-causa="${k}">${t2}</button>`).join("")}</div>`}
-            <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn btn-sm btn-primary" data-es-avanti>${i < lista.length - 1 ? "Prossima" : "Risultato"}</button></div>`;
+            ${ok ? "" : `<p class="sq-label" style="margin-top:12px">Perché hai sbagliato?</p><div class="chips">${CAUSE.map(([k, t2]) => `<button class="chip" data-causa="${k}">${t2}</button>`).join("")}</div>`}
+            <div class="row" style="justify-content:flex-end;margin-top:14px"><button class="btn btn-primary" data-es-avanti>${i < lista.length - 1 ? "Prossima" : "Vedi il risultato"}</button></div>`;
           box.querySelectorAll("[data-causa]").forEach((x) => (x.onclick = () => { voce.causa = x.dataset.causa; box.querySelectorAll("[data-causa]").forEach((y) => y.classList.toggle("on", y === x)); UL.store.save(); }));
           box.querySelector("[data-es-avanti]").onclick = () => { i++; i < lista.length ? mostra() : fine(); };
           UL.store.save();
@@ -181,23 +167,19 @@
       };
       mostra(); box.scrollIntoView({ behavior: "smooth", block: "start" });
     };
-    root.querySelector("[data-es-via]").onclick = () => corri(B.shuffle(filtra()).slice(0, f.n));
-    const rf = root.querySelector("[data-es-rifai]"); rf && (rf.onclick = () => corri(Q.filter((q) => inErrore(u, q))));
-    ridisegna();
   }
 
-  /* ---------- scheda Mappa del corso: l'indice come mappa, con lo stato di ogni capitolo ---------- */
+  /* ---------- scheda Mappa del corso · v10 essenziale (commento 3 del 8/10): un capitolo = una riga, uno stato, una barra ---------- */
   function mappa(u, c) {
     const S = STR(c.slug), M = ((u.activity.mappa = u.activity.mappa || {})[c.slug] = (u.activity.mappa[c.slug] || {}));
     if (!S) return `<div class="card empty">${icon("map")}<p>La mappa di ${esc(c.title)} nasce dall'indice della dispensa: per questo esame non l'abbiamo ancora caricato.</p></div>`;
     const Q = B.banca(c.slug), D = B.mazzo(c.slug, u), F = fcStato(u, c.slug);
-    const dati = (n) => { const q = Q.filter((x) => x.cap === n), giuste = q.filter((x) => B.stat(u, x.id).streak > 0).length, k = D.filter((x) => x.cap === n), imp = k.filter((x) => F.s[x.id] && F.s[x.id].rep > 0).length; return { q: q.length, giuste, k: k.length, imp }; };
-    const STATI = [["", "Da studiare"], ["corso", "In corso"], ["fatto", "Fatto"]];
-    return `<p class="small muted" style="margin-bottom:12px">La mappa del corso: ${esc(S.fonte)}. Per ogni capitolo vedi esercizi e flashcard e segni a che punto sei. Le mappe concettuali disegnate sono rimandate (meeting del 7/10).</p>
-      <div class="mp-mappa">${S.moduli.map((m, i) => `<section class="mp-mod"><span class="sq-label">Macroargomento ${i + 1}</span><h3>${esc(m.titolo)}</h3>
-        <div class="mp-caps">${m.capitoli.map((k) => { const d = dati(k.n), st = M[k.n] || ""; return `<div class="mp-cap ${st}"><div class="row between"><b>${k.n} · ${esc(k.titolo)}</b><select class="select mp-sel" data-mp="${k.n}" aria-label="Stato del capitolo ${k.n}">${STATI.map(([v, t]) => `<option value="${v}" ${v === st ? "selected" : ""}>${t}</option>`).join("")}</select></div>
-          <div class="mp-num"><span>${icon("quiz")} ${d.giuste}/${d.q} esercizi</span><span>${icon("layers")} ${d.imp}/${d.k} flashcard</span></div>
-          ${k.sezioni ? `<details><summary class="tiny">${k.sezioni.length} paragrafi</summary><ul class="g-lista">${k.sezioni.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></details>` : ""}</div>`; }).join("")}</div></section>`).join("")}</div>`;
+    const pct = (n) => { const q = Q.filter((x) => x.cap === n), k = D.filter((x) => x.cap === n), a = q.filter((x) => B.stat(u, x.id).streak > 0).length + k.filter((x) => F.s[x.id] && F.s[x.id].rep > 0).length; return q.length + k.length ? Math.round((a / (q.length + k.length)) * 100) : 0; };
+    const ST = { "": ["Da studiare", ""], corso: ["In corso", "corso"], fatto: ["Fatto", "fatto"] };
+    const fatti = S.moduli.flatMap((m) => m.capitoli).filter((k) => M[k.n] === "fatto").length, totCap = S.moduli.flatMap((m) => m.capitoli).length;
+    return `<div class="mp-testa"><b>${fatti} di ${totCap} capitoli fatti</b><span class="es-bar"><i style="width:${(fatti / totCap) * 100}%"></i></span><span class="small muted">Tocca lo stato per cambiarlo. La barra è quanto sai di quel capitolo (esercizi e flashcard).</span></div>
+      <div class="mp-mappa">${S.moduli.map((m, i) => `<section class="mp-mod"><h3><span>${i + 1}</span>${esc(m.titolo)}</h3>
+        <ul class="mp-lista">${m.capitoli.map((k) => { const st = M[k.n] || "", p = pct(k.n); return `<li class="${ST[st][1]}"><span class="mp-tit">${k.n} · ${esc(k.titolo)}</span><span class="es-bar" title="${p}% che sai"><i style="width:${p}%"></i></span><button class="mp-stato ${ST[st][1]}" data-mp="${k.n}">${ST[st][0]}</button></li>`; }).join("")}</ul></section>`).join("")}</div>`;
   }
 
   /* ---------- scheda Note: note ed evidenziazioni della dispensa, per pagina ---------- */
@@ -212,18 +194,53 @@
         ${(N[p] || []).map((x) => `<p class="small" style="margin-top:4px">${esc(x.testo)}</p>`).join("")}</div></li>`).join("")}</ul></div>`;
   }
 
+  /* ---------- «Pronto per l'esame?» (v10, parte del valore di Plus e della Completa): esercizi 50% · flashcard 30% · mappa 20% ---------- */
+  function pronto(u, c) {
+    const Q = B.banca(c.slug), D = B.mazzo(c.slug, u), F = fcStato(u, c.slug), S = STR(c.slug), M = ((u.activity.mappa || {})[c.slug]) || {};
+    const e = Q.length ? Q.filter((q) => B.stat(u, q.id).streak > 0).length / Q.length : 0, f = D.length ? D.filter((k) => F.s[k.id] && F.s[k.id].rep > 0).length / D.length : 0;
+    const caps = S ? S.moduli.flatMap((m) => m.capitoli) : [], m = caps.length ? caps.filter((k) => M[k.n] === "fatto").length / caps.length : 0;
+    const v = Math.round((e * 0.5 + f * 0.3 + m * 0.2) * 100), ex = u.activity.exams.find((x) => x.slug === c.slug) || {}, g = ex.appello ? B.daysTo(ex.appello) : null;
+    const msg = v >= 80 ? "Sei pronto: tieni il ritmo con ripassi e una simulazione." : v >= 50 ? "Ci sei quasi: rifai gli errori e chiudi i capitoli aperti." : "Sei all'inizio: parti dalla dispensa e dagli esercizi del primo capitolo.";
+    return `<div class="card pr-card"><div class="pr-num"><b>${v}%</b><span>pronto</span></div><div><span class="sq-label">Pronto per l'esame?${g != null && g >= 0 ? ` · appello tra ${g} giorni` : ""}</span><p style="margin:4px 0 8px">${msg}</p>
+      <div class="pr-parti"><span>Esercizi ${Math.round(e * 100)}%</span><span>Flashcard ${Math.round(f * 100)}%</span><span>Capitoli fatti ${Math.round(m * 100)}%</span></div></div></div>`;
+  }
+
   /* ---------- la macrosezione ---------- */
-  const SCHEDE = [["panoramica", "Panoramica", "home"], ["dispensa", "Dispensa", "book"], ["flashcard", "Flashcard", "layers"], ["esercizi", "Esercizi", "quiz"], ["simulazione", "Simulazione", "target"], ["mappa", "Mappa del corso", "map"], ["note", "Note", "edit"]];
+  // v10: la simulazione è dentro «Esercizi» (una scheda in meno)
+  const SCHEDE = [["panoramica", "Panoramica", "home"], ["dispensa", "Dispensa", "book"], ["flashcard", "Flashcard", "layers"], ["esercizi", "Esercizi e simulazioni", "quiz"], ["mappa", "Mappa del corso", "map"], ["note", "Note", "edit"]];
   const SENZA = (c) => `<div class="card section">${U.lock("Con la dispensa completa di " + c.title, `Dispensa da leggere e annotare, flashcard, esercizi per capitolo e simulazioni: ${B.eur(B.prezzo("completa", c))} (invece di ${B.eur(B.prezzoPieno("completa"))}) o nel pacchetto del tuo semestre`, `data-sblocca="${c.slug}"`)}</div>`;
   UL.views.studioU = {
     title: (p) => (p[0] && B.course(p[0]) ? B.course(p[0]).title : "I miei esami"),
     render(u, params) {
       const c = params[0] && B.course(params[0]);
-      if (!c) { // elenco: in preparazione · libretto e voto di laurea (commento 5 del 7/10: dentro «I miei esami», non una sezione a parte)
+      if (!c) { // v10 (commenti 2 e 8 del 8/10): elenco diviso per quello che puoi fare, e cosa ottieni con ogni piano
         const lb = params[0] === "libretto", sosp = B.esitiInSospeso ? B.esitiInSospeso(u).length : 0;
-        const tabs = `<div class="tabs" style="margin-bottom:16px"><a href="#/app/esami" class="${lb ? "" : "on"}">${icon("book")} In preparazione</a><a href="#/app/esami/libretto" class="${lb ? "on" : ""}">${icon("calc")} Libretto e voto di laurea</a></div>`;
-        if (!lb) return UL.views.esamiB.render(u, []).replace(/(<\/div><\/div>)/, "$1" + tabs);
-        return `<div class="page-head"><div><div class="eyebrow">${icon("book")} I miei esami</div><h1>Libretto e <span class="accent">voto di laurea</span></h1><p class="lead">I tuoi voti, la media e il voto di laurea con le regole ufficiali del tuo corso.${sosp ? ` Hai ${sosp} esami da raccontare: rispondi in Dashboard.` : ""}</p></div></div>${tabs}${U.librettoHTML(u)}`;
+        const tabs = `<div class="tabs" style="margin-bottom:18px"><a href="#/app/esami" class="${lb ? "" : "on"}">${icon("book")} I miei esami</a><a href="#/app/esami/libretto" class="${lb ? "on" : ""}">${icon("calc")} Libretto e voto di laurea</a></div>`;
+        if (lb) return `<div class="page-head"><div><div class="eyebrow">${icon("book")} I miei esami</div><h1>Libretto e <span class="accent">voto di laurea</span></h1><p class="lead">I tuoi voti, la media e il voto di laurea con le regole ufficiali del tuo corso.${sosp ? ` Hai ${sosp} esami da raccontare: rispondi in Dashboard.` : ""}</p></div></div>${tabs}${U.librettoHTML(u)}`;
+        const ex = u.activity.exams.map((e) => ({ e, c: B.course(e.slug) })).filter((x) => x.c), aperti = ex.filter((x) => x.e.status !== "done"), fattiE = ex.filter((x) => x.e.status === "done");
+        const conDisp = aperti.filter((x) => B.owns(u, x.c.slug)), senza = aperti.filter((x) => !B.owns(u, x.c.slug));
+        const giorni = (e) => { const d = e.appello ? B.daysTo(e.appello) : null; return d == null ? "data dell'appello da inserire" : d < 0 ? "appello passato" : d === 0 ? "appello oggi" : `appello tra ${d} giorni`; };
+        const daRip = (c) => { const F = fcStato(u, c.slug), t = oggi(); return B.mazzo(c.slug, u).filter((k) => F.s[k.id] && F.s[k.id].due <= t).length; };
+        const errori = (c) => B.banca(c.slug).filter((q) => inErrore(u, q)).length;
+        const card = ({ e, c }) => { const own = B.owns(u, c.slug), lv = B.level(u, c.slug), r = own ? daRip(c) : 0, er = own ? errori(c) : 0;
+          return `<article class="me-card ${own ? "own" : ""}"><div class="me-top"><span class="badge ${own ? "badge-green" : lv === "simulazione" ? "badge-yellow" : "badge-soft"}">${B.gratisPerTutti(c.slug) ? "Gratis per tutti" : own ? "Dispensa completa" : lv === "simulazione" ? "Simulazione" : "Solo anteprima"}</span><span class="small muted">${giorni(e)}</span></div>
+            <h3>${esc(c.title)}</h3><p class="small muted">${UL.ui.ROMAN[c.anno]} anno · ${c.cfu || "?"} CFU${e.obiettivo ? " · obiettivo " + esc(e.obiettivo) : ""}</p>
+            ${own ? `<div class="me-oggi">${r ? `<span>${icon("layers")} ${r} flashcard da ripassare</span>` : ""}${er ? `<span>${icon("alert")} ${er} errori da rifare</span>` : ""}${!r && !er ? `<span>${icon("check")} Tutto in pari</span>` : ""}</div>
+              <div class="row"><a class="btn btn-primary btn-sm" href="#/app/esami/${c.slug}/dispensa">${icon("book")} Studia</a><a class="btn btn-ghost btn-sm" href="#/app/esami/${c.slug}">Apri l'esame</a></div>`
+            : `<p class="small">Con la dispensa completa: dispensa da leggere e annotare, flashcard, esercizi per capitolo e simulazioni.</p>
+              <div class="row"><button class="btn btn-orange btn-sm" data-sblocca="${c.slug}">Sblocca · ${B.eur(B.prezzo("completa", c))}</button><a class="btn btn-ghost btn-sm" href="#/app/esami/${c.slug}">Anteprima</a></div>`}</article>`; };
+        return `<div class="page-head"><div><div class="eyebrow">${icon("book")} Studio</div><h1>I miei <span class="accent">esami</span></h1><p class="lead">Gli esami che stai preparando. Entra in un esame per studiare: dispensa, flashcard, esercizi e mappa sono tutti lì dentro.</p></div>
+          <button class="btn btn-primary" data-add>${icon("plus")} Aggiungi esame</button></div>${tabs}
+          ${conDisp.length ? `<h2 class="me-h">Pronti da studiare <span class="cnt">${conDisp.length}</span></h2><div class="me-grid">${conDisp.map(card).join("")}</div>` : ""}
+          ${senza.length ? `<h2 class="me-h">Da sbloccare <span class="cnt">${senza.length}</span></h2><div class="me-grid">${senza.map(card).join("")}</div>` : ""}
+          ${!aperti.length ? `<div class="card empty">${icon("book")}<p>Non stai preparando nessun esame. Aggiungine uno, oppure apri Economia Aziendale: è gratis per tutti.</p></div>` : ""}
+          ${fattiE.length ? `<h2 class="me-h">Superati <span class="cnt">${fattiE.length}</span></h2><div class="me-fatti">${fattiE.map(({ e, c }) => `<a href="#/app/esami/libretto"><b>${esc(c.title)}</b><span>${esc(e.voto)}${e.lode ? " e lode" : ""}</span></a>`).join("")}</div>` : ""}
+          <div class="me-offerta"><span class="sq-label">Cosa ottieni per ogni esame</span><div>
+            <div><b>Gratis</b><span>Scheda, quiz di prova, anteprima. Economia Aziendale completa.</span></div>
+            <div><b>Simulazione · ${B.eur(B.prezzo("simulazione"))}</b><span>Una prova nel formato dell'appello con correzione.</span></div>
+            <div class="ev"><b>Dispensa completa · ${B.eur(B.prezzo("completa"))}</b><span>Dispensa da annotare, flashcard, esercizi per capitolo, simulazioni.</span></div>
+            <div class="plus"><b>Plus · ${B.eur(B.prezzoPlus(u))}</b><span>Il coach: Planner su tutti gli esami, analisi degli errori, «pronto per l'esame?».</span></div></div>
+            <a class="small" href="#/app/abbonamento">Confronta i piani →</a></div>`;
       }
       const tab = SCHEDE.some((s) => s[0] === params[1]) ? params[1] : "panoramica", own = B.owns(u, c.slug);
       const lv = B.level(u, c.slug);
@@ -232,26 +249,25 @@
           <span class="badge ${own ? "badge-green" : lv === "simulazione" ? "badge-yellow" : "badge-soft"}">${B.gratisPerTutti(c.slug) ? "Gratis per tutti" : own ? "Dispensa completa" : lv === "simulazione" ? "Simulazione" : "Solo anteprima"}</span></div>
         <div class="tabs st-tabs" style="overflow-x:auto">${SCHEDE.map(([k, l, i]) => `<a href="#/app/esami/${c.slug}/${k}" class="${k === tab ? "on" : ""}">${icon(!own && ["dispensa", "flashcard", "esercizi", "note"].includes(k) ? "lock" : i)} ${l}</a>`).join("")}</div>`;
       let body;
-      if (tab === "panoramica") body = UL.views.esamiB.render(u, [c.slug]).replace(/^\s*<a href="#\/app\/esami"[^>]*>[^<]*<\/a>/, "");
+      if (tab === "panoramica") body = (own ? pronto(u, c) : "") + UL.views.esamiB.render(u, [c.slug]).replace(/^\s*<a href="#\/app\/esami"[^>]*>[^<]*<\/a>/, "");
       else if (tab === "dispensa") body = own ? UL.views.lettoreU.render(u, [c.slug]).replace(/<a href="#\/app\/materiali"[\s\S]*?<div class="lt-wrap"/, '<div class="lt-wrap"') : SENZA(c);
       else if (tab === "flashcard") body = own ? flashcard(u, c) : SENZA(c);
-      else if (tab === "esercizi") body = own ? esercizi(u, c) : SENZA(c) + (B.hasQuiz(c.slug) ? `<p class="small muted" style="margin-top:10px">Intanto c'è il <a href="#/app/esami/${c.slug}/simulazione">quiz di prova gratuito</a>.</p>` : "");
-      else if (tab === "simulazione") body = UL.views.praticaB.render(u, [c.slug]).replace(/<a href="#\/app\/esercitazioni"[^>]*>[^<]*<\/a>/, "");
+      else if (tab === "esercizi") body = own ? esercizi(u, c) : (B.ownsSimulazione(u, c.slug) || B.hasQuiz(c.slug) ? UL.views.praticaB.render(u, [c.slug]).replace(/<a href="#\/app\/esercitazioni"[^>]*>[^<]*<\/a>/, "") : "") + SENZA(c);
       else if (tab === "mappa") body = mappa(u, c);
       else body = own ? note(u, c) : SENZA(c);
       return testa + `<div class="st-corpo">${body}</div>`;
     },
     mount(root, u, params) {
       const c = params[0] && B.course(params[0]);
-      if (!c) return params[0] === "libretto" ? U.bindLibretto(root, u) : UL.views.esamiB.mount && UL.views.esamiB.mount(root, u, []);
+      if (!c) { root.querySelectorAll("[data-sblocca]").forEach((b) => b.addEventListener("click", () => B.upsell(u, b.dataset.sblocca))); return params[0] === "libretto" ? U.bindLibretto(root, u) : UL.views.esamiB.mount && UL.views.esamiB.mount(root, u, []); }
       const tab = params[1] || "panoramica", own = B.owns(u, c.slug);
       root.querySelectorAll("[data-sblocca]").forEach((b) => b.addEventListener("click", () => B.upsell(u, b.dataset.sblocca)));
       if (tab === "panoramica") UL.views.esamiB.mount && UL.views.esamiB.mount(root, u, [c.slug]);
       else if (tab === "dispensa" && own) UL.views.lettoreU.mount(root, u, [c.slug]);
       else if (tab === "flashcard" && own) montaFlashcard(root, u, c);
       else if (tab === "esercizi" && own) montaEsercizi(root, u, c);
-      else if (tab === "simulazione") UL.views.praticaB.mount && UL.views.praticaB.mount(root, u, [c.slug]);
-      root.querySelectorAll("[data-mp]").forEach((s) => s.addEventListener("change", () => { const M = (u.activity.mappa = u.activity.mappa || {}); (M[c.slug] = M[c.slug] || {})[s.dataset.mp] = s.value; UL.store.save(); s.closest(".mp-cap").className = "mp-cap " + s.value; UL.ui.toast("Salvato"); }));
+      else if (tab === "esercizi" && !own) UL.views.praticaB.mount && UL.views.praticaB.mount(root, u, [c.slug]);
+      root.querySelectorAll("[data-mp]").forEach((b) => b.addEventListener("click", () => { const M = (u.activity.mappa = u.activity.mappa || {}), m = (M[c.slug] = M[c.slug] || {}), giro = { "": "corso", corso: "fatto", fatto: "" }; m[b.dataset.mp] = giro[m[b.dataset.mp] || ""]; UL.store.save(); UL.app.refresh(); }));
       root.querySelectorAll("[data-vai-pag]").forEach((b) => b.addEventListener("click", () => { (u.activity.letture = u.activity.letture || {})[c.slug] = Number(b.dataset.vaiPag); UL.store.save(); UL.app.go(`#/app/esami/${c.slug}/dispensa`); }));
     },
   };

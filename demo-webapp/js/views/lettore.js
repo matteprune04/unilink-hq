@@ -86,7 +86,7 @@
       const disegna = async () => {
         if (!st.doc) return;
         const p = await st.doc.getPage(st.pag), box = wrap.querySelector("[data-lt-pag]");
-        const base = p.getViewport({ scale: 1 }), scala = Math.max(0.4, ((box.clientWidth - 2) / base.width) * st.zoom), dpr = Math.min(2, window.devicePixelRatio || 1);
+        const base = p.getViewport({ scale: 1 }), scala = Math.max(0.4, ((Math.min(box.clientWidth - 2, 760)) / base.width) * st.zoom), dpr = Math.min(2, window.devicePixelRatio || 1);
         const vp = p.getViewport({ scale: scala * dpr });
         cv.width = vp.width; cv.height = vp.height; cv.style.width = vp.width / dpr + "px"; cv.style.height = vp.height / dpr + "px";
         if (st.render) try { st.render.cancel(); } catch (e) { /* già finita */ }
