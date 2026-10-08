@@ -92,7 +92,7 @@
     key: "ul_unilink_v4",
     name: "UniLink",
     tag: "Area Personale",
-    flag: "DEMO v11 · dati di esempio",
+    flag: "DEMO v12 · dati di esempio",
     home: "#/app/dashboard",
     homeKey: "dashboard",
     onboarding: "onboardingU",

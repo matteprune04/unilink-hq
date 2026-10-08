@@ -7,7 +7,7 @@
    Caricato PRIMA di store.js: chiavi del database, MODELLO DATI (default di profilo e attività) e testi del login. */
 window.UL = window.UL || {};
 
-UL.VERSIONE = { n: 11, data: "2026-10-08", nota: "v11, commenti del 8/10 (Diritto Pubblico): primo accesso senza ateneo, esami per anno a scomparsa con aggiunta manuale, piano consigliato dagli esami scelti, «Il primo esame» al posto di «Ritmo e avvisi»; una scala sola di grandezze; lettore a pagina intera con indice, segnalibri, schermo intero, frecce e timer. Prima, v10: I miei esami diviso in «pronti da studiare», «da sbloccare», «superati» con cosa ottieni per ogni piano; flashcard stile Anki (mazzi e ripasso a pagina intera); esercizi in tre scelte; mappa essenziale; dispensa e note proporzionate; «pronto per l'esame?»; Planner personale solo con Plus (D51); barra in alto senza link; Catalogo vicino ad Abbonamento; strumenti partono dal libretto, «Ci stai nei tempi?» nel Planner. Prima, v9: libretto, questionario dopo l'esame." };
+UL.VERSIONE = { n: 12, data: "2026-10-08", nota: "v12, commenti del 8/10 (Microeconomia, Strumenti): lettore con PDF a sinistra e note sempre a destra, zoom chiaro (− % + · Pagina / Larghezza), seleziona una frase → evidenzia o commenta, a schermo intero le note restano in un riquadro che si sposta; Strumenti uguali alla landing (tessere con illustrazione, testata con domanda ed esempio). Prima, v11, commenti del 8/10 (Diritto Pubblico): primo accesso senza ateneo, esami per anno a scomparsa con aggiunta manuale, piano consigliato dagli esami scelti, «Il primo esame» al posto di «Ritmo e avvisi»; una scala sola di grandezze; lettore a pagina intera con indice, segnalibri, schermo intero, frecce e timer. Prima, v10: I miei esami diviso in «pronti da studiare», «da sbloccare», «superati» con cosa ottieni per ogni piano; flashcard stile Anki (mazzi e ripasso a pagina intera); esercizi in tre scelte; mappa essenziale; dispensa e note proporzionate; «pronto per l'esame?»; Planner personale solo con Plus (D51); barra in alto senza link; Catalogo vicino ad Abbonamento; strumenti partono dal libretto, «Ci stai nei tempi?» nel Planner. Prima, v9: libretto, questionario dopo l'esame." };
 
 /* PIANI — decisi nel meeting del 7/10/2026 (HQ → Decisioni «MEETING 7/10»), uguali alla landing v8 (demo-landing/config.js → listino).
    Prezzi comunicati come SCONTO DI LANCIO: [prezzo di lancio, prezzo pieno barrato]. Niente prezzi «in sessione / fuori sessione».
@@ -93,7 +93,7 @@ UL.CONFIG = {
   },
 
   auth: {
-    flag: "Demo · UniLink v11",
+    flag: "Demo · UniLink v12",
     title: 'La tua <span class="accent">Area Personale</span> UniLink',
     sub: "Accedi per ritrovare le tue dispense, i tuoi esami e gli strumenti per scegliere. Da studenti, per studenti.",
     regTitle: 'Il tuo spazio, <span class="accent">gratis</span>',
