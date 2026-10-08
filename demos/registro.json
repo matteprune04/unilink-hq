@@ -4,6 +4,21 @@
    "id": "landing",
    "versioni": [
     {
+     "n": 18,
+     "tag": "landing-v18",
+     "data": "2026-10-08T09:09+00:00",
+     "autore": "Claude",
+     "nota": "Landing v13: collezione completa per area, corso, anno e semestre; schede più grafiche",
+     "commit": "fee34bb",
+     "demo_v": 13,
+     "demo_data": "2026-10-08",
+     "impronta": "f29a4c3b9bb9ea65",
+     "kb": 5641,
+     "file": "UniLink_landing_demo-v13_backup18_2026-10-08.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v18/UniLink_landing_demo-v13_backup18_2026-10-08.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v18/demo-landing"
+    },
+    {
      "n": 17,
      "tag": "landing-v17",
      "data": "2026-10-08T08:51+00:00",
@@ -501,5 +516,5 @@
    "url": "https://matteprune04.github.io/unilink-hq/demo-webapp/"
   }
  ],
- "aggiornato": "2026-10-08T09:04+00:00"
+ "aggiornato": "2026-10-08T09:09+00:00"
 }
