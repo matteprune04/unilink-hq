@@ -22,8 +22,8 @@ def rep(a, b, count=1):
 
 
 rep('url("__FONT__")', 'url("Croogla4F.ttf")')
-rep('src="__LOGO__"', 'src="logo-white.png"')
-rep('const LOGO = "__LOGO__";', 'const LOGO = "logo-white.png";')
+rep('src="__LOGO__"', 'src="brand/unilink-orizzontale-negativo.png"')
+rep('const LOGO = "__LOGO__";', 'const LOGO = "brand/unilink-orizzontale-negativo.png";')
 rep('const author = (d) => d.by ? `<span class="who" data-uid="${esc(d.by)}">…</span>` : "";',
     'const author = (d) => d.by && !/^u_/.test(d.by) ? `<span class="who">${esc(d.by)}</span>` : "";')
 s, n = re.subn(r"async function hydrate\(root\) \{.*?\n\}\n", "function hydrate(root) { loadImgs(root); }\n", s, flags=re.S)
@@ -59,8 +59,9 @@ head = f"""<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#172554">
-<link rel="icon" href="logo-white.png">
-<link rel="apple-touch-icon" href="logo-white.png">
+<link rel="icon" href="brand/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="brand/apple-touch-icon-180.png">
+<link rel="manifest" href="brand/site.webmanifest">
 {title}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
 <script src="config.js"></script>

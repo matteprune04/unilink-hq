@@ -130,7 +130,7 @@ function showLogin(msg) {
   const box = document.getElementById("login");
   let name = ""; try { name = localStorage.getItem("ulhq_name") || ""; } catch (e) {}
   box.innerHTML = `<form class="login-card" id="loginForm" novalidate>
-    <img src="logo-white.png" alt="UniLink" class="login-logo">
+    <img src="brand/unilink-orizzontale-negativo.png" alt="UniLink" class="login-logo">
     <div class="stack" style="gap:6px"><span class="eyebrow">Area riservata ai founder</span><h1>UniLink HQ</h1></div>
     <label class="fld"><span>Il tuo nome</span><input id="lg_name" autocomplete="nickname" value="${esc(name)}" placeholder="Es. Matteo" list="lg_names"><datalist id="lg_names">${(HQ_CONFIG.founders || []).map(n => `<option value="${esc(n)}">`).join("")}</datalist><small>Serve solo a firmare idee, voti e commenti.</small></label>
     <label class="fld"><span>Password del team</span><input id="lg_pass" type="password" autocomplete="current-password"></label>

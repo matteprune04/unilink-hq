@@ -4,8 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#172554">
-<link rel="icon" href="logo-white.png">
-<link rel="apple-touch-icon" href="logo-white.png">
+<link rel="icon" href="brand/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="brand/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="brand/favicon.ico" sizes="48x48">
+<link rel="apple-touch-icon" href="brand/apple-touch-icon-180.png">
+<link rel="manifest" href="brand/site.webmanifest">
 <title>UniLink HQ</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
@@ -19,16 +22,16 @@
 /* Layout: sidebar navy fissa a sinistra (come il sito) + area di lavoro crema; su telefono la sidebar diventa un cassetto */
 :root {
   color-scheme: light; /* look unico del brand UniLink, chiaro come unilinkfirenze.it */
-  --navy: #172554; --navy-2: #22346f; --navy-soft: #e3e7f2;
-  --cream: #f4f1ea; --beige: #e9e5dd; --line: #d9d4c9;
-  --orange: #cf7527; --orange-dark: #914809; --orange-soft: #f6e6d6;
+  --navy: #172554; --navy-2: #22346f; --navy-soft: #dfe4f1;
+  --cream: #f4f1ea; --beige: #ebe4d5; --line: #e2dccf;
+  --orange: #cf7527; --orange-dark: #a95d1c; --orange-soft: #f6e4d1;
   --green: #1a453c; --green-soft: #dcebe6;
   --red: #a4321f; --red-soft: #f6e0db;
   --yellow-soft: #fbefc8; --yellow-dark: #7a5a00;
-  --ink: #181d27; --muted: #6d6a63; --white: #ffffff;
+  --ink: #181d27; --muted: #4b5675; --white: #ffffff;
   --fd: "Croogla", "Instrument Sans", sans-serif;
   --fb: "Instrument Sans", sans-serif;
-  --r: 14px; --r-sm: 9px; --pill: 100px;
+  --r: 16px; --r-sm: 9px; --pill: 100px;
   --shadow: 0 1px 2px rgba(23,37,84,.06), 0 8px 24px rgba(23,37,84,.07);
   --side: 258px;
 }
@@ -50,7 +53,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 /* ---------- sidebar ---------- */
 #side { position: fixed; inset: 0 auto 0 0; width: var(--side); background: var(--navy); color: #fff; display: flex; flex-direction: column; padding: calc(22px + env(safe-area-inset-top, 0px)) 14px calc(18px + env(safe-area-inset-bottom, 0px)); overflow-y: auto; z-index: 40; transition: transform .25s ease; }
 .brand { display: flex; align-items: center; gap: 10px; padding: 0 10px 22px; }
-.brand img { height: 30px; width: auto; }
+.brand img { height: 40px; width: auto; margin-left: -8px; }
 .brand span { font-family: var(--fd); font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--orange); border: 1px solid rgba(207,117,39,.55); border-radius: var(--pill); padding: 2px 9px 1px; }
 .navg { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.5); padding: 16px 12px 6px; }
 .nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; background: none; border: 0; color: rgba(255,255,255,.86); text-align: left; padding: 8px 12px; border-radius: var(--r-sm); cursor: pointer; font-size: 14.5px; }
@@ -244,6 +247,7 @@ blockquote::before { content: "“"; font-family: var(--fd); color: var(--orange
 .fld[hidden] { display: none; }
 .hero { background: linear-gradient(120deg, var(--navy) 0%, #2a3f86 100%); color: #fff; border-radius: 22px; padding: 26px 30px; display: flex; justify-content: space-between; gap: 18px; flex-wrap: wrap; align-items: flex-end; box-shadow: var(--shadow); position: relative; overflow: hidden; }
 .hero::after { content: ""; position: absolute; right: -60px; top: -70px; width: 280px; height: 280px; border-radius: 50%; background: radial-gradient(circle, rgba(207,117,39,.38), transparent 65%); pointer-events: none; }
+.accw { color: var(--orange); position: relative; white-space: nowrap; } .accw::after { content: ""; position: absolute; left: -2%; right: -2%; bottom: -.12em; height: .22em; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 8' preserveAspectRatio='none'%3E%3Cpath d='M1 5 Q25 1 50 4.5 T99 3.5' fill='none' stroke='%23cf7527' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E") center / 100% 100% no-repeat; }
 .hero h1 { color: #fff; font-size: clamp(30px, 4.4vw, 46px); margin: 4px 0 14px; }
 .hero-t { position: relative; z-index: 1; min-width: 0; } .hero-a { position: relative; z-index: 1; display: flex; gap: 8px; flex-wrap: wrap; }
 .hero .btn { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.3); color: #fff; } .hero .btn.acc { background: var(--orange); border-color: var(--orange); }
@@ -284,7 +288,7 @@ blockquote::before { content: "“"; font-family: var(--fd); color: var(--orange
 .tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--line); }
 .tab { background: none; border: 0; padding: 10px 16px; font-size: 15px; cursor: pointer; color: var(--muted); border-bottom: 3px solid transparent; margin-bottom: -1px; font-weight: 600; } .tab.on { color: var(--navy); border-bottom-color: var(--orange); }
 @media (max-width: 880px) { .homegrid, .calwrap { grid-template-columns: 1fr; } .hero { padding: 20px; } .cc { min-height: 52px; } .cal.big .cc { min-height: 52px; } .cpill { padding: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--k); } .cpill i, .cpill span { display: none; } .cps { flex-direction: row; flex-wrap: wrap; gap: 3px; } }
-.hero.ai { background: linear-gradient(120deg, #172554 0%, #3b2a86 100%); }
+.hero.ai { background: linear-gradient(120deg, #172554 0%, #2a3f86 100%); }
 .ver { display: flex; gap: 14px; align-items: flex-start; padding: 12px 0; border-top: 1px solid var(--beige); flex-wrap: wrap; } .ver:first-of-type { border-top: 0; }
 .ver .vn { width: 48px; height: 48px; border-radius: 12px; background: var(--navy); color: #fff; display: grid; place-items: center; font-family: var(--fd); font-size: 17px; flex: none; }
 .ver .grow { flex: 1; min-width: 220px; overflow-wrap: anywhere; } .ver details { margin-top: 6px; } .ver summary { cursor: pointer; color: var(--orange-dark); } .ver ul { margin: 6px 0 0; padding-left: 18px; }
@@ -304,16 +308,30 @@ iframe.demo { width: 100%; height: 520px; border: 0; background: #fff; display: 
 .cmpgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; } .cmpgrid iframe.demo { height: 480px; }
 .drop { border: 2px dashed var(--line); border-radius: var(--r); padding: 18px; display: flex; flex-direction: column; gap: 4px; align-items: center; cursor: pointer; color: var(--navy); } .drop:hover { border-color: var(--orange); background: var(--orange-soft); }
 .vrow { display: flex; gap: 12px; align-items: center; padding: 12px 0; border-top: 1px solid var(--beige); flex-wrap: wrap; } .vrow:first-of-type { border-top: 0; } .vrow .grow { flex: 1; min-width: 180px; }
-.vtag { width: 46px; height: 46px; border-radius: 12px; background: var(--navy-soft); color: var(--navy); display: grid; place-items: center; font-family: var(--fd); flex: none; } .vrow.attuale .vtag { background: #1a6b3c; color: #fff; } .vrow.confronto .vtag { background: #6d28d9; color: #fff; }
+.vtag { width: 46px; height: 46px; border-radius: 12px; background: var(--navy-soft); color: var(--navy); display: grid; place-items: center; font-family: var(--fd); flex: none; } .vrow.attuale .vtag { background: #1a6b3c; color: #fff; } .vrow.confronto .vtag { background: #2f4f9e; color: #fff; }
 .sheet.wide { max-width: min(1250px, 96vw); }
 @media (max-width: 980px) { .labgrid, .cmpgrid { grid-template-columns: 1fr; } }
-.hero.fin { background: linear-gradient(120deg, #172554 0%, #1a453c 100%); }
+.hero.fin { background: linear-gradient(120deg, #172554 0%, #2a3f86 100%); }
 .finhero { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 14px; align-items: stretch; }
 .cash { background: #fff; display: flex; flex-direction: column; gap: 8px; padding: 22px; } .cash .lab { color: var(--muted); font-size: 13px; } .cash .val { font-family: var(--fd); font-size: clamp(40px, 5vw, 58px); color: var(--navy); line-height: 1; }
 .runway { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; padding-top: 14px; border-top: 1px solid var(--beige); }
 .gauge { height: 12px; background: var(--beige); border-radius: var(--pill); overflow: hidden; } .gauge i { display: block; height: 100%; border-radius: var(--pill); background: #1a6b3c; } .gauge.mid i { background: #d99a1e; } .gauge.bad i { background: var(--red); }
 .finkpis { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; } .finkpis .kpi .val { font-size: 28px; }
 @media (max-width: 880px) { .finhero { grid-template-columns: 1fr; } }
+.hero.mat { background: linear-gradient(120deg, #172554 0%, #2a3f86 100%); }
+.mattabs { margin-bottom: -6px; overflow-x: auto; }
+.grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr)); gap: 14px; align-items: start; } .grid4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 14px; }
+.acard { text-align: left; display: flex; flex-direction: column; gap: 10px; font: inherit; color: inherit; } .aic { width: 38px; height: 38px; border-radius: 11px; background: var(--navy-soft); color: var(--navy); display: grid; place-items: center; flex: none; } .aic .ico { width: 20px; height: 20px; }
+.dbstrip { display: flex; flex-direction: column; gap: 10px; } .dbrow { display: grid; grid-template-columns: 150px repeat(4, minmax(0, 1fr)); gap: 8px; align-items: stretch; } .dbn { font-family: var(--fd); font-size: 17px; color: var(--navy); align-self: center; }
+.dbc { border-radius: var(--r-sm); padding: 8px 10px; font-size: 13px; display: flex; flex-direction: column; gap: 2px; } .dbc b { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; } .dbc.ok { background: var(--navy-soft); color: var(--navy); } .dbc.no { background: var(--orange-soft); color: var(--orange-dark); }
+@media (max-width: 880px) { .dbrow { grid-template-columns: 1fr 1fr; } .dbn { grid-column: 1 / -1; } }
+.vchk { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 8px; border-radius: var(--pill); font-size: 12.5px; font-weight: 600; cursor: pointer; background: var(--orange-soft); color: var(--orange-dark); border: 1.5px solid transparent; white-space: nowrap; } .vchk.on { background: var(--green-soft); color: var(--green); } .vchk input { width: 15px; height: 15px; accent-color: var(--green); margin: 0; } .vchk small { font-weight: 500; opacity: .8; }
+.mgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; } .mcard { display: flex; flex-direction: column; gap: 6px; padding: 12px; } .mcard.ok { border-color: #9cc4b6; }
+.mprev { height: 130px; border-radius: var(--r-sm); background: repeating-conic-gradient(#f4f1ea 0 25%, #fbfaf6 0 50%) 0 0 / 14px 14px; display: grid; place-items: center; overflow: hidden; border: 1px solid var(--line); } .mprev img { max-width: 100%; max-height: 100%; object-fit: contain; } .mcard .mt { font-weight: 600; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fico.sm { width: 34px; height: 34px; font-size: 10px; }
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; } .sw { border: 1px solid var(--line); background: #fff; border-radius: var(--r-sm); padding: 8px; text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 2px; font: inherit; color: var(--ink); } .sw i { height: 36px; border-radius: 6px; border: 1px solid rgba(0,0,0,.08); margin-bottom: 4px; } .sw small { color: var(--muted); font-size: 11.5px; line-height: 1.25; } .sw:hover { border-color: var(--navy); }
+.captbl td, .rawtbl td { vertical-align: middle; } .cb { position: relative; height: 22px; background: var(--beige); border-radius: 6px; min-width: 120px; } .cb i { position: absolute; inset: 0 auto 0 0; background: #8fa0c8; border-radius: 6px; min-width: 4px; } .cb.f i { background: #e9b98a; } .cb span { position: absolute; right: 8px; top: 0; font-size: 12.5px; font-weight: 600; color: var(--navy); line-height: 22px; }
+.rawz { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; } .rawz .grow { min-width: 120px; } .rawtbl th, .rawtbl td { min-width: 220px; } .rawtbl td:first-child { min-width: 140px; }
 .comment { background: var(--white); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 10px 12px; font-size: 14px; }
 .big-img { width: 100%; border-radius: var(--r-sm); }
 
@@ -325,7 +343,7 @@ iframe.demo { width: 100%; height: 520px; border: 0; background: #fff; display: 
   body.nav-open #scrim { display: block; position: fixed; inset: 0; background: rgba(23,37,84,.4); z-index: 30; }
   #main { margin-left: 0; padding-block: 18px 60px; }
   .mtop { display: flex; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; align-items: center; justify-content: space-between; gap: 10px; background: var(--navy); color: #fff; padding: 10px 16px; }
-  .mtop img { height: 24px; }
+  .mtop img { height: 34px; margin-left: -6px; }
   .mtop button { background: none; border: 1px solid rgba(255,255,255,.35); color: #fff; border-radius: var(--pill); padding: 5px 13px; cursor: pointer; }
   .form { grid-template-columns: minmax(0, 1fr); }
   .sheet { padding: 20px 16px; }
@@ -344,14 +362,14 @@ img { max-width: 100%; }
 .login-card .fld > span { color: #fff; }
 .login-card .fld small { color: rgba(255,255,255,.65); }
 .login-card input { border: 1px solid rgba(255,255,255,.25); background: #fff; color: var(--ink); border-radius: var(--r-sm); padding: 11px 12px; width: 100%; }
-.login-logo { height: 38px; width: auto; align-self: flex-start; }
+.login-logo { height: 56px; margin-left: -10px; width: auto; align-self: flex-start; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 
 </head>
 <body>
 <div id="login" hidden></div>
-<div class="mtop"><img src="logo-white.png" alt="UniLink"><button type="button" data-menu>Menu</button></div>
+<div class="mtop"><img src="brand/unilink-orizzontale-negativo.png" alt="UniLink"><button type="button" data-menu>Menu</button></div>
 <aside id="side" aria-label="Sezioni"></aside>
 <div id="scrim" data-menu></div>
 <main id="main"><div class="wrap"><div class="empty" style="margin-top:20vh">Caricamento dello spazio di lavoro…</div></div></main>
@@ -361,7 +379,7 @@ img { max-width: 100%; }
 <script>
 "use strict";
 /* ================= costanti ================= */
-const LOGO = "logo-white.png";
+const LOGO = "brand/unilink-orizzontale-negativo.png";
 const AREE = ["Dispense e quiz", "Tools", "Mentor", "Community", "Social e marketing", "Partnership e B2B", "Prodotto e tech", "Monetizzazione", "Organizzazione"];
 const IDEA_ST = ["Nuova", "Approvata", "In sviluppo", "Fatta", "Archiviata"];
 /* Tipo = di che cosa parla l'idea (colore + icona). Natura = che genere di intervento è. */
@@ -381,18 +399,18 @@ const _ic = {
 };
 const T = { prod: "Prodotto / funzione", cont: "Contenuto", evt: "Evento / community", mkt: "Marketing e social", par: "Partnership", mon: "Monetizzazione", org: "Organizzazione" };
 const TIPI = [
-  { id: T.prod, c: "#172554", s: "#e3e7f2", ic: _ic.prod, area: "Prodotto e tech", from: ["Tools", "Prodotto e tech"] },
-  { id: T.cont, c: "#1a453c", s: "#dcebe6", ic: _ic.cont, area: "Dispense e quiz", from: ["Dispense e quiz", "Mentor"] },
-  { id: T.evt, c: "#914809", s: "#f6e6d6", ic: _ic.evt, area: "Community", from: ["Community"] },
-  { id: T.mkt, c: "#9d174d", s: "#fbe3ee", ic: _ic.mkt, area: "Social e marketing", from: ["Social e marketing"] },
-  { id: T.par, c: "#0f5f6b", s: "#d9eef1", ic: _ic.par, area: "Partnership e B2B", from: ["Partnership e B2B"] },
-  { id: T.mon, c: "#7a5a00", s: "#fbefc8", ic: _ic.mon, area: "Monetizzazione", from: ["Monetizzazione"] },
-  { id: T.org, c: "#475569", s: "#e6e9ee", ic: _ic.org, area: "Organizzazione", from: ["Organizzazione"] },
+  { id: T.prod, c: "#172554", s: "#dfe4f1", ic: _ic.prod, area: "Prodotto e tech", from: ["Tools", "Prodotto e tech"] },
+  { id: T.cont, c: "#2f4f9e", s: "#e4eaf8", ic: _ic.cont, area: "Dispense e quiz", from: ["Dispense e quiz", "Mentor"] },
+  { id: T.evt, c: "#a95d1c", s: "#f6e4d1", ic: _ic.evt, area: "Community", from: ["Community"] },
+  { id: T.mkt, c: "#7a4414", s: "#efe1d1", ic: _ic.mkt, area: "Social e marketing", from: ["Social e marketing"] },
+  { id: T.par, c: "#4b5675", s: "#e8ebf2", ic: _ic.par, area: "Partnership e B2B", from: ["Partnership e B2B"] },
+  { id: T.mon, c: "#5f5b53", s: "#ebe4d5", ic: _ic.mon, area: "Monetizzazione", from: ["Monetizzazione"] },
+  { id: T.org, c: "#4b5675", s: "#e8ebf2", ic: _ic.org, area: "Organizzazione", from: ["Organizzazione"] },
 ];
-const TIPO_NONE = { id: "Da classificare", c: "#5f5b53", s: "#e9e5dd", ic: _ic.none, area: AREE[0], from: [] };
+const TIPO_NONE = { id: "Da classificare", c: "#5f5b53", s: "#ebe4d5", ic: _ic.none, area: AREE[0], from: [] };
 const IKIND = [
-  { id: "Novità", c: "#1a6b3c", ic: _ic.nov }, { id: "Miglioramento", c: "#1d4ed8", ic: _ic.mig },
-  { id: "Aggiornamento grafico", c: "#6d28d9", ic: _ic.gra }, { id: "Altro", c: "#5f5b53", ic: _ic.alt },
+  { id: "Novità", c: "#a95d1c", ic: _ic.nov }, { id: "Miglioramento", c: "#172554", ic: _ic.mig },
+  { id: "Aggiornamento grafico", c: "#4b5675", ic: _ic.gra }, { id: "Altro", c: "#5f5b53", ic: _ic.alt },
 ];
 /* campi che compaiono solo per un certo tipo di idea */
 const IDEA_SPEC = [
@@ -493,7 +511,7 @@ const SCHEMA = {
     { k: "notes", l: "Note interne", t: "textarea", rows: 3, wide: 1 } ] },
 };
 Object.values(SCHEMA).forEach(sc => sc.fields.push({ k: "files", l: "Allegati", t: "files", wide: 1 }));
-const COLS = ["ideas", "feedback", "okrs", "tasks", "metrics", "mvalues", "partners", "finance", "meetings", "decisions", "links", "team", "google", "sfiles", "docs", "notes", "lab", "labver", "aibriefs", "ctx"];
+const COLS = ["ideas", "feedback", "okrs", "tasks", "metrics", "mvalues", "partners", "finance", "meetings", "decisions", "links", "team", "google", "sfiles", "docs", "notes", "lab", "labver", "aibriefs", "ctx", "mat", "exams", "matver"];
 
 const NAV = [
   { items: [["home", "Cruscotto"], ["calendar", "Calendario"]] },
@@ -502,7 +520,7 @@ const NAV = [
   { g: "Crescita", items: [["web", "Sito e Google"], ["partners", "Partner e contatti"], ["finance", "Finanze"]] },
   { g: "Team", items: [["meetings", "Meeting"], ["decisions", "Decisioni"], ["team", "Persone"], ["links", "Risorse"]] },
   { g: "Intelligenza artificiale", items: [["lab", "Laboratorio AI"], ["aictx", "Contesto per AI"]] },
-  { g: "Archivio", items: [["docs", "Documenti"]] },
+  { g: "Materiali e archivio", items: [["mat", "Materiali"], ["docs", "Documenti"]] },
 ];
 
 /* ================= stato ================= */
@@ -549,7 +567,7 @@ function ideaKey(i, t) {
   if (t.id === T.org) return j([g("o_who"), g("o_due") && "entro " + fmtD(g("o_due"))]);
   return "";
 }
-function syncOnly() { const ty = document.getElementById("f_type") && document.getElementById("f_type").value; $$("#frm [data-only]").forEach(el => { el.hidden = !el.dataset.only.split("|").includes(ty); }); }
+function syncOnly() { const sel = document.getElementById("f_type") || document.getElementById("f_tipo"), ty = sel && sel.value; $$("#frm [data-only]").forEach(el => { el.hidden = !el.dataset.only.split("|").includes(ty); }); }
 function chip(text, cls = "") { return text ? `<span class="chip ${cls}">${esc(text)}</span>` : ""; }
 function stChip(s) { const m = { "Nuova": "navy", "Da valutare": "yl", "Approvata": "gr", "In sviluppo": "or", "Fatta": "gr", "Archiviata": "", "Da fare": "navy", "In corso": "or", "Bloccato": "rd", "Fatto": "gr", "Problema": "rd", "Richiesta": "or", "Apprezzamento": "gr", "Critica": "yl", "Presa": "gr", "Da rivedere": "yl", "Superata": "", "Alta": "rd", "Bassa": "" }; return chip(s, m[s] || ""); }
 function whenCls(s) { const n = daysFrom(s); return n < 0 ? "late" : n <= 3 ? "soon" : ""; }
@@ -909,7 +927,7 @@ function doRender() {
   hydrate(main);
   if (S.ready && !S._autoChk) { S._autoChk = true; setTimeout(() => { try { maybeAutoBrief(); } catch (e) {} }, 3500); }
 }
-function hydrate(root) { loadImgs(root); loadFrames(root); }
+function hydrate(root) { loadImgs(root); loadFrames(root); loadThumbs(root); }
 function getImg(id) {
   if (!S.imgCache[id]) S.imgCache[id] = S.db.doc("images/" + id).get().then(s => s.exists ? s.data().data : "").catch(() => { delete S.imgCache[id]; return ""; });
   return S.imgCache[id];
@@ -937,6 +955,7 @@ function fieldHTML(f, v) {
     case "images": return `<div class="fld wide"><span>${f.l}</span><div class="imgs" id="imgs"></div><small>JPG o PNG, anche più di una. Puoi anche incollare uno screenshot con Ctrl+V. Le immagini vengono ridimensionate automaticamente.</small></div>`;
     case "files": return hasFiles() ? `<div class="fld wide"><span>${f.l}</span><div class="stack" id="fls" style="gap:6px"></div><small>Documenti, PDF, fogli di calcolo, immagini. Fino a 25 MB ciascuno.</small></div>` : "";
     case "krs": return `<div class="fld wide"><span>${f.l}</span><div class="stack" id="krs" style="gap:6px"></div>${f.help ? `<small>${f.help}</small>` : ""}</div>`;
+    case "examRef": inp = `<select id="${id}"><option value="">— scegli —</option>${examList().map(x => `<option value="${esc(x.slug)}" ${x.slug === v ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select>`; break;
     case "ideaRef": inp = `<select id="${id}"><option value="">— nessuna —</option>${S.data.ideas.slice().sort((a, b) => String(a.title).localeCompare(String(b.title))).map(i => `<option value="${i.id}" ${i.id === v ? "selected" : ""}>${esc(i.title)}</option>`).join("")}</select>`; break;
     default: inp = `<input id="${id}" type="text" value="${esc(v || "")}"${ph}>`;
   }
@@ -954,7 +973,7 @@ function openForm(col, id, preset) {
     <form class="form" id="frm" novalidate>${sc.fields.map(f => fieldHTML(f, vals[f.k])).join("")}
     <div class="form-foot fld wide"><div class="row">${doc ? `<button type="button" class="btn danger" data-del="${col}:${id}">Elimina</button>` : ""}</div><div class="row"><button type="button" class="btn" data-close>Annulla</button><button type="submit" class="btn pri">${doc ? "Salva" : "Aggiungi"}</button></div></div></form>`);
   // titolo "Nuova/Nuovo" corretto
-  const h = $(".sheet h2"); if (!doc) h.textContent = (["obiettivo", "task", "feedback", "contatto", "movimento", "meeting", "documento", "materiale"].includes(sc.one) ? "Nuovo " : "Nuova ") + sc.one;
+  const h = $(".sheet h2"); if (!doc) h.textContent = (["obiettivo", "task", "feedback", "contatto", "movimento", "meeting", "documento", "materiale", "esame"].includes(sc.one) ? "Nuovo " : "Nuova ") + sc.one;
   drawImgs(); drawKrs(); drawFiles(); syncOnly();
   const first = $("#frm input, #frm textarea"); if (first) first.focus();
 }
@@ -996,7 +1015,7 @@ function readForm(sc) {
   for (const f of sc.fields) {
     if (f.t === "images" || f.t === "krs" || f.t === "files") continue;
     const el = document.getElementById("f_" + f.k); if (!el) continue;
-    if (f.only) { const ty = document.getElementById("f_type"); if (!ty || !f.only.includes(ty.value)) { o[f.k] = ""; continue; } }
+    if (f.only) { const ty = document.getElementById("f_type") || document.getElementById("f_tipo"); if (!ty || !f.only.includes(ty.value)) { o[f.k] = ""; continue; } }
     if (f.t === "check") o[f.k] = el.checked;
     else if (f.t === "number") o[f.k] = el.value === "" ? "" : Number(el.value);
     else o[f.k] = el.value.trim();
@@ -1169,7 +1188,7 @@ document.addEventListener("click", async e => {
     return;
   }
 });
-document.addEventListener("change", e => { if (e.target.id === "f_type") syncOnly(); });
+document.addEventListener("change", e => { if (e.target.id === "f_type" || e.target.id === "f_tipo") syncOnly(); });
 document.addEventListener("change", async e => {
   const t = e.target;
   if (t.id === "f_attach" && S.form) {
@@ -1219,15 +1238,15 @@ $("#modal").addEventListener("mousedown", e => { if (e.target.id === "modal") cl
 
 /* ====================================================== v2: archivio, calendario, note, attività, home ====================================================== */
 const DOC_CATS = [
-  { id: "Dispense e didattica", c: "#1a453c", s: "#dcebe6", ic: _ic.cont },
-  { id: "Brand e grafica", c: "#6d28d9", s: "#ede4fb", ic: _ic.gra },
-  { id: "Marketing e social", c: "#9d174d", s: "#fbe3ee", ic: _ic.mkt },
-  { id: "Partner e contratti", c: "#0f5f6b", s: "#d9eef1", ic: _ic.par },
-  { id: "Finanza e burocrazia", c: "#7a5a00", s: "#fbefc8", ic: _ic.mon },
-  { id: "Prodotto e tech", c: "#172554", s: "#e3e7f2", ic: _ic.prod },
-  { id: "Team e organizzazione", c: "#475569", s: "#e6e9ee", ic: _ic.org },
-  { id: "AI e demo", c: "#914809", s: "#f6e6d6", ic: _ic.nov },
-  { id: "Altro", c: "#5f5b53", s: "#e9e5dd", ic: _ic.alt },
+  { id: "Dispense e didattica", c: "#2f4f9e", s: "#e4eaf8", ic: _ic.cont },
+  { id: "Brand e grafica", c: "#172554", s: "#dfe4f1", ic: _ic.gra },
+  { id: "Marketing e social", c: "#7a4414", s: "#efe1d1", ic: _ic.mkt },
+  { id: "Partner e contratti", c: "#4b5675", s: "#e8ebf2", ic: _ic.par },
+  { id: "Finanza e burocrazia", c: "#a95d1c", s: "#f6e4d1", ic: _ic.mon },
+  { id: "Prodotto e tech", c: "#172554", s: "#dfe4f1", ic: _ic.prod },
+  { id: "Team e organizzazione", c: "#4b5675", s: "#e8ebf2", ic: _ic.org },
+  { id: "AI e demo", c: "#a95d1c", s: "#f6e4d1", ic: _ic.nov },
+  { id: "Altro", c: "#5f5b53", s: "#ebe4d5", ic: _ic.alt },
 ];
 const docCat = id => DOC_CATS.find(c => c.id === id) || DOC_CATS[DOC_CATS.length - 1];
 SCHEMA.docs = { one: "documento", fields: [
@@ -1236,10 +1255,10 @@ SCHEMA.docs = { one: "documento", fields: [
   { k: "url", l: "Link esterno (Drive, Notion…)", t: "url", ph: "Se il file sta altrove" },
   { k: "note", l: "A cosa serve", t: "textarea", rows: 2, wide: 1 },
   { k: "files", l: "File", t: "files", wide: 1 } ] };
-const FILE_COLS = { ideas: "Idee", tasks: "Task", okrs: "Obiettivi", partners: "Partner", finance: "Finanze", meetings: "Meeting", decisions: "Decisioni", links: "Risorse", team: "Persone", lab: "Laboratorio AI", docs: "Documenti" };
+const FILE_COLS = { ideas: "Idee", tasks: "Task", okrs: "Obiettivi", partners: "Partner", finance: "Finanze", meetings: "Meeting", decisions: "Decisioni", links: "Risorse", team: "Persone", lab: "Laboratorio AI", docs: "Documenti", mat: "Materiali" };
 const SEC_CAT = { ideas: "Prodotto e tech", feedback: "Prodotto e tech", okrs: "Team e organizzazione", tasks: "Team e organizzazione", metrics: "Team e organizzazione", web: "Marketing e social", partners: "Partner e contratti", finance: "Finanza e burocrazia", meetings: "Team e organizzazione", decisions: "Team e organizzazione", team: "Team e organizzazione", links: "Team e organizzazione" };
 const IDEA_CAT = { [T.prod]: "Prodotto e tech", [T.cont]: "Dispense e didattica", [T.evt]: "Marketing e social", [T.mkt]: "Marketing e social", [T.par]: "Partner e contratti", [T.mon]: "Finanza e burocrazia", [T.org]: "Team e organizzazione" };
-const itemCat = (col, d) => col === "docs" ? (d.cat || "Altro") : col === "ideas" ? IDEA_CAT[tipoOf(d).id] : col === "lab" ? "AI e demo" : (SEC_CAT[col] || "Altro");
+const itemCat = (col, d) => col === "docs" ? (d.cat || "Altro") : col === "ideas" ? IDEA_CAT[tipoOf(d).id] : col === "lab" ? "AI e demo" : col === "mat" ? (["brand", "modelli"].includes(matArea(d)) ? "Brand e grafica" : "Dispense e didattica") : (SEC_CAT[col] || "Altro");
 const itemTitle = d => d.title || d.name || d.desc || "";
 const fileExt = n => ((String(n).match(/\.([A-Za-z0-9]{1,5})$/) || [])[1] || "file").toLowerCase();
 
@@ -1309,7 +1328,7 @@ function activityHTML(n) {
 }
 
 /* ---------- calendario collegato ---------- */
-const CAL_K = { meeting: ["Meeting", "#172554"], task: ["Scadenze", "#cf7527"], late: ["In ritardo", "#a4321f"], done: ["Fatto", "#9a968d"], idea: ["Eventi e idee", "#9d174d"], decision: ["Da rivedere", "#7a5a00"], partner: ["Partner", "#0f5f6b"], bday: ["Compleanni", "#6d28d9"] };
+const CAL_K = { meeting: ["Meeting", "#172554"], task: ["Scadenze", "#cf7527"], late: ["In ritardo", "#a4321f"], done: ["Fatto", "#9a968d"], idea: ["Eventi e idee", "#2f4f9e"], decision: ["Da rivedere", "#7a4414"], partner: ["Partner", "#4b5675"], bday: ["Compleanni", "#a95d1c"] };
 function calEvents(year) {
   const ev = []; const add = (date, kind, title, ref, time) => { const d = String(date || "").slice(0, 10); if (/^\d{4}-\d\d-\d\d$/.test(d)) ev.push({ date: d, kind, title, ref, time: time || "" }); };
   S.data.meetings.forEach(m => m.when && add(m.when, "meeting", m.title, "meetings:" + m.id, String(m.when).slice(11, 16)));
@@ -1371,7 +1390,7 @@ V.home = () => {
   const lastBrief = (S.data.aibriefs || []).slice().sort((a, b) => (b.n || 0) - (a.n || 0))[0];
   const pill = (n, l, cls) => n ? `<span class="hchip ${cls || ""}"><b class="num">${n}</b> ${l}</span>` : "";
   return `<div class="wrap">
-  <section class="hero"><div class="hero-t"><div class="eyebrow" style="color:var(--orange)">${now.toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" })}</div><h1>${hi}${meName() ? ", " + esc(meName()) : ""}</h1>
+  <section class="hero"><div class="hero-t"><div class="eyebrow" style="color:var(--orange)">${now.toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" })}</div><h1>${hi}${meName() ? ", <span class=\"accw\">" + esc(meName()) + "</span>" : ""}</h1>
     <div class="row" style="gap:8px">${pill(late, late === 1 ? "task in ritardo" : "task in ritardo", "red")}${pill(dueToday, "in scadenza oggi", "or")}${pill(newIdeas, newIdeas === 1 ? "idea nuova" : "idee nuove")}${nextM ? `<span class="hchip">Prossimo meeting: <b>${esc(nextM.title)}</b> · ${fmtDT(nextM.when)}</span>` : ""}${!late && !dueToday && !newIdeas && !nextM ? '<span class="hchip">Tutto in ordine per oggi</span>' : ""}</div></div>
     <div class="hero-a">${addBtn("ideas", "+ Nuova idea", "acc")}<button class="btn" data-go="notes">Nota rapida</button><button class="btn" data-weekly>Aggiorna metriche</button></div></section>
   <div class="kpis kpis-l">${north ? kpi(north, 1) : ""}${pinned.map(m => kpi(m)).join("")}
@@ -1395,6 +1414,7 @@ V.home = () => {
     <section class="card panel"><div class="panel-h"><h2>Prossimo meeting</h2><button class="linkbtn" data-nav="meetings">Tutti</button></div>
       ${nextM ? `<div class="stack"><div><div class="eyebrow">${fmtDT(nextM.when)}</div><h3 style="margin-top:4px">${esc(nextM.title)}</h3></div>${nextM.agenda ? `<div class="pre small muted">${esc(String(nextM.agenda).slice(0, 220))}</div>` : ""}<div class="row">${nextM.link ? `<a class="btn acc" href="${esc(safeUrl(nextM.link))}" target="_blank" rel="noopener">Entra nel meeting</a>` : ""}<button class="btn" data-meeting="${nextM.id}">Apri</button></div></div>` : `<p class="muted">Nessun meeting in calendario.</p>${addBtn("meetings", "Programma un meeting", "")}`}
       ${rooms.length ? `<div class="row" style="border-top:1px solid var(--beige);padding-top:12px"><span class="small muted">Stanze fisse:</span>${rooms.map(r => `<a class="btn sm" href="${esc(safeUrl(r.url))}" target="_blank" rel="noopener">${esc(r.title)}</a>`).join("")}</div>` : ""}</section>
+    <section class="card panel"><div class="panel-h"><h2>Materiali</h2><button class="linkbtn" data-nav="mat">Apri</button></div>${(() => { const t = matStats(), db = dbItems(), n = t.n + db.length, v = t.v + db.filter(x => isVer("key", x.k)).length; return `<div class="row between"><span class="small muted">Verificati</span><span class="num"><b>${v}</b> / ${n}</span></div>${progBar(v, n)}<div class="row small muted"><span>${t.n ? t.n + " file di brand e modelli" : "Kit brand e modelli non ancora importati"}</span></div>${!t.n && S.canWrite ? '<button class="btn sm" data-nav="mat">Importa i tuoi zip</button>' : ""}`; })()}</section>
     <section class="card panel"><div class="panel-h"><h2>Laboratorio AI</h2><button class="linkbtn" data-nav="lab">Apri</button></div>
       ${lastLab.length ? lastLab.map(l => `<div class="li"><div class="grow" data-openref="lab:${l.id}" style="cursor:pointer"><div class="t">${esc(l.title)}</div><div class="small muted">${esc(l.ai || "")} · ${esc(l.cat || "")}</div></div></div>`).join("") : `<p class="muted small">Qui compaiono le demo e i materiali creati con Claude e ChatGPT.</p>`}
       <div class="row" style="border-top:1px solid var(--beige);padding-top:12px"><button class="btn sm" data-nav="aictx">Contesto per AI</button>${lastBrief ? `<span class="small muted">ultima versione v${lastBrief.n} · ${ago(lastBrief.createdAt)}</span>` : ""}</div></section>
@@ -1463,6 +1483,7 @@ const BRIEF_SECTIONS = [
   { k: "partners", t: "Partner e pipeline (senza contatti)", on: true, why: "Stato delle trattative. I contatti personali sono esclusi." },
   { k: "partnerContacts", t: "Contatti dei partner (referente, email, telefono)", on: false, sens: true, why: "Dati personali di terzi: esclusi di default." },
   { k: "lab", t: "Laboratorio AI", on: true, why: "Materiali e demo già creati con AI, con la versione in uso." },
+  { k: "materials", t: "Materiali didattici (database, esercizi per capitolo, stato di verifica)", on: true, why: "Cosa abbiamo per ogni esame: appunti, esercizi per capitolo, simulazioni, e cosa è già verificato." },
   { k: "docs", t: "Archivio documenti (solo elenco)", on: true, why: "Nomi dei file e cartelle; il contenuto dei file non è incluso." },
   { k: "notes", t: "Note rapide aperte", on: true, why: "Appunti non ancora smistati." },
   { k: "finance", t: "Finanze (riepilogo)", on: false, sens: true, why: "Dati economici riservati: esclusi di default." },
@@ -1512,6 +1533,7 @@ function briefBodies() {
   mine("partners", () => { idx.partners = Object.fromEntries(D.partners.map(p => [p.id, [p.name, p.status || ""]])); return D.partners.length ? PIPE.map(st => { const l = D.partners.filter(p => p.status === st); return l.length ? `### ${st}\n` + l.map(p => `- **${p.name}** (${p.type || "n/d"})${p.owner ? ", segue " + p.owner : ""}.${p.next ? " Prossimo passo: " + p.next + (p.nextDate ? " entro " + mdDate(p.nextDate) : "") + "." : ""}${ml(p.value) ? " Valore: " + ml(p.value).replace(/\n+/g, " ") + "." : ""}${incl("partnerContacts") ? ` Contatto: ${[p.contact, p.channel].filter(Boolean).join(" — ") || "n/d"}.` : ""}`).join("\n") : ""; }).filter(Boolean).join("\n\n") : "_Nessun contatto._"; });
   mine("lab", () => { idx.lab = Object.fromEntries((D.lab || []).map(l => [l.id, [l.title, ""]])); const L = D.lab || []; return L.length ? L.map(l => { const vs = (D.labver || []).filter(v => v.itemId === l.id), cur = vs.find(v => v.role === "attuale"); const idea = D.ideas.find(i => i.id === l.ideaId); return `- **${l.title}** — ${l.cat || "n/d"}, creato con ${l.ai || "n/d"} (${l.kind || "n/d"}). ${ml(l.summary) ? ml(l.summary).replace(/\n+/g, " ") + " " : ""}${vs.length ? `Versioni: ${vs.length}; in uso: ${cur ? cur.label : "nessuna"}${cur && ml(cur.note) ? " (" + ml(cur.note).replace(/\n+/g, " ") + ")" : ""}.` : ""}${idea ? ` Collegato all'idea “${idea.title}”.` : ""}`; }).join("\n") : "_Nessun materiale._"; });
   mine("docs", () => { const all = allFiles(), byc = DOC_CATS.map(c => [c.id, all.filter(f => f.cat === c.id)]).filter(x => x[1].length); return byc.length ? byc.map(([c, l]) => `### ${c}\n` + l.map(f => `- ${f.name}${f.title ? " (" + f.title + ")" : ""} — ${f.label}`).join("\n")).join("\n\n") : "_Nessun file archiviato._"; });
+  mine("materials", () => { const ex = examList(); return ex.map(e => { const st = t => matList().filter(m => m.exam === e.slug && m.tipo === t && matArea(m) !== "raw"), raw = matList().filter(m => m.exam === e.slug && matArea(m) === "raw"); const ver = l => l.length ? `${l.filter(m => m.verified).length}/${l.length} verificati` : "nessun file"; let o = `### ${e.name}${e.corso ? " (" + e.corso + ")" : ""}\n`; if (e.db) { const ne = Object.values(e.db.esercizi).reduce((a, b) => a + b, 0), nc = Object.values(e.db.carte).reduce((a, b) => a + b, 0); o += `- **Esercizi nel database:** ${ne} in ${Object.keys(e.db.esercizi).length} capitoli (${isVer("key", "db:" + e.slug + ":esercizi") ? "verificati" : "da verificare"}). Per capitolo: ` + Object.keys(e.db.esercizi).sort((a, b) => a - b).map(c => `cap. ${c}: ${e.db.esercizi[c]}`).join(", ") + ".\n"; o += `- **Flashcard nel database:** ${nc} (${isVer("key", "db:" + e.slug + ":carte") ? "verificate" : "da verificare"}). Capitoli senza flashcard: ${Object.keys(e.db.esercizi).filter(c => e.db.carte[c] == null).join(", ") || "nessuno"}.\n`; } else o += "- Esercizi e flashcard: non ancora nel database.\n"; o += `- **Appunti:** nel database non ci sono (le dispense sono PDF sul sito). File caricati: ${ver(st("Appunti"))}.\n- **Simulazioni d'esame:** non ancora nel database. Definite: ` + (st("Simulazione esame").map(m => `${m.title}${m.mode ? " (" + m.mode + ")" : ""}`).join("; ") || "nessuna") + ".\n"; o += `- **Fonti raw (zip):** ${raw.length ? raw.map(m => m.tipo).join(", ") : "nessuno caricato"}.`; return o; }).join("\n\n") + `\n\n_Stato generale: ${matStats().v} di ${matStats().n} file del kit brand e dei modelli verificati._`; });
   mine("notes", () => { const n = noteList(false); return n.length ? n.map(x => `- ${ml(x.text).replace(/\n+/g, " ")} — ${x.by || "?"}, ${mdDate(x.createdAt)}`).join("\n") : "_Nessuna nota in sospeso._"; });
   mine("finance", () => { const mo = money(); return `- Saldo di cassa: ${eur(mo.saldo)}\n- Entrate del mese: ${eur(mo.inM)} · Uscite del mese: ${eur(mo.outM)}\n- Costi fissi mensili: ${eur(mo.fixed)}\n- Runway stimata: ${mo.runway ? nf(mo.runway, 1) + " mesi" : "n/d"}`; });
   return { out, idx };
@@ -1523,7 +1545,7 @@ function briefAssemble(meta) {
     const inc = incl(s.k); toc += `| ${s.t} | ${inc ? "✅ Incluso" : "⛔ Escluso"} | ${s.why} |\n`;
     if (!inc || s.k === "teamContacts" || s.k === "partnerContacts" || !(s.k in out)) return;
     n++; nums[s.k] = n;
-    const meta2 = { ctx: ["missione, target, tono di voce, priorità e regole del team", "come cornice per qualsiasi risposta o contenuto: rispetta tono e regole indicati"], team: ["chi sono i founder, il ruolo e le responsabilità", "per sapere a chi attribuire una cosa o per chi scrivere"], goals: ["obiettivi del trimestre con risultati chiave e le metriche più recenti", "per valutare se un'idea o un'azione aiuta i numeri che contano"], ideas: ["tutte le idee raccolte, divise per **Tipo** (di cosa parla) e **Natura** (novità, miglioramento, aggiornamento grafico, altro), con stato, voti, problema, descrizione, campi specifici del tipo, task collegati e commenti", "per capire cosa è già stato pensato, evitare duplicati, proporre idee coerenti e aiutare a svilupparle; le idee 'Nuova' non sono ancora decise"], feedback: ["cosa dicono gli studenti (problemi, richieste, apprezzamenti)", "come fonte di verità sui bisogni reali: privilegia queste evidenze rispetto alle ipotesi"], tasks: ["task aperti con responsabile e scadenza", "per sapere cosa è in corso e cosa è urgente; non assegnare lavoro già assegnato"], decisions: ["scelte già prese con motivazioni e alternative scartate", "non riproporre alternative scartate senza nuovi elementi"], meetings: ["meeting in programma e verbali recenti", "per il contesto delle discussioni più recenti"], partners: ["pipeline delle collaborazioni per stato", "per preparare proposte e follow-up coerenti con lo stato della trattativa"], lab: ["materiali e demo creati con AI, con la versione attualmente in uso", "per continuare un lavoro esistente invece di ricominciare: indica quale versione è quella 'attuale'"], docs: ["elenco dei file archiviati per cartella (il contenuto non è incluso)", "per sapere che documenti esistono e dove si trovano"], notes: ["appunti rapidi non ancora trasformati in idee o task", "come spunti grezzi, non come decisioni"], finance: ["solo indicatori aggregati di cassa", "con prudenza: sono dati riservati e non vanno citati all'esterno"] }[s.k];
+    const meta2 = { ctx: ["missione, target, tono di voce, priorità e regole del team", "come cornice per qualsiasi risposta o contenuto: rispetta tono e regole indicati"], team: ["chi sono i founder, il ruolo e le responsabilità", "per sapere a chi attribuire una cosa o per chi scrivere"], goals: ["obiettivi del trimestre con risultati chiave e le metriche più recenti", "per valutare se un'idea o un'azione aiuta i numeri che contano"], ideas: ["tutte le idee raccolte, divise per **Tipo** (di cosa parla) e **Natura** (novità, miglioramento, aggiornamento grafico, altro), con stato, voti, problema, descrizione, campi specifici del tipo, task collegati e commenti", "per capire cosa è già stato pensato, evitare duplicati, proporre idee coerenti e aiutare a svilupparle; le idee 'Nuova' non sono ancora decise"], feedback: ["cosa dicono gli studenti (problemi, richieste, apprezzamenti)", "come fonte di verità sui bisogni reali: privilegia queste evidenze rispetto alle ipotesi"], tasks: ["task aperti con responsabile e scadenza", "per sapere cosa è in corso e cosa è urgente; non assegnare lavoro già assegnato"], decisions: ["scelte già prese con motivazioni e alternative scartate", "non riproporre alternative scartate senza nuovi elementi"], meetings: ["meeting in programma e verbali recenti", "per il contesto delle discussioni più recenti"], partners: ["pipeline delle collaborazioni per stato", "per preparare proposte e follow-up coerenti con lo stato della trattativa"], lab: ["materiali e demo creati con AI, con la versione attualmente in uso", "per continuare un lavoro esistente invece di ricominciare: indica quale versione è quella 'attuale'"], materials: ["per ogni esame cosa abbiamo nel database (esercizi per capitolo, flashcard), cosa manca (appunti strutturati, simulazioni) e cosa è già stato verificato", "per sapere dove il materiale è scarso o non verificato prima di proporre contenuti; non considerare \"verificato\" ciò che è segnato da verificare"], docs: ["elenco dei file archiviati per cartella (il contenuto non è incluso)", "per sapere che documenti esistono e dove si trovano"], notes: ["appunti rapidi non ancora trasformati in idee o task", "come spunti grezzi, non come decisioni"], finance: ["solo indicatori aggregati di cassa", "con prudenza: sono dati riservati e non vanno citati all'esterno"] }[s.k];
     body += sect(n, s.t, meta2[0], meta2[1], out[s.k]) + "\n---\n\n";
   });
   const cnt = { ideas: S.data.ideas.length, tasks: S.data.tasks.length, decisions: S.data.decisions.length, feedback: S.data.feedback.length, lab: (S.data.lab || []).length, partners: S.data.partners.length };
@@ -1607,19 +1629,19 @@ document.addEventListener("submit", async e => {
 
 /* ====================================================== v2: laboratorio AI (materiali, demo, versioni, confronto) ====================================================== */
 const LAB_CATS = [
-  { id: "Demo e prototipi", c: "#172554", s: "#e3e7f2", ic: _ic.prod },
-  { id: "Contenuti didattici", c: "#1a453c", s: "#dcebe6", ic: _ic.cont },
-  { id: "Social e marketing", c: "#9d174d", s: "#fbe3ee", ic: _ic.mkt },
-  { id: "Grafica e brand", c: "#6d28d9", s: "#ede4fb", ic: _ic.gra },
-  { id: "Documenti e piani", c: "#475569", s: "#e6e9ee", ic: _ic.org },
-  { id: "Prompt e istruzioni", c: "#914809", s: "#f6e6d6", ic: _ic.nov },
-  { id: "Analisi e ricerche", c: "#0f5f6b", s: "#d9eef1", ic: _ic.par },
-  { id: "Altro", c: "#5f5b53", s: "#e9e5dd", ic: _ic.alt },
+  { id: "Demo e prototipi", c: "#172554", s: "#dfe4f1", ic: _ic.prod },
+  { id: "Contenuti didattici", c: "#2f4f9e", s: "#e4eaf8", ic: _ic.cont },
+  { id: "Social e marketing", c: "#7a4414", s: "#efe1d1", ic: _ic.mkt },
+  { id: "Grafica e brand", c: "#4b5675", s: "#e8ebf2", ic: _ic.gra },
+  { id: "Documenti e piani", c: "#a95d1c", s: "#f6e4d1", ic: _ic.org },
+  { id: "Prompt e istruzioni", c: "#5f5b53", s: "#ebe4d5", ic: _ic.nov },
+  { id: "Analisi e ricerche", c: "#2f4f9e", s: "#e4eaf8", ic: _ic.par },
+  { id: "Altro", c: "#5f5b53", s: "#ebe4d5", ic: _ic.alt },
 ];
 const labCat = id => LAB_CATS.find(c => c.id === id) || LAB_CATS[LAB_CATS.length - 1];
-const AI_COL = { Claude: ["#a8530f", "#f6e6d6"], ChatGPT: ["#0b6e57", "#d8f0e8"], Altro: ["#5f5b53", "#e9e5dd"] };
+const AI_COL = { Claude: ["#a95d1c", "#f6e4d1"], ChatGPT: ["#172554", "#dfe4f1"], Altro: ["#5f5b53", "#ebe4d5"] };
 const LAB_KINDS = ["Demo HTML", "Documento", "Immagine / grafica", "Prompt", "Conversazione", "Altro"];
-const ROLE = { attuale: ["Attuale", "#1a6b3c", "#dcebe6"], confronto: ["In confronto", "#6d28d9", "#ede4fb"], archivio: ["Archivio", "#5f5b53", "#e9e5dd"] };
+const ROLE = { attuale: ["Attuale", "#1a6b3c", "#dcebe6"], confronto: ["In confronto", "#2f4f9e", "#e4eaf8"], archivio: ["Archivio", "#5f5b53", "#ebe4d5"] };
 SCHEMA.lab = { one: "materiale", fields: [
   { k: "title", l: "Titolo", req: 1, wide: 1, ph: "Es. Demo simulatore d'esame" },
   { k: "cat", l: "Per cosa serve (cartella)", t: "select", o: LAB_CATS.map(c => c.id), d: "Demo e prototipi", help: "L'uso che ne facciamo: così lo ritrovi." },
@@ -1769,7 +1791,7 @@ const monthLabel = (m, short) => new Date(m + "-01T00:00").toLocaleDateString("i
 const monthKeys = n => { const d = new Date(), out = []; for (let i = n - 1; i >= 0; i--) out.push(localISO(new Date(d.getFullYear(), d.getMonth() - i, 1)).slice(0, 7)); return out; };
 const finSign = r => (r.type === "Entrata" ? 1 : -1) * (Number(r.amount) || 0);
 function finMonth(m) { const r = S.data.finance.filter(x => (x.date || "").startsWith(m)); const i = r.filter(x => x.type === "Entrata").reduce((a, x) => a + (+x.amount || 0), 0), o = r.filter(x => x.type !== "Entrata").reduce((a, x) => a + (+x.amount || 0), 0); return { m, i, o, net: i - o }; }
-const FIN_COL = ["#cf7527", "#172554", "#1a6b3c", "#9d174d", "#0f5f6b", "#7a5a00", "#6d28d9", "#475569", "#a4321f"];
+const FIN_COL = ["#cf7527", "#172554", "#2f4f9e", "#7a4414", "#4b5675", "#a95d1c", "#5f5b53", "#dfa36b", "#8fa0c8"];
 function finChart(n) {
   const ms = monthKeys(n).map(finMonth), W = 760, H = 230, pl = 44, pb = 28, pt = 10, mx = Math.max(100, ...ms.map(r => Math.max(r.i, r.o))), step = (W - pl) / ms.length, bw = Math.min(26, step / 2.6);
   const y = v => pt + (H - pt - pb) * (1 - v / mx), ticks = [0, .5, 1].map(f => mx * f);
@@ -1829,6 +1851,186 @@ V.finance = () => {
 };
 document.addEventListener("click", e => { if (!e.target.closest("[data-fincsv]")) return; const q = v => '"' + String(v ?? "").replace(/"/g, '""') + '"'; const lines = [["Data", "Tipo", "Importo", "Categoria", "Descrizione", "Ricorrente", "Inserito da"].join(";")].concat(S.data.finance.slice().sort(byDate("date")).map(r => [r.date, r.type, String(r.amount).replace(".", ","), q(r.category), q(r.desc), r.recurring ? "sì" : "no", q(r.by)].join(";"))); downloadText("UniLink-HQ_Finanze_" + localISO() + ".csv", "﻿" + lines.join("\n"), "text/csv"); toast("CSV scaricato"); });
 document.addEventListener("submit", async e => { if (e.target.id !== "cashfrm") return; e.preventDefault(); const v = document.getElementById("cash_in").value; try { await saveCtx({ cashStart: v === "" ? 0 : Number(v) }); toast("Saldo iniziale impostato"); } catch (er) {} });
+
+/* ====================================================== v2: materiali (didattica, fonti raw, brand, modelli, database) ====================================================== */
+const MAT_DB = { at: "9 ottobre 2026", exams: [{ slug: "economia_aziendale", name: "Economia aziendale", corso: "EA / EC",
+    esercizi: { 0: 26, 1: 6, 2: 5, 3: 4, 4: 1, 5: 2, 6: 1, 7: 10, 8: 5, 9: 3, 10: 2, 11: 5 },
+    carte: { 0: 18, 1: 6, 2: 5, 3: 3, 4: 3, 5: 7, 6: 16, 7: 12, 8: 12, 10: 7, 11: 10, 12: 1 } }],
+  tables: [["contenuti_studio", "Esercizi e flashcard, per esame e capitolo", "2 righe"], ["avanzamento", "Pagina letta e segnalibri di ogni studente, per dispensa", "1"], ["annotazioni", "Evidenziazioni degli studenti sulle pagine", "0"], ["note", "Note degli studenti sulle pagine", "2"], ["segnalazioni", "Errori segnalati dagli studenti nelle dispense", "0"], ["esiti_esame", "Esito, voto e difficoltà degli esami dati", "0"], ["studio_dati", "Dati di studio personali", "0"], ["strumenti_dati", "Dati degli strumenti (voto, Erasmus, magistrali)", "3"], ["eventi_uso", "Eventi d'uso (dispensa aperta, strumento usato)", "13"], ["acquisti", "Acquisti (Stripe)", "1"], ["profili", "Profili: corso, anno, esami", "1"], ["liste_attesa · lista_attesa", "Liste d'attesa Giurisprudenza e Medicina", "0"], ["candidature", "Candidature al team", "0"], ["orientatori", "Risultati dei test di orientamento", "1"], ["richieste_scuole", "Richieste di nuove facoltà", "0"], ["interesse_planner", "Interesse per il planner", "0"]] };
+const MAT_TIPI = ["Appunti", "Esercizi", "Simulazione esame", "Brand", "Modello", "Altro"];
+const MAT_RAW = "Fonte raw (zip)", MAT_EL = "Materiale elaborato", MAT_DID = ["Appunti", "Esercizi", "Simulazione esame"];
+const slugify = s => String(s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+const examList = () => { const m = new Map(); MAT_DB.exams.forEach(e => m.set(e.slug, { slug: e.slug, name: e.name, corso: e.corso, db: e })); (S.data.exams || []).forEach(e => { const sl = e.slug || slugify(e.name); if (!m.has(sl)) m.set(sl, { id: e.id, slug: sl, name: e.name, corso: e.corso }); }); return [...m.values()]; };
+const examName = sl => (examList().find(e => e.slug === sl) || {}).name || sl || "—";
+SCHEMA.exams = { one: "esame", fields: [{ k: "name", l: "Nome dell'esame", req: 1, wide: 1, ph: "Es. Microeconomia" }, { k: "slug", l: "Nome nel database (facoltativo)", ph: "es. microeconomia", help: "Lo stesso identificativo usato sul sito. Se vuoto lo ricavo dal nome." }, { k: "corso", l: "Corso", t: "select", o: ["EA / EC", "EA", "EC", "SUSBUS", "SECI", "Altro"], d: "EA / EC" }] };
+SCHEMA.mat = { one: "materiale", fields: [
+  { k: "title", l: "Nome", req: 1, wide: 1, ph: "Es. Appunti cap. 3 — il bilancio" },
+  { k: "tipo", l: "Che materiale è", t: "select", o: MAT_TIPI, d: "Appunti" },
+  { k: "fonte", l: "Versione", t: "select", o: [MAT_EL, MAT_RAW], d: MAT_EL, help: "Fonte raw = i file originali di partenza (in zip), prima di essere rivisti." },
+  { k: "exam", l: "Esame", t: "examRef", only: MAT_DID },
+  { k: "cap", l: "Capitolo", t: "number", only: ["Appunti", "Esercizi"], ph: "Numero" },
+  { k: "mode", l: "Modalità", t: "select", o: ["Reale (come all'esame vero)", "Allenamento"], only: ["Simulazione esame"] },
+  { k: "prove", l: "Numero di prove", t: "number", only: ["Simulazione esame"], ph: "Es. 3" },
+  { k: "parts", l: "Partizioni (una per riga)", t: "textarea", rows: 4, wide: 1, only: ["Simulazione esame"], ph: "Parte 1 · test a risposta multipla · 30 domande · 40 min\nParte 2 · domande aperte · 3 domande · 50 min" },
+  { k: "note", l: "Note", t: "textarea", rows: 3, wide: 1 },
+  { k: "link", l: "Link esterno (se il file è troppo grande)", t: "url", wide: 1, ph: "Drive, Dropbox… (i file qui dentro arrivano a 25 MB)" },
+  { k: "files", l: "File", t: "files", wide: 1 }] };
+const matList = () => S.data.mat || [];
+const matArea = m => m.area || (m.tipo === "Brand" ? "brand" : m.tipo === "Modello" ? "modelli" : m.fonte === MAT_RAW ? "raw" : MAT_DID.includes(m.tipo) ? "didattica" : "altro");
+const verKey = k => "v-" + fnv(k);
+const verDoc = k => (S.data.matver || []).find(x => x.id === verKey(k));
+const isVer = (kind, id) => kind === "mat" ? !!(matList().find(x => x.id === id) || {}).verified : !!(verDoc(id) || {}).verified;
+function verCtl(kind, id) {
+  const rec = kind === "mat" ? matList().find(x => x.id === id) : verDoc(id), v = !!(rec && rec.verified);
+  return `<label class="vchk ${v ? "on" : ""}" title="${v ? "Verificato da " + esc(rec.verifiedBy || rec.by || "") : "Da verificare"}"><input type="checkbox" data-matv="${kind}:${esc(id)}" ${v ? "checked" : ""} ${S.canWrite ? "" : "disabled"}><span>${v ? "Verificato" : "Da verificare"}</span>${v && rec.verifiedBy ? `<small>${esc(String(rec.verifiedBy).split(" ")[0])} · ${fmtD(String(rec.verifiedAt || "").slice(0, 10))}</small>` : ""}</label>`;
+}
+const MIME = { png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", svg: "image/svg+xml", ico: "image/x-icon", webp: "image/webp", pdf: "application/pdf", html: "text/html", htm: "text/html", css: "text/css", json: "application/json", md: "text/markdown", txt: "text/plain", zip: "application/zip", ttf: "font/ttf", webmanifest: "application/manifest+json" };
+const IMG_EXT = ["png", "jpg", "jpeg", "svg", "ico", "webp"];
+const prettyGroup = g => { const t = String(g || "").replace(/^[_\d\-\s]+/, "").replace(/[-_]+/g, " ").trim(); return t ? t.charAt(0).toUpperCase() + t.slice(1) : "Generale"; };
+const SIGNED = {};
+async function loadThumbs(root) {
+  const els = $$("img[data-spath]", root).filter(i => !i.getAttribute("src")); if (!els.length) return;
+  const need = [...new Set(els.map(i => i.dataset.spath).filter(p => !SIGNED[p]))];
+  if (need.length) { try { const { data } = await SB.storage.from("hq-files").createSignedUrls(need, 3600); (data || []).forEach(d => { if (d.signedUrl) SIGNED[d.path] = d.signedUrl; }); } catch (e) {} }
+  els.forEach(i => { const u = SIGNED[i.dataset.spath]; if (u) i.src = u; });
+}
+
+/* ---------- lettura degli zip nel browser (senza librerie esterne) ---------- */
+async function readZip(buf) {
+  const dv = new DataView(buf), u8 = new Uint8Array(buf); let e = u8.length - 22;
+  while (e >= 0 && dv.getUint32(e, true) !== 0x06054b50) e--;
+  if (e < 0) throw new Error("Non sembra uno zip valido.");
+  const n = dv.getUint16(e + 10, true); let p = dv.getUint32(e + 16, true); if (n > 3000) throw new Error("Troppi file nello zip.");
+  const list = [];
+  for (let i = 0; i < n; i++) {
+    if (dv.getUint32(p, true) !== 0x02014b50) throw new Error("Zip danneggiato.");
+    const meth = dv.getUint16(p + 10, true), csz = dv.getUint32(p + 20, true), usz = dv.getUint32(p + 24, true), nl = dv.getUint16(p + 28, true), el = dv.getUint16(p + 30, true), cl = dv.getUint16(p + 32, true), lo = dv.getUint32(p + 42, true);
+    const name = new TextDecoder("utf-8").decode(u8.subarray(p + 46, p + 46 + nl)); p += 46 + nl + el + cl;
+    list.push({ name, size: usz, isDir: name.endsWith("/"), async bytes() { const st = lo + 30 + dv.getUint16(lo + 26, true) + dv.getUint16(lo + 28, true), comp = u8.subarray(st, st + csz); if (meth === 0) return comp.slice(); if (meth !== 8) throw new Error("compressione non supportata"); return new Uint8Array(await new Response(new Blob([comp]).stream().pipeThrough(new DecompressionStream("deflate-raw"))).arrayBuffer()); } });
+  }
+  return list;
+}
+function openImport() {
+  openModal(`${sheetHead("Materiali", "Importa zip")}<form class="form" id="impfrm">
+    <p class="small muted" style="grid-column:1/-1">Scegli gli zip del kit (per esempio <b>11_Logo.zip</b> e <b>12_Modelli.zip</b>). L'HQ li apre qui nel browser, carica ogni file nell'archivio privato del team e li segna <b>"da verificare"</b>. Non passano da GitHub e puoi ripetere l'importazione senza creare doppioni.</p>
+    <label class="fld wide"><span>File zip</span><input type="file" id="imp_files" accept=".zip,application/zip" multiple></label>
+    <label class="fld wide"><span>Cosa contengono</span><select id="imp_area"><option value="auto">Riconosci dal nome (logo → Brand, modelli → Modelli)</option><option value="brand">Brand e logo</option><option value="modelli">Modelli (email, social, documenti…)</option></select></label>
+    <div id="imp_prog" class="small" style="grid-column:1/-1"></div>
+    <div class="form-foot fld wide"><div></div><div class="row"><button type="button" class="btn" data-close>Chiudi</button><button class="btn pri">Importa</button></div></div></form>`);
+}
+async function runImport(files, areaSel) {
+  const prog = document.getElementById("imp_prog"), say = t => { if (prog) prog.innerHTML = t; };
+  const have = new Set(matList().map(m => m.srcKey).filter(Boolean)); let ok = 0, skipped = 0, big = 0, fail = 0;
+  for (const zf of files) {
+    say(`Apro <b>${esc(zf.name)}</b>…`);
+    let entries; try { entries = await readZip(await zf.arrayBuffer()); } catch (e) { say(`<span style="color:var(--red)">${esc(zf.name)}: ${esc(e.message)}</span>`); fail++; continue; }
+    const base = zf.name.replace(/\.zip$/i, ""), items = entries.filter(x => !x.isDir && !/(^|\/)(\.DS_Store|Thumbs\.db|__MACOSX)(\/|$)/.test(x.name) && !x.name.split("/").includes(".."));
+    if (items.reduce((a, x) => a + x.size, 0) > 200e6) { say(`<span style="color:var(--red)">${esc(zf.name)}: troppo grande (oltre 200 MB).</span>`); fail++; continue; }
+    const top = (items[0] ? items[0].name.split("/")[0] : base), area = areaSel !== "auto" ? areaSel : /logo|brand/i.test(top + base) ? "brand" : "modelli";
+    let done = 0; const queue = items.slice();
+    const worker = async () => { while (queue.length) {
+      const it = queue.shift(), key = base + "|" + it.name; if (have.has(key)) { skipped++; done++; continue; }
+      if (it.size > HQ_FILES.max) { big++; done++; continue; }
+      try {
+        const parts = it.name.split("/"), fname = parts[parts.length - 1], ext = (fname.split(".").pop() || "").toLowerCase(); let rest = parts.slice(1); if (rest[0] === "kit") rest = rest.slice(1);
+        const group = rest.length > 1 ? prettyGroup(rest[0]) : "Manuale e documenti", file = new File([await it.bytes()], fname, { type: MIME[ext] || "application/octet-stream" });
+        const up = await HQ_FILES.upload(file, "materiali/" + area);
+        await S.db.collection("mat").doc().set({ title: fname, tipo: area === "brand" ? "Brand" : "Modello", area, group, srcKey: key, relPath: rest.join("/"), source: base, files: [{ ...up, by: S.uid || "", at: new Date().toISOString() }], verified: false, by: S.uid || "", createdAt: new Date().toISOString() }); ok++;
+      } catch (e) { fail++; }
+      done++; say(`<b>${esc(zf.name)}</b>: ${done} / ${items.length} file…`);
+    } };
+    await Promise.all([worker(), worker(), worker()]);
+  }
+  say(`Fatto: <b>${ok}</b> file caricati${skipped ? `, ${skipped} già presenti` : ""}${big ? `, ${big} oltre 25 MB (da caricare con un link)` : ""}${fail ? `, <span style="color:var(--red)">${fail} non riusciti</span>` : ""}.`);
+  if (ok) toast(ok + " file importati, tutti da verificare");
+}
+
+/* ---------- vista Materiali ---------- */
+const MAT_AREAS = [["panoramica", "Panoramica"], ["didattica", "Didattica"], ["raw", "Fonti raw"], ["brand", "Brand"], ["modelli", "Modelli"], ["database", "Database"]];
+const dbItems = () => examList().flatMap(e => e.db ? [{ k: `db:${e.slug}:esercizi`, l: `${e.name} · esercizi`, n: Object.values(e.db.esercizi).reduce((a, b) => a + b, 0) }, { k: `db:${e.slug}:carte`, l: `${e.name} · flashcard`, n: Object.values(e.db.carte).reduce((a, b) => a + b, 0) }] : []);
+function matStats(area) { const l = matList().filter(m => !area || matArea(m) === area); return { n: l.length, v: l.filter(m => m.verified).length }; }
+const progBar = (v, n) => `<div class="bar ${n && v === n ? "gr" : ""}"><i style="width:${n ? v / n * 100 : 0}%"></i></div>`;
+function matCard(m) {
+  const f = (m.files || [])[0], ext = f ? fileExt(f.name) : "", img = f && IMG_EXT.includes(ext);
+  return `<article class="card mcard ${m.verified ? "ok" : ""}"><div class="mprev">${img ? `<img data-spath="${esc(f.path)}" alt="${esc(m.title)}">` : `<span class="fico" style="--tc:#172554;--ts:#dfe4f1">${esc(ext || "file")}</span>`}</div><div class="mt" title="${esc(m.title)}">${esc(m.title)}</div><div class="small muted">${f ? fsize(f.size) : ""}${m.relPath && m.relPath.includes("/") ? " · " + esc(m.relPath.split("/").slice(0, -1).join("/")) : ""}</div><div class="row" style="justify-content:space-between;margin-top:auto">${verCtl("mat", m.id)}<div class="row" style="gap:4px">${f ? `<button class="btn ghost sm" data-matopen="${m.id}">${["html", "htm"].includes(ext) ? "Anteprima" : "Apri"}</button>` : m.link ? `<a class="btn ghost sm" href="${esc(safeUrl(m.link))}" target="_blank" rel="noopener">Link</a>` : ""}${S.canWrite ? `<button class="btn ghost sm" data-edit="mat:${m.id}" aria-label="Modifica">⋯</button>` : ""}</div></div></article>`;
+}
+function matGroups(area) {
+  const only = S.f.matOnly, q = (S.f["q_mat" + area] || "").toLowerCase(), l = matList().filter(m => matArea(m) === area && (!only || !m.verified) && (!q || [m.title, m.group].join(" ").toLowerCase().includes(q)));
+  if (!matList().some(m => matArea(m) === area)) return `<div class="empty"><h3>Qui non c'è ancora niente</h3><p>Importa gli zip del kit: l'HQ li apre, carica ogni file nell'archivio privato e li segna da verificare.</p>${S.canWrite ? '<button class="btn pri" data-matimport>Importa zip</button>' : ""}</div>`;
+  const gs = {}; l.forEach(m => (gs[m.group || "Generale"] = gs[m.group || "Generale"] || []).push(m));
+  return Object.keys(gs).sort().map(g => { const it = gs[g].sort((a, b) => String(a.relPath || a.title).localeCompare(String(b.relPath || b.title))), v = it.filter(x => x.verified).length; return `<section class="stack"><div class="gh" style="--tc:#172554"><h2>${esc(g)}</h2><span class="num muted">${v}/${it.length} verificati</span></div><div class="mgrid">${it.map(matCard).join("")}</div></section>`; }).join("") || '<p class="muted">Nessun file corrisponde ai filtri.</p>';
+}
+const SWATCH = [["Navy", "#172554", "primario: testi, titoli, fondi scuri"], ["Arancio", "#cf7527", "accento: la testa del simbolo, pulsanti forti"], ["Crema", "#f4f1ea", "sfondo principale"], ["Crema scuro", "#ebe4d5", "sfondi di sezione"], ["Arancio chiaro", "#f6e4d1", "avvisi e badge"], ["Arancio scuro", "#a95d1c", "testo arancio piccolo"], ["Navy testo 2", "#4b5675", "testi secondari"], ["Navy chiaro", "#dfe4f1", "fondi chiari freddi"], ["Linea", "#e2dccf", "bordi"]];
+const brandRules = () => `<section class="card panel"><div class="panel-h"><h2>Il brand in breve</h2><span class="small muted">dal manuale v1 · 9 ottobre 2026</span></div>
+  <div class="swatches">${SWATCH.map(([n, h, u]) => `<button class="sw" data-copy="${h}" title="Copia ${h}"><i style="background:${h}"></i><b>${n}</b><span class="num">${h}</span><small>${u}</small></button>`).join("")}</div>
+  <div class="grid2" style="gap:12px"><div class="small stack" style="gap:6px"><b>Simbolo e nome</b><span>Un libro aperto e una persona: due pagine navy, la testa arancio. Il nome è «unilink» minuscolo in Croogla 4F; nei testi si scrive «UniLink».</span><b>Font</b><span>Croogla 4F, uno solo. Nelle email e nei documenti Office: Arial. <i>Il file attuale è una versione dimostrativa: la licenza è da comprare.</i></span></div>
+  <div class="small stack" style="gap:6px"><b>Regole d'uso</b><span>Colori 60 · 30 · 10 (crema · navy · arancio). Una sola parola accento arancio per titolo. Verde e rosso solo per gli stati. Spazio di rispetto pari alla testa arancio. Mai deformare, ruotare o cambiare i colori.</span><b>Tono</b><span>Da studenti a studenti: amichevole, diretto, concreto, onesto. «Tu» al singolo, «voi» al gruppo.</span></div></div></section>`;
+function examCapTable(ex) {
+  const caps = [...new Set([...Object.keys(ex.db.esercizi), ...Object.keys(ex.db.carte)].map(Number))].sort((a, b) => a - b), mx = Math.max(1, ...Object.values(ex.db.esercizi), ...Object.values(ex.db.carte));
+  const row = c => { const e = ex.db.esercizi[c] || 0, f = ex.db.carte[c] || 0; return `<tr><td class="num"><b>Cap. ${c}</b></td><td><div class="cb"><i style="width:${e / mx * 100}%"></i><span class="num">${e}</span></div></td><td><div class="cb f"><i style="width:${f / mx * 100}%"></i><span class="num">${f}</span></div></td><td>${e < 3 || f < 3 ? `<span class="chip or">${e === 0 ? "senza esercizi" : f === 0 ? "senza flashcard" : "pochi contenuti"}</span>` : ""}</td></tr>`; };
+  return `<div class="tbl-wrap"><table class="captbl"><thead><tr><th>Capitolo</th><th>Esercizi</th><th>Flashcard</th><th></th></tr></thead><tbody>${caps.map(row).join("")}</tbody></table></div>`;
+}
+V.mat = () => {
+  const tab = S.f.matTab || "panoramica", exams = examList(), exSel = exams.find(e => e.slug === S.f.matExam) || exams[0], tot = matStats(), dbi = dbItems(), dbV = dbi.filter(x => isVer("key", x.k)).length, T = tot.n + dbi.length, Vv = tot.v + dbV;
+  const tabs = `<div class="tabs mattabs">${MAT_AREAS.map(([k, l]) => `<button class="tab ${tab === k ? "on" : ""}" data-f="matTab" data-v="${k}">${l}</button>`).join("")}</div>`;
+  const imp = S.canWrite ? '<button class="btn" data-matimport>Importa zip</button>' : "", add = addBtn("mat", "+ Nuovo materiale", "acc");
+  let body = "";
+  if (tab === "panoramica") {
+    const card = (k, l, sub, st, ic) => `<button class="card click acard" data-f="matTab" data-v="${k}"><div class="row between"><span class="aic">${svgI(ic)}</span><span class="num small muted">${st.v}/${st.n} verificati</span></div><h3>${l}</h3><p class="small muted">${sub}</p>${progBar(st.v, st.n)}</button>`;
+    body = `<div class="grid4">${card("didattica", "Didattica", "Appunti, esercizi per capitolo e simulazioni d'esame, esame per esame.", matStats("didattica"), _ic.cont)}${card("raw", "Fonti raw", "Gli zip originali, uno per tipo e per esame.", matStats("raw"), _ic.org)}${card("brand", "Brand", "Logo, icone, social, manuale e colori.", matStats("brand"), _ic.gra)}${card("modelli", "Modelli", "Email, social, WhatsApp, documenti, presentazione, stampa.", matStats("modelli"), _ic.mkt)}</div>
+    <section class="card panel"><div class="panel-h"><h2>Cosa abbiamo nel database</h2><button class="linkbtn" data-f="matTab" data-v="database">Dettagli</button></div><div class="dbstrip">${exams.map(e => { const ne = e.db ? Object.values(e.db.esercizi).reduce((a, b) => a + b, 0) : null, nc = e.db ? Object.values(e.db.carte).reduce((a, b) => a + b, 0) : null; const cell = (l, v, ok) => `<div class="dbc ${ok ? "ok" : "no"}"><b>${l}</b><span>${v}</span></div>`; return `<div class="dbrow"><div class="dbn">${esc(e.name)}</div>${cell("Appunti", "PDF sul sito, non nel database", false)}${cell("Esercizi", ne != null ? ne + " · " + Object.keys(e.db.esercizi).length + " capitoli" : "non ancora", ne != null)}${cell("Flashcard", nc != null ? nc + " carte" : "non ancora", nc != null)}${cell("Simulazioni", "non ancora nel database", false)}</div>`; }).join("")}</div></section>`;
+    if (!tot.n) body += `<div class="empty"><h3>Importa il kit di UniLink</h3><p>Hai i due zip del brand (11_Logo e 12_Modelli): importali e compaiono qui tutti i file, da verificare uno a uno.</p>${imp}</div>`;
+  } else if (tab === "didattica") {
+    const mine = t => matList().filter(m => matArea(m) === "didattica" && m.exam === (exSel && exSel.slug) && m.tipo === t), hasDb = exSel && exSel.db;
+    const chips = `<div class="filters">${exams.map(e => `<button class="fchip ${exSel && e.slug === exSel.slug ? "on" : ""}" data-f="matExam" data-v="${esc(e.slug)}">${esc(e.name)}</button>`).join("")}${S.canWrite ? '<button class="fchip" data-add="exams">+ Aggiungi esame</button>' : ""}</div>`;
+    const recs = (t, empty) => { const l = mine(t); return l.length ? l.map(m => `<div class="li"><div class="grow"><div class="t">${esc(m.title)}${m.cap !== "" && m.cap != null ? ` <span class="chip navy">cap. ${esc(m.cap)}</span>` : ""}${m.mode ? ` <span class="chip or">${m.mode.startsWith("Reale") ? "modalità reale" : "allenamento"}</span>` : ""}</div>${m.parts ? `<div class="small pre muted">${esc(m.parts)}</div>` : ""}<div class="small muted">${(m.files || []).length ? (m.files || []).map(f => esc(f.name)).join(", ") : m.link ? "link esterno" : "nessun file"}${m.prove ? " · " + esc(m.prove) + " prove" : ""}</div></div>${verCtl("mat", m.id)}${S.canWrite ? `<button class="btn ghost sm" data-edit="mat:${m.id}">⋯</button>` : ""}</div>`).join("") : `<p class="small muted">${empty}</p>`; };
+    const col = (t, ic, title, dbHtml, empty, extra = "") => `<section class="card panel"><div class="panel-h"><div class="row" style="gap:10px"><span class="aic">${svgI(ic)}</span><h2>${title}</h2></div>${S.canWrite ? `<button class="btn sm" data-matadd="${t}|${exSel ? esc(exSel.slug) : ""}|">+ Aggiungi</button>` : ""}</div>${dbHtml}${recs(t, empty)}${extra}</section>`;
+    body = chips + (exSel ? `<div class="grid3">
+      ${col("Appunti", _ic.cont, "Appunti", `<div class="dbc no"><b>Nel database</b><span>Le dispense sono PDF sul sito: il database tiene solo progresso, note ed evidenziazioni degli studenti.</span></div>`, "Nessun file di appunti caricato per questo esame.")}
+      ${col("Esercizi", _ic.prod, "Esercizi", hasDb ? `<div class="dbc ok"><b>Nel database</b><span>${Object.values(exSel.db.esercizi).reduce((a, b) => a + b, 0)} esercizi · ${Object.keys(exSel.db.esercizi).length} capitoli · ${Object.values(exSel.db.carte).reduce((a, b) => a + b, 0)} flashcard</span></div><div class="stack" style="gap:6px"><div class="row between"><span class="small">Esercizi (${Object.values(exSel.db.esercizi).reduce((a, b) => a + b, 0)})</span>${verCtl("key", `db:${exSel.slug}:esercizi`)}</div><div class="row between"><span class="small">Flashcard (${Object.values(exSel.db.carte).reduce((a, b) => a + b, 0)})</span>${verCtl("key", `db:${exSel.slug}:carte`)}</div></div>` : `<div class="dbc no"><b>Nel database</b><span>Questo esame non ha ancora esercizi.</span></div>`, "Nessun file di esercizi caricato per questo esame.")}
+      ${col("Simulazione esame", _ic.evt, "Simulazioni d'esame", `<div class="dbc no"><b>Nel database</b><span>Non c'è ancora nessuna tabella. Definisci qui come sarà: prove, partizioni, durata.</span></div><p class="small muted">Modalità reale = come l'esame vero (tempo, partizioni, correzione). Sui nostri testi: «simulazione, 3 prove con correzione».</p>`, "Nessuna simulazione definita per questo esame.")}
+    </div>${hasDb ? `<section class="stack"><h2>Esercizi e flashcard per capitolo</h2><p class="small muted">Dal database del sito, fotografia del ${MAT_DB.at}. I capitoli con meno di 3 contenuti sono segnalati.</p>${examCapTable(exSel)}</section>` : ""}` : emptyBox("Nessun esame", "Aggiungi gli esami di cui avete materiali.", "exams", "Aggiungi un esame"));
+  } else if (tab === "raw") {
+    const cell = (e, t) => { const l = matList().filter(m => matArea(m) === "raw" && m.exam === e.slug && m.tipo === t); return `<td><div class="stack" style="gap:6px">${l.map(m => `<div class="rawz"><span class="fico sm" style="--tc:#a95d1c;--ts:#f6e4d1">zip</span><div class="grow"><div class="small"><b>${esc(m.title)}</b></div><div class="small muted">${(m.files || []).map(f => fsize(f.size)).join(" · ") || (m.link ? "link esterno" : "")}</div></div>${verCtl("mat", m.id)}${(m.files || [])[0] ? `<button class="btn ghost sm" data-matopen="${m.id}">Scarica</button>` : ""}${S.canWrite ? `<button class="btn ghost sm" data-edit="mat:${m.id}">⋯</button>` : ""}</div>`).join("") || '<span class="small muted">nessuno zip</span>'}${S.canWrite ? `<button class="btn sm" data-matadd="${t}|${esc(e.slug)}|raw">+ Carica zip</button>` : ""}</div></td>`; };
+    body = `<p class="small muted" style="max-width:760px">Gli zip con le <b>fonti originali</b>, uno per ogni tipo (appunti, esercizi, simulazioni) e per ogni esame. Ogni file può pesare fino a 25 MB: per quelli più grandi usa il campo "link esterno".</p><div class="tbl-wrap"><table class="rawtbl"><thead><tr><th>Esame</th><th>Appunti</th><th>Esercizi</th><th>Simulazioni</th></tr></thead><tbody>${exams.map(e => `<tr><td><b>${esc(e.name)}</b><div class="small muted">${esc(e.corso || "")}</div></td>${cell(e, "Appunti")}${cell(e, "Esercizi")}${cell(e, "Simulazione esame")}</tr>`).join("")}</tbody></table></div>`;
+  } else if (tab === "brand" || tab === "modelli") {
+    body = `<div class="filters">${searchBox("mat" + tab, "Cerca un file")}<button class="fchip ${S.f.matOnly ? "on" : ""}" data-toggle="matOnly">Solo da verificare</button></div>${tab === "brand" ? brandRules() : ""}${matGroups(tab)}`;
+  } else if (tab === "database") {
+    const ex = exams.filter(e => e.db), gaps = [];
+    ex.forEach(e => { Object.keys(e.db.esercizi).forEach(c => { if (e.db.esercizi[c] < 3) gaps.push(`${e.name}: capitolo ${c} con ${e.db.esercizi[c]} ${e.db.esercizi[c] === 1 ? "esercizio" : "esercizi"}`); }); for (let c = 0; c <= 12; c++) if (e.db.carte[c] == null && e.db.esercizi[c] != null) gaps.push(`${e.name}: capitolo ${c} senza flashcard`); });
+    body = `<p class="small muted" style="max-width:760px">Fotografia del database del sito (<code>unilink-website</code>) al ${MAT_DB.at}. Non si aggiorna da sola: chiedimi di rifarla quando serve.</p>
+    <div class="grid2"><section class="card panel"><h2>Contenuti di studio</h2><div class="stack" style="gap:8px"><div class="dbc no"><b>Appunti</b><span>Nessuna tabella: le dispense sono PDF. Il database tiene l'uso (<code>avanzamento</code>, <code>annotazioni</code>, <code>note</code>, <code>segnalazioni</code>).</span></div><div class="dbc ok"><b>Esercizi</b><span>Tabella <code>contenuti_studio</code>, tipo «esercizi»: ogni esercizio ha capitolo, domanda, opzioni e risposta.</span></div><div class="dbc ok"><b>Flashcard</b><span>Stessa tabella, tipo «carte»: ogni carta ha capitolo, fronte e retro.</span></div><div class="dbc no"><b>Simulazioni d'esame</b><span>Nessuna tabella: serve definire prove, partizioni, durata e correzione.</span></div></div></section>
+    <section class="card panel"><h2>Cosa manca o è scarso</h2>${gaps.length || true ? `<ul class="small" style="margin:0;padding-left:18px;display:grid;gap:4px"><li><b>Simulazioni d'esame:</b> da costruire da zero.</li><li><b>Appunti:</b> nessun testo strutturato, solo PDF.</li>${gaps.map(g => `<li>${esc(g)}</li>`).join("")}</ul>` : ""}</section></div>
+    <section class="card panel"><h2>Tabelle del sito</h2><div class="tbl-wrap"><table><thead><tr><th>Tabella</th><th>A cosa serve</th><th class="r">Righe</th></tr></thead><tbody>${MAT_DB.tables.map(([n, d, r]) => `<tr><td><code>${esc(n)}</code></td><td>${esc(d)}</td><td class="r num">${esc(r)}</td></tr>`).join("")}</tbody></table></div></section>`;
+  }
+  return `<div class="wrap">
+  <section class="hero mat"><div class="hero-t"><div class="eyebrow" style="color:var(--orange)">Materiali e archivio</div><h1>I <span class="accw">materiali</span> di UniLink</h1><p style="max-width:620px;opacity:.9">Appunti, esercizi e simulazioni per esame, le fonti originali, il kit del brand e i modelli. Ogni file ha la spunta <b>verificato</b>: all'inizio sono tutti da verificare.</p>
+    <div class="row" style="margin-top:12px;max-width:520px;align-items:center"><div class="grow">${progBar(Vv, T)}</div><span class="hchip"><b class="num">${Vv}</b> di <b class="num">${T}</b> verificati</span></div></div><div class="hero-a">${add}${imp}</div></section>
+  ${tabs}${body}</div>`;
+};
+
+/* ---------- eventi ---------- */
+document.addEventListener("click", async e => {
+  const t = e.target, q = s => t.closest(s); let x;
+  if (q("[data-matimport]")) { openImport(); return; }
+  if ((x = q("[data-matadd]"))) { const [tipo, exam, raw] = x.dataset.matadd.split("|"); closeModal(); openForm("mat", null, { tipo, exam, fonte: raw ? MAT_RAW : MAT_EL }); return; }
+  if ((x = q("[data-matopen]"))) {
+    e.stopPropagation(); const m = matList().find(y => y.id === x.dataset.matopen), f = m && (m.files || [])[0]; if (!f) return;
+    if (["html", "htm"].includes(fileExt(f.name))) { try { const { data } = await SB.storage.from("hq-files").createSignedUrl(f.path, 600); const html = await (await fetch(data.signedUrl)).text(); openModal(`${sheetHead(esc(m.group || "Modello"), esc(m.title))}<iframe class="demo full" sandbox="" id="matprev"></iframe>`); $("#modal .sheet").classList.add("wide"); document.getElementById("matprev").srcdoc = html; } catch (er) { toast("Anteprima non disponibile: uso il download."); HQ_FILES.open(f.path); } }
+    else HQ_FILES.open(f.path); return;
+  }
+});
+document.addEventListener("change", async e => {
+  const t = e.target; if (!t.dataset || !t.dataset.matv) return;
+  const [kind, ...r] = t.dataset.matv.split(":"), id = r.join(":"), v = t.checked, patch = { verified: v, verifiedBy: v ? S.uid || "" : "", verifiedAt: v ? new Date().toISOString() : "" };
+  try { if (kind === "mat") await setDoc("mat", id, patch); else await guard(() => S.db.collection("matver").doc(verKey(id)).set({ key: id, ...patch })); toast(v ? "Segnato come verificato" : "Tornato da verificare"); } catch (er) { t.checked = !v; }
+});
+document.addEventListener("submit", async e => {
+  if (e.target.id !== "impfrm") return; e.preventDefault();
+  const fl = Array.from(document.getElementById("imp_files").files); if (!fl.length) { toast("Scegli almeno uno zip."); return; }
+  const b = e.target.querySelector("button.pri"); b.disabled = true; b.textContent = "Importo…";
+  try { await runImport(fl, document.getElementById("imp_area").value); } finally { b.disabled = false; b.textContent = "Importa"; }
+});
 
 function go(v) {
   if (v === "okrs" || v === "metrics") { S.f.goalTab = v; v = "goals"; }
@@ -1979,7 +2181,7 @@ function showLogin(msg) {
   const box = document.getElementById("login");
   let name = ""; try { name = localStorage.getItem("ulhq_name") || ""; } catch (e) {}
   box.innerHTML = `<form class="login-card" id="loginForm" novalidate>
-    <img src="logo-white.png" alt="UniLink" class="login-logo">
+    <img src="brand/unilink-orizzontale-negativo.png" alt="UniLink" class="login-logo">
     <div class="stack" style="gap:6px"><span class="eyebrow">Area riservata ai founder</span><h1>UniLink HQ</h1></div>
     <label class="fld"><span>Il tuo nome</span><input id="lg_name" autocomplete="nickname" value="${esc(name)}" placeholder="Es. Matteo" list="lg_names"><datalist id="lg_names">${(HQ_CONFIG.founders || []).map(n => `<option value="${esc(n)}">`).join("")}</datalist><small>Serve solo a firmare idee, voti e commenti.</small></label>
     <label class="fld"><span>Password del team</span><input id="lg_pass" type="password" autocomplete="current-password"></label>
