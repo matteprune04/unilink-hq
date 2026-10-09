@@ -2077,8 +2077,10 @@ async function boot() {
 const demoVer = (x) => x && x.demo_v ? `demo v${x.demo_v} · backup ${x.n}` : x ? `v${x.n}` : "";
 const DEMO_REG = ["https://raw.githubusercontent.com/matteprune04/unilink-hq/main/demos/registro.json", "demos/registro.json"];
 const DEMO_BASE = [
-  { id: "landing", titolo: "Landing", cartella: "demo-landing", descrizione: "Landing v2: Prima · Durante · Dopo, strumenti, anteprima area personale, Da decidere (riferimento per Framer).", url: "demo-landing/", versioni: [] },
-  { id: "webapp", titolo: "Web app · area personale", cartella: "demo-webapp", descrizione: "Demo della web app: sezioni decise + sezione «Da decidere».", url: "demo-webapp/", versioni: [] },
+  { id: "sito", titolo: "Sito vero · con l'audit", cartella: "demo-sito", descrizione: "Il sito vero (unilinkfirenze.it) importato nella demo, con le modifiche dell'audit UX. Com'era prima: demo-sito-prima/.", url: "demo-sito/", versioni: [] },
+  { id: "app", titolo: "Web app vera · con l'audit", cartella: "demo-app", descrizione: "La web app vera importata nella demo (dati di esempio, accesso rapido), con le modifiche dell'audit UX. Com'era prima: demo-app-prima/.", url: "demo-app/accedi", versioni: [] },
+  { id: "landing", titolo: "Landing demo (idee)", cartella: "demo-landing", descrizione: "Landing v2: Prima · Durante · Dopo, strumenti, anteprima area personale, Da decidere (riferimento per Framer).", url: "demo-landing/", versioni: [] },
+  { id: "webapp", titolo: "Web app demo (idee)", cartella: "demo-webapp", descrizione: "Demo della web app: sezioni decise + sezione «Da decidere».", url: "demo-webapp/", versioni: [] },
 ];
 const DM = { reg: null, err: "", busy: false, open: "", dev: "desk" };
 // Anteprima tablet (820 px): lo stile del telefono è nel sorgente dell'HQ, questo si aggiunge da qui
