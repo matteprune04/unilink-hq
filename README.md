@@ -29,5 +29,6 @@ Segreti (solo in GitHub → Settings → Secrets, mai nel codice): `GOOGLE_KEY_J
 
 ## Esami e dispense (catalogo a tabella)
 - Voce **Esami e dispense**: gli esami per corso (EA, EC, SUSBUS, SECI, Giurisprudenza, Medicina), anno e semestre, con spunta a tre stati (manca · da verificare · verificato) su appunti, schemi, esercizi, quiz, simulazione, syllabus.
+- **Carica CSV / elenco** legge anche il catalogo completo (colonne NOME ESAME, CODICE, AREA, CDL, PARTIZIONE, ANNO, SEMESTRE, CFU, APPUNTI, ESERCIZI / QUIZ, SIMULAZIONI, ZIP RAW SOURCES, LINK CATALOGO, DOCENTE, TIPO, PERCORSO, MAPPE E SCHEMI, STATO MATERIALI, SSD). Le celle con un percorso/link valgono come "file presente, da verificare". L'opzione **Sostituisci TUTTO il catalogo** cancella gli esami attuali (con le spunte) e carica solo quelli del file: prima chiede conferma e scarica un backup CSV. L'export ha lo stesso formato, quindi si può riscaricare e ricaricare senza creare doppioni.
 - Si carica da CSV (stesso formato di `Dispense_1.csv`) o incollando un elenco; gli esami con lo stesso nome in corsi diversi restano distinti. Le spunte non si perdono rimportando. Si scarica anche in CSV.
 - I link ai PDF restano nel database privato dell'HQ, non nel repository.
