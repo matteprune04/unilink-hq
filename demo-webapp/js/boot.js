@@ -15,15 +15,15 @@
       { g: "Studio", items: [
         { k: "dashboard", l: "Dashboard", i: "home", to: "#/app/dashboard" },
         { k: "esami", l: "I miei esami", i: "book", to: "#/app/esami" },
-        { k: "planner", l: "Planner · Plus", i: "target", to: "#/app/planner", soloAttiva: true },
+        // v18 (audit UX 9/10, C1): il Planner esce da menu e barra finché non esiste; un solo annuncio in dashboard
         { k: "strumenti", l: "Strumenti", i: "calc", to: "#/app/strumenti" },
         // «Guida» archiviata il 7/10; «Aula studio» e «Ambassador» spostate nelle proposte l'8/10 (D45, D46)
       ] },
       // «Dopo gli esami» (Il mio percorso) è una proposta dall'8/10 (D50); il libretto è in «I miei esami»
       { g: "Account", items: [
-        { k: "materiali", l: "Catalogo e acquisti", i: "layers", to: "#/app/materiali/catalogo", soloAttiva: true },   // v10: vicino ad Abbonamento
-        { k: "abbonamento", l: "Piani e abbonamento", i: "euro", to: "#/app/abbonamento" },
-        { k: "account", l: "Profilo e account", i: "user", to: "#/app/account" },
+        // v18 (audit C5): un solo catalogo (sfogliare e sbloccare); «Piani e abbonamento» fuori dal menu, gli ordini sono nel profilo
+        { k: "materiali", l: "Catalogo", i: "layers", to: "#/app/materiali/catalogo", soloAttiva: true },
+        { k: "account", l: "Profilo", i: "user", to: "#/app/account" },
       ] },
     ],
     // k = rotta, v = vista originale del modulo (UL.views[v]); admin = solo team
@@ -80,7 +80,7 @@
     <div class="field"><label for="ac-area">Area di studio</label><select class="select" id="ac-area" name="area">${window.UL_AREE.map((a) => opt(a.slug, a.nome + (a.stato === "attiva" ? "" : a.stato === "in_arrivo" ? " (in arrivo)" : " (proposta)"), p.area)).join("")}</select></div>
     <div class="field"><label for="ac-ateneo">Ateneo</label><select class="select" id="ac-ateneo" name="ateneo">${[["unifi", "Università di Firenze"]].concat((window.UL_D ? window.UL_D.unis : []).filter((u) => u.id !== "unifi").map((u) => [u.id, u.n || u.id])).map(([k, l]) => opt(k, l + (k === "unifi" ? "" : " (da decidere)"), p.ateneo || "unifi")).join("")}</select></div>
     <div class="field"><label for="ac-cds">Corso di laurea</label><select class="select" id="ac-cds" name="cds">${[["EA", "Economia Aziendale"], ["EC", "Economia e Commercio"], ["", "Altro / nessuno"]].map(([k, l]) => opt(k, l, p.cds)).join("")}</select></div>
-    <div class="field"><label for="ac-curr">Curriculum (III anno; II anno per EC)</label><select class="select" id="ac-curr" name="curriculum">${[["", "Non ancora scelto"]].concat(window.UL_PERCORSI ? Object.entries(window.UL_PERCORSI.corsi).flatMap(([cds, c]) => Object.entries(c.curricula).map(([k, n]) => [k, cds + " · " + n])) : []).map(([k, l]) => opt(k, l, p.curriculum || "")).join("")}</select></div>
+    <div class="field"><label for="ac-curr">Indirizzo (se l'hai già scelto)</label><select class="select" id="ac-curr" name="curriculum">${[["", "Non ancora scelto"]].concat(window.UL_PERCORSI ? Object.entries(window.UL_PERCORSI.corsi).flatMap(([cds, c]) => Object.entries(c.curricula).map(([k, n]) => [k, cds + " · " + n])) : []).map(([k, l]) => opt(k, l, p.curriculum || "")).join("")}</select></div>
     <div class="field"><label for="ac-anno">Anno</label><select class="select" id="ac-anno" name="anno">${[["1", "I anno"], ["2", "II anno"], ["3", "III anno"], ["FC", "Fuori corso"]].map(([k, l]) => opt(k, l, p.anno)).join("")}</select></div>
     <div class="field span-2"><label>Colore del tuo cerchio (in alto a destra)</label><div class="row colori-cerchio">${U.COLORI.map((c) => `<label style="cursor:pointer"><input type="radio" name="colore" value="${c}" ${p.colore === c ? "checked" : ""} class="sr-only"><span class="avatar" style="background:${c};color:#fff">${esc(UL.ui.initials(p))}</span></label>`).join("")}</div><p class="tiny muted" style="margin-top:6px">Quello scelto ha il bordo e la spunta: si applica quando salvi.</p></div>`;
   };
@@ -92,7 +92,7 @@
     key: "ul_unilink_v4",
     name: "UniLink",
     tag: "Area Personale",
-    flag: "DEMO v12 · dati di esempio",
+    flag: "DEMO v18 · dati di esempio",
     home: "#/app/dashboard",
     homeKey: "dashboard",
     onboarding: "onboardingU",
@@ -124,25 +124,20 @@
       return g;
     },
     userMenu(user) {
-      return [{ l: "Abbonamento", i: "euro", to: "#/app/abbonamento" }, { l: "Profilo e colore", i: "user", to: "#/app/account" }, { l: "Configurazione", i: "settings", to: "#/app/configurazione" }]
+      return [{ l: "Profilo", i: "user", to: "#/app/account" }]   // v18 (audit C5): solo Profilo ed Esci
         .concat(user.role === "admin" ? [{ l: "Metriche", i: "shield", to: "#/app/metriche" }] : []);
     },
     // riquadro in cima alla sidebar: area di studio e ateneo
+    // v18 (audit C4): in cima alla sidebar solo corso e anno dello studente, senza il badge «attiva»; niente card del piano in fondo
     sideHead(user) {
-      const a = U.area(user);
-      const ateneo = U.ateneoAttivo(user) ? "UniFi" : (window.UL_D && UL.D ? UL.D.myUni(user).s || user.profile.ateneo : user.profile.ateneo);
-      return `<div class="row between"><span class="sq-label">La tua area</span>${U.attiva(user) ? '<span class="badge badge-green">attiva</span>' : '<span class="badge badge-yellow">in arrivo</span>'}</div>
-        <p class="display" style="color:var(--navy);font-size:18px;margin-top:8px">${esc(a.nome)}</p>
-        <p class="tiny muted" style="margin-top:4px">${icon("globe")} ${esc(ateneo)}${U.ateneoAttivo(user) ? "" : " (da decidere)"} · <a href="#/app/account">cambia</a></p>`;
+      const a = U.area(user), p = user.profile;
+      if (!U.attiva(user)) return `<span class="sq-label">La tua area</span><p class="display" style="color:var(--navy);font-size:18px;margin-top:6px">${esc(a.nome)}</p><p class="tiny muted" style="margin-top:4px">in arrivo · <a href="#/app/account">cambia</a></p>`;
+      const corso = (UL.ui.CDS || {})[p.cds] || a.nome, anno = p.anno === "FC" ? "fuori corso" : (UL.ui.ROMAN[p.anno] ? UL.ui.ROMAN[p.anno] + " anno" : "");
+      return `<p class="display" style="color:var(--navy);font-size:17px;margin:0">${esc(corso)}</p><p class="tiny muted" style="margin-top:4px">${esc(anno)}${anno ? " · " : ""}UniFi · <a href="#/app/account">cambia</a></p>`;
     },
-    // card in fondo alla sidebar: il piano attuale e l'upgrade
-    sideFoot(user) {
-      const plus = B.plus(user);
-      const n = B.courses().filter((c) => B.owns(user, c.slug)).length;
-      return `<div class="row between"><span class="display small" style="color:var(--navy)">Il tuo piano</span><b class="display" style="color:var(--orange);font-weight:400">${esc(B.planName(user))}</b></div>
-        <p class="tiny muted" style="margin:6px 0 10px">${plus ? "Planner personale e ripasso errori su tutti gli esami." : n > 1 ? `${n} dispense da leggere. Il Planner su tutti gli esami è con Plus.` : "Economia Aziendale è gratis per tutti: sblocchi solo ciò che ti serve."}</p>
-        <a href="#/app/abbonamento" class="small display" style="text-decoration:none">${plus ? "Il tuo piano →" : "Vedi piani e prezzi →"}</a>`;
-    },
+    sideFoot: null,
+    // barra in basso sul telefono (audit C8): Dashboard · Esami · Strumenti · Catalogo; il Planner entra a dicembre
+    bottomBar: [["dashboard", "Home", "home", "#/app/dashboard"], ["esami", "Esami", "book", "#/app/esami"], ["strumenti", "Strumenti", "calc", "#/app/strumenti"], ["materiali", "Catalogo", "layers", "#/app/materiali/catalogo"]],
     notifications(user) {
       const out = [];
       user.activity.exams.filter((e) => e.status !== "done" && e.appello).forEach((e) => {

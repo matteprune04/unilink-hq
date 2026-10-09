@@ -68,3 +68,10 @@
   };
 })();
 
+
+/* v18 (audit UX, C5): gli ordini stanno nel profilo, non in una voce di menu a parte */
+(function () {
+  const UL = window.UL, A = UL.views.account; if (!A || A._ordini) return;
+  const r0 = A.render.bind(A); A._ordini = true;
+  A.render = function (u, p) { const AQ = UL.views.acquistiB; if (!AQ) return r0(u, p); const ord = AQ.render(u).replace(/^\s*<div class="page-head">[\s\S]*?<\/div><\/div>/, ""); return r0(u, p) + `<section style="margin-top:28px"><h2 style="margin-bottom:12px">I tuoi <span class="accent">ordini</span></h2>${ord}</section>`; };
+})();

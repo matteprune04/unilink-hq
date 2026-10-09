@@ -79,8 +79,12 @@
       const sem = new Date().getMonth() + 1 >= 9 || new Date().getMonth() + 1 <= 1 ? 1 : 2;
       const hasSem = a.purchases.some((p) => p.type === "semester");
       const totalDone = a.quiz.sessions.reduce((s, x) => s + x.n, 0);
+      // v18 (audit UX): dubbi aperti al posto del riquadro vuoto; Planner annunciato in una riga sola, chiudibile
+      const P = (a.pref = a.pref || {});
+      const dubbi = Object.entries(a.note || {}).flatMap(([slug, pg]) => Object.entries(pg).flatMap(([p2, l]) => l.filter((x) => x.tag === "dubbio" && !x.risolto).map((x) => ({ slug, p: Number(p2), x })))).filter((d) => B.course(d.slug));
       return `
       ${head("Dashboard", "home", `Cosa ti serve <span class="accent">adesso</span>, ${esc(user.profile.nome)}?`)}
+      ${P.noAvvisoPlanner || B.plus(user) ? "" : `<div class="ux-avviso" data-avviso><span>${icon("calendar")} <b>A dicembre</b>: il Planner su tutti i tuoi esami, con il primo mese gratis.</span><button class="icon-btn" data-chiudi-avviso="noAvvisoPlanner" aria-label="Chiudi">${icon("x")}</button></div>`}
       <div class="grid g-ov">
         <section class="card navy c-7">
           ${errSlug ? `
@@ -105,12 +109,17 @@
           <div class="exam-list">${ex.map((x) => examRow(user, x.e, x.c)).join("") || '<div class="empty">Nessun esame in preparazione.</div>'}</div>
         </section>
         <section class="card c-4">
-          <div class="card-head"><h3>${icon("bell")} Aggiornamenti ai tuoi materiali</h3></div>
-          <ul class="feed">${ups.map((u) => `<li><span class="ic">${icon("file")}</span><div><b class="display" style="font-weight:400">${esc(B.course(u.slug).title)} ${u.v}</b><br><span class="small">${esc(u.d)}</span></div></li>`).join("") || '<li class="small muted">Nessun aggiornamento: qui compaiono le nuove versioni dei pacchetti che possiedi.</li>'}</ul>
-          ${!hasSem && user.profile.cds ? `<hr class="divider"><p class="small">Ti mancano altri esami del ${ROMAN[sem]} semestre? Con il <b>pacchetto semestre</b> del tuo percorso (${B.eur(B.prezzo("semester", null, 3))} con 3 esami, ${B.eur(B.prezzo("semester", null, 4))} con 4) hai le dispense complete di tutti.</p><a class="btn btn-sm btn-orange" style="margin-top:10px" href="#/app/abbonamento/calcola">Calcola il tuo pacchetto</a>` : ""}
+          <div class="card-head"><h3>${icon("edit")} I tuoi dubbi aperti</h3>${dubbi.length ? `<span class="badge badge-orange">${dubbi.length}</span>` : ""}</div>
+          <ul class="feed">${dubbi.slice(0, 4).map((d) => `<li><span class="ic">${icon("alert")}</span><div><a href="#/app/esami/${d.slug}/note" class="display" style="font-weight:400;text-decoration:none">${esc(B.course(d.slug).title)} · p. ${d.p}</a><br><span class="small">${esc(d.x.testo.length > 70 ? d.x.testo.slice(0, 70) + "…" : d.x.testo)}</span></div></li>`).join("") || '<li class="small muted">Nessun dubbio aperto. Mentre leggi, etichetta una nota «Non ho capito»: la ritrovi qui finché non la segni come risolta.</li>'}</ul>
+          ${ups.length ? `<hr class="divider"><p class="sq-label">Aggiornamenti ai tuoi materiali</p><ul class="feed">${ups.map((u) => `<li><span class="ic">${icon("file")}</span><div><b class="display" style="font-weight:400">${esc(B.course(u.slug).title)} ${u.v}</b><br><span class="small">${esc(u.d)}</span></div></li>`).join("")}</ul>` : ""}
+          ${!hasSem && user.profile.cds && !P.noAvvisoPacchetto ? `<div class="ux-pac" data-avviso><button class="icon-btn" data-chiudi-avviso="noAvvisoPacchetto" aria-label="Non mostrare più">${icon("x")}</button><p class="small">Ti mancano altri esami del ${ROMAN[sem]} semestre? Con il <b>pacchetto semestre</b> hai le dispense complete di tutti.</p><a class="btn btn-sm btn-ghost" style="margin-top:8px" href="#/app/materiali/semestre">Vedi i pacchetti</a></div>` : ""}
         </section>
       </div>`;
     },
+  };
+
+  UL.views.dashboardB.mount = function (root, user) {
+    root.querySelectorAll("[data-chiudi-avviso]").forEach((b) => b.addEventListener("click", () => { (user.activity.pref = user.activity.pref || {})[b.dataset.chiudiAvviso] = true; UL.store.save(); b.closest("[data-avviso]").remove(); }));
   };
 
   /* ---------------- I MIEI ESAMI ---------------- */
@@ -221,7 +230,8 @@
   UL.views.materialiB = {
     title: "Materiali",
     render(user, params) {
-      const tab = params[0] || "miei";
+      // v18 (audit C5): un esame = un posto. «Le mie dispense» sono già in «I miei esami»: qui si sfoglia e si sblocca
+      const tab = params[0] === "semestre" ? "semestre" : "catalogo";
       const p = user.profile;
       const owned = B.courses().filter((c) => B.owns(user, c.slug));
       const cds = p.cds || "EA", curr = B.currDi(user);
@@ -239,8 +249,8 @@
         </article>`;
       };
       return `
-      ${head("Materiali", "book", 'La tua <span class="accent">libreria</span>', "Le dispense che possiedi, sempre aggiornate, da leggere e annotare qui, e il catalogo degli altri esami.")}
-      <div class="tabs"><a href="#/app/materiali" class="${tab === "miei" ? "on" : ""}">${icon("book")} Le mie dispense <span class="cnt">${owned.length}</span></a><a href="#/app/materiali/catalogo" class="${tab === "catalogo" ? "on" : ""}">${icon("layers")} Catalogo</a><a href="#/app/materiali/semestre" class="${tab === "semestre" ? "on" : ""}">${icon("spark")} Pacchetti</a></div>
+      ${head("Catalogo", "layers", 'Il <span class="accent">catalogo</span>', "Tutti gli esami del tuo corso, con anteprima e prezzo di lancio, e i pacchetti del semestre. Quelli che hai già sono in «I miei esami».")}
+      <div class="tabs"><a href="#/app/materiali/catalogo" class="${tab === "catalogo" ? "on" : ""}">${icon("layers")} Esami</a><a href="#/app/materiali/semestre" class="${tab === "semestre" ? "on" : ""}">${icon("spark")} Pacchetti del semestre</a></div>
       ${tab === "miei" ? (owned.length ? `<div class="course-grid">${owned.map(card).join("")}</div>` : `<div class="card empty">${icon("book")}<p>Non hai ancora dispense. Economia Aziendale è gratis per tutti: aprila dal catalogo.</p><a class="btn btn-primary" style="margin-top:12px" href="#/app/materiali/catalogo">Apri il catalogo</a></div>`)
         : tab === "catalogo" ? [1, 2, 3].map((y) => `<div class="year-head"><h2>${ROMAN[y]} anno</h2><span class="line"></span></div><div class="course-grid">${B.courses().filter((c) => c.anno === y && (!p.cds || c.cds.includes(p.cds))).map(card).join("")}</div>`).join("")
         : `<p class="muted" style="margin-bottom:16px">Le dispense complete di un semestre del tuo percorso (${esc(UL.ui.CDS[cds])}${curr && window.UL_PERCORSI ? " · " + esc(window.UL_PERCORSI.nomeCurr(cds, curr)) : ""}): ${B.eur(B.prezzo("semester", null, 3))} con 3 esami, ${B.eur(B.prezzo("semester", null, 4))} con 4. Il curriculum si sceglie in Profilo e account. <a href="#/app/abbonamento/calcola">Calcola e scegli gli esami →</a></p>

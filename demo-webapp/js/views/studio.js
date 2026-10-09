@@ -117,7 +117,8 @@
     return `<div class="es-scelte">
         <button class="es-scelta" data-es-vai="cap"><span class="ic">${icon("layers")}</span><b>Esercizi per capitolo</b><span>Scegli un capitolo o un macroargomento intero</span></button>
         <button class="es-scelta ${err.length ? "" : "spenta"}" data-es-rifai ${err.length ? "" : "disabled"}><span class="ic">${icon("alert")}</span><b>Rifai gli errori${err.length ? ` (${err.length})` : ""}</b><span>${err.length ? "Le domande sbagliate, finché non le indovini due volte" : "Nessun errore da rifare"}</span></button>
-        <a class="es-scelta" href="#/app/esercitazioni/${c.slug}/simulazione"><span class="ic">${icon("target")}</span><b>Simulazione d'esame</b><span>${formato(c.slug).domande} domande in ${formato(c.slug).minuti} minuti, voto in trentesimi</span></a>
+        ${(() => { const M = B.mazzo(c.slug, u), k0 = conta(u, c.slug, M), n = k0.nuove + k0.imp + k0.rip; return M.length ? `<button class="es-scelta ${n ? "" : "spenta"}" data-fc-studia="tutto" ${n ? "" : "disabled"}><span class="ic">${icon("layers")}</span><b>Carte di oggi${n ? ` (${n})` : ""}</b><span>${n ? "Ripasso stile Anki, a schermo intero" : "Hai finito per oggi"}</span></button>` : ""; })()}
+        ${B.haSimulazione(c) ? `<a class="es-scelta" href="#/app/esercitazioni/${c.slug}/simulazione"><span class="ic">${icon("target")}</span><b>Simulazione d'esame</b><span>${formato(c.slug).domande} domande in ${formato(c.slug).minuti} minuti, voto in trentesimi</span></a>` : ""}
       </div>
       <p class="small muted es-riass">${P.tot} domande${c.slug === "economia-aziendale" ? " (70 dalla raccolta vera di Economia Aziendale)" : ""} · ${P.fatte} fatte · obiettivo ${ob} secondi a domanda${formato(c.slug).vero ? "" : " (formato d'esempio)"}</p>
       <div class="card es-capitoli" data-es-caps hidden><div class="card-head"><h3>${icon("layers")} Scegli cosa ripassare</h3><span class="small muted">10 domande per volta</span></div>
@@ -263,7 +264,13 @@
 
   /* ---------- la macrosezione ---------- */
   // v10: la simulazione è dentro «Esercizi» (una scheda in meno)
-  const SCHEDE = [["panoramica", "Panoramica", "home"], ["mappa", "Programma e progressi", "map"], ["dispensa", "Dispensa", "book"], ["esercizi", "Esercizi e simulazioni", "quiz"], ["flashcard", "Flashcard", "layers"], ["note", "Note", "edit"]];
+  // v18 (audit UX 9/10, C2): quattro schede, sempre le stesse, che seguono il ciclo di studio: leggi → allenati → annota.
+  // «Programma e progressi» entra in Dispensa (lista dei capitoli con «Leggi · p. N»); Esercizi, Flashcard, Errori e Simulazione in «Allenati».
+  const SCHEDE = [["panoramica", "Panoramica", "home"], ["dispensa", "Dispensa", "book"], ["allenati", "Allenati", "quiz"], ["note", "Note", "edit"]];
+  const ALIAS = { mappa: "dispensa", esercizi: "allenati", flashcard: "allenati" };
+  const tabDi = (x) => { const t = ALIAS[x] || x; return SCHEDE.some((s) => s[0] === t) ? t : "panoramica"; };
+  const haAllenamento = (c) => B.banca(c.slug).length > 0 || B.mazzo(c.slug).length > 0;
+  const inArrivoRiga = (c) => haAllenamento(c) && B.haSimulazione(c) ? "" : `<div class="ux-arrivo">${icon("clock")} <span>Per questo esame arrivano a fine novembre: ${[haAllenamento(c) ? "" : "domande per capitolo e flashcard", B.haSimulazione(c) ? "" : "simulazioni d'esame"].filter(Boolean).join(", ")}.</span></div>`;
   const SENZA = (c) => `<div class="card section">${U.lock("Con la dispensa completa di " + c.title, `Dispensa da leggere e annotare, flashcard, esercizi per capitolo e simulazioni: ${B.eur(B.prezzo("completa", c))} (invece di ${B.eur(B.prezzoPieno("completa"))}) o nel pacchetto del tuo semestre`, `data-sblocca="${c.slug}"`)}</div>`;
   UL.views.studioU = {
     title: (p) => (p[0] && B.course(p[0]) ? B.course(p[0]).title : "I miei esami"),
@@ -279,54 +286,48 @@
         const daRip = (c) => { const F = fcStato(u, c.slug), t = oggi(); return B.mazzo(c.slug, u).filter((k) => F.s[k.id] && F.s[k.id].due <= t).length; };
         const errori = (c) => B.banca(c.slug).filter((q) => inErrore(u, q)).length;
         const card = ({ e, c }) => { const own = B.owns(u, c.slug), lv = B.level(u, c.slug), r = own ? daRip(c) : 0, er = own ? errori(c) : 0;
-          return `<article class="me-card ${own ? "own" : ""}"><div class="me-top"><span class="badge ${own ? "badge-green" : lv === "simulazione" ? "badge-yellow" : "badge-soft"}">${B.gratisPerTutti(c.slug) ? "Gratis per tutti" : own ? "Dispensa completa" : lv === "simulazione" ? "Simulazione" : "Solo anteprima"}</span><span class="small muted">${giorni(e)}</span></div>
+          return `<article class="me-card ${own ? "own" : ""}"><div class="me-top"><span class="badge ${own ? "badge-green" : lv === "simulazione" ? "badge-yellow" : "badge-soft"}">${B.gratisPerTutti(c.slug) ? "Gratis per tutti" : own ? "Dispensa completa" : lv === "simulazione" ? "Simulazione" : "Anteprima"}</span><span class="small muted">${giorni(e)}</span></div>
             <h3>${esc(c.title)}</h3><p class="small muted">${UL.ui.ROMAN[c.anno]} anno · ${c.cfu || "?"} CFU${e.obiettivo ? " · obiettivo " + esc(e.obiettivo) : ""}</p>
             ${own ? `<div class="me-oggi">${r ? `<span>${icon("layers")} ${r} flashcard da ripassare</span>` : ""}${er ? `<span>${icon("alert")} ${er} errori da rifare</span>` : ""}${!r && !er ? `<span>${icon("check")} Tutto in pari</span>` : ""}</div>
               <div class="row"><a class="btn btn-primary btn-sm" href="#/app/esami/${c.slug}/dispensa">${icon("book")} Studia</a><a class="btn btn-ghost btn-sm" href="#/app/esami/${c.slug}">Apri l'esame</a></div>`
-            : `<p class="small">Con la dispensa completa: dispensa da leggere e annotare, flashcard, esercizi per capitolo e simulazioni.</p>
-              <div class="row"><button class="btn btn-orange btn-sm" data-sblocca="${c.slug}">Sblocca · ${B.eur(B.prezzo("completa", c))}</button><a class="btn btn-ghost btn-sm" href="#/app/esami/${c.slug}">Anteprima</a></div>`}</article>`; };
-        return `<div class="page-head"><div><div class="eyebrow">${icon("book")} Studio</div><h1>I miei <span class="accent">esami</span></h1><p class="lead">Gli esami che stai preparando. Entra in un esame per studiare: dispensa, flashcard, esercizi e mappa sono tutti lì dentro.</p></div>
+            : `<p class="small">Scheda dell'esame, indice e quiz di prova. Dentro l'esame vedi cosa sblocca la dispensa completa.</p>
+              <div class="row"><a class="btn btn-primary btn-sm" href="#/app/esami/${c.slug}">Apri</a></div>`}</article>`; };
+        return `<div class="page-head"><div><div class="eyebrow">${icon("book")} Studio</div><h1>I miei <span class="accent">esami</span></h1><p class="lead">Gli esami che stai preparando. Entra in un esame per studiare: dispensa, allenamento e note sono tutti lì dentro.</p></div>
           <button class="btn btn-primary" data-add>${icon("plus")} Aggiungi esame</button></div>${tabs}
           ${conDisp.length ? `<h2 class="me-h">Pronti da studiare <span class="cnt">${conDisp.length}</span></h2><div class="me-grid">${conDisp.map(card).join("")}</div>` : ""}
-          ${senza.length ? `<h2 class="me-h">Da sbloccare <span class="cnt">${senza.length}</span></h2><div class="me-grid">${senza.map(card).join("")}</div>` : ""}
+          ${senza.length ? `<h2 class="me-h">In anteprima <span class="cnt">${senza.length}</span></h2><div class="me-grid">${senza.map(card).join("")}</div>` : ""}
           ${!aperti.length ? `<div class="card empty">${icon("book")}<p>Non stai preparando nessun esame. Aggiungine uno, oppure apri Economia Aziendale: è gratis per tutti.</p></div>` : ""}
           ${fattiE.length ? `<h2 class="me-h">Superati <span class="cnt">${fattiE.length}</span></h2><div class="me-fatti">${fattiE.map(({ e, c }) => `<a href="#/app/esami/libretto"><b>${esc(c.title)}</b><span>${esc(e.voto)}${e.lode ? " e lode" : ""}</span></a>`).join("")}</div>` : ""}
-          <div class="me-offerta"><span class="sq-label">Cosa ottieni per ogni esame</span><div>
-            <div><b>Gratis</b><span>Scheda, quiz di prova, anteprima. Economia Aziendale completa.</span></div>
-            <div><b>Simulazione · ${B.eur(B.prezzo("simulazione"))}</b><span>Una prova nel formato dell'appello con correzione.</span></div>
-            <div class="ev"><b>Dispensa completa · ${B.eur(B.prezzo("completa"))}</b><span>Dispensa da annotare, flashcard, esercizi per capitolo, simulazioni.</span></div>
-            <div class="plus"><b>Plus · ${B.eur(B.prezzoPlus(u))}</b><span>Il coach: Planner su tutti gli esami, analisi degli errori, «pronto per l'esame?».</span></div></div>
-            <a class="small" href="#/app/abbonamento">Confronta i piani →</a></div>`;
+          `;
       }
-      const tab = SCHEDE.some((s) => s[0] === params[1]) ? params[1] : "panoramica", own = B.owns(u, c.slug);
+      const tab = tabDi(params[1]), own = B.owns(u, c.slug);
       const lv = B.level(u, c.slug);
       const testa = `<a href="#/app/esami" class="small display" style="text-decoration:none">← I miei esami</a>
         <div class="st-testa"><div><span class="sq-label">${esc(c.cds)} · ${UL.ui.ROMAN[c.anno]} anno · ${UL.ui.ROMAN[c.sem]} semestre${c.cfu ? " · " + c.cfu + " CFU" : ""}</span><h1>${esc(c.title)}</h1></div>
-          <span class="badge ${own ? "badge-green" : lv === "simulazione" ? "badge-yellow" : "badge-soft"}">${B.gratisPerTutti(c.slug) ? "Gratis per tutti" : own ? "Dispensa completa" : lv === "simulazione" ? "Simulazione" : "Solo anteprima"}</span></div>
-        <div class="tabs st-tabs" style="overflow-x:auto">${SCHEDE.map(([k, l, i]) => `<a href="#/app/esami/${c.slug}/${k}" class="${k === tab ? "on" : ""}">${icon(!own && ["dispensa", "flashcard", "esercizi", "note"].includes(k) ? "lock" : i)} ${l}</a>`).join("")}</div>`;
+          <span class="badge ${own ? "badge-green" : lv === "simulazione" ? "badge-yellow" : "badge-soft"}">${B.gratisPerTutti(c.slug) ? "Gratis per tutti" : own ? "Dispensa completa" : lv === "simulazione" ? "Simulazione" : "Anteprima"}</span></div>
+        <div class="tabs st-tabs" style="overflow-x:auto">${SCHEDE.map(([k, l, i]) => `<a href="#/app/esami/${c.slug}/${k}" class="${k === tab ? "on" : ""}">${icon(!own && ["dispensa", "note"].includes(k) ? "lock" : i)} ${l}</a>`).join("")}</div>`;
       let body;
-      if (tab === "panoramica") body = (own ? riprendi(u, c) + progressi(u, c) : "") + UL.views.esamiB.render(u, [c.slug]).replace(/^\s*<a href="#\/app\/esami"[^>]*>[^<]*<\/a>/, "");
-      else if (tab === "dispensa") body = own ? UL.views.lettoreU.render(u, [c.slug]).replace(/<a href="#\/app\/materiali"[\s\S]*?<div class="lt-wrap/, '<div class="lt-wrap') : SENZA(c);
-      else if (tab === "flashcard") body = own ? flashcard(u, c) : SENZA(c);
-      else if (tab === "esercizi") body = own ? esercizi(u, c) : (B.ownsSimulazione(u, c.slug) || B.hasQuiz(c.slug) ? UL.views.praticaB.render(u, [c.slug]).replace(/<a href="#\/app\/esercitazioni"[^>]*>[^<]*<\/a>/, "") : "") + SENZA(c);
-      else if (tab === "mappa") body = mappa(u, c);
+      if (tab === "panoramica") body = (own ? riprendi(u, c) + progressi(u, c) : "") + inArrivoRiga(c) + (u.activity.exams.some((e) => e.slug === c.slug) ? "" : `<div class="ux-arrivo" style="background:#f6e4d1;color:#7a4314">${icon("plus")} <span>Non è ancora tra i tuoi esami: aggiungilo per avere data dell'appello, obiettivo e promemoria.</span><button class="btn btn-sm btn-primary" data-ux-agg>Aggiungi</button></div>`) + UL.views.esamiB.render(u, [c.slug]).replace(/<div class="empty">Esame non trovato[\s\S]*?<\/div>/, "").replace(/^\s*<a href="#\/app\/esami"[^>]*>[^<]*<\/a>/, "");
+      else if (tab === "dispensa") body = own ? UL.views.lettoreU.render(u, [c.slug]).replace(/<a href="#\/app\/materiali"[\s\S]*?<div class="lt-wrap/, '<div class="lt-wrap') + `<section class="ux-prog"><div class="card-head"><h3>${icon("map")} Programma per capitoli</h3><span class="small muted">leggi · allenati · segna come fatto</span></div>${mappa(u, c)}</section>` : SENZA(c);
+      else if (tab === "allenati") body = own ? (haAllenamento(c) ? esercizi(u, c) + `<details class="ux-mazzi"><summary>${icon("layers")} Le flashcard per capitolo e le tue carte</summary>${flashcard(u, c)}</details>` : inArrivoRiga(c))
+        : (B.ownsSimulazione(u, c.slug) || B.hasQuiz(c.slug) ? UL.views.praticaB.render(u, [c.slug]).replace(/<a href="#\/app\/esercitazioni"[^>]*>[^<]*<\/a>/, "") : "") + SENZA(c);
       else body = own ? note(u, c) : SENZA(c);
       return testa + `<div class="st-corpo">${body}</div>`;
     },
     mount(root, u, params) {
       const c = params[0] && B.course(params[0]);
       if (!c) { root.querySelectorAll("[data-sblocca]").forEach((b) => b.addEventListener("click", () => B.upsell(u, b.dataset.sblocca))); return params[0] === "libretto" ? U.bindLibretto(root, u) : UL.views.esamiB.mount && UL.views.esamiB.mount(root, u, []); }
-      const tab = params[1] || "panoramica", own = B.owns(u, c.slug);
+      const tab = tabDi(params[1]), own = B.owns(u, c.slug);
       root.querySelectorAll("[data-sblocca]").forEach((b) => b.addEventListener("click", () => B.upsell(u, b.dataset.sblocca)));
       if (tab === "panoramica") UL.views.esamiB.mount && UL.views.esamiB.mount(root, u, [c.slug]);
       else if (tab === "dispensa" && own) UL.views.lettoreU.mount(root, u, [c.slug]);
-      else if (tab === "flashcard" && own) montaFlashcard(root, u, c);
-      else if (tab === "esercizi" && own) montaEsercizi(root, u, c);
-      else if (tab === "esercizi" && !own) UL.views.praticaB.mount && UL.views.praticaB.mount(root, u, [c.slug]);
+      else if (tab === "allenati" && own && haAllenamento(c)) { montaFlashcard(root, u, c); montaEsercizi(root, u, c); }
+      else if (tab === "allenati" && !own) UL.views.praticaB.mount && UL.views.praticaB.mount(root, u, [c.slug]);
+      const ag = root.querySelector("[data-ux-agg]"); ag && ag.addEventListener("click", () => { u.activity.exams.push({ slug: c.slug, partizione: "", appello: "", obiettivo: "", status: "doing" }); UL.store.save(); UL.app.refresh(); });
       root.querySelectorAll("[data-mp]").forEach((b) => b.addEventListener("click", () => { const M = (u.activity.mappa = u.activity.mappa || {}), m = (M[c.slug] = M[c.slug] || {}), giro = { "": "corso", corso: "fatto", fatto: "" }; const k = capitoliDi(c.slug).find((x) => x.n === Number(b.dataset.mp)), ora = k ? statoCap(u, c, k).st : (m[b.dataset.mp] || ""); m[b.dataset.mp] = giro[ora] || ""; if (!m[b.dataset.mp]) delete m[b.dataset.mp]; UL.store.save(); UL.app.refresh(); }));
       const vaiTab = (t) => { const h = `#/app/esami/${c.slug}/${t}`; if (location.hash === h) UL.app.refresh(); else UL.app.go(h); };
-      root.querySelectorAll("[data-avvia-es]").forEach((b) => b.addEventListener("click", () => { u.activity.esAvvia = b.dataset.avviaEs; UL.store.save(); vaiTab("esercizi"); }));
-      root.querySelectorAll("[data-avvia-fc]").forEach((b) => b.addEventListener("click", () => { u.activity.fcAvvia = b.dataset.avviaFc; UL.store.save(); vaiTab("flashcard"); }));
+      root.querySelectorAll("[data-avvia-es]").forEach((b) => b.addEventListener("click", () => { u.activity.esAvvia = b.dataset.avviaEs; UL.store.save(); vaiTab("allenati"); }));
+      root.querySelectorAll("[data-avvia-fc]").forEach((b) => b.addEventListener("click", () => { u.activity.fcAvvia = b.dataset.avviaFc; UL.store.save(); vaiTab("allenati"); }));
       root.querySelectorAll("[data-vai-cap]").forEach((b) => b.addEventListener("click", () => { const p = B.capPag(u, c.slug)[b.dataset.vaiCap]; if (!p) return; (u.activity.letture = u.activity.letture || {})[c.slug] = p; UL.store.save(); vaiTab("dispensa"); }));
       root.querySelectorAll("[data-nt-f]").forEach((b) => b.addEventListener("click", () => { (u.activity.pref = u.activity.pref || {}).noteFiltro = b.dataset.ntF; UL.store.save(); UL.app.refresh(); }));
       root.querySelectorAll("[data-nt-ok]").forEach((b) => b.addEventListener("click", () => { const [p, id] = b.dataset.ntOk.split("|"), x = (((u.activity.note || {})[c.slug] || {})[p] || []).find((y) => y.id === id); if (x) { x.risolto = !x.risolto; UL.store.save(); UL.app.refresh(); } }));

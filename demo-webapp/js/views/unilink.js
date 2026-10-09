@@ -37,7 +37,7 @@
 
   /* ---------- 3 · primo accesso (dopo la registrazione): 6 passi, l'ultimo è la scelta del piano ---------- */
   // v11 (commenti del 8/10): niente ateneo (è Firenze), esami per anno a scomparsa, via «Ritmo e avvisi» (non serviva), piano consigliato dagli esami scelti
-  const PASSI = ["Area di studio", "Corso e anno", "I tuoi esami", "Dopo la laurea", "Il primo esame", "Il tuo piano"];
+  const PASSI = ["Area di studio", "Corso e anno", "I tuoi esami", "Il primo esame", "Il tuo primo passo"]; // v18 (audit C3)
   UL.views.onboardingU = {
     title: "Primo accesso",
     render: () => `
@@ -71,11 +71,19 @@
             <div class="onb-extra"><label class="small muted" for="onb-x">Manca un esame? Scrivilo</label><div class="row"><input class="input" id="onb-x" placeholder="es. Diritto del lavoro" style="max-width:320px"><button class="btn btn-ghost btn-sm" data-xadd>Aggiungi</button></div>
               ${o.extra.length ? `<div class="chips" style="margin-top:8px">${o.extra.map((x, i) => `<span class="chip on">${esc(x)} <button class="link" data-xdel="${i}" aria-label="Togli">✕</button></span>`).join("")}</div>` : ""}</div>`; }
         }
-        if (n === 3) body = `<h2 style="margin:10px 0 6px">E dopo la laurea?</h2><p class="muted" style="margin-bottom:18px">Serve a «Il mio percorso» per proporti magistrali, Erasmus e i prossimi passi. Puoi non saperlo ancora.</p>
+        if (false) body = `<h2 style="margin:10px 0 6px">E dopo la laurea?</h2><p class="muted" style="margin-bottom:18px">Serve a «Il mio percorso» per proporti magistrali, Erasmus e i prossimi passi. Puoi non saperlo ancora.</p>
           <div class="chips">${Object.entries(UL.ui.DOPO).map(([k, l]) => `<span class="chip ${o.dopo === k ? "on" : ""}" data-dopo="${k}">${esc(l)}</span>`).join("")}</div>`;
-        if (n === 4) body = `<h2 style="margin:10px 0 6px">Quando dai il primo esame?</h2><p class="muted" style="margin-bottom:18px">Così ti ricordiamo cosa fare al momento giusto.</p>
+        if (n === 3) body = `<h2 style="margin:10px 0 6px">Quando dai il primo esame?</h2><p class="muted" style="margin-bottom:18px">Così ti ricordiamo cosa fare al momento giusto.</p>
           <div class="chips">${[["inverno", "Sessione invernale · gen–feb"], ["estate", "Sessione estiva · giu–lug"], ["autunno", "Sessione autunnale · set"], ["nonso", "Non lo so ancora"]].map(([k, l]) => `<span class="chip ${o.sessione === k ? "on" : ""}" data-ses="${k}">${l}</span>`).join("")}</div>`;
-        if (n === 5) {
+        if (n === 4) { // «Il tuo primo passo»: si finisce aprendo una dispensa, non valutando un prezzo
+          o.piano = "free";
+          const scelti = B.courses().filter((c) => o.esami.has(c.slug)), ea = B.courses().find((c) => B.gratisPerTutti(c.slug));
+          const primo = scelti.find((c) => B.owns(user, c.slug) && !B.gratisPerTutti(c.slug)) || scelti.find((c) => B.gratisPerTutti(c.slug)) || scelti[0] || ea, mia = primo && B.owns(user, primo.slug);
+          o.primo = primo ? (mia ? `#/app/esami/${primo.slug}/dispensa` : `#/app/esami/${primo.slug}`) : "#/app/dashboard";
+          body = `<h2 style="margin:10px 0 6px">Il tuo primo passo</h2><p class="muted" style="margin-bottom:16px">Niente da pagare per iniziare. Parti da qui:</p>
+            ${primo ? `<div class="ux-primo"><span class="ic">${icon("book")}</span><div><b>${mia ? "Apri la dispensa di " + esc(primo.title) + ": è tua" : "Apri l'anteprima di " + esc(primo.title)}</b><span class="small muted">${mia ? (B.gratisPerTutti(primo.slug) ? "Completa e gratis per tutti" : "La trovi completa nella tua area") + ": leggila, annota e prova le domande del primo capitolo." : "Indice, quiz di prova e cosa contiene la dispensa. Economia Aziendale invece è gratis e completa."}</span></div></div>` : ""}`;
+        }
+        if (false) {
           // consiglio dal numero di esami scelti nello stesso semestre del percorso: 3 o più → pacchetto; meno → dispense singole
           const scelti = B.courses().filter((c) => o.esami.has(c.slug) && !B.gratisPerTutti(c.slug)), gruppi = {};
           scelti.forEach((c) => { const k = c.anno + "|" + c.sem; (gruppi[k] = gruppi[k] || []).push(c); });
@@ -97,7 +105,7 @@
         box.innerHTML = `<div class="row between"><span class="sq-label">Primo accesso · passo ${n + 1} di ${PASSI.length} · ${PASSI[n]}</span>${n ? `<a href="#" class="small display" data-back>← Indietro</a>` : ""}</div>
           <div class="steps" style="margin-top:14px">${PASSI.map((_, i) => `<i class="${i <= n ? "on" : ""}"></i>`).join("")}</div>${body}
           <div class="row between" style="margin-top:24px"><a href="#" data-skip class="small display">${n < PASSI.length - 1 ? "Salta questo passo" : ""}</a>
-            <button class="btn btn-primary btn-arrow" data-next>${n < PASSI.length - 1 ? "Continua" : o.piano === "free" ? "Entra nel tuo spazio" : "Vai al pagamento"} <span class="arr">${icon("arrow")}</span></button></div>`;
+            <button class="btn btn-primary btn-arrow" data-next>${n < PASSI.length - 1 ? "Continua" : "Inizia a studiare"} <span class="arr">${icon("arrow")}</span></button></div>`;
         bind();
       };
       const read = () => box.querySelectorAll("[data-k]").forEach((el) => { o[el.dataset.k] = el.type === "checkbox" ? el.checked : el.value; });
@@ -106,7 +114,7 @@
         Object.assign(p, { area: o.area, ateneo: "unifi", cds: eco ? o.cds : "", corso: eco ? "" : o.corso, anno: o.anno, dopoLaurea: o.dopo, esamiManuali: o.extra.slice(), primaSessione: o.sessione, newsletter: !!o.novita, colore: p.colore || U.COLORI[(p.nome.length + p.cognome.length) % U.COLORI.length] });
         if (eco) o.esami.forEach((s) => user.activity.exams.some((e) => e.slug === s) || user.activity.exams.push({ slug: s, partizione: "", appello: "", obiettivo: "", status: "doing" }));
         if (o.attesa) user.activity.waitlist[o.area] = o.attesa;
-        const done = () => { UL.store.markOnboarded(user); B.track("registrazione"); U.onb = null; UL.ui.toast("Il tuo spazio è pronto"); UL.app.go("#/app/dashboard"); };
+        const done = () => { UL.store.markOnboarded(user); B.track("registrazione"); U.onb = null; UL.ui.toast("Il tuo spazio è pronto"); UL.app.go(o.primo || "#/app/dashboard"); };
         if (o.piano === "free") return done();
         if (o.piano === "singole") { const c0 = B.courses().find((c) => o.esami.has(c.slug) && !B.gratisPerTutti(c.slug)); return c0 ? B.checkout(user, B.completaItem(c0), () => { done(); }) : done(); }
         if (o.piano === "semester" && o.rec) return B.checkout(user, B.semItem(o.cds, o.rec.anno, o.rec.sem, p.curriculum || ""), done);

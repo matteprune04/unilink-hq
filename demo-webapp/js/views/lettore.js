@@ -70,6 +70,7 @@
               <span class="lt-sp"></span>
               <div class="lt-grp lt-zoom" role="group" aria-label="Zoom"><button class="icon-btn" data-lt-zoom="-1" aria-label="Rimpicciolisci">−</button><b data-lt-z title="Grandezza rispetto alla pagina adattata">100%</b><button class="icon-btn" data-lt-zoom="1" aria-label="Ingrandisci">+</button></div>
               <div class="lt-fit" role="group" aria-label="Adatta"><button type="button" data-lt-fit="pagina" class="on" aria-pressed="true" title="La pagina intera nello schermo">Pagina</button><button type="button" data-lt-fit="larghezza" aria-pressed="false" title="La pagina larga quanto il riquadro: si scorre dentro">Larghezza</button></div>
+              <button class="icon-btn lt-piu" type="button" data-lt-piu aria-label="Altri comandi" aria-expanded="false">⋯</button>
               <button class="btn btn-ghost btn-sm" data-lt-timer title="Sessione di lettura di 25 minuti (pomodoro)">⏱ 25</button>
               <button class="btn btn-primary btn-sm" data-lt-focus title="Leggi a schermo intero (F)" aria-label="Schermo intero">⛶ Intero</button></div>
             <div class="lt-avanz"><i data-lt-av></i></div>
@@ -270,6 +271,9 @@
       // zoom: parte da «adattata» (100%) e va da 50% a 300%; «Pagina intera» la fa stare tutta, «Larghezza» la allarga e si scorre dentro il riquadro
       const zoom = (d) => { st.zoom = Math.round(Math.min(3, Math.max(0.5, st.zoom + d * (st.zoom >= 1 ? 0.25 : 0.1))) * 100) / 100; chiudiPop(); disegna(); };
       wrap.querySelectorAll("[data-lt-zoom]").forEach((b) => b.addEventListener("click", () => zoom(Number(b.dataset.ltZoom))));
+      // v18 (audit C7): sul telefono si parte da «Larghezza» (testo leggibile); zoom, timer e schermo intero vanno nel menu «⋯»
+      if (!PREF.ltFit && window.innerWidth < 960) PREF.ltFit = "larghezza";
+      const piu = wrap.querySelector("[data-lt-piu]"); piu && piu.addEventListener("click", () => { const b = wrap.querySelector(".lt-bar"), on = !b.classList.contains("aperta"); b.classList.toggle("aperta", on); piu.setAttribute("aria-expanded", String(on)); });
       if (PREF.ltFit) { st.fit = PREF.ltFit; wrap.querySelectorAll("[data-lt-fit]").forEach((x) => { x.classList.toggle("on", x.dataset.ltFit === st.fit); x.setAttribute("aria-pressed", String(x.dataset.ltFit === st.fit)); }); }
       wrap.querySelectorAll("[data-lt-fit]").forEach((b) => b.addEventListener("click", () => { st.fit = b.dataset.ltFit; st.zoom = 1; PREF.ltFit = st.fit; UL.store.save();
         wrap.querySelectorAll("[data-lt-fit]").forEach((x) => { x.classList.toggle("on", x === b); x.setAttribute("aria-pressed", String(x === b)); }); chiudiPop(); disegna(); }));

@@ -143,6 +143,7 @@
       </aside>
       <main class="main" id="view"></main>
     </div>
+    ${C.bottomBar ? `<nav class="bbar" aria-label="Sezioni principali">${C.bottomBar.map(([k, l, i, to]) => `<a href="${to}" class="${active === k ? "on" : ""}">${icon(i)}<span>${esc(l)}</span></a>`).join("")}</nav>` : ""}
     <div class="draft-flag" title="Demo: i dati restano solo in questo browser">${esc(C.flag)}</div>`;
   }
 

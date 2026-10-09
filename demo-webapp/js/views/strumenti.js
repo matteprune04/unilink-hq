@@ -14,7 +14,7 @@
     const hub = HUB[u.profile.area] || "economia", VV = V();
     const L = window.ULTools.lista(hub).filter((t, i, a) => !(t.id === "voto-cdl" && a.some((x) => x.id === "voto")));
     const out = L.map((t) => ({ id: t.id, nome: t.nome, perche: VV.perche[t.id] || t.desc, v: VV.tools[t.id] || {}, demo: t.stato === "demo", href: "#/app/strumenti/" + t.id }));
-    if (hub === "economia") out.push({ id: "planner", nome: "Il Planner", plus: true, perche: VV.perche.planner || "", v: {}, href: "#/app/planner" });
+    // v18 (audit UX, C1): il Planner non è una tessera finché non esiste; lo annuncia una riga in dashboard
     return out;
   };
   const badge = (x) => (x.plus ? '<span class="badge vt-bplus">UniLink Plus</span>' : '<span class="badge badge-soft">Gratis</span>');
