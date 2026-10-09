@@ -17,8 +17,8 @@
     window.ULTools.lista = (hub) => { const L = L0(hub).filter((t) => t.id !== "media"); if (!L.some((t) => t.id === "magistrali")) { const i = L.findIndex((t) => t.id === "erasmus"); L.splice(i + 1, 0, { id: "magistrali", nome: "Magistrali e master", desc: "163 programmi in Italia e in Europa: filtra, salva e confronta.", hub: ["economia"], stato: "live" }); } return L; }; }
   const VV = (window.UL_VETRINA = window.UL_VETRINA || { illus: {}, perche: {}, tools: {} });
   VV.illus.magistrali = VV.illus.magistrali || `<svg viewBox="0 0 220 150" fill="none"><rect x="34" y="28" width="152" height="100" rx="18" fill="#f4f1ea"/><path d="M60 62l50-22 50 22z" fill="#172554"/><rect x="66" y="64" width="88" height="8" rx="2" fill="#172554" opacity=".8"/><rect x="72" y="74" width="10" height="34" rx="3" fill="#172554" opacity=".55"/><rect x="92" y="74" width="10" height="34" rx="3" fill="#172554" opacity=".55"/><rect x="118" y="74" width="10" height="34" rx="3" fill="#172554" opacity=".55"/><rect x="138" y="74" width="10" height="34" rx="3" fill="#172554" opacity=".55"/><rect x="62" y="108" width="96" height="8" rx="2" fill="#172554"/><circle cx="168" cy="44" r="14" fill="#cf7527"/><path d="M162 44l4 4 8-9" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-  VV.perche.magistrali = VV.perche.magistrali || "Trova la magistrale o il master giusto per te, e confrontali fianco a fianco.";
-  VV.tools.magistrali = VV.tools.magistrali || { domanda: "Quale magistrale o master fa per me, dove e quanto costa?", esempio: "Finance · Olanda · 12 mesi → 9 programmi, da confrontare fianco a fianco", tempo: "3 minuti", fonte: "163 programmi del tool «Master / Magistrale» di unilinkfirenze.it (classificazione editoriale UniLink)" };
+  VV.perche.magistrali = "Quattro domande e ti consigliamo le magistrali e i master adatti a te.";
+  VV.tools.magistrali = VV.tools.magistrali || { domanda: "Quale magistrale o master fa per me, dove e quanto costa?", esempio: "Finanza · in Italia · costo basso → 6 magistrali consigliate, con il perché", tempo: "3 minuti", fonte: "163 programmi del tool «Master / Magistrale» di unilinkfirenze.it (classificazione editoriale UniLink)" };
   VV.perche.voto = "Il voto di laurea da dove sei oggi, e la media che ti serve per arrivare dove vuoi.";
   if (VV.tools.voto) { VV.tools.voto.domanda = "Che voto prendo alla laurea, e che media mi serve per arrivare a quello che voglio?"; }
   const PRO = ["voto", "erasmus", "magistrali"]; // v14b: «Che media mi serve?» è il passo 4 del voto di laurea (come sul sito attuale)
@@ -226,47 +226,102 @@
   };
   const migliore = (dir) => (v) => { const n = v.map((x) => parseFloat(String(x).replace(/<[^>]*>/g, "").replace(",", ".").replace(/[^\d.]/g, ""))); const ok = n.filter((x) => !isNaN(x)); if (ok.length < 2) return -1; const t = dir > 0 ? Math.max(...ok) : Math.min(...ok); return n.filter((x) => x === t).length > 1 ? -1 : n.indexOf(t); };
 
-  /* ======================= 4 · MAGISTRALI E MASTER ======================= */
-  const PR = () => window.UL_PROGRAMMI || [];
+  /* ======================= 4 · MAGISTRALI E MASTER (v16: semplice) =======================
+     Commento di Matteo (9/10): «così è overwhelming; la maggior parte di chi studia in un'università pubblica non sa niente di
+     queste cose». Ora: 1) quattro domande con risposte grandi e illustrate; 2) «Consigliati per te» (6 schede grandi, con logo,
+     un'immagine della città e il perché); 3) le parole da sapere; 4) solo se lo chiedi, «Esplora tutti» con due filtri.
+     Dati: i 163 programmi del sito attuale + le 7 magistrali della Scuola di Economia UniFi (pagina «Offerta formativa», 9/10/2026). */
+  const UNIFI = [
+    ["Accounting, Auditing e Controllo", "Italiano", "AUD CF", "Per chi vuole fare il commercialista, il revisore o il controller in azienda."],
+    ["Governo e direzione d'impresa", "Italiano", "CON MKT ENT", "Per chi vuole guidare un'impresa: strategia, organizzazione, marketing."],
+    ["Finance and Risk Management", "Inglese", "FIN Q CF", "Per chi vuole lavorare in banca, nella finanza o nella gestione del rischio."],
+    ["Economia, istituzioni, sostenibilità (EIS)", "Italiano e inglese", "ECO", "Per chi è interessato a politiche economiche, istituzioni, ambiente e territorio."],
+    ["Economics and Development", "Inglese", "ECO", "Per chi vuole lavorare nello sviluppo, nella cooperazione e nelle organizzazioni internazionali."],
+    ["Design of Sustainable Tourism Systems", "Inglese", "MKT ENT", "Per chi vuole progettare il turismo sostenibile, in impresa o nei territori."],
+    ["Statistica e data science", "Italiano", "DATA Q", "Per chi ama i numeri: analisi dei dati, statistica, modelli."],
+  ];
+  const AREA_COD = { FIN: "Finance / IB / PE", CF: "Corporate Finance / FP&A", Q: "Quant / Risk", CON: "Consulting / Strategy", MKT: "Marketing / Sales", DATA: "Data / Analytics", FT: "Fintech / Data", ECO: "Economics / Institutions", ENT: "Entrepreneurship", AUD: "Audit / Accounting / Tax", OPS: "Operations / Supply Chain" };
+  const PR = () => { if (!window.UL_PROGRAMMI_TUTTI) { const base = (window.UL_PROGRAMMI || []).filter((p) => !/FIRENZE/i.test(p.school));
+      window.UL_PROGRAMMI_TUTTI = UNIFI.map(([prog, lingua, aree, perChi], i) => ({ id: "unifi" + i, tier: "U", cems: false, school: "UNIVERSITÀ DI FIRENZE", program: prog, loc: "Firenze, Italia", durata: "2 anni", retta: "Contributo in base all'ISEE", lingua, aree: aree.split(" ").map((k) => AREA_COD[k]), test: "Laurea triennale in Economia; serve il nulla osta del corso per l'accesso.", url: "https://www.economia.unifi.it/vp-49-lauree-magistrali.html", perChi })).concat(base); }
+    return window.UL_PROGRAMMI_TUTTI; };
   const REG = [["UK & Irlanda", /Regno Unito|Irlanda/], ["Italia", /Italia/], ["Francia", /Francia/], ["Germania", /Germania/], ["Spagna", /Spagna/], ["Olanda", /Paesi Bassi|Olanda/], ["BELUX", /Belgio|Lussemburgo/], ["Svizzera", /Svizzera/], ["Austria", /Austria/], ["Portogallo", /Portogallo/], ["Nordics", /Danimarca|Svezia|Norvegia|Finlandia/], ["East EU", /Polonia|Cechia|Ungheria|Slovenia|Romania|Slovacchia|Croazia|Estonia|Lettonia|Lituania|Bulgaria/], ["Asia", /Singapore|Cina|Hong Kong|Giappone|Corea|India/]];
   const regione = (p) => (REG.find(([, r]) => r.test(p.loc || "")) || ["Altro"])[0];
   const mesi = (p) => { const m = String(p.durata || "").match(/(\d+)/); return m ? Number(m[1]) : null; };
   const fascia = (p) => { const m = mesi(p); return m == null ? "" : m <= 12 ? "12" : m <= 18 ? "18" : "24"; };
-  const TIER = { T: ["Target", "tg-t"], S: ["Semi-target", "tg-s"], R: ["Regional", "tg-r"] };
-  const defMag = (u) => ({ q: "", reg: "", area: "", tier: "", dur: "", cems: false, soloFav: false, fav: [], cmp: [], quante: 18, aperto: "" });
+  const TIER = { U: ["La tua università", "tg-u"], T: ["Target", "tg-t"], S: ["Semi-target", "tg-s"], R: ["Regional", "tg-r"] };
+  // costo indicativo all'anno: «ISEE / pubblica» = basso; altrimenti il primo importo della retta (in € o £)
+  const costo = (p) => { const r = String(p.retta || ""); if (/ISEE|pubblic|Contributo/i.test(r)) return 1500; const m = r.replace(/\./g, "").match(/(\d{3,6})/); if (!m) return null; let v = Number(m[1]) * (/£/.test(r) ? 1.17 : 1); if (!/anno/i.test(r) && mesi(p) > 12) v = v / 2; return v; };
+  const fasciaCosto = (p) => { const c = costo(p); return c == null ? "?" : c <= 4000 ? "basso" : c <= 12000 ? "medio" : "alto"; };
+  const COSTO_T = { basso: "€ · costo basso", medio: "€€ · costo medio", alto: "€€€ · costo alto", "?": "costo da verificare" };
+  const host = (u) => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch (e) { return ""; } };
+  const sigla = (s) => s.replace(/[—–-].*$/, "").replace(/UNIVERSIT[ÀA]|UNIVERSITY|OF|DI|DE|THE|SCHOOL|BUSINESS|COLLEGE/gi, " ").trim().split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("") || s[0];
+  const logo = (p) => { const h = host(p.url); return `<span class="mg-logo" data-sigla="${esc(sigla(p.school))}">${h ? `<img src="https://www.google.com/s2/favicons?domain=${esc(h)}&sz=64" alt="" loading="lazy" onerror="this.remove()">` : ""}</span>`; };
+  const CITTA_COL = { "Italia": ["#172554", "#cf7527"], "UK & Irlanda": ["#1d3a8a", "#9b2c2c"], "Francia": ["#23408e", "#c8553d"], "Olanda": ["#1f4e79", "#e07b29"], "Spagna": ["#8a1c1c", "#e0a526"], "Germania": ["#2b2b2b", "#c8a227"], "Svizzera": ["#9b2c2c", "#e8e1d4"] };
+  const banner = (p) => { const reg = regione(p), [a, b] = CITTA_COL[reg] || ["#172554", "#4b5675"], citta = (p.loc || "").split(",")[0].split("/")[0].trim();
+    return `<div class="mg-ban" style="--a:${a};--b:${b}"><svg viewBox="0 0 300 70" preserveAspectRatio="none" aria-hidden="true"><path d="M0 70V52h18V38h14v14h10V28h8v-8h6v8h8v24h12V34h16v18h10V44h14V22l10-10 10 10v30h12V40h18v12h8V30h6v-8h8v8h6v22h14V36h20v16h10V46h16v24z" fill="rgba(255,255,255,.18)"/></svg><span>${esc(citta)}</span><em>${esc(reg === "UK & Irlanda" ? "Regno Unito / Irlanda" : reg)}</em></div>`; };
+  // le 4 domande
+  const DOM = [
+    ["cosa", "Cosa ti piacerebbe fare dopo?", "Scegli quello che ti attira di più: non è una scelta per la vita.", [
+      ["fin", "Finanza e banche", "Investimenti, mercati, banche", "FIN CF Q"], ["con", "Consulenza e strategia", "Aiutare le aziende a crescere", "CON"],
+      ["mkt", "Marketing e comunicazione", "Brand, clienti, prodotti", "MKT"], ["dati", "Dati e numeri", "Analisi, statistica, tecnologia", "DATA FT Q"],
+      ["aud", "Contabilità e controllo", "Bilanci, revisione, fisco", "AUD"], ["eco", "Economia e società", "Istituzioni, sviluppo, sostenibilità", "ECO"],
+      ["ent", "Creare un'impresa", "Startup, innovazione", "ENT"], ["boh", "Non lo so ancora", "Ti mostriamo un po' di tutto", ""]]],
+    ["dove", "Dove vorresti studiare?", "", [["firenze", "Restare a Firenze", "Le magistrali della tua Scuola"], ["italia", "In Italia", "Firenze, Milano, Roma, Bologna…"], ["estero", "All'estero", "Europa e non solo"], ["tutto", "Non importa", "Fammi vedere tutto"]]],
+    ["lingua", "In che lingua?", "", [["it", "Preferisco l'italiano", "Corsi in italiano"], ["en", "L'inglese va bene", "La maggior parte dei master è in inglese"], ["tutto", "Non importa", ""]]],
+    ["soldi", "Quanto potresti spendere all'anno?", "Le università pubbliche costano in base all'ISEE: spesso meno di 2.000 € l'anno.", [["basso", "Il meno possibile", "Università pubbliche"], ["medio", "Fino a circa 12.000 €", ""], ["alto", "Anche di più", "Business school private"], ["tutto", "Non lo so", ""]]],
+  ];
+  const ICO_DOM = { fin: "€", con: "◆", mkt: "★", dati: "▤", aud: "≡", eco: "◎", ent: "✦", boh: "?", firenze: "F", italia: "IT", estero: "EU", tutto: "∗", it: "IT", en: "EN", basso: "€", medio: "€€", alto: "€€€" };
+  const defMag = (u) => ({ ris: {}, passo: 0, fatto: false, esplora: false, q: "", reg: "", area: "", fav: [], cmp: [], quante: 12, aperto: "" });
+  const punteggio = (p, R) => { let s = 0; const why = [];
+    const cod = (DOM[0][3].find((o) => o[0] === R.cosa) || [])[3] || "";
+    if (cod) { const want = cod.split(" ").map((k) => AREA_COD[k]), hit = (p.aree || []).filter((a) => want.includes(a)); if (hit.length) { s += 4 + hit.length; why.push("è nell'area che ti interessa"); } else s -= 3; }
+    if (R.dove === "firenze") { if (p.tier === "U") { s += 6; why.push("è a Firenze, nella tua Scuola"); } else if (/Italia/.test(p.loc)) s += 1; else s -= 4; }
+    if (R.dove === "italia") { if (/Italia/.test(p.loc)) { s += 4; why.push("è in Italia"); } else s -= 4; }
+    if (R.dove === "estero") { if (!/Italia/.test(p.loc)) { s += 3; why.push("è all'estero"); } else s -= 3; }
+    if (R.lingua === "it") { if (/Italiano/.test(p.lingua || "")) { s += 4; why.push("si studia in italiano"); } else s -= 2; }
+    if (R.soldi && R.soldi !== "tutto") { const f = fasciaCosto(p), ord = { basso: 0, medio: 1, alto: 2, "?": 1 }; if (ord[f] <= ord[R.soldi]) { s += 2; if (f === "basso") why.push("costa poco"); } else s -= 3 * (ord[f] - ord[R.soldi]); }
+    if (p.tier === "T") s += 0.6; if (p.tier === "U") s += 0.8;
+    return { s, why }; };
   function htmlMag(u) {
-    const d = dati(u, "magistrali", defMag(u)), P = PR(), aree = window.UL_AREE_PROF || [];
-    const chip = (k, v, t) => `<button type="button" class="chip ${String(d[k]) === String(v) ? "on" : ""}" data-k="${k}" data-v="${esc(v)}">${esc(t)}</button>`;
-    return `<div class="tp-mag-f card">
-        <div class="tp-mag-r"><span>Cerca</span><input class="input" type="search" data-k="q" value="${esc(d.q)}" placeholder="Scuola, programma o città"></div>
-        <div class="tp-mag-r"><span>Area professionale</span><div class="chips">${chip("area", "", "Tutte")}${aree.map((a) => chip("area", a, a)).join("")}</div></div>
-        <div class="tp-mag-r"><span>Dove</span><div class="chips">${chip("reg", "", "Ovunque")}${REG.map(([r]) => chip("reg", r, r)).join("")}</div></div>
-        <div class="tp-mag-r dop"><div><span>Classificazione</span><div class="chips">${chip("tier", "", "Tutte")}${Object.entries(TIER).map(([k, [t]]) => chip("tier", k, t)).join("")}</div></div>
-          <div><span>Durata</span><div class="chips">${chip("dur", "", "Tutte")}${chip("dur", "12", "fino a 12 mesi")}${chip("dur", "18", "13–18 mesi")}${chip("dur", "24", "2 anni")}</div></div></div>
-        <div class="tp-mag-r riga"><label class="tp-chk"><input type="checkbox" data-k="cems" ${d.cems ? "checked" : ""}> Solo CEMS</label><label class="tp-chk"><input type="checkbox" data-k="soloFav" ${d.soloFav ? "checked" : ""}> ★ Solo salvati</label><button type="button" class="link small" data-azzera>Azzera i filtri</button></div></div>
-      <p class="small muted" data-mag-n></p><div class="tp-mag" data-mag></div><div style="text-align:center;margin-top:14px"><button type="button" class="btn btn-ghost" data-piu>Mostra altri</button></div>
-      <div data-tray></div>
-      <section class="tp-come"><h2>Come leggere <span class="accent">Target, Semi-target e Regional</span></h2><div class="tp-come-g">${[["T", "Target", "Recruiting strutturato e presenza ricorrente nei principali hub per almeno una delle aree indicate."], ["S", "Semi-target", "Buon accesso al mercato, più forte in alcune aree o paesi: conta molto il profilo personale."], ["R", "Regional", "Forte nel mercato locale: può essere la scelta migliore per costo, specializzazione o paese."], ["?", "Test / profilo", "Il profilo che normalmente serve per essere davvero competitivi, diverso dal minimo formale."]].map(([n, t, x]) => `<div class="card"><span class="tp-cn">${n === "?" ? "★" : n}</span><b>${t}</b><p class="small">${x}</p></div>`).join("")}</div>
-        <p class="tiny muted" style="margin-top:10px">Classificazione editoriale UniLink, relativa alle aree e ai mercati indicati, non alla qualità accademica assoluta. Rette, durate e test cambiano ogni anno: verifica sempre sul sito del programma.</p></section>`;
+    dati(u, "magistrali", defMag(u));
+    return `<div class="mg" data-mg></div><div data-tray></div>`;
   }
+  const cardMag = (p, d, why) => { const fav = d.fav.includes(p.id);
+    return `<article class="mg-card">${banner(p)}<div class="mg-body"><div class="mg-testa">${logo(p)}<div><span class="mg-scuola">${esc(p.school)}</span><span class="tp-tier ${TIER[p.tier][1]}">${TIER[p.tier][0]}</span></div><button type="button" class="tp-fav ${fav ? "on" : ""}" data-fav="${esc(p.id)}" aria-label="${fav ? "Togli dai salvati" : "Salva"}">${fav ? "★" : "☆"}</button></div>
+      <h4>${esc(p.program)}</h4>
+      ${p.perChi ? `<p class="small">${esc(p.perChi)}</p>` : ""}
+      <div class="mg-pill"><span>${esc(p.lingua || "")}</span><span>${esc(p.durata || "")}</span><span>${COSTO_T[fasciaCosto(p)]}</span></div>
+      ${why && why.length ? `<p class="mg-why">${icon("check")} Te lo consigliamo perché ${esc(why.slice(0, 2).join(" e ").replace(" e è", " ed è"))}.</p>` : ""}
+      ${d.aperto === p.id ? `<div class="tp-det"><span class="sq-label">Cosa serve per entrare</span><p class="small">${esc(p.test || "—")}</p><span class="sq-label">Retta</span><p class="small">${esc(p.retta || "—")}</p>${p.url ? `<a class="small" href="${esc(p.url)}" target="_blank" rel="noopener">Vai al sito del corso →</a>` : ""}</div>` : ""}
+      <div class="tp-mag-az"><button type="button" class="link small" data-apri="${esc(p.id)}">${d.aperto === p.id ? "Chiudi" : "Scopri di più"}</button>${cmpBtn(d, p.id)}</div></div></article>`; };
   function risMag(el, d) {
-    const P = PR(), q = (d.q || "").toLowerCase().trim();
-    el.querySelectorAll(".tp-mag-f .chip[data-k]").forEach((b) => b.classList.toggle("on", String(d[b.dataset.k]) === b.dataset.v));
-    const L = P.filter((p) => (!q || `${p.school} ${p.program} ${p.loc}`.toLowerCase().includes(q)) && (!d.area || (p.aree || []).includes(d.area)) && (!d.reg || regione(p) === d.reg)
-      && (!d.tier || p.tier === d.tier) && (!d.dur || fascia(p) === d.dur) && (!d.cems || p.cems) && (!d.soloFav || d.fav.includes(p.id)));
-    el.querySelector("[data-mag-n]").textContent = `${L.length} programmi${L.length !== P.length ? " su " + P.length : ""}`;
-    el.querySelector("[data-mag]").innerHTML = L.slice(0, d.quante).map((p) => { const fav = d.fav.includes(p.id), ap = d.aperto === p.id;
-      return `<article class="tp-mag-c ${ap ? "aperto" : ""}"><div class="tp-mc-top"><span class="tp-tier ${TIER[p.tier][1]}">${TIER[p.tier][0]}${p.cems ? " · CEMS" : ""}</span><button type="button" class="tp-fav ${fav ? "on" : ""}" data-fav="${esc(p.id)}" aria-label="${fav ? "Togli dai salvati" : "Salva"}">${fav ? "★" : "☆"}</button></div>
-        <span class="tp-paese">${esc(p.school)}</span><h4>${esc(p.program)}</h4>
-        <div class="tp-mc-dati"><span>${icon("globe")} ${esc(p.loc)}</span><span>${esc(p.durata)}</span><span>${esc(p.retta)}</span>${p.lingua ? `<span>${esc(p.lingua)}</span>` : ""}</div>
-        <div class="tp-aree">${(p.aree || []).map((a) => `<em class="${d.area === a ? "on" : ""}">${esc(a)}</em>`).join("")}</div>
-        ${ap ? `<div class="tp-det"><span class="sq-label">Test e profilo</span><p class="small">${esc(p.test || "—")}</p>${p.url ? `<a class="small" href="${esc(p.url)}" target="_blank" rel="noopener">Sito del programma →</a>` : ""}</div>` : ""}
-        <div class="tp-mag-az"><button type="button" class="link small" data-apri="${esc(p.id)}">${ap ? "Chiudi" : "Dettagli"}</button>${cmpBtn(d, p.id)}</div></article>`; }).join("") || '<div class="card empty">Nessun programma con questi filtri.</div>';
-    el.querySelector("[data-piu]").hidden = L.length <= d.quante;
-    el.querySelector("[data-tray]").innerHTML = trayHtml(d, (id) => { const p = P.find((x) => x.id === id); return p ? p.school.split(" — ")[0].slice(0, 22) : id; });
+    const box = el.querySelector("[data-mg]"), P = PR();
+    if (!d.fatto) { // il questionario: una domanda alla volta
+      const [k, tit, sotto, opts] = DOM[d.passo];
+      box.innerHTML = `<section class="card mg-quiz"><div class="mg-qtop"><span class="sq-label">Domanda ${d.passo + 1} di ${DOM.length}</span><div class="mg-dots">${DOM.map((_, i) => `<i class="${i < d.passo ? "ok" : i === d.passo ? "on" : ""}"></i>`).join("")}</div></div>
+        <h2>${tit}</h2>${sotto ? `<p class="muted">${sotto}</p>` : ""}
+        <div class="mg-opts ${opts.length > 4 ? "molte" : ""}">${opts.map(([v, t, s2]) => `<button type="button" class="mg-opt ${d.ris[k] === v ? "on" : ""}" data-mg-r="${k}" data-v="${v}"><span class="mg-ic">${ICO_DOM[v] || "•"}</span><b>${t}</b>${s2 ? `<small>${s2}</small>` : ""}</button>`).join("")}</div>
+        <div class="row mg-nav">${d.passo ? `<button type="button" class="btn btn-ghost btn-sm" data-mg-indietro>← Indietro</button>` : "<span></span>"}<button type="button" class="link small" data-mg-salta>Salta e mostrami tutto</button></div></section>
+        <section class="mg-parole"><h3>Le parole da sapere</h3><div class="tp-come-g">${[["Magistrale", "I due anni dopo la triennale, in un'università italiana (laurea magistrale)."], ["MSc / Master", "Lo stesso livello all'estero: «Master of Science». Spesso dura 1 anno ed è in inglese."], ["Target", "Scuole dove le grandi aziende vanno a cercare laureati: aprono porte, ma sono selettive e costose."], ["GMAT", "Un test di logica e matematica che molte business school chiedono per entrare."]].map(([t, x]) => `<div class="card"><b>${t}</b><p class="small">${x}</p></div>`).join("")}</div></section>`;
+      return;
+    }
+    const R = d.ris, cl = P.map((p) => Object.assign({ p }, punteggio(p, R))).sort((a, b) => b.s - a.s), top = cl.slice(0, 6);
+    const riass = DOM.map(([k, , , o]) => (o.find((x) => x[0] === R[k]) || [, "—"])[1]).join(" · ");
+    const q = (d.q || "").toLowerCase().trim(), L = P.filter((p) => (!q || `${p.school} ${p.program} ${p.loc}`.toLowerCase().includes(q)) && (!d.area || (p.aree || []).includes(d.area)) && (!d.reg || regione(p) === d.reg));
+    box.innerHTML = `<section class="mg-res-h"><div><span class="sq-label">Consigliati per te</span><h2>Le magistrali che <span class="accent">fanno per te</span></h2><p class="small muted">${esc(riass)}</p></div><button type="button" class="btn btn-ghost btn-sm" data-mg-rifai>Rifai le domande</button></section>
+      <div class="mg-grid">${top.map((x) => cardMag(x.p, d, x.why)).join("")}</div>
+      ${d.fav.length ? `<p class="small" style="margin-top:12px">★ Hai salvato ${d.fav.length} ${d.fav.length === 1 ? "programma" : "programmi"}: li trovi in «Esplora tutti» con il filtro salvati.</p>` : ""}
+      <section class="mg-esplora"><button type="button" class="btn btn-primary" data-mg-esplora>${d.esplora ? "Nascondi l'elenco completo" : `Esplora tutti i ${P.length} programmi`}</button>
+        ${d.esplora ? `<div class="card mg-filtri"><input class="input" type="search" data-k="q" value="${esc(d.q)}" placeholder="Cerca università, corso o città">
+          <select class="select" data-k="area"><option value="">Tutte le aree</option>${Object.values(AREA_COD).map((a) => `<option ${d.area === a ? "selected" : ""}>${esc(a)}</option>`).join("")}</select>
+          <select class="select" data-k="reg"><option value="">Ovunque</option>${REG.map(([r]) => `<option ${d.reg === r ? "selected" : ""}>${esc(r)}</option>`).join("")}</select></div>
+          <p class="small muted">${L.length} programmi</p><div class="mg-lista">${L.slice(0, d.quante).map((p) => `<div class="mg-riga">${logo(p)}<div><b>${esc(p.program)}</b><span class="small muted">${esc(p.school)} · ${esc(p.loc)}</span></div><span class="tp-tier ${TIER[p.tier][1]}">${TIER[p.tier][0]}</span><span class="small">${COSTO_T[fasciaCosto(p)]}</span>${cmpBtn(d, p.id)}</div>`).join("")}</div>
+          ${L.length > d.quante ? `<button type="button" class="btn btn-ghost" data-piu style="margin-top:10px">Mostra altri</button>` : ""}` : ""}</section>
+      <p class="tiny muted" style="margin-top:14px">I consigli sono un orientamento: rette, durate e requisiti cambiano ogni anno, verifica sempre sul sito del corso. Le magistrali UniFi sono quelle della Scuola di Economia (offerta 2026/27); le altre vengono dal tool «Master / Magistrale» di UniLink. I loghi servono solo a riconoscere le università.</p>`;
+    el.querySelector("[data-tray]").innerHTML = trayHtml(d, (id) => { const p = P.find((x) => x.id === id); return p ? p.program.slice(0, 26) : id; });
   }
   const confrontaMag = (d) => { const cols = d.cmp.map((id) => PR().find((p) => p.id === id)).filter(Boolean).map((p) => Object.assign({ sopra: p.school, nome: p.program }, p));
-    apriConfronto("Confronta i programmi", cols, [["Dove", (p) => esc(p.loc)], ["Classificazione", (p) => `<span class="tp-tier ${TIER[p.tier][1]}">${TIER[p.tier][0]}</span>${p.cems ? " · CEMS" : ""}`], ["Durata", (p) => esc(p.durata), migliore(-1)], ["Retta", (p) => esc(p.retta)], ["Lingua", (p) => esc(p.lingua || "—")],
+    apriConfronto("Confronta i programmi", cols, [["Dove", (p) => esc(p.loc)], ["Classificazione", (p) => `<span class="tp-tier ${TIER[p.tier][1]}">${TIER[p.tier][0]}</span>${p.cems ? " · CEMS" : ""}`], ["Durata", (p) => esc(p.durata), migliore(-1)], ["Costo", (p) => esc(COSTO_T[fasciaCosto(p)]) + "<br><small>" + esc(p.retta) + "</small>"], ["Lingua", (p) => esc(p.lingua || "—")],
       ["Aree professionali", (p) => (p.aree || []).map(esc).join("<br>")], ["Test e profilo", (p) => esc(p.test || "—")], ["Link", (p) => p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">Sito del programma</a>` : "—"]]); };
   const confrontaEra = (d) => { const r = puntiErasmus(d); const cols = d.cmp.map((c) => ME().mete.find((m) => m.code === c)).filter(Boolean).map((m) => Object.assign({ sopra: m.country.trim(), nome: m.name }, m));
     apriConfronto("Confronta le mete", cols, [["Codice", (m) => esc(m.code)], ["Posti", (m) => m.places, migliore(1)], ["Durata", (m) => m.durationMonths + " mesi"], ["Lingua richiesta", (m) => esc((m.languageRequirement || "nessuna").replace(/^nessuno$/i, "nessuna")) + (reqOk(m, d) === false ? " ⚠" : "")], ["Da quale anno", (m) => ["", "I", "II", "III"][m.minYear || 1] + " anno"],
@@ -294,7 +349,7 @@
     const d = dati(u, id, DEF[id](u));
     const T = (u.activity.tool = u.activity.tool || {}); T[id] = (T[id] || 0) + 1; B.track("tool-" + id);
     const mob = root.querySelector("[data-tp-mob]");
-    const aggiorna = () => { RIS[id](el, d); const big = el.querySelector(".tp-big"); mob.innerHTML = big ? `<span>${esc(el.querySelector("[data-ris] .sq-label").textContent)}</span>${big.outerHTML}` : ""; salvaPoi(); };
+    const aggiorna = () => { const fo = document.activeElement, fk = fo && el.contains(fo) && fo.dataset && fo.dataset.k, fc = fk && fo.selectionStart; RIS[id](el, d); if (fk) { const n = el.querySelector(`[data-k="${fk}"]`); if (n && n !== fo) { n.focus(); try { n.setSelectionRange(fc, fc); } catch (e) {} } } const big = el.querySelector(".tp-big"); mob.innerHTML = big ? `<span>${esc(el.querySelector("[data-ris] .sq-label").textContent)}</span>${big.outerHTML}` : ""; salvaPoi(); };
     const num = (k, v) => { const x = parseFloat(String(v).replace(",", ".")); return isNaN(x) ? d[k] : x; };
     el.addEventListener("input", (e) => {
       const k = e.target.dataset.k; if (!k) return;
@@ -328,6 +383,11 @@
       if (b.hasAttribute("data-piu")) { d.quante += id === "magistrali" ? 18 : 24; aggiorna(); }
       if (b.dataset.cmp) { const i = d.cmp.indexOf(b.dataset.cmp); if (i >= 0) d.cmp.splice(i, 1); else if (d.cmp.length >= MAXC) { UL.ui.toast(`Puoi confrontarne fino a ${MAXC}: togline uno`); return; } else d.cmp.push(b.dataset.cmp); aggiorna(); }
       if (b.hasAttribute("data-cmp-apri")) { (id === "magistrali" ? confrontaMag : confrontaEra)(d); }
+      if (b.dataset.mgR) { d.ris[b.dataset.mgR] = b.dataset.v; if (d.passo < DOM.length - 1) d.passo++; else d.fatto = true; aggiorna(); el.scrollIntoView({ block: "start" }); window.scrollBy(0, -90); return; }
+      if (b.hasAttribute("data-mg-indietro")) { d.passo = Math.max(0, d.passo - 1); aggiorna(); return; }
+      if (b.hasAttribute("data-mg-salta")) { d.fatto = true; d.esplora = true; aggiorna(); return; }
+      if (b.hasAttribute("data-mg-rifai")) { d.fatto = false; d.passo = 0; aggiorna(); return; }
+      if (b.hasAttribute("data-mg-esplora")) { d.esplora = !d.esplora; aggiorna(); return; }
       if (b.dataset.apri) { d.aperto = d.aperto === b.dataset.apri ? "" : b.dataset.apri; aggiorna(); }
       if (b.hasAttribute("data-azzera")) { Object.assign(d, { q: "", reg: "", area: "", tier: "", dur: "", cems: false, soloFav: false, quante: 18 }); el.querySelector('[data-k="q"]').value = ""; el.querySelectorAll(".tp-mag-f input[type=checkbox]").forEach((x) => (x.checked = false)); aggiorna(); }
     });
