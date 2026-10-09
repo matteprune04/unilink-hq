@@ -169,6 +169,12 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .group-h { display: flex; align-items: baseline; gap: 8px; margin: 6px 0 8px; }
 .group-h h3 { font-size: 16px; }
 
+/* report settimanali */
+.rep { display: grid; grid-template-columns: minmax(200px, 260px) 1fr; gap: 18px; }
+.rep-pdf { display: flex; flex-direction: column; gap: 4px; background: var(--cream, #f4f1ea); border-radius: 12px; padding: 14px; }
+.rep-txt ul { margin: 6px 0 0; padding-left: 18px; } .rep-txt li { margin-bottom: 5px; }
+.rep-ult { border-color: var(--orange, #cf7527); }
+@media (max-width: 760px) { .rep { grid-template-columns: 1fr; } }
 /* metriche */
 .mcard { display: flex; flex-direction: column; gap: 8px; }
 .mcard .val { font-family: var(--fd); font-size: 30px; color: var(--navy); line-height: 1; }
@@ -525,7 +531,7 @@ const SCHEMA = {
     { k: "notes", l: "A cosa serve e note", t: "textarea", rows: 3, wide: 1 } ] },
 };
 Object.values(SCHEMA).forEach(sc => sc.fields.push({ k: "files", l: "Allegati", t: "files", wide: 1 }));
-const COLS = ["ideas", "feedback", "okrs", "tasks", "metrics", "mvalues", "partners", "finance", "meetings", "decisions", "links", "team", "accounts", "google", "sfiles", "docs", "notes", "lab", "labver", "aibriefs", "ctx", "mat", "exams", "matver"];
+const COLS = ["ideas", "feedback", "okrs", "tasks", "metrics", "mvalues", "partners", "finance", "meetings", "decisions", "links", "team", "accounts", "google", "sfiles", "docs", "notes", "lab", "labver", "aibriefs", "ctx", "mat", "exams", "matver", "reports"];
 
 const NAV = [
   { items: [["home", "Cruscotto"], ["calendar", "Calendario"]] },
@@ -773,6 +779,26 @@ V.tasks = () => {
   </div>`;
 };
 
+/* report settimanali (scritti ogni lunedì dal task «unilink-report-settimanale»: PDF in hq-files/report/, riassunto in docs col «reports») */
+const reportsBox = () => {
+  const rs = (S.data.reports || []).slice().sort((a, b) => String(b.week).localeCompare(String(a.week)));
+  if (!rs.length) return `<section class="card panel"><div class="panel-h"><h2>Report settimanali</h2></div><p class="small muted">Il primo arriva lunedì: ogni settimana, in automatico, un PDF con visite, ricerche su Google e iscrizioni, e accanto il riassunto in 30 secondi.</p></section>`;
+  const one = (r, i) => `<article class="card rep ${i === 0 ? "rep-ult" : ""}">
+    <div class="rep-pdf">
+      <span class="eyebrow">${i === 0 ? "Ultimo report" : "Settimana"}</span>
+      <h3 style="margin:2px 0 6px">${fmtD(r.from)} – ${fmtD(r.to, 1)}</h3>
+      ${(r.kpi || []).map(k => `<div class="row between small"><span class="muted">${esc(k.l)}</span><b class="num">${esc(k.v)}${k.d ? ` <span class="delta ${String(k.d).startsWith("-") ? "down" : "up"}">${esc(k.d)}</span>` : ""}</b></div>`).join("")}
+      ${r.pdf ? `<button type="button" class="btn acc sm" style="margin-top:10px;justify-content:center" data-openfile="${esc(r.pdf.path)}">Apri il PDF</button>` : ""}
+    </div>
+    <div class="rep-txt">
+      <h3>In 30 secondi</h3><ul>${(r.summary || []).map(t => `<li>${esc(t)}</li>`).join("")}</ul>
+      ${(r.todo || []).length ? `<h3 style="margin-top:10px">Cosa fare questa settimana</h3><ul>${r.todo.map(t => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
+    </div></article>`;
+  const showAll = S.f.repAll;
+  return `<section class="stack"><div class="row between"><h2>Report settimanali</h2>${rs.length > 3 ? `<button class="btn ghost sm" data-f="repAll" data-v="${showAll ? "" : "1"}">${showAll ? "Mostra solo gli ultimi" : `Tutti i report (${rs.length})`}</button>` : ""}</div>
+    ${(showAll ? rs : rs.slice(0, 3)).map(one).join("")}</section>`;
+};
+
 V.metrics = () => {
   const ms = S.data.metrics;
   const card = m => { const st = mStat(m); return `<article class="card click mcard ${m.north ? "north" : ""}" data-metric="${m.id}">
@@ -783,6 +809,7 @@ V.metrics = () => {
     <span class="small muted">${st.last ? "Aggiornata " + rel(st.last.date) : esc(m.freq || "")}</span></article>`; };
   return `<div class="wrap">
   ${head("Crescita", "Metriche", "I numeri che dicono se UniLink sta crescendo davvero. La North Star è uno solo: gli studenti che ogni settimana usano qualcosa di nostro. Gli altri numeri spiegano perché sale o scende.", `<button class="btn acc" data-weekly ${!S.canWrite || !ms.length ? "disabled" : ""}>Inserisci i valori</button>${addBtn("metrics", "Nuova metrica", "")}`)}
+  ${reportsBox()}
   ${ms.length ? MGROUPS.concat([""]).map(g => { const items = ms.filter(m => (m.group || "") === g).sort((a, b) => (b.north ? 1 : 0) - (a.north ? 1 : 0) || String(a.name).localeCompare(String(b.name))); return items.length ? `<section class="stack"><h2>${g || "Altre"}</h2><div class="grid">${items.map(card).join("")}</div></section>` : ""; }).join("") : emptyBox("Nessuna metrica", "Crea le metriche da seguire, poi ogni settimana inserisci i valori con un solo modulo.", "metrics", "Crea una metrica")}
   <p class="small muted">Consiglio: aggiornate i numeri sempre lo stesso giorno (ad esempio la domenica sera), così i confronti tra settimane sono affidabili.</p>
   </div>`;
