@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice"><rect width="1200" height="800" fill="#f4f1ea"/><circle cx="1000" cy="150" r="110" fill="#f6e4d1"/><rect x="180" y="620" width="190" height="180" rx="16" fill="#dfe4f1"/><rect x="350" y="530" width="190" height="270" rx="16" fill="#ebe4d5"/><rect x="520" y="440" width="190" height="360" rx="16" fill="#dfe4f1"/><rect x="690" y="350" width="190" height="450" rx="16" fill="#ebe4d5"/><rect x="860" y="260" width="190" height="540" rx="16" fill="#dfe4f1"/>
+<rect x="1010" y="150" width="10" height="140" fill="#172554"/><path d="M1020 152 h110 l-28 34 l28 34 h-110 z" fill="#cf7527"/>
+<circle cx="300" cy="560" r="26" fill="#cf7527"/><rect x="276" y="590" width="48" height="80" rx="22" fill="#172554"/>
+<rect x="560" y="480" width="110" height="80" rx="14" fill="#172554"/><rect x="590" y="462" width="50" height="26" rx="8" fill="none" stroke="#172554" stroke-width="10"/>
+<path d="M240 470 q200 -160 420 -120 t380 -160" fill="none" stroke="#cf7527" stroke-width="8" stroke-dasharray="4 22" stroke-linecap="round"/></svg>
