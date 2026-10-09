@@ -9,7 +9,7 @@
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const CFG = window.UL_CFG;
   const pagina = document.body.dataset.page || "home";
-  const WA = CFG.wa, APP = CFG.app;
+  const WA = CFG.wa, APP = CFG.app, ACCEDI = CFG.appVera || CFG.app;
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const UND = '<svg class="u" viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M3 13 C 55 4, 130 3, 197 9" stroke="#cf7527" stroke-width="5" fill="none" stroke-linecap="round"/></svg>';
   const SPK = '<svg class="s" viewBox="0 0 20 20"><path d="M3 17 L7 8 M10 18 L16 11 M12 5 L15 1" stroke="#cf7527" stroke-width="2.4" stroke-linecap="round"/></svg>';
@@ -48,7 +48,7 @@
         <a class="${att(pagina === "ambassador")}" href="ambassador.html">${esc(NAV.ambassador || "Ambassador")}</a>
       </div>
       <span class="tendina fondatori"><a class="tend decpill ${att(["decidere", "area", "commenti", "archivio"].includes(pagina))}" href="#" title="Strumenti del team: solo in demo">${esc(NAV.founder || "Founder")} <span>${nDec}</span></a><div class="pan">${fondItems}</div></span>
-      <a class="btn btn-p navcta" href="${APP}">${esc(NAV.accedi || "Accedi")}</a>
+      <a class="btn btn-p navcta" href="${ACCEDI}">${esc(NAV.accedi || "Accedi")}</a>
       <button class="burger" aria-label="Apri il menu">≡</button>
     </div></header>
     <div class="mmenu"><button class="x" aria-label="Chiudi">✕</button>
@@ -56,7 +56,7 @@
       ${CFG.hub.map((h) => `<a href="${h.href}">${h.nome} ${badge(h)}</a>`).join("")}
       <div class="mg">UniLink</div>
       <a href="guida.html">${esc(NAV.guida || "Guida")}</a><a href="materiali.html">${esc(NAV.materiali || "Materiali")}</a><a href="tools.html">${esc(NAV.strumenti || "Strumenti")}</a><a href="ambassador.html">${esc(NAV.ambassador || "Ambassador")}</a>
-      <a class="btn btn-p" href="${APP}">${esc(NAV.accedi || "Accedi")}</a>
+      <a class="btn btn-p" href="${ACCEDI}">${esc(NAV.accedi || "Accedi")}</a>
       <div class="mg">${esc(NAV.founder || "Founder")} · solo demo</div>
       <a class="mdec" href="decidere.html">Da decidere · ${nDec}</a><a href="archivio/index.html">Archivio · ${nArc}</a><a href="area.html">Area personale · schermate</a>${COMM ? '<a href="commenti.html">Commenti del team</a>' : ""}
       <a class="btn btn-a" href="${WA}" target="_blank" rel="noopener">Entra nel gruppo WhatsApp</a></div>`;
@@ -65,7 +65,7 @@
       <div><a class="logo w" href="index.html"><img src="img/logo-white.png" alt="">unilink</a><p style="opacity:.75;font-size:15px;margin-top:14px;max-width:300px">Da studenti, per studenti. Da Firenze, un passo alla volta.</p></div>
       <div><h2 class="fh">Hub</h2>${CFG.hub.map((h) => `<a href="${h.href}">${h.nome}${h.stato === "attivo" ? "" : " · in arrivo"}</a>`).join("")}</div>
       <div><h2 class="fh">In ogni hub</h2>${CFG.fasi.map((f) => `<a href="${f.href}">${f.tab}</a>`).join("")}<a href="guida.html">${esc(NAV.guida || "Guida")}</a><a href="materiali.html">${esc(NAV.materiali || "Materiali")}</a><a href="tools.html">Strumenti</a></div>
-      <div><h2 class="fh">UniLink</h2><a href="${WA}" target="_blank" rel="noopener">Gruppo WhatsApp</a><a href="ambassador.html">Diventa ambassador</a><a href="index.html#faq">FAQ</a><a href="${APP}">Accedi all’area personale</a><a href="decidere.html">Da decidere (founder)</a></div>
+      <div><h2 class="fh">UniLink</h2><a href="${WA}" target="_blank" rel="noopener">Gruppo WhatsApp</a><a href="ambassador.html">Diventa ambassador</a><a href="index.html#faq">FAQ</a><a href="${ACCEDI}">Accedi all’area personale</a><a href="decidere.html">Da decidere (founder)</a></div>
       <div class="fnl"><h2 class="fh">Avvisami quando apre</h2><p style="font-size:14.5px;opacity:.75">Giurisprudenza o Medicina: una sola email, quando l'hub apre.</p><form class="nl" id="nl"><input type="email" placeholder="La tua email" aria-label="La tua email" style="background:transparent;border:0;outline:0;color:#f4f1ea;font:inherit;flex:1;min-width:0"><button class="nlb" style="width:34px;height:34px;border-radius:50%;background:#cf7527;border:0;color:#fff;cursor:pointer">→</button></form></div>
     </div><div class="fbase"><span>© 2026 UniLink Firenze · Progetto indipendente, non affiliato all'Università di Firenze · Venditore: dati da definire (soggetto legale) · <a href="#" data-legale>Privacy</a> · <a href="#" data-legale>Cookie</a> · <a href="#" data-legale>Termini</a> · <a href="#" data-legale>Gestisci cookie</a></span><span>Demo v${CFG.versione.n} · ${new Date(CFG.versione.data).toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" })}</span></div></div></footer>
     <div class="toast" id="toast"></div>`;

@@ -18,6 +18,7 @@ window.UL_CFG = {
   // In produzione (Framer): attivi: false.
   commenti: { attivi: true, chiave: "ul-commenti-v1" },
   app: "../demo-webapp/",   // la demo della web app (stesso repository, cartella accanto)
+  appVera: "../demo-app/accedi", // «Accedi»: la web app vera importata nella demo (con l'audit UX); i link profondi restano sulla demo di prima
 
   // Numeri REALI (Google Analytics 4 e catalogo): aggiornare a mano o con il sync giornaliero dell'HQ
   numeri: { utenti: "876", pagine: "7.855", esami: "34", fonte: "Google Analytics 4 e catalogo · 8 set – 5 ott 2026" },

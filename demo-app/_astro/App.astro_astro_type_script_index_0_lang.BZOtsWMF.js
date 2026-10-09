@@ -1,0 +1,1 @@
+import{t as e}from"./cornice.ax7TTJsf.js";e();
