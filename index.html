@@ -337,6 +337,7 @@ iframe.demo { width: 100%; height: 520px; border: 0; background: #fff; display: 
 .stc { text-align: center; white-space: nowrap; } .st { width: 30px; height: 30px; border-radius: 9px; border: 1.5px dashed var(--line); background: transparent; color: var(--muted); cursor: pointer; font-size: 15px; font-weight: 700; line-height: 1; } .st:hover { border-color: var(--navy); }
 .st.da { border: 1.5px solid #cf7527; background: var(--orange-soft); color: var(--orange-dark); } .st.da::before { content: ""; display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #cf7527; background: linear-gradient(90deg, #cf7527 50%, transparent 50%); vertical-align: middle; } .lgd { display: inline-flex; align-items: center; gap: 5px; margin-right: 10px; } .lgd i { width: 18px; height: 18px; border-radius: 6px; display: inline-grid; place-items: center; font-style: normal; font-size: 12px; font-weight: 700; border: 1.5px dashed rgba(255,255,255,.5); } .lgd i.da { border: 1.5px solid #cf7527; background: rgba(207,117,39,.25); } .lgd i.ok { border: 1.5px solid #6fcf9a; background: rgba(111,207,154,.25); color: #6fcf9a; } .st.ok { border: 1.5px solid #1a6b3c; background: var(--green-soft); color: #1a6b3c; }
 .pchips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; } .pchip { font-size: 11.5px; background: var(--beige); color: var(--ink); border-radius: var(--pill); padding: 1px 8px; white-space: nowrap; } .pchip b { color: var(--navy); }
+.fup, .fdl { display: inline-flex; align-items: center; justify-content: center; gap: 2px; min-width: 24px; height: 24px; margin-left: 4px; border-radius: 7px; border: 1px solid var(--line); background: var(--white); color: var(--navy); font-size: 12px; font-weight: 700; cursor: pointer; padding: 0 4px; vertical-align: middle; } .fup:hover, .fdl:hover { border-color: var(--orange); color: var(--orange-dark); } .fdl { background: var(--orange-soft); border-color: #cf7527; color: var(--orange-dark); } .fdl b { font-size: 11px; } .exf { padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; } .exfn { display: block; overflow-wrap: anywhere; }
 .stl { font-size: 12px; color: var(--orange-dark); text-decoration: none; margin-left: 4px; font-weight: 600; } .stl:hover { text-decoration: underline; } .dbb { font-size: 10px; font-weight: 700; background: var(--navy-soft); color: var(--navy); border-radius: 5px; padding: 1px 4px; margin-left: 4px; }
 .comment { background: var(--white); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 10px 12px; font-size: 14px; }
 .big-img { width: 100%; border-radius: var(--r-sm); }
@@ -1118,6 +1119,7 @@ async function del(col, id, btn) {
       await S.db.collection(col).doc(id).delete();
       for (const im of (d && d.images) || []) await S.db.doc("images/" + im).delete().catch(() => {});
       if (hasFiles() && d && d.files && d.files.length) await HQ_FILES.remove(d.files.map(f => f.path)).catch(() => {});
+      if (hasFiles() && d && d.exfiles) { const ps = Object.values(d.exfiles).flat().map(f => f.path).filter(Boolean); if (ps.length) await HQ_FILES.remove(ps).catch(() => {}); }
       if (col === "lab") { for (const v of labVers(id)) { await S.db.doc("images/" + v.htmlId).delete().catch(() => {}); await S.db.collection("labver").doc(v.id).delete().catch(() => {}); } if (S.labOpen === id) S.labOpen = null; }
       if (col === "metrics") for (const v of series(id)) await S.db.collection("mvalues").doc(v.id).delete().catch(() => {});
     });
@@ -2106,8 +2108,10 @@ SCHEMA.exams = { one: "esame", fields: [
   { k: "note", l: "Note", t: "textarea", rows: 2, wide: 1 }, { k: "confermato", l: "Confermato sul piano ufficiale", t: "check" }] };
 const exSlug = e => e.slug || slugify(e.name);
 const exDb = e => MAT_DB.exams.find(x => x.slug === exSlug(e));
+const exFiles = (e, k) => (e.exfiles && e.exfiles[k]) || [];
 function exSt(e, k) {
   const s = e.st || {}; if (s[k]) return s[k];
+  if (exFiles(e, k).length) return "da";
   if (k === "esercizi") return s.quiz || (exDb(e) || e.l_quiz || e.l_esercizi ? "da" : "manca");
   if (k === "raw") return e.l_raw ? "da" : "manca";
   if (k === "sim") return e.l_sim ? "da" : "manca";
@@ -2177,11 +2181,12 @@ function csvToExams(text, defCorso) {
 async function importExams(list, repl, all) {
   let nuovi = 0, agg = 0, rim = 0, uniti = 0; const have = new Map(exAll().map(e => [e.slug, e])), byCod = new Map(), kc = e => String(e.codice || "").trim().toLowerCase();
   exAll().forEach(e => { if (kc(e)) byCod.set(kc(e), [...(byCod.get(kc(e)) || []), e]); });
+  const keepF = new Map(); exAll().forEach(e => { if (e.exfiles) keepF.set(kc(e) || e.slug, e.exfiles); }); /* i file già caricati restano agganciati allo stesso esame */
   if (all) { /* sostituzione totale: via tutti gli esami presenti, poi si carica solo il file */
     await guard(async () => { for (const e of (S.data.exams || []).slice()) { await S.db.collection("exams").doc(e.id).delete(); rim++; } await saveCtx({ seedExams: SEED_VER }); }); have.clear(); byCod.clear(); repl = false; }
   if (repl) { /* toglie solo le bozze che nel piano importato non ci sono: quelle che combaciano si aggiornano e tengono le spunte */
     const corsi = new Set(list.flatMap(x => x.corso.split("/"))), keep = new Set(list.flatMap(x => [x.slug, kc(x)]).filter(Boolean));
-    await guard(async () => { for (const e of exAll()) if (e.bozza && !e.confermato && corsiDi(e).some(c => corsi.has(c)) && !keep.has(e.slug) && !keep.has(kc(e))) { await S.db.collection("exams").doc(e.id).delete(); have.delete(e.slug); rim++; } }); }
+    await guard(async () => { for (const e of exAll()) if (e.bozza && !e.confermato && corsiDi(e).some(c => corsi.has(c)) && !keep.has(e.slug) && !keep.has(kc(e)) && !e.exfiles) { await S.db.collection("exams").doc(e.id).delete(); have.delete(e.slug); rim++; } }); }
   await guard(async () => { for (const x of list) {
     /* identità = CODICE UniFi (se c'è): un esame in comune a più corsi è un solo esame. Senza codice: corso + nome */
     const cod = kc(x), dup = cod ? (byCod.get(cod) || []) : [];
@@ -2191,11 +2196,12 @@ async function importExams(list, repl, all) {
     const clean = Object.fromEntries(Object.entries(x).filter(([k, v]) => v !== "" && v !== undefined && k !== "st"));
     /* l'importazione non toglie mai una spunta: tiene il valore più alto tra quello presente e quello del file */
     const st = { ...(old && old.st || {}) }, mergeSt = o => Object.entries(o || {}).forEach(([k, v]) => { if (!st[k] || ST_RANK[v] > ST_RANK[st[k]]) st[k] = v; });
-    mergeSt(x.st); const corsiAll = [...(old ? corsiDi(old) : []), ...x.corso.split("/")];
+    mergeSt(x.st); let exf = old ? old.exfiles : keepF.get(cod || x.slug); const mergeExf = (a, b) => { const o = { ...(a || {}) }; Object.entries(b || {}).forEach(([k, l]) => { o[k] = [...(o[k] || []), ...l.filter(f => !(o[k] || []).some(g => g.path === f.path))]; }); return o; };
+    const corsiAll = [...(old ? corsiDi(old) : []), ...x.corso.split("/")];
     /* doppioni già presenti con lo stesso codice (es. EA ed EC separati): si fondono nel primo, tenendo le spunte */
-    for (const d of dup.slice(1)) { mergeSt(d.st); corsiAll.push(...corsiDi(d)); await S.db.collection("exams").doc(d.id).delete(); have.delete(d.slug); uniti++; }
+    for (const d of dup.slice(1)) { mergeSt(d.st); if (d.exfiles) exf = mergeExf(exf, d.exfiles); corsiAll.push(...corsiDi(d)); await S.db.collection("exams").doc(d.id).delete(); have.delete(d.slug); uniti++; }
     const merged = old ? { ...old, ...clean, slug: old.slug, corso: joinCorsi(corsiAll), st, updatedBy: S.uid || "", updatedAt: new Date().toISOString() } : { ...clean, st, by: S.uid || "", createdAt: new Date().toISOString() };
-    delete merged.cdlCodice; if (!Object.keys(st).length) delete merged.st; delete merged.id; await S.db.collection("exams").doc(id).set(merged); old ? agg++ : nuovi++;
+    delete merged.cdlCodice; if (exf) merged.exfiles = exf; if (!Object.keys(st).length) delete merged.st; delete merged.id; await S.db.collection("exams").doc(id).set(merged); old ? agg++ : nuovi++;
     const rec = { ...merged, id }; have.set(rec.slug, rec); if (cod) byCod.set(cod, [rec]); } });
   return { nuovi, agg, rim, uniti };
 }
@@ -2211,7 +2217,37 @@ function csvExport() {
 }
 
 /* ---------- vista ---------- */
-const stBtn = (e, k, l) => { const ref = k === "esercizi" ? e.l_quiz : k === "sim" ? e.l_sim : e["l_" + k], link = /^https?:\/\//i.test(ref || "") ? ref : null, s = exSt(e, k); return `<td class="stc"><button class="st ${s}" data-exst="${esc(e.id)}|${k}" title="${l}: ${ST_LAB[s]}${k === "esercizi" && exDb(e) ? " · nel database" : ""}${ref && !link ? " · file: " + esc(ref) : ""} (clic per cambiare)">${ST_SYM[s]}</button>${link ? `<a class="stl" href="${esc(safeUrl(link))}" target="_blank" rel="noopener" title="Apri il file">↗</a>` : ""}${k === "esercizi" && exDb(e) ? '<span class="dbb" title="Presente nel database del sito">DB</span>' : ""}</td>`; };
+const stFiles = (e, k, l) => { const n = exFiles(e, k).length;
+  return `${S.canWrite && hasFiles() ? `<label class="fup" title="Carica un file per «${l}»" aria-label="Carica file ${l}">⬆<input type="file" multiple hidden data-exup="${esc(e.id)}|${k}"></label>` : ""}${n ? `<button class="fdl" data-exfiles="${esc(e.id)}|${k}" title="${n} file caricat${n > 1 ? "i" : "o"}: clic per scaricare" aria-label="Scarica i file ${l}">⬇${n > 1 ? `<b>${n}</b>` : ""}</button>` : ""}`; };
+const stBtn = (e, k, l) => { const ref = k === "esercizi" ? e.l_quiz : k === "sim" ? e.l_sim : e["l_" + k], link = /^https?:\/\//i.test(ref || "") ? ref : null, s = exSt(e, k); return `<td class="stc"><button class="st ${s}" data-exst="${esc(e.id)}|${k}" title="${l}: ${ST_LAB[s]}${k === "esercizi" && exDb(e) ? " · nel database" : ""}${ref && !link ? " · file: " + esc(ref) : ""} (clic per cambiare)">${ST_SYM[s]}</button>${link ? `<a class="stl" href="${esc(safeUrl(link))}" target="_blank" rel="noopener" title="Apri il file">↗</a>` : ""}${k === "esercizi" && exDb(e) ? '<span class="dbb" title="Presente nel database del sito">DB</span>' : ""}${stFiles(e, k, l)}</td>`; };
+const fsz = n => n > 1048576 ? (n / 1048576).toFixed(1).replace(".", ",") + " MB" : Math.max(1, Math.round(n / 1024)) + " KB";
+const EXK = { appunti: "Appunti", esercizi: "Esercizi / Quiz", sim: "Simulazioni", raw: "Zip raw" };
+async function exUpload(ex, k, fs) {
+  const big = fs.find(f => f.size > HQ_FILES.max); if (big) { toast(`“${big.name}” è troppo grande (massimo 25 MB).`, 5000); return; }
+  toast(fs.length > 1 ? `Carico ${fs.length} file…` : `Carico “${fs[0].name}”…`, 60000); const add = [];
+  try { await guard(async () => { for (const f of fs) { const m = await HQ_FILES.upload(f, "esami/" + ex.id + "/" + k); add.push({ ...m, at: new Date().toISOString(), by: S.uid || "" }); } }); } catch (er) {}
+  if (!add.length) return;
+  const cur = exAll().find(y => y.id === ex.id) || ex, patch = { exfiles: { [k]: [...exFiles(cur, k), ...add] } }; if (exSt(cur, k) === "manca") patch.st = { [k]: "da" };
+  await setDoc("exams", ex.id, patch); toast(add.length > 1 ? `${add.length} file caricati` : "File caricato"); render(); if (S.exFilesOpen === ex.id + "|" + k) openExFiles(ex.id, k);
+}
+async function exDownload(path, name) {
+  try { const { data, error } = await SB.storage.from("hq-files").createSignedUrl(path, 600, { download: name || true }); if (error || !data) throw error || new Error("no url");
+    const a = document.createElement("a"); a.href = data.signedUrl; a.rel = "noopener"; a.download = name || ""; document.body.appendChild(a); a.click(); a.remove();
+  } catch (er) { toast("Non riesco a scaricare il file. Riprova."); }
+}
+function openExFiles(id, k) {
+  const ex = exAll().find(y => y.id === id); if (!ex) return; S.exFilesOpen = id + "|" + k; const fl = exFiles(ex, k);
+  openModal(`${sheetHead(esc(ex.name), esc(EXK[k] || k))}<div class="stack" style="gap:8px">
+    ${fl.length ? fl.map((f, i) => `<div class="row between exf"><div style="min-width:0"><b class="exfn">${esc(f.name)}</b><div class="small muted">${fsz(f.size || 0)}${f.at ? " · " + esc(fmtDT(f.at)) : ""}</div></div><div class="row"><button class="btn sm pri" data-exfdl="${i}">Scarica</button>${S.canWrite ? `<button class="btn sm ghost" data-exfrm="${i}">Elimina</button>` : ""}</div></div>`).join("") : '<p class="muted">Nessun file caricato.</p>'}
+    ${S.canWrite && hasFiles() ? `<label class="addimg" style="width:auto;height:auto;padding:10px 14px;align-self:flex-start">+ Carica ${fl.length ? "un altro file" : "un file"}<input type="file" multiple hidden data-exup="${esc(id)}|${k}"></label><p class="small muted">Massimo 25 MB per file. Quando carichi un file la spunta passa a «da verificare»: sei tu a confermarla.</p>` : ""}
+    <div class="row" style="justify-content:flex-end"><button class="btn" data-close>Chiudi</button></div></div>`);
+}
+async function exRemoveFile(id, k, i) {
+  const ex = exAll().find(y => y.id === id); if (!ex) return; const fl = exFiles(ex, k), f = fl[i]; if (!f) return;
+  if (!confirm(`Eliminare “${f.name}”? Il file viene cancellato dall'archivio.`)) return;
+  try { await guard(async () => { await HQ_FILES.remove([f.path]).catch(() => {}); }); } catch (er) { return; }
+  await setDoc("exams", id, { exfiles: { [k]: fl.filter((_, j) => j !== i) } }); toast("File eliminato"); render(); openExFiles(id, k);
+}
 V.esami = () => {
   const all = exAll(), fC = S.f.exC || "", fA = S.f.exA || "", fS = S.f.exS || "", fT = S.f.exT || "", fM = !!S.f.exM;
   const inC = (e, c) => !c || corsiDi(e).includes(c) || e.corso === c;
@@ -2224,7 +2260,7 @@ V.esami = () => {
   const row = e => `<tr><td class="exn"><b>${esc(e.name)}</b>${e.codice ? ` <small class="muted">${esc(e.codice)}</small>` : ""}${e.urlUnifi ? ` <a class="stl" href="${esc(safeUrl(e.urlUnifi))}" target="_blank" rel="noopener" title="Scheda ufficiale UniFi">UniFi ↗</a>` : ""}${e.bozza && !e.confermato ? ' <span class="chip yl" title="Bozza ricavata dal piano ufficiale: da confermare">da confermare</span>' : ""}${e.area ? ` <span class="chip navy">${esc(e.area)}</span>` : ""}${e.ssd ? ` <span class="small muted" title="Settore scientifico-disciplinare">${esc(String(e.ssd).slice(0, 40))}</span>` : ""}${exParts(e).length ? `<div class="pchips">${exParts(e).map(([pp, dd, mm]) => `<span class="pchip" title="${esc([pp, dd, mm].filter(Boolean).join(" · "))}">${pp ? `<b>${esc(pp)}</b> ` : ""}${esc(String(dd || "").replace(/^Prof\.?(ssa)?\s*/i, "").split(/ · | e |, /)[0])}</span>`).join("")}</div>` : ""}${e.percorso && !/^GEN Generico$/i.test(e.percorso) ? `<div class="small muted" title="${esc(e.percorso)}" style="max-width:420px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Percorsi: ${esc(e.percorso)}</div>` : ""}${e.note ? `<div class="small muted">${esc(e.note)}</div>` : ""}</td><td class="small">${esc(String(e.semestre || "").replace(" semestre", " sem."))}</td><td class="r num">${e.cfu || ""}</td><td>${e.tipo === "Opzionale" ? '<span class="chip or">opzionale</span>' : '<span class="small muted">obbl.</span>'}</td>${EX_KINDS.map(([k, l]) => stBtn(e, k, l)).join("")}<td class="small">${esc(e.voto || "")}</td><td>${S.canWrite ? `<button class="btn ghost sm" data-edit="exams:${e.id}" aria-label="Modifica">⋯</button>` : ""}</td></tr>`;
   const sections = Object.keys(groups).sort((a, b) => corsoRank(a) - corsoRank(b)).map(c => Object.keys(groups[c]).sort(((a, b) => ANNI.indexOf(a) - ANNI.indexOf(b))).map(a => { const l = groups[c][a].sort((x, y) => String(x.semestre).localeCompare(String(y.semestre)) || x.name.localeCompare(y.name)); return `<section class="stack"><div class="gh" style="--tc:#172554"><h2>${c ? (c === "EA/EC" ? "EA / EC · in comune" : esc(c)) + " · " : ""}${esc(a)}</h2><span class="num muted">${l.length} ${l.length === 1 ? "esame" : "esami"}</span></div><div class="tbl-wrap"><table class="extbl">${thead}<tbody>${l.map(row).join("")}</tbody></table></div></section>`; }).join("")).join("");
   return `<div class="wrap">
-  <section class="hero mat"><div class="hero-t"><div class="eyebrow" style="color:var(--orange)">Materiali e archivio</div><h1>Esami e <span class="accw">dispense</span></h1><p style="max-width:640px;opacity:.9">Tutti gli esami, divisi per corso, anno e semestre. Per ognuno spunti cosa abbiamo (appunti, esercizi/quiz, simulazioni, zip raw): clicca una casella per cambiarla.</p><p class="small" style="margin-top:6px"><span class="lgd"><i>–</i>manca</span><span class="lgd"><i class="da"></i>da verificare</span><span class="lgd"><i class="ok">✓</i>verificato</span></p><div class="row" style="margin-top:12px;max-width:520px;align-items:center"><div class="grow">${progBar(T.ok, T.t)}</div><span class="hchip"><b class="num">${all.length}</b> esami · <b class="num">${T.ok}</b>/${T.t} verificati</span></div></div>
+  <section class="hero mat"><div class="hero-t"><div class="eyebrow" style="color:var(--orange)">Materiali e archivio</div><h1>Esami e <span class="accw">dispense</span></h1><p style="max-width:640px;opacity:.9">Tutti gli esami, divisi per corso, anno e semestre. Per ognuno spunti cosa abbiamo (appunti, esercizi/quiz, simulazioni, zip raw): clicca una casella per cambiarla; ⬆ carica il file accanto alla spunta, ⬇ lo scarichi.</p><p class="small" style="margin-top:6px"><span class="lgd"><i>–</i>manca</span><span class="lgd"><i class="da"></i>da verificare</span><span class="lgd"><i class="ok">✓</i>verificato</span></p><div class="row" style="margin-top:12px;max-width:520px;align-items:center"><div class="grow">${progBar(T.ok, T.t)}</div><span class="hchip"><b class="num">${all.length}</b> esami · <b class="num">${T.ok}</b>/${T.t} verificati</span></div></div>
     <div class="hero-a">${S.canWrite ? '<button class="btn acc" data-eximport>Carica CSV / elenco</button><button class="btn" data-add="exams">+ Nuovo esame</button>' : ""}<button class="btn" data-exexport>Scarica CSV</button></div></section>
   <div class="grid4">${["EA", "EC", "SUSBUS", "SECI", "Giurisprudenza", "Medicina"].map(cCard).join("")}</div>
   <div class="filters">${searchBox("esami", "Cerca un esame")}${fchips("exA", ANNI.slice(0, 5), "Tutti gli anni")}</div>
@@ -2240,15 +2276,22 @@ function openExImport() {
     <label class="fld wide"><span>Oppure incolla l'elenco</span><textarea id="exi_text" rows="6" placeholder="Diritto privato&#9;I anno&#9;I semestre&#9;9&#9;Obbligatorio"></textarea></label>
     <label class="fld wide"><span>Corso per le righe che non lo indicano</span><select id="exi_corso">${CORSO_OPT.map(c => `<option>${c}</option>`).join("")}</select></label>
     <label class="fld chk-f wide"><input type="checkbox" id="exi_repl"><span>Togli le bozze «da confermare» che non compaiono nel file, per i corsi che importo (usalo solo con il piano ufficiale completo di quel corso, non con un file di sole aggiunte)</span></label>
-    <label class="fld chk-f wide" style="background:var(--red-soft);padding:8px 10px;border-radius:8px"><input type="checkbox" id="exi_all"><span><b>Sostituisci TUTTO il catalogo</b>: cancella tutti gli esami che ci sono ora (e le loro spunte) e carica solo quelli del file. Prima viene scaricato un backup del catalogo attuale.</span></label>
+    <label class="fld chk-f wide" style="background:var(--red-soft);padding:8px 10px;border-radius:8px"><input type="checkbox" id="exi_all"><span><b>Sostituisci TUTTO il catalogo</b>: cancella tutti gli esami che ci sono ora (e le loro spunte) e carica solo quelli del file. I file già caricati restano agganciati agli esami con lo stesso codice. Prima viene scaricato un backup del catalogo attuale.</span></label>
     <div id="exi_msg" class="small" style="grid-column:1/-1"></div>
     <div class="form-foot fld wide"><div class="row"><button type="button" class="btn ghost sm" data-extpl>Scarica il modello CSV</button></div><div class="row"><button type="button" class="btn" data-close>Chiudi</button><button class="btn pri">Importa</button></div></div></form>`);
 }
+document.addEventListener("change", async e => {
+  const inp = e.target.closest && e.target.closest("input[data-exup]"); if (!inp) return;
+  const [id, k] = inp.dataset.exup.split("|"), ex = exAll().find(y => y.id === id), fs = [...inp.files]; inp.value = ""; if (ex && fs.length && S.canWrite) await exUpload(ex, k, fs);
+});
 document.addEventListener("click", async e => {
   const t = e.target, q = s => t.closest(s); let x;
   if (q("[data-eximport]")) { openExImport(); return; }
   if (q("[data-extpl]")) { downloadText("UniLink_Esami_modello.csv", "﻿" + csvTemplate(), "text/csv"); return; }
   if (q("[data-exexport]")) { downloadText("UniLink_Esami_" + localISO() + ".csv", csvExport(), "text/csv"); toast("CSV scaricato"); return; }
+  if ((x = q("[data-exfiles]"))) { const [id, k] = x.dataset.exfiles.split("|"); openExFiles(id, k); return; }
+  if ((x = q("[data-exfdl]"))) { const [id, k] = (S.exFilesOpen || "|").split("|"), ex = exAll().find(y => y.id === id), f = ex && exFiles(ex, k)[+x.dataset.exfdl]; if (f) exDownload(f.path, f.name); return; }
+  if ((x = q("[data-exfrm]"))) { const [id, k] = (S.exFilesOpen || "|").split("|"); exRemoveFile(id, k, +x.dataset.exfrm); return; }
   if ((x = q("[data-exst]"))) { if (!S.canWrite) return; const [id, k] = x.dataset.exst.split("|"), ex = exAll().find(y => y.id === id); if (!ex) return; await setDoc("exams", id, { st: { [k]: ST_NEXT[exSt(ex, k)] } }); }
 });
 document.addEventListener("submit", async e => {
