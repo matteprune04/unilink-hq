@@ -4,6 +4,21 @@
    "id": "landing",
    "versioni": [
     {
+     "n": 32,
+     "tag": "landing-v32",
+     "data": "2026-10-09T11:26+00:00",
+     "autore": "Claude",
+     "nota": "Demo: foto vere dei campus UniFi e di Firenze (con crediti), Erasmus a domande con loghi e card, stampa tolta, Strumenti e catalogo della web app con le stesse foto",
+     "commit": "ca1c093",
+     "demo_v": 14,
+     "demo_data": "2026-10-09",
+     "impronta": "d812d5ea098531dc",
+     "kb": 5663,
+     "file": "UniLink_landing_demo-v14_backup32_2026-10-09.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v32/UniLink_landing_demo-v14_backup32_2026-10-09.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v32/demo-landing"
+    },
+    {
      "n": 31,
      "tag": "landing-v31",
      "data": "2026-10-09T10:57+00:00",
@@ -478,6 +493,21 @@
   {
    "id": "webapp",
    "versioni": [
+    {
+     "n": 33,
+     "tag": "webapp-v33",
+     "data": "2026-10-09T11:26+00:00",
+     "autore": "Claude",
+     "nota": "Demo: foto vere dei campus UniFi e di Firenze (con crediti), Erasmus a domande con loghi e card, stampa tolta, Strumenti e catalogo della web app con le stesse foto",
+     "commit": "ca1c093",
+     "demo_v": 18,
+     "demo_data": "2026-10-09",
+     "impronta": "642895a207ae1dd1",
+     "kb": 487,
+     "file": "UniLink_webapp_demo-v18_backup33_2026-10-09.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/webapp-v33/UniLink_webapp_demo-v18_backup33_2026-10-09.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v33/demo-webapp"
+    },
     {
      "n": 32,
      "tag": "webapp-v32",
@@ -966,5 +996,5 @@
    "url": "https://matteprune04.github.io/unilink-hq/demo-webapp/"
   }
  ],
- "aggiornato": "2026-10-09T10:57+00:00"
+ "aggiornato": "2026-10-09T11:26+00:00"
 }
