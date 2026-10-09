@@ -2086,14 +2086,16 @@ document.addEventListener("submit", async e => {
 
 /* ====================================================== v2: esami e dispense (catalogo a tabella, CSV) ====================================================== */
 const CORSI = ["EA", "EC", "SUSBUS", "SECI", "Giurisprudenza", "Medicina"];
-const CORSO_OPT = ["EA/EC", ...CORSI, "Altro"];
+const CORSO_OPT = ["EA/EC", "EC/SECI", "SECI/Giurisprudenza", ...CORSI, "Altro"];
+const CDL_COD = { EA: "B395", EC: "B402", SUSBUS: "B314", SECI: "B328", Giurisprudenza: "B344", Medicina: "B414" };
+const joinCorsi = a => [...new Set(a)].sort((x, y) => (CORSI.indexOf(x) < 0 ? 99 : CORSI.indexOf(x)) - (CORSI.indexOf(y) < 0 ? 99 : CORSI.indexOf(y))).join("/");
 const ANNI = ["I anno", "II anno", "III anno", "IV anno", "V anno", "VI anno"];
 const SEMS = ["I semestre", "II semestre", "Annuale"];
 const EX_KINDS = [["appunti", "Appunti"], ["esercizi", "Esercizi / Quiz"], ["sim", "Simulazioni"], ["raw", "Zip raw"]];
 const ST_NEXT = { manca: "da", da: "ok", ok: "manca" }, ST_SYM = { manca: "–", da: "", ok: "✓" }, ST_LAB = { manca: "Manca", da: "Da verificare", ok: "Verificato" }, ST_RANK = { manca: 0, da: 1, ok: 2 };
 SCHEMA.exams = { one: "esame", fields: [
   { k: "name", l: "Nome dell'esame", req: 1, wide: 1, ph: "Es. Microeconomia" },
-  { k: "corso", l: "Corso di laurea", t: "select", o: CORSO_OPT, d: "EA/EC", help: "«EA/EC» = esame in comune ai due corsi." },
+  { k: "corso", l: "Corso di laurea", t: "select", o: CORSO_OPT, d: "EA/EC", help: "«EA/EC» = esame in comune ai due corsi (vale anche EC/SECI ecc.). L'identità dell'esame è il codice UniFi." },
   { k: "anno", l: "Anno", t: "select", o: ANNI, d: "I anno" }, { k: "semestre", l: "Semestre", t: "select", o: SEMS, d: "I semestre" },
   { k: "tipo", l: "Obbligatorio o opzionale", t: "select", o: ["Obbligatorio", "Opzionale"], d: "Obbligatorio" }, { k: "cfu", l: "CFU", t: "number" },
   { k: "codice", l: "Codice UniFi", ph: "Es. B018991" }, { k: "area", l: "Area", ph: "Es. Aziendale, Giuridica…" }, { k: "ssd", l: "Settore scientifico (SSD)" }, { k: "percorso", l: "Percorsi / curricula", wide: 1 }, { k: "l_sim", l: "File simulazioni (percorso o link)", wide: 1 },
@@ -2112,8 +2114,8 @@ function exSt(e, k) {
   return e["l_" + k] ? "da" : "manca";
 }
 const exParts = e => String(e.parts || "").split("\n").map(l => l.split("|").map(s => s.trim())).filter(p => p.some(Boolean));
-const corsiDi = e => e.corso === "EA/EC" ? ["EA", "EC"] : [e.corso || "Altro"];
-const corsoRank = c => { const i = ["EA/EC", ...CORSI].indexOf(c); return i < 0 ? 99 : i; };
+const corsiDi = e => String(e.corso || "Altro").split("/").filter(Boolean);
+const corsoRank = c => { if (c === "EA/EC") return 0; const p = String(c).split("/"), i = CORSI.indexOf(p[0]); return i < 0 ? 99 : 1 + i + (p.length > 1 ? .5 : 0); };
 const exAll = () => (S.data.exams || []).filter(e => e.name).map(e => ({ ...e, slug: exSlug(e) }));
 
 /* ---------- CSV ---------- */
@@ -2136,7 +2138,7 @@ const HMAP = { slug: ["abbreviazione", "slug", "id", "nomedatabase", "iddatabase
   hasSyl: ["syllabus"], voto: ["votodegliappunti", "voto", "votoappunti"], st_appunti: ["statoappunti"], st_esercizi: ["statoesercizi", "statoeserciziquiz", "statoesercizio"], st_quiz: ["statoquiz"], st_sim: ["statosimulazione", "statosimulazioni"], st_raw: ["statozipraw", "statoraw"], percorso: ["percorso", "percorsi", "curriculum"], ssd: ["ssd", "settorescientificodisciplinare"], note: ["note", "nota", "fonte"], bozza: ["statoelenco", "elenco", "bozza"] };
 const normAnno = s => { const t = String(s || "").trim().toUpperCase(); if (!t) return ""; const m = t.match(/\b(VI|IV|V|III|II|I|[1-6])\b/); if (!m) return ""; const r = { 1: "I", 2: "II", 3: "III", 4: "IV", 5: "V", 6: "VI" }[m[1]] || m[1]; return r + " anno"; };
 const normSem = s => { const t = String(s || "").trim().toUpperCase(); if (!t) return ""; if (/ANNUAL/.test(t)) return "Annuale"; if (/\bII\b|\b2\b|SECOND/.test(t)) return "II semestre"; if (/\bI\b|\b1\b|PRIM/.test(t)) return "I semestre"; return ""; };
-const normCorso = (s, def) => { const t = String(s || "").replace(/\([^)]*\)/g, "").trim(); if (!t) return def; const u = t.toUpperCase().replace(/\s+/g, ""); if (u === "EA/EC" || u === "EC/EA") return "EA/EC"; const hit = CORSI.find(c => c.toUpperCase() === u || u.startsWith(c.toUpperCase().slice(0, 5))); return hit || t; };
+const normCorso = (s, def) => { const t = String(s || "").replace(/\([^)]*\)/g, "").trim(); if (!t) return def; const u = t.toUpperCase().replace(/\s+/g, ""); if (t.includes("/")) return joinCorsi(t.split("/").map(x => normCorso(x, "")).filter(Boolean)); const hit = CORSI.find(c => c.toUpperCase() === u || u.startsWith(c.toUpperCase().slice(0, 5))); return hit || t; };
 const isStWord = s => /^(manca|da verificare|verificat[oa]|ok|✓|–|-|no)$/i.test(String(s || "").trim());
 const normSt = s => { const t = String(s || "").toLowerCase(); return /verificat|^ok$|^✓/.test(t) && !/da verific/.test(t) ? "ok" : /da verific|^da$/.test(t) ? "da" : /manca|^no$|^-$|^–$/.test(t) ? "manca" : ""; };
 const cellOf = v => { v = String(v || "").trim(); if (!v) return null; if (isStWord(v)) return { st: normSt(v) }; return { link: v, st: "da" }; /* URL o percorso di un file: c'è, da verificare */ };
@@ -2148,12 +2150,15 @@ function csvToExams(text, defCorso) {
   const get = (r, f) => { for (const i of idx[f] || []) if ((r[i] || "").trim()) return r[i].trim(); return ""; }, byKey = new Map(), out = [];
   body.forEach(r => {
     let title = get(r, "name"); if (!title) return; const m = title.match(/\s*\(([A-Z]\d{5,7})\)\s*$/); if (m) title = title.replace(m[0], "").trim();
-    const corso = normCorso(get(r, "corso"), defCorso), cdlc = (get(r, "corso").match(/\(([A-Z]\d{3,4})\)/) || [])[1] || "", cod0 = get(r, "codice") || (m ? m[1] : ""), base = get(r, "slug") || (slugify(title) + "_" + slugify(corso) + (cod0 ? "_" + cod0.toLowerCase() : "")), key = corso + "|" + base;
+    const corso = normCorso(get(r, "corso"), defCorso), cdlc = (get(r, "corso").match(/\(([A-Z]\d{3,4})\)/) || [])[1] || "", cod0 = get(r, "codice") || (m ? m[1] : ""), base = get(r, "slug") || (slugify(title) + "_" + (cod0 ? cod0.toLowerCase() : slugify(corso))), key = cod0 ? "c:" + cod0.toLowerCase() : corso + "|" + base;
+    /* identità = CODICE UniFi: lo stesso codice in più corsi di laurea è UN esame solo, collegato a tutti quei corsi */
     let e = byKey.get(key);
-    if (!e) { e = { name: title, codice: cod0, slug: base, corso, cdlCodice: cdlc, parts: [], st: {} }; byKey.set(key, e); out.push(e); }
+    if (!e) { e = { name: title, codice: cod0, slug: base, corso, parts: [], st: {}, _cs: [], _per: {} }; byKey.set(key, e); out.push(e); }
+    corso.split("/").forEach(c => e._cs.push(c)); const per = (e._per[corso] = e._per[corso] || {}), pf = (k, v) => { if (v !== "" && v != null && !per[k]) per[k] = v; };
+    pf("anno", normAnno(get(r, "anno"))); pf("semestre", normSem(get(r, "semestre"))); pf("cfu", Number(String(get(r, "cfu")).replace(",", ".")) || ""); pf("tipo", /opz|scelta/i.test(get(r, "tipo")) ? "Opzionale" : get(r, "tipo") ? "Obbligatorio" : "");
     const fill = (k, v) => { if (v !== "" && v != null && (e[k] === "" || e[k] == null)) e[k] = v; };
     fill("codice", get(r, "codice") || (m ? m[1] : "")); fill("area", get(r, "area")); fill("anno", normAnno(get(r, "anno"))); fill("semestre", normSem(get(r, "semestre")));
-    fill("tipo", /opz|scelta/i.test(get(r, "tipo")) ? "Opzionale" : get(r, "tipo") ? "Obbligatorio" : ""); fill("percorso", get(r, "percorso")); fill("ssd", get(r, "ssd")); const cf = get(r, "cfu"); fill("cfu", cf ? Number(String(cf).replace(",", ".")) || "" : "");
+    fill("tipo", /opz|scelta/i.test(get(r, "tipo")) ? "Opzionale" : get(r, "tipo") ? "Obbligatorio" : ""); if (get(r, "percorso")) e.percorso = [...new Set([...(e.percorso ? e.percorso.split(/\s*;\s*/) : []), ...get(r, "percorso").split(/\s*;\s*/)])].filter(Boolean).join("; "); fill("ssd", get(r, "ssd")); const cf = get(r, "cfu"); fill("cfu", cf ? Number(String(cf).replace(",", ".")) || "" : "");
     fill("urlUnifi", get(r, "urlUnifi")); fill("voto", get(r, "voto").replace(/\s+/g, " ").trim()); fill("note", get(r, "note"));
     ["l_appunti", "l_schemi", "l_materiali", "l_quiz", "l_raw"].forEach(k => fill(k, get(r, k)));
     if ((idx.hasSyl || []).some(i => (r[i] || "").trim())) e.hasSyl = true;
@@ -2163,26 +2168,36 @@ function csvToExams(text, defCorso) {
       const v = normSt(get(r, "st_" + k)); if (v && (!e.st[k] || ST_RANK[v] > ST_RANK[e.st[k]])) e.st[k] = v; });
     const q = normSt(get(r, "st_quiz")); if (q && !e.st.esercizi) e.st.esercizi = q;
   });
-  out.forEach(e => { e.parts = e.parts.join("\n"); if (!Object.keys(e.st).length) delete e.st; if (!e.tipo) e.tipo = "Obbligatorio"; });
+  out.forEach(e => { e.corso = joinCorsi(e._cs); const cs = e.corso.split("/");
+    if (cs.length > 1) { const dif = cs.slice(1).map(c => { const p = e._per[c] || {}, d = []; if (p.anno && e.anno && p.anno !== e.anno) d.push(p.anno); if (p.semestre && e.semestre && p.semestre !== e.semestre) d.push(p.semestre); if (p.cfu && e.cfu && p.cfu !== e.cfu) d.push(p.cfu + " CFU"); if (p.tipo && e.tipo && p.tipo !== e.tipo) d.push(p.tipo === "Opzionale" ? "a scelta" : "obbligatorio"); return d.length ? "In " + c + ": " + d.join(", ") : ""; }).filter(Boolean).join(" · ");
+      if (dif && !String(e.note || "").includes(dif)) e.note = [e.note, dif].filter(Boolean).join(" · "); }
+    delete e._cs; delete e._per; e.parts = e.parts.join("\n"); if (!Object.keys(e.st).length) delete e.st; if (!e.tipo) e.tipo = "Obbligatorio"; });
   return out;
 }
 async function importExams(list, repl, all) {
-  let nuovi = 0, agg = 0, rim = 0; const have = new Map(exAll().map(e => [e.slug, e]));
+  let nuovi = 0, agg = 0, rim = 0, uniti = 0; const have = new Map(exAll().map(e => [e.slug, e])), byCod = new Map(), kc = e => String(e.codice || "").trim().toLowerCase();
+  exAll().forEach(e => { if (kc(e)) byCod.set(kc(e), [...(byCod.get(kc(e)) || []), e]); });
   if (all) { /* sostituzione totale: via tutti gli esami presenti, poi si carica solo il file */
-    await guard(async () => { for (const e of (S.data.exams || []).slice()) { await S.db.collection("exams").doc(e.id).delete(); rim++; } await saveCtx({ seedExams: SEED_VER }); }); have.clear(); repl = false; }
+    await guard(async () => { for (const e of (S.data.exams || []).slice()) { await S.db.collection("exams").doc(e.id).delete(); rim++; } await saveCtx({ seedExams: SEED_VER }); }); have.clear(); byCod.clear(); repl = false; }
   if (repl) { /* toglie solo le bozze che nel piano importato non ci sono: quelle che combaciano si aggiornano e tengono le spunte */
-    const corsi = new Set(list.map(x => x.corso)), keep = new Set(list.map(x => x.corso + "|" + x.slug));
-    await guard(async () => { for (const e of exAll()) if (e.bozza && !e.confermato && corsi.has(e.corso) && !keep.has(e.corso + "|" + e.slug)) { await S.db.collection("exams").doc(e.id).delete(); have.delete(e.slug); rim++; } }); }
+    const corsi = new Set(list.flatMap(x => x.corso.split("/"))), keep = new Set(list.flatMap(x => [x.slug, kc(x)]).filter(Boolean));
+    await guard(async () => { for (const e of exAll()) if (e.bozza && !e.confermato && corsiDi(e).some(c => corsi.has(c)) && !keep.has(e.slug) && !keep.has(kc(e))) { await S.db.collection("exams").doc(e.id).delete(); have.delete(e.slug); rim++; } }); }
   await guard(async () => { for (const x of list) {
-    /* identità = corso + esame: lo stesso nome in corsi diversi (es. Diritto privato) sono due esami */
-    let old = have.get(x.slug); if (old && (old.corso || "") !== (x.corso || "")) { x.slug = x.slug + "_" + slugify(x.corso || "altro"); old = have.get(x.slug); }
-    const id = old ? old.id : "ex-" + slugify(x.corso || "altro") + "-" + x.slug.slice(0, 60);
+    /* identità = CODICE UniFi (se c'è): un esame in comune a più corsi è un solo esame. Senza codice: corso + nome */
+    const cod = kc(x), dup = cod ? (byCod.get(cod) || []) : [];
+    let old = dup[0] || (cod ? (have.get(x.slug) && !have.get(x.slug).codice ? have.get(x.slug) : undefined) : have.get(x.slug));
+    if (old && !cod && (old.corso || "") !== (x.corso || "")) { x.slug = x.slug + "_" + slugify(x.corso || "altro"); old = have.get(x.slug); }
+    const id = old ? old.id : "ex-" + (cod ? slugify(cod) : slugify(x.corso || "altro") + "-" + x.slug.slice(0, 60));
     const clean = Object.fromEntries(Object.entries(x).filter(([k, v]) => v !== "" && v !== undefined && k !== "st"));
     /* l'importazione non toglie mai una spunta: tiene il valore più alto tra quello presente e quello del file */
-    const st = { ...(old && old.st || {}) }; Object.entries(x.st || {}).forEach(([k, v]) => { if (!st[k] || ST_RANK[v] > ST_RANK[st[k]]) st[k] = v; });
-    const merged = old ? { ...old, ...clean, st, updatedBy: S.uid || "", updatedAt: new Date().toISOString() } : { ...clean, st, by: S.uid || "", createdAt: new Date().toISOString() };
-    if (!Object.keys(st).length) delete merged.st; delete merged.id; await S.db.collection("exams").doc(id).set(merged); old ? agg++ : nuovi++; have.set(x.slug, { ...merged, id }); } });
-  return { nuovi, agg, rim };
+    const st = { ...(old && old.st || {}) }, mergeSt = o => Object.entries(o || {}).forEach(([k, v]) => { if (!st[k] || ST_RANK[v] > ST_RANK[st[k]]) st[k] = v; });
+    mergeSt(x.st); const corsiAll = [...(old ? corsiDi(old) : []), ...x.corso.split("/")];
+    /* doppioni già presenti con lo stesso codice (es. EA ed EC separati): si fondono nel primo, tenendo le spunte */
+    for (const d of dup.slice(1)) { mergeSt(d.st); corsiAll.push(...corsiDi(d)); await S.db.collection("exams").doc(d.id).delete(); have.delete(d.slug); uniti++; }
+    const merged = old ? { ...old, ...clean, slug: old.slug, corso: joinCorsi(corsiAll), st, updatedBy: S.uid || "", updatedAt: new Date().toISOString() } : { ...clean, st, by: S.uid || "", createdAt: new Date().toISOString() };
+    delete merged.cdlCodice; if (!Object.keys(st).length) delete merged.st; delete merged.id; await S.db.collection("exams").doc(id).set(merged); old ? agg++ : nuovi++;
+    const rec = { ...merged, id }; have.set(rec.slug, rec); if (cod) byCod.set(cod, [rec]); } });
+  return { nuovi, agg, rim, uniti };
 }
 const EX_HEAD = ["NOME ESAME", "CODICE", "AREA", "CDL", "PARTIZIONE", "ANNO", "SEMESTRE", "CFU", "APPUNTI", "ESERCIZI / QUIZ", "SIMULAZIONI", "ZIP RAW SOURCES", "LINK CATALOGO", "DOCENTE", "TIPO", "PERCORSO", "MAPPE E SCHEMI", "STATO MATERIALI", "SSD", "STATO APPUNTI", "STATO ESERCIZI / QUIZ", "STATO SIMULAZIONI", "STATO ZIP RAW", "MODALITÀ ESAME", "VOTO DEGLI APPUNTI", "STATO ELENCO", "NOTE", "ID DATABASE"];
 const annoNum = a => ({ "I anno": "1° anno", "II anno": "2° anno", "III anno": "3° anno", "IV anno": "4° anno", "V anno": "5° anno", "VI anno": "6° anno" }[a] || a || "");
@@ -2191,7 +2206,7 @@ function csvExport() {
   const q = v => '"' + String(v ?? "").replace(/"/g, '""') + '"', lines = [EX_HEAD.map(q).join(";")];
   exAll().sort((a, b) => corsoRank(a.corso) - corsoRank(b.corso) || ANNI.indexOf(a.anno) - ANNI.indexOf(b.anno) || String(a.semestre).localeCompare(String(b.semestre)) || a.name.localeCompare(b.name)).forEach(e => {
     const ps = exParts(e), list = ps.length ? ps : [["", "", ""]], sts = EX_KINDS.map(([k]) => exSt(e, k)), any = sts.some(x => x !== "manca");
-    list.forEach(([p, d, m]) => lines.push([e.name, e.codice, e.area, e.corso + (e.cdlCodice ? " (" + e.cdlCodice + ")" : ""), p || (ps.length ? "" : "Unica"), annoNum(e.anno), e.semestre, e.cfu, e.l_appunti, e.l_quiz, e.l_sim, e.l_raw, e.urlUnifi, d, e.tipo === "Opzionale" ? "A scelta" : "Obbligatorio", e.percorso, e.l_schemi, any ? "DA VERIFICARE" : "DA FARE", e.ssd, ...sts.map(x => ST_LAB[x]), m, e.voto, e.confermato ? "confermato" : e.bozza ? "bozza" : "", e.note, e.slug].map(q).join(";"))); });
+    corsiDi(e).forEach(cd => list.forEach(([p, d, m]) => lines.push([e.name, e.codice, e.area, cd + (CDL_COD[cd] ? " (" + CDL_COD[cd] + ")" : ""), p || (ps.length ? "" : "Unica"), annoNum(e.anno), e.semestre, e.cfu, e.l_appunti, e.l_quiz, e.l_sim, e.l_raw, e.urlUnifi, d, e.tipo === "Opzionale" ? "A scelta" : "Obbligatorio", e.percorso, e.l_schemi, any ? "DA VERIFICARE" : "DA FARE", e.ssd, ...sts.map(x => ST_LAB[x]), m, e.voto, e.confermato ? "confermato" : e.bozza ? "bozza" : "", e.note, e.slug].map(q).join(";")))); });
   return "\uFEFF" + lines.join("\n");
 }
 
@@ -2202,7 +2217,7 @@ V.esami = () => {
   const inC = (e, c) => !c || corsiDi(e).includes(c) || e.corso === c;
   const list = all.filter(e => inC(e, fC) && (!fA || e.anno === fA) && (!fS || e.semestre === fS) && (!fT || e.tipo === fT) && (!fM || EX_KINDS.some(([k]) => exSt(e, k) === "manca")) && match({ n: e.name, c: e.codice, s: e.slug }, "esami", ["n", "c", "s"]));
   const cover = l => { const t = l.length * EX_KINDS.length, got = l.reduce((a, e) => a + EX_KINDS.filter(([k]) => exSt(e, k) !== "manca").length, 0), ok = l.reduce((a, e) => a + EX_KINDS.filter(([k]) => exSt(e, k) === "ok").length, 0); return { t, got, ok }; };
-  const cCard = c => { const l = all.filter(e => inC(e, c)), s = cover(l); return `<button class="card click excard ${fC === c ? "on" : ""}" data-f="exC" data-v="${fC === c ? "" : c}"><div class="row between"><b>${c}${(l.find(e => e.corso === c && e.cdlCodice) || {}).cdlCodice ? ` <span class="small muted">${(l.find(e => e.corso === c && e.cdlCodice) || {}).cdlCodice}</span>` : ""}</b><span class="num small muted">${l.length} esami</span></div>${l.length ? `<div class="small muted">Abbiamo ${s.t ? Math.round(s.got / s.t * 100) : 0}% · verificato ${s.t ? Math.round(s.ok / s.t * 100) : 0}%</div>${progBar(s.ok, s.t)}` : '<div class="small" style="color:var(--orange-dark)">Nessun esame: importa l\'elenco</div>'}${CORSO_INFO[c] && l.some(e => e.bozza && !e.confermato) ? `<div class="small"><span class="chip yl">Bozza · ${CORSO_INFO[c].liv}</span></div>` : ""}</button>`; };
+  const cCard = c => { const l = all.filter(e => inC(e, c)), s = cover(l); return `<button class="card click excard ${fC === c ? "on" : ""}" data-f="exC" data-v="${fC === c ? "" : c}"><div class="row between"><b>${c}${CDL_COD[c] ? ` <span class="small muted">${CDL_COD[c]}</span>` : ""}</b><span class="num small muted">${l.length} esami</span></div>${l.length ? `<div class="small muted">Abbiamo ${s.t ? Math.round(s.got / s.t * 100) : 0}% · verificato ${s.t ? Math.round(s.ok / s.t * 100) : 0}%</div>${progBar(s.ok, s.t)}` : '<div class="small" style="color:var(--orange-dark)">Nessun esame: importa l\'elenco</div>'}${CORSO_INFO[c] && l.some(e => e.bozza && !e.confermato) ? `<div class="small"><span class="chip yl">Bozza · ${CORSO_INFO[c].liv}</span></div>` : ""}</button>`; };
   const groups = {}; list.forEach(e => { const g = fC ? "" : e.corso; ((groups[g] = groups[g] || {})[e.anno || "Anno n/d"] = groups[g][e.anno || "Anno n/d"] || []).push(e); });
   const T = cover(list);
   const thead = `<thead><tr><th>Esame</th><th>Sem.</th><th class="r">CFU</th><th>Tipo</th>${EX_KINDS.map(([, l]) => `<th class="c">${l}</th>`).join("")}<th>Voto appunti</th><th></th></tr></thead>`;
@@ -2243,7 +2258,7 @@ document.addEventListener("submit", async e => {
   const b = e.target.querySelector("button.pri"); b.disabled = true; b.textContent = "Importo…";
   try { const text = file ? await file.text() : pasted, list = csvToExams(text, document.getElementById("exi_corso").value); if (!list.length) throw new Error("Non ho trovato nessun esame."); const repAll = document.getElementById("exi_all").checked, n0 = (S.data.exams || []).length;
     if (repAll && n0) { if (!confirm(`Stai per CANCELLARE tutti i ${n0} esami presenti (con le loro spunte) e caricare i ${list.length} del file. Scarico prima un backup. Procedo?`)) { b.disabled = false; b.textContent = "Importa"; return; } downloadText("UniLink_Esami_BACKUP_" + localISO() + ".csv", csvExport(), "text/csv"); }
-    const r = await importExams(list, document.getElementById("exi_repl").checked, repAll); msg.innerHTML = repAll ? `Fatto: <b>${r.rim}</b> esami rimossi, <b>${r.nuovi}</b> caricati.` : `Fatto: <b>${r.nuovi}</b> nuovi, <b>${r.agg}</b> aggiornati${r.rim ? `, <b>${r.rim}</b> bozze sostituite` : ""}.`; toast(`${list.length} esami importati`); S.f.exC = ""; render(); }
+    const r = await importExams(list, document.getElementById("exi_repl").checked, repAll); msg.innerHTML = repAll ? `Fatto: <b>${r.rim}</b> esami rimossi, <b>${r.nuovi}</b> caricati.` : `Fatto: <b>${r.nuovi}</b> nuovi, <b>${r.agg}</b> aggiornati${r.uniti ? `, <b>${r.uniti}</b> doppioni uniti per codice` : ""}${r.rim ? `, <b>${r.rim}</b> bozze sostituite` : ""}.`; toast(`${list.length} esami importati`); S.f.exC = ""; render(); }
   catch (er) { msg.innerHTML = `<span style="color:var(--red)">${esc(er.message || "Importazione non riuscita")}</span>`; }
   b.disabled = false; b.textContent = "Importa";
 });
