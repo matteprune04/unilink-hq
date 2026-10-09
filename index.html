@@ -332,6 +332,11 @@ iframe.demo { width: 100%; height: 520px; border: 0; background: #fff; display: 
 .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; } .sw { border: 1px solid var(--line); background: #fff; border-radius: var(--r-sm); padding: 8px; text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 2px; font: inherit; color: var(--ink); } .sw i { height: 36px; border-radius: 6px; border: 1px solid rgba(0,0,0,.08); margin-bottom: 4px; } .sw small { color: var(--muted); font-size: 11.5px; line-height: 1.25; } .sw:hover { border-color: var(--navy); }
 .captbl td, .rawtbl td { vertical-align: middle; } .cb { position: relative; height: 22px; background: var(--beige); border-radius: 6px; min-width: 120px; } .cb i { position: absolute; inset: 0 auto 0 0; background: #8fa0c8; border-radius: 6px; min-width: 4px; } .cb.f i { background: #e9b98a; } .cb span { position: absolute; right: 8px; top: 0; font-size: 12.5px; font-weight: 600; color: var(--navy); line-height: 22px; }
 .rawz { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; } .rawz .grow { min-width: 120px; } .rawtbl th, .rawtbl td { min-width: 220px; } .rawtbl td:first-child { min-width: 140px; }
+.excard { text-align: left; display: flex; flex-direction: column; gap: 8px; font: inherit; color: inherit; padding: 14px; } .excard.on { border-color: var(--navy); box-shadow: var(--shadow); background: var(--navy-soft); }
+.extbl td, .extbl th { padding: 8px 10px; vertical-align: middle; } .extbl th.c { text-align: center; } .extbl .exn { min-width: 230px; } .extbl .exn a { white-space: nowrap; }
+.stc { text-align: center; white-space: nowrap; } .st { width: 30px; height: 30px; border-radius: 9px; border: 1.5px dashed var(--line); background: transparent; color: var(--muted); cursor: pointer; font-size: 15px; font-weight: 700; line-height: 1; } .st:hover { border-color: var(--navy); }
+.st.da { border: 1.5px solid #cf7527; background: var(--orange-soft); color: var(--orange-dark); } .st.da::before { content: ""; display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #cf7527; background: linear-gradient(90deg, #cf7527 50%, transparent 50%); vertical-align: middle; } .lgd { display: inline-flex; align-items: center; gap: 5px; margin-right: 10px; } .lgd i { width: 18px; height: 18px; border-radius: 6px; display: inline-grid; place-items: center; font-style: normal; font-size: 12px; font-weight: 700; border: 1.5px dashed rgba(255,255,255,.5); } .lgd i.da { border: 1.5px solid #cf7527; background: rgba(207,117,39,.25); } .lgd i.ok { border: 1.5px solid #6fcf9a; background: rgba(111,207,154,.25); color: #6fcf9a; } .st.ok { border: 1.5px solid #1a6b3c; background: var(--green-soft); color: #1a6b3c; }
+.stl { font-size: 12px; color: var(--orange-dark); text-decoration: none; margin-left: 4px; font-weight: 600; } .stl:hover { text-decoration: underline; } .dbb { font-size: 10px; font-weight: 700; background: var(--navy-soft); color: var(--navy); border-radius: 5px; padding: 1px 4px; margin-left: 4px; }
 .comment { background: var(--white); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 10px 12px; font-size: 14px; }
 .big-img { width: 100%; border-radius: var(--r-sm); }
 
@@ -527,7 +532,7 @@ const NAV = [
   { g: "Crescita", items: [["web", "Sito e Google"], ["partners", "Partner e contatti"], ["finance", "Finanze"]] },
   { g: "Team", items: [["meetings", "Meeting"], ["decisions", "Decisioni"], ["team", "Persone"], ["accounts", "Strumenti e account"], ["links", "Risorse"]] },
   { g: "Intelligenza artificiale", items: [["lab", "Laboratorio AI"], ["aictx", "Contesto per AI"]] },
-  { g: "Materiali e archivio", items: [["mat", "Materiali"], ["docs", "Documenti"]] },
+  { g: "Materiali e archivio", items: [["esami", "Esami e dispense"], ["mat", "Materiali"], ["docs", "Documenti"]] },
 ];
 
 /* ================= stato ================= */
@@ -1225,7 +1230,7 @@ document.addEventListener("click", async e => {
     return;
   }
 });
-document.addEventListener("change", e => { if (e.target.id === "f_type" || e.target.id === "f_tipo") syncOnly(); });
+document.addEventListener("change", e => { if (e.target.id === "f_type" || e.target.id === "f_tipo") syncOnly(); if (e.target.dataset && e.target.dataset.matexamsel !== undefined) { S.f.matExam = e.target.value; render(); } });
 document.addEventListener("change", async e => {
   const t = e.target;
   if (t.id === "f_attach" && S.form) {
@@ -1571,7 +1576,7 @@ function briefBodies() {
   mine("partners", () => { idx.partners = Object.fromEntries(D.partners.map(p => [p.id, [p.name, p.status || ""]])); return D.partners.length ? PIPE.map(st => { const l = D.partners.filter(p => p.status === st); return l.length ? `### ${st}\n` + l.map(p => `- **${p.name}** (${p.type || "n/d"})${p.owner ? ", segue " + p.owner : ""}.${p.next ? " Prossimo passo: " + p.next + (p.nextDate ? " entro " + mdDate(p.nextDate) : "") + "." : ""}${ml(p.value) ? " Valore: " + ml(p.value).replace(/\n+/g, " ") + "." : ""}${incl("partnerContacts") ? ` Contatto: ${[p.contact, p.channel].filter(Boolean).join(" — ") || "n/d"}.` : ""}`).join("\n") : ""; }).filter(Boolean).join("\n\n") : "_Nessun contatto._"; });
   mine("lab", () => { idx.lab = Object.fromEntries((D.lab || []).map(l => [l.id, [l.title, ""]])); const L = D.lab || []; return L.length ? L.map(l => { const vs = (D.labver || []).filter(v => v.itemId === l.id), cur = vs.find(v => v.role === "attuale"); const idea = D.ideas.find(i => i.id === l.ideaId); return `- **${l.title}** — ${l.cat || "n/d"}, creato con ${l.ai || "n/d"} (${l.kind || "n/d"}). ${ml(l.summary) ? ml(l.summary).replace(/\n+/g, " ") + " " : ""}${vs.length ? `Versioni: ${vs.length}; in uso: ${cur ? cur.label : "nessuna"}${cur && ml(cur.note) ? " (" + ml(cur.note).replace(/\n+/g, " ") + ")" : ""}.` : ""}${idea ? ` Collegato all'idea “${idea.title}”.` : ""}`; }).join("\n") : "_Nessun materiale._"; });
   mine("docs", () => { const all = allFiles(), byc = DOC_CATS.map(c => [c.id, all.filter(f => f.cat === c.id)]).filter(x => x[1].length); return byc.length ? byc.map(([c, l]) => `### ${c}\n` + l.map(f => `- ${f.name}${f.title ? " (" + f.title + ")" : ""} — ${f.label}`).join("\n")).join("\n\n") : "_Nessun file archiviato._"; });
-  mine("materials", () => { const ex = examList(); return ex.map(e => { const st = t => matList().filter(m => m.exam === e.slug && m.tipo === t && matArea(m) !== "raw"), raw = matList().filter(m => m.exam === e.slug && matArea(m) === "raw"); const ver = l => l.length ? `${l.filter(m => m.verified).length}/${l.length} verificati` : "nessun file"; let o = `### ${e.name}${e.corso ? " (" + e.corso + ")" : ""}\n`; if (e.db) { const ne = Object.values(e.db.esercizi).reduce((a, b) => a + b, 0), nc = Object.values(e.db.carte).reduce((a, b) => a + b, 0); o += `- **Esercizi nel database:** ${ne} in ${Object.keys(e.db.esercizi).length} capitoli (${isVer("key", "db:" + e.slug + ":esercizi") ? "verificati" : "da verificare"}). Per capitolo: ` + Object.keys(e.db.esercizi).sort((a, b) => a - b).map(c => `cap. ${c}: ${e.db.esercizi[c]}`).join(", ") + ".\n"; o += `- **Flashcard nel database:** ${nc} (${isVer("key", "db:" + e.slug + ":carte") ? "verificate" : "da verificare"}). Capitoli senza flashcard: ${Object.keys(e.db.esercizi).filter(c => e.db.carte[c] == null).join(", ") || "nessuno"}.\n`; } else o += "- Esercizi e flashcard: non ancora nel database.\n"; o += `- **Appunti:** nel database non ci sono (le dispense sono PDF sul sito). File caricati: ${ver(st("Appunti"))}.\n- **Simulazioni d'esame:** non ancora nel database. Definite: ` + (st("Simulazione esame").map(m => `${m.title}${m.mode ? " (" + m.mode + ")" : ""}`).join("; ") || "nessuna") + ".\n"; o += `- **Fonti raw (zip):** ${raw.length ? raw.map(m => m.tipo).join(", ") : "nessuno caricato"}.`; return o; }).join("\n\n") + `\n\n_Stato generale: ${matStats().v} di ${matStats().n} file del kit brand e dei modelli verificati._`; });
+  mine("materials", () => { const ex = examList(); return ex.map(e => { const st = t => matList().filter(m => m.exam === e.slug && m.tipo === t && matArea(m) !== "raw"), raw = matList().filter(m => m.exam === e.slug && matArea(m) === "raw"); const ver = l => l.length ? `${l.filter(m => m.verified).length}/${l.length} verificati` : "nessun file"; let o = `### ${e.name}${e.corso ? " (" + e.corso + ")" : ""}\n`; if (e.db) { const ne = Object.values(e.db.esercizi).reduce((a, b) => a + b, 0), nc = Object.values(e.db.carte).reduce((a, b) => a + b, 0); o += `- **Esercizi nel database:** ${ne} in ${Object.keys(e.db.esercizi).length} capitoli (${isVer("key", "db:" + e.slug + ":esercizi") ? "verificati" : "da verificare"}). Per capitolo: ` + Object.keys(e.db.esercizi).sort((a, b) => a - b).map(c => `cap. ${c}: ${e.db.esercizi[c]}`).join(", ") + ".\n"; o += `- **Flashcard nel database:** ${nc} (${isVer("key", "db:" + e.slug + ":carte") ? "verificate" : "da verificare"}). Capitoli senza flashcard: ${Object.keys(e.db.esercizi).filter(c => e.db.carte[c] == null).join(", ") || "nessuno"}.\n`; } else o += "- Esercizi e flashcard: non ancora nel database.\n"; o += `- **Appunti:** nel database non ci sono (le dispense sono PDF sul sito). File caricati: ${ver(st("Appunti"))}.\n- **Simulazioni d'esame:** non ancora nel database. Definite: ` + (st("Simulazione esame").map(m => `${m.title}${m.mode ? " (" + m.mode + ")" : ""}`).join("; ") || "nessuna") + ".\n"; o += `- **Fonti raw (zip):** ${raw.length ? raw.map(m => m.tipo).join(", ") : "nessuno caricato"}.`; return o; }).join("\n\n") + `\n\n### Catalogo esami (corso · anno · semestre)\n_Legenda: – manca · da = da verificare · ok = verificato. Colonne: Appunti, Schemi, Esercizi, Quiz, Simulazione, Syllabus._\n\n| Esame | Corso | Anno | Sem. | Tipo | A | S | E | Q | Sim | Syl |\n|---|---|---|---|---|---|---|---|---|---|---|\n` + exAll().sort((a, b) => corsoRank(a.corso) - corsoRank(b.corso) || ANNI.indexOf(a.anno) - ANNI.indexOf(b.anno)).map(e => `| ${e.name} | ${e.corso || ""} | ${e.anno || ""} | ${String(e.semestre || "").replace(" semestre", "")} | ${e.tipo || ""} | ` + EX_KINDS.map(([k]) => ({ manca: "–", da: "da", ok: "ok" })[exSt(e, k)]).join(" | ") + " |").join("\n") + `\n\n_Stato generale: ${matStats().v} di ${matStats().n} file del kit brand e dei modelli verificati._`; });
   mine("notes", () => { const n = noteList(false); return n.length ? n.map(x => `- ${ml(x.text).replace(/\n+/g, " ")} — ${x.by || "?"}, ${mdDate(x.createdAt)}`).join("\n") : "_Nessuna nota in sospeso._"; });
   mine("finance", () => { const mo = money(); return `- Saldo di cassa: ${eur(mo.saldo)}\n- Entrate del mese: ${eur(mo.inM)} · Uscite del mese: ${eur(mo.outM)}\n- Costi fissi mensili: ${eur(mo.fixed)}\n- Runway stimata: ${mo.runway ? nf(mo.runway, 1) + " mesi" : "n/d"}`; });
   return { out, idx };
@@ -2028,7 +2033,7 @@ V.mat = () => {
     if (!tot.n) body += `<div class="empty"><h3>Importa il kit di UniLink</h3><p>Hai i due zip del brand (11_Logo e 12_Modelli): importali e compaiono qui tutti i file, da verificare uno a uno.</p>${imp}</div>`;
   } else if (tab === "didattica") {
     const mine = t => matList().filter(m => matArea(m) === "didattica" && m.exam === (exSel && exSel.slug) && m.tipo === t), hasDb = exSel && exSel.db;
-    const chips = `<div class="filters">${exams.map(e => `<button class="fchip ${exSel && e.slug === exSel.slug ? "on" : ""}" data-f="matExam" data-v="${esc(e.slug)}">${esc(e.name)}</button>`).join("")}${S.canWrite ? '<button class="fchip" data-add="exams">+ Aggiungi esame</button>' : ""}</div>`;
+    const chips = `<div class="filters">${exams.length > 8 ? `<select class="mini-sel" data-matexamsel>${exams.map(e => `<option value="${esc(e.slug)}" ${exSel && e.slug === exSel.slug ? "selected" : ""}>${esc(e.name)}${e.corso ? " · " + esc(e.corso) : ""}</option>`).join("")}</select>` : exams.map(e => `<button class="fchip ${exSel && e.slug === exSel.slug ? "on" : ""}" data-f="matExam" data-v="${esc(e.slug)}">${esc(e.name)}</button>`).join("")}${S.canWrite ? '<button class="fchip" data-add="exams">+ Aggiungi esame</button>' : ""}<button class="fchip" data-nav="esami">Catalogo completo</button></div>`;
     const recs = (t, empty) => { const l = mine(t); return l.length ? l.map(m => `<div class="li"><div class="grow"><div class="t">${esc(m.title)}${m.cap !== "" && m.cap != null ? ` <span class="chip navy">cap. ${esc(m.cap)}</span>` : ""}${m.mode ? ` <span class="chip or">${m.mode.startsWith("Reale") ? "modalità reale" : "allenamento"}</span>` : ""}</div>${m.parts ? `<div class="small pre muted">${esc(m.parts)}</div>` : ""}<div class="small muted">${(m.files || []).length ? (m.files || []).map(f => esc(f.name)).join(", ") : m.link ? "link esterno" : "nessun file"}${m.prove ? " · " + esc(m.prove) + " prove" : ""}</div></div>${verCtl("mat", m.id)}${S.canWrite ? `<button class="btn ghost sm" data-edit="mat:${m.id}">⋯</button>` : ""}</div>`).join("") : `<p class="small muted">${empty}</p>`; };
     const col = (t, ic, title, dbHtml, empty, extra = "") => `<section class="card panel"><div class="panel-h"><div class="row" style="gap:10px"><span class="aic">${svgI(ic)}</span><h2>${title}</h2></div>${S.canWrite ? `<button class="btn sm" data-matadd="${t}|${exSel ? esc(exSel.slug) : ""}|">+ Aggiungi</button>` : ""}</div>${dbHtml}${recs(t, empty)}${extra}</section>`;
     body = chips + (exSel ? `<div class="grid3">
@@ -2076,6 +2081,127 @@ document.addEventListener("submit", async e => {
   const fl = Array.from(document.getElementById("imp_files").files); if (!fl.length) { toast("Scegli almeno uno zip."); return; }
   const b = e.target.querySelector("button.pri"); b.disabled = true; b.textContent = "Importo…";
   try { await runImport(fl, document.getElementById("imp_area").value); } finally { b.disabled = false; b.textContent = "Importa"; }
+});
+
+/* ====================================================== v2: esami e dispense (catalogo a tabella, CSV) ====================================================== */
+const CORSI = ["EA", "EC", "SUSBUS", "SECI", "Giurisprudenza", "Medicina"];
+const CORSO_OPT = ["EA/EC", ...CORSI, "Altro"];
+const ANNI = ["I anno", "II anno", "III anno", "IV anno", "V anno", "VI anno"];
+const SEMS = ["I semestre", "II semestre", "Annuale"];
+const EX_KINDS = [["appunti", "Appunti"], ["schemi", "Schemi"], ["esercizi", "Esercizi"], ["quiz", "Quiz"], ["sim", "Simulazione"], ["syllabus", "Syllabus"]];
+const ST_NEXT = { manca: "da", da: "ok", ok: "manca" }, ST_SYM = { manca: "–", da: "", ok: "✓" }, ST_LAB = { manca: "Manca", da: "Da verificare", ok: "Verificato" };
+SCHEMA.exams = { one: "esame", fields: [
+  { k: "name", l: "Nome dell'esame", req: 1, wide: 1, ph: "Es. Microeconomia" },
+  { k: "corso", l: "Corso di studio", t: "select", o: CORSO_OPT, d: "EA/EC", help: "«EA/EC» = esame in comune ai due corsi." },
+  { k: "anno", l: "Anno", t: "select", o: ANNI, d: "I anno" }, { k: "semestre", l: "Semestre", t: "select", o: SEMS, d: "I semestre" },
+  { k: "tipo", l: "Obbligatorio o opzionale", t: "select", o: ["Obbligatorio", "Opzionale"], d: "Obbligatorio" }, { k: "cfu", l: "CFU", t: "number" },
+  { k: "codice", l: "Codice UniFi", ph: "Es. B018991" }, { k: "slug", l: "Nome nel database (facoltativo)", ph: "es. microeconomia" },
+  { k: "urlUnifi", l: "Scheda ufficiale UniFi", t: "url", wide: 1 }, { k: "voto", l: "Voto di chi ha scritto gli appunti", ph: "Es. 30 / 30 e lode" },
+  { k: "l_appunti", l: "Link appunti", t: "url", wide: 1 }, { k: "l_schemi", l: "Link schemi e mappe", t: "url", wide: 1 }, { k: "l_quiz", l: "Link quiz", t: "url", wide: 1 }, { k: "l_materiali", l: "Link altri materiali", t: "url", wide: 1 },
+  { k: "note", l: "Note", t: "textarea", rows: 2, wide: 1 }] };
+const exSlug = e => e.slug || slugify(e.name);
+const exDb = e => MAT_DB.exams.find(x => x.slug === exSlug(e));
+function exSt(e, k) {
+  const v = e.st && e.st[k]; if (v) return v;
+  if (k === "esercizi") return exDb(e) ? "da" : (e.l_esercizi ? "da" : "manca");
+  if (k === "syllabus") return e.hasSyl ? "da" : "manca";
+  if (k === "sim") return "manca";
+  return e["l_" + k] ? "da" : "manca";
+}
+const corsiDi = e => e.corso === "EA/EC" ? ["EA", "EC"] : [e.corso || "Altro"];
+const corsoRank = c => { const i = ["EA/EC", ...CORSI].indexOf(c); return i < 0 ? 99 : i; };
+const exAll = () => (S.data.exams || []).filter(e => e.name).map(e => ({ ...e, slug: exSlug(e) }));
+
+/* ---------- CSV ---------- */
+function parseCSV(text) {
+  text = text.replace(/^﻿/, ""); const first = text.split(/\r?\n/, 1)[0] || "", delim = [";", "\t", ","].map(d => [d, first.split(d).length]).sort((a, b) => b[1] - a[1])[0][0];
+  const rows = []; let row = [], cur = "", q = false;
+  for (let i = 0; i < text.length; i++) { const c = text[i];
+    if (q) { if (c === '"') { if (text[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += c; }
+    else if (c === '"') q = true; else if (c === delim) { row.push(cur); cur = ""; }
+    else if (c === "\n" || c === "\r") { if (c === "\r" && text[i + 1] === "\n") i++; row.push(cur); if (row.some(x => x.trim())) rows.push(row); row = []; cur = ""; }
+    else cur += c; }
+  row.push(cur); if (row.some(x => x.trim())) rows.push(row); return rows;
+}
+const hkey = h => String(h || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]/g, "");
+const HMAP = { slug: ["abbreviazione", "slug", "id", "nomedatabase"], name: ["title", "titolo", "nome", "esame", "insegnamento", "nomeesame"], urlUnifi: ["linkunifi", "unifi", "schedaunifi"], corso: ["corsodistudio", "corso"], anno: ["anno"], semestre: ["semestre"], cfu: ["cfu"], tipo: ["tipo", "obbligatorio", "obbligatorioopzionale", "obbligatorioopz"], l_appunti: ["appuntisbobine", "appunti", "linkappunti"], l_schemi: ["schemimappe", "schemi", "linkschemi"], l_materiali: ["materiali"], l_quiz: ["quizmock", "quiz", "linkquiz"], hasSyl: ["syllabus"], voto: ["votodegliappunti", "voto", "votoappunti"], st_appunti: ["statoappunti"], st_schemi: ["statoschemi"], st_esercizi: ["statoesercizi"], st_quiz: ["statoquiz"], st_sim: ["statosimulazione", "statosimulazioni"], st_syllabus: ["statosyllabus"] };
+const normAnno = s => { const t = String(s || "").trim().toUpperCase(); if (!t) return ""; const m = t.match(/\b(VI|IV|V|III|II|I|[1-6])\b/); if (!m) return ""; const r = { 1: "I", 2: "II", 3: "III", 4: "IV", 5: "V", 6: "VI" }[m[1]] || m[1]; return r + " anno"; };
+const normSem = s => { const t = String(s || "").trim().toUpperCase(); if (!t) return ""; if (/ANNUAL/.test(t)) return "Annuale"; if (/\bII\b|\b2\b|SECOND/.test(t)) return "II semestre"; if (/\bI\b|\b1\b|PRIM/.test(t)) return "I semestre"; return ""; };
+const normCorso = (s, def) => { const t = String(s || "").trim(); if (!t) return def; const u = t.toUpperCase().replace(/\s+/g, ""); if (u === "EA/EC" || u === "EC/EA") return "EA/EC"; const hit = CORSI.find(c => c.toUpperCase() === u || u.startsWith(c.toUpperCase().slice(0, 5))); return hit || t; };
+const normSt = s => { const t = String(s || "").toLowerCase(); return /verificat|^ok$|^✓/.test(t) && !/da verific/.test(t) ? "ok" : /da verific|^da$/.test(t) ? "da" : /manca|^no$|^-$|^–$/.test(t) ? "manca" : ""; };
+function csvToExams(text, defCorso) {
+  const rows = parseCSV(text); if (rows.length < 2) throw new Error("Il file è vuoto o ha una sola riga.");
+  let H = rows[0].map(hkey), body = rows.slice(1); const known = H.filter(h => Object.values(HMAP).some(a => a.includes(h))).length;
+  if (known < 2) { H = ["name", "anno", "semestre", "cfu", "tipo"].map(hkey); body = rows; }  /* elenco incollato senza intestazione: Esame; Anno; Semestre; CFU; Tipo */
+  const idx = {}; Object.entries(HMAP).forEach(([f, al]) => { idx[f] = H.map((h, i) => al.includes(h) ? i : -1).filter(i => i >= 0); });
+  const get = (r, f) => { for (const i of idx[f] || []) if ((r[i] || "").trim()) return r[i].trim(); return ""; }, out = [];
+  body.forEach(r => {
+    let title = get(r, "name"); if (!title) return; const m = title.match(/\s*\(([A-Z]\d{5,7})\)\s*$/), codice = m ? m[1] : ""; if (m) title = title.replace(m[0], "").trim();
+    const e = { name: title, codice, slug: get(r, "slug") || slugify(title), corso: normCorso(get(r, "corso"), defCorso), anno: normAnno(get(r, "anno")), semestre: normSem(get(r, "semestre")), tipo: /opz/i.test(get(r, "tipo")) ? "Opzionale" : "Obbligatorio", cfu: get(r, "cfu") ? Number(String(get(r, "cfu")).replace(",", ".")) || "" : "", urlUnifi: get(r, "urlUnifi"), voto: get(r, "voto").replace(/\s+/g, " ").trim(), l_appunti: get(r, "l_appunti"), l_schemi: get(r, "l_schemi"), l_materiali: get(r, "l_materiali"), l_quiz: get(r, "l_quiz"), hasSyl: (idx.hasSyl || []).some(i => (r[i] || "").trim()) };
+    const st = {}; EX_KINDS.forEach(([k]) => { const v = normSt(get(r, "st_" + k)); if (v) st[k] = v; }); if (Object.keys(st).length) e.st = st;
+    out.push(e);
+  });
+  return out;
+}
+async function importExams(list) {
+  let nuovi = 0, agg = 0; const have = new Map(exAll().map(e => [e.slug, e]));
+  await guard(async () => { for (const x of list) {
+    /* identità = corso + esame: lo stesso nome in corsi diversi (es. Diritto privato) sono due esami */
+    let old = have.get(x.slug); if (old && (old.corso || "") !== (x.corso || "")) { x.slug = x.slug + "_" + slugify(x.corso || "altro"); old = have.get(x.slug); }
+    const id = old ? old.id : "ex-" + slugify(x.corso || "altro") + "-" + x.slug.slice(0, 60);
+    const clean = Object.fromEntries(Object.entries(x).filter(([, v]) => v !== "" && v !== undefined)), merged = old ? { ...old, ...clean, st: { ...(old.st || {}), ...(x.st || {}) } } : { ...clean, by: S.uid || "", createdAt: new Date().toISOString() };
+    delete merged.id; await S.db.collection("exams").doc(id).set(merged); old ? agg++ : nuovi++; have.set(x.slug, { ...merged, id }); } });
+  return { nuovi, agg };
+}
+function csvTemplate() { return "Title;Corso di studio;Anno;Semestre;CFU;Tipo;Link UNIFI;Appunti/Sbobine;Schemi/Mappe;Quiz/Mock;Voto degli Appunti\n\"Diritto privato (B000000)\";Giurisprudenza;I anno;I semestre;9;Obbligatorio;;;;;\n\"Esame a scelta\";Giurisprudenza;V anno;II semestre;6;Opzionale;;;;;\n"; }
+function csvExport() { const q = v => '"' + String(v ?? "").replace(/"/g, '""') + '"'; const H = ["abbreviazione", "Title", "Link UNIFI", "Corso di studio", "Anno", "Semestre", "CFU", "Tipo", "Appunti/Sbobine", "Schemi/Mappe", "Materiali", "Quiz/Mock", "Voto degli Appunti", ...EX_KINDS.map(([, l]) => "Stato " + l)]; return "﻿" + [H.map(q).join(";")].concat(exAll().sort((a, b) => corsoRank(a.corso) - corsoRank(b.corso) || String(a.anno).localeCompare(String(b.anno)) || String(a.semestre).localeCompare(String(b.semestre))).map(e => [e.slug, e.name + (e.codice ? " (" + e.codice + ")" : ""), e.urlUnifi, e.corso, e.anno, e.semestre, e.cfu, e.tipo, e.l_appunti, e.l_schemi, e.l_materiali, e.l_quiz, e.voto, ...EX_KINDS.map(([k]) => ST_LAB[exSt(e, k)])].map(q).join(";"))).join("\n"); }
+
+/* ---------- vista ---------- */
+const stBtn = (e, k, l) => { const s = exSt(e, k), link = k === "esercizi" ? null : e["l_" + k]; return `<td class="stc"><button class="st ${s}" data-exst="${esc(e.id)}|${k}" title="${l}: ${ST_LAB[s]}${k === "esercizi" && exDb(e) ? " · nel database" : ""} (clic per cambiare)">${ST_SYM[s]}</button>${link ? `<a class="stl" href="${esc(safeUrl(link))}" target="_blank" rel="noopener" title="Apri il file">↗</a>` : ""}${k === "esercizi" && exDb(e) ? '<span class="dbb" title="Presente nel database del sito">DB</span>' : ""}</td>`; };
+V.esami = () => {
+  const all = exAll(), fC = S.f.exC || "", fA = S.f.exA || "", fS = S.f.exS || "", fT = S.f.exT || "", fM = !!S.f.exM;
+  const inC = (e, c) => !c || corsiDi(e).includes(c) || e.corso === c;
+  const list = all.filter(e => inC(e, fC) && (!fA || e.anno === fA) && (!fS || e.semestre === fS) && (!fT || e.tipo === fT) && (!fM || EX_KINDS.some(([k]) => exSt(e, k) === "manca")) && match({ n: e.name, c: e.codice, s: e.slug }, "esami", ["n", "c", "s"]));
+  const cover = l => { const t = l.length * EX_KINDS.length, got = l.reduce((a, e) => a + EX_KINDS.filter(([k]) => exSt(e, k) !== "manca").length, 0), ok = l.reduce((a, e) => a + EX_KINDS.filter(([k]) => exSt(e, k) === "ok").length, 0); return { t, got, ok }; };
+  const cCard = c => { const l = all.filter(e => inC(e, c)), s = cover(l); return `<button class="card click excard ${fC === c ? "on" : ""}" data-f="exC" data-v="${fC === c ? "" : c}"><div class="row between"><b>${c}</b><span class="num small muted">${l.length} esami</span></div>${l.length ? `<div class="small muted">Abbiamo ${s.t ? Math.round(s.got / s.t * 100) : 0}% · verificato ${s.t ? Math.round(s.ok / s.t * 100) : 0}%</div>${progBar(s.ok, s.t)}` : '<div class="small" style="color:var(--orange-dark)">Nessun esame: importa l\'elenco</div>'}</button>`; };
+  const groups = {}; list.forEach(e => { const g = fC ? "" : e.corso; ((groups[g] = groups[g] || {})[e.anno || "Anno n/d"] = groups[g][e.anno || "Anno n/d"] || []).push(e); });
+  const T = cover(list);
+  const thead = `<thead><tr><th>Esame</th><th>Sem.</th><th class="r">CFU</th><th>Tipo</th>${EX_KINDS.map(([, l]) => `<th class="c">${l}</th>`).join("")}<th>Voto appunti</th><th></th></tr></thead>`;
+  const row = e => `<tr><td class="exn"><b>${esc(e.name)}</b>${e.codice ? ` <small class="muted">${esc(e.codice)}</small>` : ""}${e.urlUnifi ? ` <a class="stl" href="${esc(safeUrl(e.urlUnifi))}" target="_blank" rel="noopener" title="Scheda ufficiale UniFi">UniFi ↗</a>` : ""}${e.note ? `<div class="small muted">${esc(e.note)}</div>` : ""}</td><td class="small">${esc(String(e.semestre || "").replace(" semestre", " sem."))}</td><td class="r num">${e.cfu || ""}</td><td>${e.tipo === "Opzionale" ? '<span class="chip or">opzionale</span>' : '<span class="small muted">obbl.</span>'}</td>${EX_KINDS.map(([k, l]) => stBtn(e, k, l)).join("")}<td class="small">${esc(e.voto || "")}</td><td>${S.canWrite ? `<button class="btn ghost sm" data-edit="exams:${e.id}" aria-label="Modifica">⋯</button>` : ""}</td></tr>`;
+  const sections = Object.keys(groups).sort((a, b) => corsoRank(a) - corsoRank(b)).map(c => Object.keys(groups[c]).sort(((a, b) => ANNI.indexOf(a) - ANNI.indexOf(b))).map(a => { const l = groups[c][a].sort((x, y) => String(x.semestre).localeCompare(String(y.semestre)) || x.name.localeCompare(y.name)); return `<section class="stack"><div class="gh" style="--tc:#172554"><h2>${c ? (c === "EA/EC" ? "EA / EC · in comune" : esc(c)) + " · " : ""}${esc(a)}</h2><span class="num muted">${l.length} ${l.length === 1 ? "esame" : "esami"}</span></div><div class="tbl-wrap"><table class="extbl">${thead}<tbody>${l.map(row).join("")}</tbody></table></div></section>`; }).join("")).join("");
+  return `<div class="wrap">
+  <section class="hero mat"><div class="hero-t"><div class="eyebrow" style="color:var(--orange)">Materiali e archivio</div><h1>Esami e <span class="accw">dispense</span></h1><p style="max-width:640px;opacity:.9">Tutti gli esami, divisi per corso, anno e semestre. Per ognuno spunti cosa abbiamo: clicca una casella per cambiarla.</p><p class="small" style="margin-top:6px"><span class="lgd"><i>–</i>manca</span><span class="lgd"><i class="da"></i>da verificare</span><span class="lgd"><i class="ok">✓</i>verificato</span></p><div class="row" style="margin-top:12px;max-width:520px;align-items:center"><div class="grow">${progBar(T.ok, T.t)}</div><span class="hchip"><b class="num">${all.length}</b> esami · <b class="num">${T.ok}</b>/${T.t} verificati</span></div></div>
+    <div class="hero-a">${S.canWrite ? '<button class="btn acc" data-eximport>Carica CSV / elenco</button><button class="btn" data-add="exams">+ Nuovo esame</button>' : ""}<button class="btn" data-exexport>Scarica CSV</button></div></section>
+  <div class="grid4">${["EA", "EC", "SUSBUS", "SECI", "Giurisprudenza", "Medicina"].map(cCard).join("")}</div>
+  <div class="filters">${searchBox("esami", "Cerca un esame")}${fchips("exA", ANNI.slice(0, 5), "Tutti gli anni")}</div>
+  <div class="filters">${fchips("exS", SEMS, "Tutti i semestri")}${fchips("exT", ["Obbligatorio", "Opzionale"], "Obbligatori e opzionali")}<button class="fchip ${fM ? "on" : ""}" data-toggle="exM">Solo con qualcosa che manca</button>${fC ? `<button class="fchip on" data-f="exC" data-v="">Corso: ${esc(fC)} ✕</button>` : ""}</div>
+  ${all.length ? (sections || '<p class="muted">Nessun esame corrisponde ai filtri.</p>') : `<div class="empty"><h3>Carica il catalogo degli esami</h3><p>Importa il CSV delle dispense (Dispense_1.csv): compaiono tutti gli esami per corso, anno e semestre, con i link e le spunte. Per Giurisprudenza, Medicina, SUSBUS e SECI incolla l'elenco ufficiale degli esami (anche gli opzionali) o carica un CSV nello stesso formato.</p>${S.canWrite ? '<button class="btn pri" data-eximport>Carica CSV / elenco</button>' : ""}</div>`}
+  </div>`;
+};
+function openExImport() {
+  openModal(`${sheetHead("Esami e dispense", "Carica CSV o elenco")}<form class="form" id="eximpfrm">
+    <p class="small muted" style="grid-column:1/-1">Due modi. <b>1)</b> Scegli un file CSV (come <i>Dispense_1.csv</i>, anche con più corsi). <b>2)</b> Incolla un elenco copiato dal sito UniFi o da un foglio: una riga per esame, colonne <i>Esame · Anno · Semestre · CFU · Obbligatorio/Opzionale</i> (anche con intestazione). Rimporti senza doppioni: gli esami già presenti si aggiornano e <b>le spunte restano</b>.</p>
+    <label class="fld wide"><span>File CSV</span><input type="file" id="exi_file" accept=".csv,text/csv,.tsv,.txt"></label>
+    <label class="fld wide"><span>Oppure incolla l'elenco</span><textarea id="exi_text" rows="6" placeholder="Diritto privato&#9;I anno&#9;I semestre&#9;9&#9;Obbligatorio"></textarea></label>
+    <label class="fld wide"><span>Corso per le righe che non lo indicano</span><select id="exi_corso">${CORSO_OPT.map(c => `<option>${c}</option>`).join("")}</select></label>
+    <div id="exi_msg" class="small" style="grid-column:1/-1"></div>
+    <div class="form-foot fld wide"><div class="row"><button type="button" class="btn ghost sm" data-extpl>Scarica il modello CSV</button></div><div class="row"><button type="button" class="btn" data-close>Chiudi</button><button class="btn pri">Importa</button></div></div></form>`);
+}
+document.addEventListener("click", async e => {
+  const t = e.target, q = s => t.closest(s); let x;
+  if (q("[data-eximport]")) { openExImport(); return; }
+  if (q("[data-extpl]")) { downloadText("UniLink_Esami_modello.csv", "﻿" + csvTemplate(), "text/csv"); return; }
+  if (q("[data-exexport]")) { downloadText("UniLink_Esami_" + localISO() + ".csv", csvExport(), "text/csv"); toast("CSV scaricato"); return; }
+  if ((x = q("[data-exst]"))) { if (!S.canWrite) return; const [id, k] = x.dataset.exst.split("|"), ex = exAll().find(y => y.id === id); if (!ex) return; await setDoc("exams", id, { st: { [k]: ST_NEXT[exSt(ex, k)] } }); }
+});
+document.addEventListener("submit", async e => {
+  if (e.target.id !== "eximpfrm") return; e.preventDefault();
+  const msg = document.getElementById("exi_msg"), file = document.getElementById("exi_file").files[0], pasted = document.getElementById("exi_text").value.trim();
+  if (!file && !pasted) { msg.textContent = "Scegli un file o incolla un elenco."; return; }
+  const b = e.target.querySelector("button.pri"); b.disabled = true; b.textContent = "Importo…";
+  try { const text = file ? await file.text() : pasted, list = csvToExams(text, document.getElementById("exi_corso").value); if (!list.length) throw new Error("Non ho trovato nessun esame."); const r = await importExams(list); msg.innerHTML = `Fatto: <b>${r.nuovi}</b> nuovi, <b>${r.agg}</b> aggiornati.`; toast(`${list.length} esami importati`); S.f.exC = ""; render(); }
+  catch (er) { msg.innerHTML = `<span style="color:var(--red)">${esc(er.message || "Importazione non riuscita")}</span>`; }
+  b.disabled = false; b.textContent = "Importa";
 });
 
 function go(v) {
