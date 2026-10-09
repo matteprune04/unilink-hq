@@ -4,6 +4,21 @@
    "id": "landing",
    "versioni": [
     {
+     "n": 28,
+     "tag": "landing-v28",
+     "data": "2026-10-09T10:27+00:00",
+     "autore": "Claude",
+     "nota": "Web app vera (demo): Planner in arrivo con registrazione dell'interesse, Esercizi e simulazioni, lettore con evidenziatore, commenti, focus e stampa",
+     "commit": "893e18d",
+     "demo_v": 14,
+     "demo_data": "2026-10-09",
+     "impronta": "547dbee27b68bd91",
+     "kb": 5663,
+     "file": "UniLink_landing_demo-v14_backup28_2026-10-09.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v28/UniLink_landing_demo-v14_backup28_2026-10-09.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v28/demo-landing"
+    },
+    {
      "n": 27,
      "tag": "landing-v27",
      "data": "2026-10-09T10:12+00:00",
@@ -418,6 +433,21 @@
   {
    "id": "webapp",
    "versioni": [
+    {
+     "n": 29,
+     "tag": "webapp-v29",
+     "data": "2026-10-09T10:27+00:00",
+     "autore": "Claude",
+     "nota": "Web app vera (demo): Planner in arrivo con registrazione dell'interesse, Esercizi e simulazioni, lettore con evidenziatore, commenti, focus e stampa",
+     "commit": "893e18d",
+     "demo_v": 18,
+     "demo_data": "2026-10-09",
+     "impronta": "6752f2ae940fac8d",
+     "kb": 487,
+     "file": "UniLink_webapp_demo-v18_backup29_2026-10-09.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/webapp-v29/UniLink_webapp_demo-v18_backup29_2026-10-09.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v29/demo-webapp"
+    },
     {
      "n": 28,
      "tag": "webapp-v28",
@@ -846,5 +876,5 @@
    "url": "https://matteprune04.github.io/unilink-hq/demo-webapp/"
   }
  ],
- "aggiornato": "2026-10-09T10:12+00:00"
+ "aggiornato": "2026-10-09T10:27+00:00"
 }
