@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://www.unilinkfirenze.it/sitemap-index.xml

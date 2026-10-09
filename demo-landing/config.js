@@ -1,0 +1,953 @@
+// UniLink · Landing (demo v2) — CONFIGURAZIONE
+// -----------------------------------------------------------------------------
+// Questo è il file da toccare per cambiare COSA c'è nella demo; il design (ul.css) e il
+// funzionamento (app.js) leggono da qui. Riferimento: architettura/UniLink_Architettura_Landing.pdf
+//
+//   UL_CFG.versione   → numero, data e nota (compare nel footer)
+//   UL_CFG.numeri     → numeri reali di Google Analytics (home)
+//   UL_CFG.hub        → le aree di studio: stato "attivo" | "in_arrivo"
+//   UL_CFG.fasi       → Prima · Durante · Dopo: voci del menu e delle pagine
+//   UL_CFG.prezzi     → il LISTINO (da decidere): si cambia qui, la pagina Prezzi si ridisegna
+//   UL_CFG.decidere   → le card della sezione arancio DA DECIDERE (una card = un'idea con la sua architettura)
+//   Gli strumenti stanno in tools.js (condiviso con la web app).
+// -----------------------------------------------------------------------------
+window.UL_CFG = {
+  versione: { n: 14, data: "2026-10-09", nota: "Landing v14 · nuovo logo (libro aperto + persona, testa più bassa, colori UniLink) con favicon e icona per il telefono; il vecchio è in Archivio. Prima, Landing v13 · commenti v12: collezione completa per area (Economia, Giurisprudenza, Medicina) → corso (EA, EC, SUSBUS, SECI) → anno e semestre, ricerca in tutte le aree, i tre vantaggi in alto, schede con copertina e sconto, Economia Aziendale gratis spiegata. Prima, v12 · commenti v11: Simulazione a 5,99 €, strumenti con illustrazione grande e una riga (home e pagina Strumenti), Erasmus visivo. Prima, v11 · commenti v10: via i numeri in home, icone vere degli hub, modulo «la tua scuola non c'è?», «Parti da dove sei» con destinazioni chiare, Plus = il coach (Planner stile TTP, errori, pronto per l'esame), strumenti in vetrina con «come si usa» e il Planner come Plus, orientatori per corso e carriera, Studiare con strumenti, Planner ed Erasmus, Guida con le sole facoltà attive, Ambassador con il programma inviti, calcolatore con le singole a prezzo pieno. Prima, v10 · commenti v9: Guida più leggibile (testo più grande, più aria, contrasto pieno), Materiali con lo sconto in evidenza (−% e «Risparmi») e tabella più chiara, calcolatore con gli esami a scelta, 4 strumenti per tutti (Quanto prendo alla laurea?, Che media mi serve?, Ci stai nei tempi?, Erasmus: punteggio e mete), gli altri nell'archivio dei founder. Prima, v9 · risposte di Matteo e PDF «Architettura della landing reale»: barra Hub · Guida · Materiali · Strumenti · Ambassador, Guida e Medicina «in arrivo» di nuovo nel sito, registrazione aperta a tutti (niente anteprima a numero chiuso), si paga solo nella web app, strumenti in vetrina (si usano nella web app), pagina Ambassador con profili, footer con avvisi e link legali. La v8 (anteprima, pagamento e strumenti funzionanti nella landing) resta per i founder in Archivio. Prima, v8: · decisioni del meeting del 7/10 e commenti v7: listino di lancio (Simulazione 5,99, Dispensa completa 12,99, Pacchetto semestre 29,99 o 34,99 per percorso, Plus 14,99 o 7,99), Economia Aziendale gratis, niente download, anteprima a numero chiuso in home, Ambassador al 20% al posto dei profili dei founder, calcolatore per corso e curriculum, indice completo di Economia Aziendale. Archiviati (Founder → Archivio): Guida, Community e mentor, Tesi, Carriera e CV, hub Medicina, profili dei founder, listino P2. Prima, v7: pagamento con Stripe Checkout (simulato) da Plus, calcolatore e anteprima esame, sezione «Come si paga» con le commissioni sul listino P2. Prima, v6: Planner nella tabella dei piani (piano personale con la Completa o con Plus, come nella web app v4). Prima, v5: prezzi con card pulite, «Cosa c'è dentro» e calcolatore del pacchetto con il consiglio. Prima, v4: barra Hub · Guida · Materiali · Strumenti · Community, menu Founder, Materiali e Anteprima (P2), Planner di esempio (P3), tab Scegliere (P4), Guida per facoltà, founder e FAQ da config." },
+  wa: "https://chat.whatsapp.com/KdA4r1POh6MAiBbLmmES0L",
+  // Commenti del team sulle pagine e sulle sezioni (solo demo). Si salvano nel browser e si esportano in PDF/Markdown/JSON.
+  // In produzione (Framer): attivi: false.
+  commenti: { attivi: true, chiave: "ul-commenti-v1" },
+  app: "../demo-webapp/",   // la demo della web app (stesso repository, cartella accanto)
+  appVera: "../demo-app/accedi", // «Accedi»: la web app vera importata nella demo (con l'audit UX); i link profondi restano sulla demo di prima
+
+  // Numeri REALI (Google Analytics 4 e catalogo): aggiornare a mano o con il sync giornaliero dell'HQ
+  numeri: { utenti: "876", pagine: "7.855", esami: "34", fonte: "Google Analytics 4 e catalogo · 8 set – 5 ott 2026" },
+
+  // SCHERMATE REALI della web app demo (immagini in img/app/, solo da guardare: nessuna interazione).
+  // Ogni schermata ha 3 file: img/app/<id>-desk.webp · -tab.webp · -ph.webp. Per aggiornarle: node _src/screenshot_webapp.js
+  // e python _src/png_to_webp.py (vedi CONTESTO_DEMO.md). Se la web app cambia, aggiornare anche questo elenco.
+  schermate: {
+    gruppi: [
+      { id: "studio", nome: "Studio", quando: "Durante", desc: "Dashboard, esami, materiali, esercitazioni." },
+      { id: "percorso", nome: "Il mio percorso", quando: "Dopo", desc: "Media e voto di laurea, Erasmus, magistrali." },
+      { id: "account", nome: "Piano e account", quando: "Sempre", desc: "Abbonamento e profilo." },
+      { id: "decidere", nome: "Moduli da decidere", quando: "In prova", desc: "Proposte già disegnate nella web app, non ancora decise." },
+      { id: "altro", nome: "Accesso e aree in arrivo", quando: "Sempre", desc: "Accesso e stato vero di Giurisprudenza." },
+    ],
+    lista: [
+      { id: "studio-dashboard", gruppo: "studio", titolo: "Dashboard", account: "Giulia · Economia · piano Gratuito", nota: "Cosa ti serve adesso: la prossima azione, gli esami che stai preparando e i giorni all'appello." },
+      { id: "studio-esami", gruppo: "studio", titolo: "I miei esami", account: "Giulia · Economia · piano Gratuito", nota: "Partizione, data dell'appello, voto obiettivo e avanzamento di ogni esame, filtrabili per stato." },
+      { id: "studio-esame", gruppo: "studio", titolo: "Pagina di un esame", account: "Giulia · Economia · piano Gratuito", nota: "Impostazioni dell'esame e avanzamento per argomento: gli argomenti si spuntano uno a uno." },
+      { id: "studio-materiali", gruppo: "studio", titolo: "Materiali · i miei pacchetti", account: "Marco · Economia · Pacchetto esame", nota: "Le dispense che possiedi, sempre aggiornate: si leggono e si annotano nell'area, non si scaricano." },
+      { id: "studio-catalogo", gruppo: "studio", titolo: "Materiali · catalogo", account: "Giulia · Economia · piano Gratuito", nota: "Il catalogo degli altri esami, per anno, con anteprima e prezzo di lancio." },
+      { id: "studio-esercitazioni", gruppo: "studio", titolo: "Esercitazioni", account: "Giulia · Economia · piano Gratuito", nota: "Gli esami con quiz, quante domande e a che punto sei. Le domande sono scritte per la demo." },
+      { id: "studio-quiz", gruppo: "studio", titolo: "Quiz di un esame", account: "Giulia · Economia · piano Gratuito", nota: "Quiz di prova, quiz rapido, ripasso errori e simulazione d'esame; sotto gli argomenti e lo storico delle sessioni." },
+      { id: "percorso-libretto", gruppo: "percorso", titolo: "Media e voto di laurea", account: "Luca · Economia · piano Plus", nota: "Esami superati, media pesata e scenari di voto di laurea con tre ipotesi." },
+      { id: "percorso-erasmus", gruppo: "percorso", titolo: "Erasmus", account: "Luca · Economia · piano Plus", nota: "Checklist di scadenze e destinazioni salvate. Le regole valgono solo se prese dal bando ufficiale." },
+      { id: "percorso-magistrali", gruppo: "percorso", titolo: "Magistrali", account: "Luca · Economia · piano Plus", nota: "Per ora leggero: rimanda allo strumento sulle magistrali. È una delle parti che si può far crescere." },
+      { id: "account-abbonamento", gruppo: "account", titolo: "Abbonamento", account: "Giulia · Economia · piano Gratuito", nota: "Simulazione, Dispensa completa, Pacchetto semestre e Plus, con i prezzi di lancio del 7/10. Il pagamento è simulato." },
+      { id: "account-profilo", gruppo: "account", titolo: "Profilo e account", account: "Giulia · Economia · piano Gratuito", nota: "Dati personali, area di studio e ateneo, colore del profilo e gestione dei propri dati." },
+      { id: "decidere-elenco", gruppo: "decidere", titolo: "Tutte le proposte", account: "Giulia · Economia · piano Gratuito", nota: "L'elenco delle proposte ancora da decidere, ognuna con la sua scheda di architettura." },
+      { id: "decidere-career-piano", gruppo: "decidere", titolo: "Career · il mio piano", account: "Luca · Economia · piano Plus", nota: "Modulo proposto, non ancora deciso: punteggio di carriera e prossime azioni. Funziona con dati di esempio." },
+      { id: "decidere-career-opportunita", gruppo: "decidere", titolo: "Career · opportunità", account: "Luca · Economia · piano Plus", nota: "Modulo proposto: stage e graduate program con candidatura rapida. Aziende e annunci sono di esempio." },
+      { id: "decidere-network-home", gruppo: "decidere", titolo: "Network · home dell'ateneo", account: "Martina · Economia · UniPi", nota: "Modulo proposto: più atenei, ognuno con la sua home. Oggi UniLink è solo UniFi." },
+      { id: "altro-in-arrivo", gruppo: "altro", titolo: "Area in arrivo (Giurisprudenza)", account: "Elena · Giurisprudenza", nota: "Lo stato vero di oggi: nessuna promessa, lista d'attesa e una domanda su cosa serve a chi studia lì." },
+      { id: "altro-accesso", gruppo: "altro", titolo: "Accesso", account: "—", nota: "Accesso con email e password, oppure con un account demo (accesso rapido)." },
+    ],
+  },
+
+  hub: [
+    { slug: "economia", icoImg: "", nome: "Economia", stato: "attivo", href: "hub-economia.html", ico: "€", cls: "eco", img: "novoli-piazza.jpg",
+      desc: "34 esami di EA ed EC con dispense, quiz e simulazioni. Strumenti per Erasmus, media e laurea.", tag: ["Matricole", "Esami", "Dopo la laurea"] },
+    { slug: "giurisprudenza", icoImg: "", nome: "Giurisprudenza", stato: "in_arrivo", href: "hub-giurisprudenza.html", ico: "§", cls: "giu", img: "palazzo.jpg",
+      desc: "Lo stesso metodo, per un ciclo unico di cinque anni. Lo costruiamo con chi studia lì.", tag: ["Primo anno", "Esami", "Professioni legali"] },
+    { slug: "medicina", icoImg: "", nome: "Medicina", stato: "in_arrivo", href: "hub-medicina.html", ico: "+", cls: "med", img: "aula.jpg",
+      desc: "Dal semestre filtro (Fisica, Chimica, Biologia) agli esami del corso. Stiamo raccogliendo interesse.", tag: ["Semestre filtro", "Esami", "Tirocini"] },
+  ],
+
+  // ===========================================================================================================
+  // DA QUI: dati aggiunti con le modifiche A del 7 ottobre (commenti dei founder + PDF «Proposte», P2 e P7).
+  // Ogni testo e ogni immagine qui sotto corrisponde a un campo che in Framer va reso modificabile
+  // (proprietà del componente o collezione CMS): l'elenco completo è in LEGGIMI.md, sezione «Campi per Framer».
+  // ===========================================================================================================
+
+  // v13 (commento S15.3 del 8/10): la collezione si divide per AREA → CORSO → anno e semestre. Stato: "attivo" o "in_arrivo".
+  // SUSBUS e SECI: sigle come le ha scritte Matteo, il nome per esteso va confermato prima della landing reale.
+  collezione: {
+    corsi: {
+      economia: [["EA", "Economia Aziendale", "attivo"], ["EC", "Economia e Commercio", "attivo"], ["SUSBUS", "SUSBUS", "in_arrivo"], ["SECI", "SECI", "in_arrivo"]],
+      giurisprudenza: [["GIU", "Giurisprudenza · ciclo unico", "in_arrivo"]],
+      medicina: [["MED", "Medicina e Chirurgia", "in_arrivo"]],
+    },
+    vantaggi: [["−32%", "prezzi di lancio", "su tutte le dispense, tutto l'anno"], ["0 €", "un esame completo", "Economia Aziendale gratis per tutti"], ["29,99 €", "pacchetto semestre", "3 dispense complete del tuo percorso"]],
+    gratis: "Gratis per davvero: la leggi tutta, con quiz e simulazioni, solo creando l'account. Serve a provare UniLink prima di spendere.",
+  },
+
+  // Barra di navigazione (P7, aggiornata il 7/10). «materiali» è il nome proposto al posto di «Market»: si cambia qui.
+  nav: { guida: "Guida", materiali: "Materiali", strumenti: "Strumenti", ambassador: "Ambassador", accedi: "Accedi", founder: "Founder" },   // v9: come nel PDF della landing reale (cap. 5); Community → Ambassador
+
+  // HOME · testi e immagini (H02 hero, H03 numeri, H04 scuole). I numeri restano quelli veri di «numeri».
+  home: {
+    hero: {
+      foto: [
+        { img: "mani-appunti.jpg", alt: "Appunti a mano su un quaderno" },
+        { img: "render-dispense.jpg", alt: "Le dispense UniLink" },
+        { img: "campus-portico.jpg", alt: "Il portico del campus di Novoli" },
+        { img: "laurea.jpg", alt: "Il giorno della laurea" },
+      ],
+      sticker1: { titolo: "Dal programma UniFi", testo: "ogni dispensa segue il syllabus" },
+      sticker2: "Scritte da chi l'ha appena dato",
+    },
+    numeri: {
+      voci: { utenti: "studenti hanno usato UniLink nell'ultimo mese", pagine: "pagine consultate in 28 giorni", esami: "esami di Economia con la loro dispensa" },
+      img: "atrio.jpg", alt: "L'atrio della Scuola di Economia e Management a Novoli",
+    },
+  },
+
+  // CATALOGO in home (H06): per hub, i corsi più scaricati, poi «Scopri la collezione completa» → Materiali.
+  // ATTENZIONE: oggi non abbiamo i dati di download per esame: l'elenco è scelto a mano (primo anno + più cercati)
+  // e va sostituito con i dati veri quando ci saranno (Google Analytics o backend).
+  catalogo: {
+    piuScaricati: { economia: ["microeconomia", "economia_aziendale", "statistica", "diritto_pubblico", "matematica-per-applicazioni-economiche-i", "macroeconomia"] },
+    nota: "Selezione a mano: diventerà «i più letti» con i dati veri.",
+  },
+
+  // LISTINO · deciso nel meeting dei founder del 7/10/2026 (HQ → Decisioni «MEETING 7/10»). Prezzi comunicati come SCONTO DI LANCIO:
+  // ogni prezzo è [prezzo di lancio, prezzo pieno barrato]. Niente Appunti singoli, niente Pacchetto anno, niente «fuori sessione»
+  // (il listino precedente, P2, è in archivio/). Il pacchetto semestre costa in base agli esami del semestre del PERCORSO dello studente
+  // (percorsi.js): 3 esami 29,99 · 4 esami 34,99; con più di 4 se ne scelgono 4. Economia Aziendale completa: gratis per tutti, come esempio.
+  listino: {
+    stato: "Prezzi di lancio · decisi il 7/10",
+    titolo: "Prezzi di *lancio*",
+    sotto: "Prezzi scontati per il lancio: il prezzo pieno è quello barrato. Uguali tutto l'anno, senza abbonamenti.",
+    lancio: "I prezzi sono scontati per il lancio di UniLink: il prezzo pieno è quello barrato. Valgono tutto l'anno, senza abbonamenti né rinnovi.",
+    prezzi: { simulazione: [5.99, 9.99], completa: [12.99, 18.99], semestre: { 3: [29.99, 39.99], 4: [34.99, 44.99] }, plus: 14.99, plusConPacchetto: 7.99 },
+    maxEsamiPacchetto: 4,
+    gratisEsame: "economia_aziendale",
+    gratis: "schede degli esami, quiz di prova, strumenti e la dispensa completa di Economia Aziendale (I anno), gratis per tutti come esempio.",
+    gratisNota: "È l'esempio dell'offerta UniLink: la dispensa completa, gratis per tutti.",
+    plusNota: "Plus è il coach: il Planner stile TTP su tutti gli esami, l'analisi degli errori e «pronto per l'esame?» (proposta D51 della web app).",
+    // «Cosa c'è dentro» (Materiali): colonne Simulazione · Dispensa completa · Pacchetto semestre · Plus. 1 = sì, 0 = no, testo = condizione.
+    dentro: [
+      ["Materiali · da leggere e annotare nell'area personale", [
+        ["Dispensa completa (appunti e sbobine)", 0, 1, 1, 0],
+        ["Quiz per argomento", 0, 1, 1, 0],
+        ["Simulazione d'esame con correzione", 1, 1, 1, 0],
+        ["Informazioni utili sull'esame", 1, 1, 1, 0],
+        ["Esami inclusi", "1", "1", "3 o 4 del tuo percorso", "—"],
+        ["Aggiornamenti della stessa edizione", 1, 1, 1, 0],
+      ]],
+      ["Il metodo", [
+        ["«Ci stai nei tempi?» e metodo standard", 1, 1, 1, 1],
+        ["Planner stile TTP: piano personale, calendario, «oggi»", 0, 0, 0, "tutti gli esami"],
+        ["Analisi degli errori e «pronto per l'esame?»", 0, "per quell'esame", "esami del pacchetto", "tutti gli esami"],
+        ["Ripasso degli errori mescolato tra gli esami", 0, 0, 0, 1],
+      ]],
+      ["Come si usa", [
+        ["Si scarica?", "no, si legge qui", "no, si legge qui", "no, si legge qui", "—"],
+        ["Prezzo", "lancio · invece di 9,99", "lancio · invece di 18,99", "lancio · invece di 39,99 / 44,99", "una volta per sessione"],
+      ]],
+    ],
+  },
+
+  // LANCIO · anteprima a numero chiuso (nota di Matteo del 7/10: «al posto della parte di scaricare gli appunti un form di iscrizione
+  // per anteprima a numero chiuso, con esclusività»). Cosa regalare a chi si iscrive NON è deciso: card L27 in Da decidere.
+  // posti e iscrittiDemo sono numeri di esempio da decidere.
+  lancio: {
+    posti: 150, iscrittiDemo: 37,
+    titolo: "Entra nell'*anteprima*",
+    testo: "Prima del lancio apriamo l'area personale a un numero chiuso di studenti di Economia. Chi entra la prova per primo, ci dice cosa cambiare e riceve un codice invito personale.",
+    ricevi: ["Accesso anticipato all'area personale", "Il tuo codice invito personale, via email", "Economia Aziendale completa, gratis come per tutti"],
+    cta: "Prenota il tuo posto",
+  },
+
+  // AMBASSADOR · deciso il 7/10: solo a commissione, 20% sugli acquisti fatti con il proprio codice, nessun accesso gratuito.
+  // Sta in home al posto di «Studenti, come te» (commento di Matteo: «magari qui mettere gli Ambassador»).
+  ambassador: {
+    commissione: 20, esempio: 10,
+    passi: [["Ricevi il tuo codice", "Un codice personale, sempre lo stesso, da condividere nel tuo anno."], ["Lo usa chi compra", "Simulazioni, dispense, pacchetti: ogni acquisto fatto con il tuo codice conta."], ["Il 20% è tuo", "Vedi iscritti, acquisti e commissione nella tua area personale."]],
+    nota: "Solo commissione: essere ambassador non dà accesso gratuito ai materiali.",
+    cta: "Candidati",
+    // PROFILI (risposta di Matteo: «foto e nomi degli ambassador»). 3–6 profili veri, scelti da Niccolò/Cosimo tra gli attivi del
+    // gruppo WhatsApp, SOLO con liberatoria firmata (revocabile). Qui sono SEGNAPOSTO: nomi, foto e frasi da sostituire.
+    profili: [
+      { nome: "Nome Cognome", corso: "Economia Aziendale", anno: "II anno", frase: "Frase breve dell'ambassador: perché UniLink, cosa consiglia a chi inizia.", foto: "" },
+      { nome: "Nome Cognome", corso: "Economia e Commercio", anno: "III anno", frase: "Frase breve dell'ambassador: l'esame che gli è piaciuto di più e un consiglio.", foto: "" },
+      { nome: "Nome Cognome", corso: "Economia Aziendale", anno: "I anno", frase: "Frase breve dell'ambassador: come si è organizzato per la prima sessione.", foto: "" },
+      { nome: "Nome Cognome", corso: "Giurisprudenza", anno: "hub in arrivo", frase: "Il primo ambassador di un hub in arrivo: raccoglie cosa manca a chi studia lì.", foto: "" },
+    ],
+    segnaposto: "Profili di esempio: si pubblicano solo con foto, frase e liberatoria firmata.",
+  },
+
+  // VETRINA DEGLI STRUMENTI (v9): nella landing si mostrano, si usano nella web app (#/app/strumenti/<id>) con l'account gratuito.
+  // domanda = a cosa risponde · tempo = quanto ci vuole · esempio = risultato d'esempio (etichetta «Esempio») · fonte = da dove viene
+  // la regola · metrica = numero vero dalla web app (Supabase), mostrato solo se valore ≥ soglia (oggi nessun dato: valore null).
+  vetrina: {
+    soglia: 50,
+    planner: { titolo: "Il Planner · UniLink Plus", testo: "Il tuo piano di studio stile TTP: dalla data dell'appello e dal voto che vuoi, sessioni da 45 minuti giorno per giorno, su tutti i tuoi esami.", cta: "Come funziona", href: "durante.html#metodo" },
+    tools: {
+      "voto": { inserisci: "la media (o la prendiamo dal libretto), lodi, quando ti laurei", domanda: "Con la mia media, che voto prendo alla laurea?", tempo: "1 minuto", esempio: "Media 27,4 · 2 lodi · tesi buona · in corso · 40+ CFU l'anno → presentazione 101,1 · voto stimato 108", fonte: "regole ufficiali della prova finale della Scuola di Economia e Management UniFi (20/6/2017, integrate il 22/5/2018)", metrica: { valore: null, testo: "voti di laurea calcolati questo mese" } },
+      "voto-cdl": { domanda: "Che voto di laurea posso prendere, con le regole del mio corso?", tempo: "1 minuto", esempio: "Economia · media 27,4 · 2 lodi → voto stimato 105", fonte: "regole del proprio corso di laurea (Economia: Scuola di Economia UniFi)", metrica: { valore: null, testo: "voti di laurea calcolati questo mese" } },
+      "media": { inserisci: "i voti che hai e i CFU che restano", domanda: "Che voto mi serve negli esami che restano per arrivare alla media che voglio?", tempo: "2 minuti", esempio: "Media 26,1 su 96 CFU · obiettivo 27 · restano 84 CFU → ti serve 28,0 di media", fonte: "media ponderata sui CFU (calcolo esatto)", metrica: { valore: null, testo: "obiettivi calcolati questo mese" } },
+      "peso": { domanda: "Quanto si muove la mia media con il prossimo esame?", tempo: "30 secondi", esempio: "Media 26,5 su 60 CFU · esame da 9 CFU con 30 → nuova media 26,96", fonte: "media ponderata sui CFU (calcolo esatto)", metrica: { valore: null, testo: "simulazioni questo mese" } },
+      "countdown": { domanda: "Quanto tempo utile ho davvero fino all'appello?", tempo: "30 secondi", esempio: "26 giorni · 2,5 ore al giorno, 6 giorni su 7 → 46 ore utili, 61 sessioni da 45 minuti", fonte: "margine del 18% per imprevisti (metodo del Planner)", metrica: { valore: null, testo: "conti alla rovescia attivi" } },
+      "piano": { domanda: "Ci sto nei tempi per l'appello? Quanto devo fare ogni giorno?", tempo: "2 minuti", esempio: "12 argomenti · 20 giorni → 0,6 argomenti al giorno, ripasso finale di 3 giorni", fonte: "metodo del Planner UniLink", metrica: { valore: null, testo: "piani creati questo mese" } },
+      "erasmus": { inserisci: "media, CFU e certificazione di lingua", domanda: "Che punteggio avrei nel bando Erasmus, e quali mete posso puntare?", tempo: "2 minuti", esempio: "Media 27 · 120 CFU · B2 → punteggio stimato 71/100", fonte: "regole di ESEMPIO: vanno prese dal bando ufficiale prima del lancio", metrica: { valore: null, testo: "stime Erasmus questo mese" } },
+      "voto-lmg": { inserisci: "media e punti della tesi", domanda: "Che voto di laurea posso prendere a Giurisprudenza?", tempo: "1 minuto", esempio: "Media 27 · tesi 5 punti → voto stimato 104", fonte: "regole di ESEMPIO del ciclo unico, da verificare", metrica: { valore: null, testo: "voti calcolati" } },
+      "filtro": { inserisci: "settimane e materie", domanda: "Come organizzo il semestre filtro di Medicina?", tempo: "2 minuti", esempio: "10 settimane · 3 materie → 14 ore a settimana per materia", fonte: "regole di ESEMPIO, da verificare con il bando ministeriale", metrica: { valore: null, testo: "piani creati" } },
+    },
+  },
+
+  // ANTEPRIMA dell'esame (preview.html): cosa si mostra prima di comprare.
+  // indice[slug] = indice COMPLETO e reale: capitoli e paragrafi dei sorgenti della dispensa (00_DISPENSE_BUILD/sorgenti), raggruppati
+  // nei moduli del programma ufficiale UniFi (Course Catalogue 2026/27) e con la tabella di copertura. Oggi c'è Economia Aziendale
+  // (commento S16.1 di Matteo); per gli altri esami si fa allo stesso modo. argomenti[slug] = argomenti della banca di quiz (Planner).
+  anteprima: {
+    indice: {
+      economia_aziendale: {
+        fonte: "Indice della dispensa UniLink (12 capitoli), confrontato con il programma ufficiale UniFi 2026/27 di Economia Aziendale (B018991, 9 CFU, I anno, I semestre; testo: F. Giunta, Economia Aziendale, Wolters Kluwer 2025).",
+        moduli: [
+          { titolo: "L'azienda, l'ambiente, il capitale e la gestione", capitoli: [
+            { n: 1, titolo: "Oggetto e soggetti dell'azienda", sezioni: ["Azienda di erogazione e azienda di produzione", "I soggetti dell'azienda", "Azienda pubblica e gruppi aziendali"] },
+            { n: 2, titolo: "Azienda e ambiente", sezioni: ["L'ambiente generale", "L'ambiente competitivo", "Dinamismo ambientale, innovazione e rischio d'impresa"] },
+            { n: 3, titolo: "Gli elementi costitutivi dell'azienda", sezioni: ["Il capitale finanziario", "Il capitale intellettuale", "Il sistema aziendale", "I valori guida del sistema aziendale", "Formula imprenditoriale e amministrazione economica"] },
+            { n: 4, titolo: "Le operazioni di gestione", sezioni: ["La gestione organizzata dell'azienda: decisioni e operazioni", "Le fasi della gestione: provvista, trasformazione, scambio", "Gestione interna e gestione esterna: la catena del valore", "Il sistema delle operazioni di gestione"] },
+            { n: 5, titolo: "I valori relativi alle operazioni di gestione", sezioni: ["Dal sistema delle operazioni al sistema dei valori", "I valori derivanti dalle operazioni di gestione", "L'ampliamento del sistema dei valori"] },
+            { n: 6, titolo: "Il reddito come risultato economico", sezioni: ["Il risultato economico della gestione: reddito totale e reddito d'esercizio", "La determinazione del reddito d'esercizio", "Le relazioni fra reddito e capitale", "Aree di gestione e figure di reddito"] },
+          ] },
+          { titolo: "Il sistema delle rilevazioni", capitoli: [
+            { n: 9, titolo: "Le rilevazioni per il controllo delle condizioni di equilibrio della gestione", sezioni: ["Struttura organizzativa e sistemi operativi", "I sistemi di decisione", "I sistemi di controllo", "Il controllo della gestione e la rilevazione", "I piani temporali delle rilevazioni", "Rilevazioni contabili ed extra-contabili. Il conto"] },
+            { n: 10, titolo: "La contabilità generale", sezioni: ["La contabilità generale e il metodo della partita doppia", "Il sistema del capitale e del risultato economico", "Le rilevazioni continuative: finanziamenti, acquisti e vendite, crediti e debiti", "La situazione contabile al termine del periodo amministrativo"] },
+            { n: 11, titolo: "Dalle rilevazioni in contabilità generale al bilancio d'esercizio", sezioni: ["L'assestamento dei conti e la redazione dell'inventario", "Le rettifiche sottrattive: ammortamenti, rimanenze, risconti", "Le rettifiche integrative: fondi, imposte, ratei", "La chiusura dei conti alla fine dell'esercizio", "Il bilancio d'esercizio come strumento di informazione", "La riapertura dei conti all'inizio dell'esercizio", "L'utilizzo dei fondi", "Il Conto Economico a struttura logica"] },
+          ] },
+          { titolo: "Le condizioni di equilibrio della gestione", capitoli: [
+            { n: 7, titolo: "L'equilibrio economico", sezioni: ["Equilibrio economico oggettivo e soggettivo", "Il costo del capitale", "L'equilibrio economico a valere nel tempo", "Le determinanti dell'equilibrio economico", "I costi: costi fissi e variabili, punto di pareggio, margine di contribuzione, Activity Based Costing"] },
+            { n: 8, titolo: "L'equilibrio finanziario", sezioni: ["Le relazioni fra entrate e uscite monetarie", "Il fabbisogno finanziario: componente costante e componente variabile", "Equilibrio finanziario ed equilibrio patrimoniale (con l'effetto di leva finanziaria)", "Il processo di autofinanziamento e gli accantonamenti", "L'autosufficienza del sistema d'impresa"] },
+          ] },
+          { titolo: "Il valore economico del capitale", capitoli: [
+            { n: 12, titolo: "Il valore economico del capitale", sezioni: ["Il valore economico del capitale", "Criteri e metodi di determinazione del valore economico del capitale", "La determinazione basata sui flussi reddituali attesi (metodi puri)", "La determinazione basata sul valore degli stock patrimoniali (metodi misti): la stima dell'avviamento", "La scelta del metodo"] },
+          ] },
+        ],
+        copertura: [
+          ["Soggetti aziendali, elementi costitutivi, capitale", "cap. 1–3"], ["Fasi e operazioni di gestione, valori", "cap. 4–5"], ["Reddito e relazione reddito-capitale", "cap. 6"],
+          ["Partita doppia, conto, acquisti, vendite, finanziamenti", "cap. 9–10"], ["Rettifiche sottrattive e integrative, chiusura e riapertura", "cap. 11"],
+          ["Equilibrio economico, struttura dei costi, break even e margine di contribuzione", "cap. 7"], ["Equilibrio finanziario e leva finanziaria", "cap. 8"], ["Valore economico del capitale", "cap. 12"],
+        ],
+        nota: "Tutti gli argomenti del programma ufficiale sono coperti. La dispensa segue l'ordine del manuale (gli equilibri prima delle rilevazioni); qui i capitoli sono raggruppati per i moduli del programma. Verificato il 7/10/2026.",
+      },
+    },
+    argomenti: {
+      microeconomia: ["Elasticità", "Scelte del consumatore", "Produzione e costi", "Concorrenza perfetta", "Monopolio", "Teoria dei giochi", "Esternalità"],
+      economia_aziendale: ["Patrimonio", "Reddito", "Partita doppia", "Assestamento", "Analisi dei costi", "Indici di bilancio", "Azienda"],
+      statistica: ["Statistica descrittiva", "Variabilità", "Probabilità", "Variabili casuali", "Inferenza", "Regressione"],
+    },
+    perche: ["Segue il programma ufficiale di quest'anno, non quello di tre anni fa", "Ha versione e data: quando esce una revisione la trovi già aggiornata nella tua area", "La scrive chi ha appena dato l'esame, con i punti dove si sbaglia", "Quiz e simulazioni nel formato dell'appello"],
+    tips: ["Come si comporta il prof all'orale", "Le domande che tornano più spesso", "Cosa studiare per primo se hai poco tempo"],
+  },
+
+  // FOUNDER (H09) · ARCHIVIATI il 7/10 («niente profili founder» sul sito): la home non li mostra più, servono solo ad archivio/founder.html.
+  team: [
+    { id: "matteo", nome: "Matteo Prunecchi", ruolo: "Sito, prodotto e strumenti", corso: "Economia UniFi", foto: "", linkedin: "https://www.linkedin.com/search/results/people/?keywords=Matteo%20Prunecchi",
+      bio: "Testo da compilare dal profilo LinkedIn: chi è, cosa studia, cosa ha fatto prima di UniLink (2–3 frasi).", punti: ["Studi: da compilare", "Esperienze: da compilare", "In UniLink: sito, prodotto, strumenti e Framer"] },
+    { id: "cosimo", nome: "Cosimo Pucci", ruolo: "Strategia e nuovi hub", corso: "Economia UniFi", foto: "", linkedin: "https://www.linkedin.com/search/results/people/?keywords=Cosimo%20Pucci",
+      bio: "Testo da compilare dal profilo LinkedIn: chi è, cosa studia, cosa ha fatto prima di UniLink (2–3 frasi).", punti: ["Studi: da compilare", "Esperienze: da compilare", "In UniLink: strategia e nuovi hub"] },
+    { id: "niccolo", nome: "Niccolò Giusti", ruolo: "Dispense e materiali", corso: "Economia UniFi", foto: "", linkedin: "https://www.linkedin.com/search/results/people/?keywords=Niccol%C3%B2%20Giusti",
+      bio: "Testo da compilare dal profilo LinkedIn: chi è, cosa studia, cosa ha fatto prima di UniLink (2–3 frasi).", punti: ["Studi: da compilare", "Esperienze: da compilare", "In UniLink: dispense e materiali"] },
+    { id: "gianmarco", nome: "Gianmarco Campigli", ruolo: "Community e ambassador", corso: "Economia UniFi", foto: "", linkedin: "https://www.linkedin.com/search/results/people/?keywords=Gianmarco%20Campigli",
+      bio: "Testo da compilare dal profilo LinkedIn: chi è, cosa studia, cosa ha fatto prima di UniLink (2–3 frasi).", punti: ["Studi: da compilare", "Esperienze: da compilare", "In UniLink: community e ambassador"] },
+  ],
+
+  // FAQ della home (H11): ogni risposta porta verso l'account o l'acquisto. [domanda, risposta, testo del link, link]
+  faq: [
+    ["Cosa trovo gratis su UniLink?", "Anteprime e informazioni su ogni esame, quiz di prova, gli strumenti e la dispensa completa di Economia Aziendale: gratis per tutti, per vedere com'è fatta.", "Leggila nell'area personale", "@app#/app/leggi/economia-aziendale"],
+    ["Perché la dispensa UniLink e non appunti presi qua e là?", "Segue il programma ufficiale di quest'anno, è datata e aggiornata, la scrive chi ha appena dato l'esame e ha quiz e simulazioni nel formato dell'appello.", "Guarda un'anteprima", "preview.html?esame=economia_aziendale"],
+    ["Quanto costa?", "La simulazione d'esame 5,99 €, la dispensa completa 12,99 €, il pacchetto del tuo semestre 29,99 € (3 esami) o 34,99 € (4 esami). Sono prezzi di lancio, scontati.", "Vedi i materiali", "materiali.html"],
+    ["Posso scaricare le dispense?", "No: si leggono e si annotano nella tua area personale, da computer, tablet o telefono, sempre aggiornate. Così restano di chi le compra.", "Accedi", "@app"],
+    ["Come pago?", "Nell'area personale, con l'account gratuito: carta, Apple Pay, Google Pay o Klarna su Stripe. I dati della carta non passano da noi. Pagamento unico, senza rinnovi: appena paghi, la dispensa è sbloccata.", "Come si paga", "materiali.html#pagamento"],
+    ["Chi vende?", "I dati del venditore (nome o ragione sociale, partita IVA, email) compaiono qui e nei termini appena è definito il soggetto legale.", "", ""],
+    ["Cosa c'è nell'area personale?", "I tuoi esami con data e obiettivo, le dispense da leggere e annotare, le esercitazioni e UniLink Planner: il metodo standard per tutti, il piano personale con la dispensa completa.", "Accedi", "@app"],
+    ["UniLink è solo per Economia?", "Oggi i materiali sono per Economia UniFi. Giurisprudenza e Medicina sono in arrivo: lascia l'email nella lista d'attesa e ti scriviamo quando aprono.", "Scegli il tuo hub", "index.html#hub"],
+    ["UniLink è affiliato all'Università di Firenze?", "No, è un progetto indipendente fatto da studenti.", "", ""],
+  ],
+
+
+  // PLANNER · esempio solo da guardare in «Studiare» (S06), dalla proposta P3 del PDF «Proposte» (7 ottobre).
+  // Il piano si calcola UNA volta (niente ricalcolo), metodo standard per esame e fascia di voto.
+  // Numeri del PDF, inventati per il mockup: le sessioni per fascia vanno calibrate con i dati veri.
+  // ore utili = giorni × ore nette × (1 − margine); capitoli = anteprima.argomenti[esame].
+  planner: {
+    stato: "Esempio · dati inventati · proposta P3",
+    esame: "microeconomia", nome: "Microeconomia", cfu: 9, appello: "20 gennaio", gruppo: "Modelli economici",
+    giorni: 26, oreNette: 2.5, margine: 0.18, minuti: 45, riposo: "domenica", fascia: "ottimo", fatte: 21,
+    fasce: [
+      { id: "passare", nome: "Passare", voto: "18–21", sessioni: 40, cosa: "Lezione + un esercizio per capitolo, 2 simulazioni" },
+      { id: "buono", nome: "Buono", voto: "22–25", sessioni: 52, cosa: "+ ripassi di blocco, 3 simulazioni" },
+      { id: "ottimo", nome: "Ottimo", voto: "26–28", sessioni: 64, cosa: "+ seconda sessione di esercizi, 4 simulazioni, registro errori" },
+      { id: "massimo", nome: "Massimo", voto: "29–30L", sessioni: 78, cosa: "+ approfondimenti, domande d'orale, 6 simulazioni" },
+    ],
+    fasi: [["Avvio", 0.06], ["Basi", 0.32], ["Approfondimento", 0.27], ["Allenamento d'esame", 0.23], ["Rifinitura", 0.12]],
+    disclaimer: "Le fasce dicono quanto lavoro prevede il metodo per quel voto: non garantiamo il risultato.",
+    oggi: [["Lezione", "Produzione e costi · dispensa pp. 61–70"], ["Esercizi", "Produzione e costi · esercizi 1–8"], ["Ripasso", "Registro errori · Scelte del consumatore"]],
+    completate: [["Simulazione breve", "Scelte del consumatore", "Così così", 2, "ieri"], ["Esercizi", "Scelte del consumatore", "Sicuro", 0, "ieri"], ["Lezione", "Scelte del consumatore", "Sicuro", 0, "2 giorni fa"], ["Esercizi", "Elasticità", "Da rivedere", 3, "3 giorni fa"]],
+  },
+
+  // Le tre fasi (stesso modello in ogni hub: cambiano i contenuti, non la struttura).
+  // I nomi sono volutamente generici ("Dopo", non "Dopo la triennale"): valgono anche per i cicli unici.
+  fasi: [
+    { id: "prima", nome: "Prima", tab: "Scegliere", href: "prima.html", titolo: "Prima di iscriverti", sotto: "Scegliere bene, senza perdersi tra bandi e scadenze.",
+      voci: [["Scegliere il corso", "prima.html#scegliere"], ["Come funziona l'università", "prima.html#funziona"], ["Borse e tasse", "prima.html#borse"], ["Test d'ingresso", "prima.html#test"]] },
+    { id: "durante", nome: "Durante", tab: "Studiare", href: "durante.html", titolo: "Durante gli studi", sotto: "Esami, metodo, Erasmus: quello che serve ogni settimana.",
+      voci: [["Il tuo semestre", "durante.html#semestre"], ["Strumenti", "tools.html"], ["Metodo e piano", "durante.html#metodo"], ["Erasmus", "durante.html#erasmus"], ["La tua area personale", "area.html"]] },
+    { id: "dopo", nome: "Dopo", tab: "Dopo la laurea", href: "dopo.html", titolo: "Dopo e verso la laurea", sotto: "Voto di laurea, magistrali e master.",
+      voci: [["Voto di laurea", "tools.html#voto"], ["Magistrali e master", "dopo.html#magistrali"]] },   // Tesi e Carriera e CV archiviate il 7/10
+  ],
+
+  // LISTINO DI ESEMPIO del 4 ottobre · ARCHIVIATO (pagina archivio/prezzi.html e card dei report). Il listino in uso è «listino».
+  prezzi: {
+    nota: "Prezzi di esempio, dalle ipotesi del 4 ottobre: il listino è ancora da decidere e si cambia da questo file (UL_CFG.prezzi) senza toccare il design.",
+    modi: {
+      esame: { etichetta: "Per esame", piani: [
+        { nome: "Appunti di un esame", prezzo: "€ 4,99", desc: "Gli appunti completi, da tenere.", voci: ["Appunti/Sbobine del corso", "Aggiornamenti della stessa edizione", "Filigrana personale"] },
+        { nome: "Dispensa completa", prezzo: "€ 12,99", desc: "Tutto per un esame.", top: true, voci: ["Appunti, mappe e quiz", "Informazioni utili sull'esame", "Simulazioni nel formato dell'appello"] },
+        { nome: "Due esami", prezzo: "€ 22,99", desc: "Due dispense complete a scelta.", voci: ["Dispense complete del semestre", "Si vedono gli esami inclusi", "Upgrade che riconosce quanto già pagato"] },
+      ] },
+      semestre: { etichetta: "Per semestre", piani: [
+        { nome: "Semestre · 1 esame", prezzo: "€ 12,99", desc: "Una dispensa completa del semestre.", voci: ["Appunti, mappe e quiz", "Informazioni sull'esame", "Aggiornamenti"] },
+        { nome: "Pacchetto semestre", prezzo: "€ 29,99", desc: "Gli esami del tuo semestre.", top: true, voci: ["Tutte le dispense del semestre", "Simulazioni", "Aggiornamenti"] },
+        { nome: "Pacchetto anno", prezzo: "€ 49,99", desc: "Due semestri, un solo acquisto.", voci: ["Tutte le dispense dell'anno", "Simulazioni", "Aggiornamenti"] },
+      ] },
+    },
+    faq: [
+      ["C'è qualcosa di gratis?", "Sì: anteprime, informazioni sugli esami e gli strumenti rapidi restano gratuiti."],
+      ["Posso passare da Appunti alla dispensa completa?", "Nell'ipotesi in valutazione sì: l'upgrade riconosce quanto hai già pagato."],
+      ["Come pago?", "Proposta: Stripe Checkout. Carta, Apple Pay, Google Pay e Klarna; 1,5% + 0,25 € a transazione, nessun canone. Lo sblocco arriva dal webhook di Stripe a Supabase."],
+    ],
+  },
+
+  // ===========================================================================================================
+  // v11 · commenti v10 dell'8/10
+  // ===========================================================================================================
+  // ICONE DEGLI HUB (commento H04): un disegno per scuola, al posto dei simboli €, §, +. SVG a linea, colori UniLink.
+  icoHub: {
+    economia: '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 38h32"/><path d="M12 34V24M20 34V16M28 34V20M36 34V10"/><path d="M10 18l9-7 8 5 11-9"/><path d="M33 7h5v5"/></svg>',
+    giurisprudenza: '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M24 8v32M14 40h20"/><path d="M10 14h28"/><path d="M14 14l-6 12a6 6 0 0 0 12 0z"/><path d="M34 14l-6 12a6 6 0 0 0 12 0z"/></svg>',
+    medicina: '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M14 8v12a8 8 0 0 0 16 0V8"/><path d="M22 28v4a8 8 0 0 0 16 0v-6"/><circle cx="38" cy="22" r="4"/><path d="M11 8h6M27 8h6"/></svg>',
+  },
+  // ILLUSTRAZIONI degli strumenti (v12, commenti H08 e S09: «immagine grande, nome, a cosa serve, perché è utile, link»).
+  // SVG nello stile UniLink (blu, crema, arancio): si cambiano qui. «perche» = una riga sola, il resto si scopre usandoli.
+  illus: {
+    voto: '<svg viewBox="0 0 220 150" fill="none"><circle cx="110" cy="80" r="56" fill="#f4f1ea"/><path d="M58 64l52-24 52 24-52 24z" fill="#172554"/><path d="M80 75v22c0 9 14 16 30 16s30-7 30-16V75l-30 14z" fill="#172554" opacity=".85"/><path d="M162 64v26" stroke="#cf7527" stroke-width="4" stroke-linecap="round"/><circle cx="162" cy="94" r="6" fill="#cf7527"/><rect x="128" y="104" width="70" height="34" rx="12" fill="#cf7527"/><text x="163" y="128" text-anchor="middle" font-family="Croogla, sans-serif" font-size="20" fill="#fff">110</text></svg>',
+    media: '<svg viewBox="0 0 220 150" fill="none"><rect x="30" y="22" width="160" height="110" rx="18" fill="#f4f1ea"/><path d="M52 112h116" stroke="#172554" stroke-width="3" stroke-linecap="round" opacity=".3"/><rect x="58" y="80" width="18" height="32" rx="5" fill="#172554" opacity=".45"/><rect x="86" y="66" width="18" height="46" rx="5" fill="#172554" opacity=".65"/><rect x="114" y="54" width="18" height="58" rx="5" fill="#172554"/><rect x="142" y="40" width="18" height="72" rx="5" fill="#cf7527"/><path d="M52 50h116" stroke="#cf7527" stroke-width="3" stroke-dasharray="6 6"/><text x="168" y="38" text-anchor="end" font-family="Croogla, sans-serif" font-size="14" fill="#cf7527">obiettivo 27</text></svg>',
+    erasmus: '<svg viewBox="0 0 220 150" fill="none"><circle cx="102" cy="78" r="54" fill="#f4f1ea"/><circle cx="102" cy="78" r="54" stroke="#172554" stroke-width="3"/><path d="M48 78h108M102 24c-18 18-18 90 0 108M102 24c18 18 18 90 0 108" stroke="#172554" stroke-width="2.5" opacity=".5"/><path d="M140 40c22-12 44-8 52 4" stroke="#cf7527" stroke-width="3" stroke-dasharray="5 6" stroke-linecap="round"/><path d="M186 30l14 8-14 8 3-8z" fill="#cf7527"/><circle cx="74" cy="60" r="7" fill="#cf7527"/><circle cx="122" cy="96" r="7" fill="#cf7527"/></svg>',
+    planner: '<svg viewBox="0 0 220 150" fill="none"><rect x="36" y="24" width="148" height="112" rx="18" fill="#f4f1ea"/><rect x="36" y="24" width="148" height="28" rx="14" fill="#cf7527"/><circle cx="66" cy="22" r="5" fill="#172554"/><circle cx="154" cy="22" r="5" fill="#172554"/>' +
+      [0, 1, 2, 3].map((r) => [0, 1, 2, 3, 4].map((c) => `<rect x="${50 + c * 26}" y="${62 + r * 18}" width="18" height="12" rx="4" fill="#172554" opacity="${(r * 5 + c) % 3 === 0 ? 1 : 0.18}"/>`).join("")).join("") + '</svg>',
+  },
+  perche: {
+    voto: "Sai da dove parti alla discussione, con le regole ufficiali della Scuola.",
+    media: "Scopri che voti ti servono negli esami che restano per arrivare all'obiettivo.",
+    erasmus: "Capisci se ce la fai per le mete che vuoi, prima del bando.",
+    planner: "Un piano giorno per giorno fino all'appello, su tutti i tuoi esami.",
+  },
+
+  // RICHIESTA DI UNA SCUOLA (commento H04: «La tua scuola non c'è?» → modulo, non WhatsApp). Le scuole sono quelle della Guida.
+  // Demo: le richieste restano nel browser (ul-demo-richieste); nel sito vero vanno su Supabase e si esportano in Excel dal Pannello.
+  scuole: ["Economia", "Giurisprudenza", "Medicina", "Ingegneria", "Scienze", "Architettura", "Psicologia", "Scienze Politiche", "Studi Umanistici", "Agraria", "Altro"],
+  // ORIENTATORI (commenti S02, S05, S07): poche domande, un risultato con il perché. Si usano nella landing lasciando email e corso
+  // (l'unico strumento della landing che si usa qui, come chiesto). Pesi e testi: orientamento, non una scelta definitiva.
+  orientatori: {
+    corso: {
+      titolo: "Quale corso di Economia fa per te?", sotto: "Quattro domande per orientarti tra Economia Aziendale, Economia e Commercio, Sustainable Business e SECI.",
+      domande: [
+        ["Cosa ti incuriosisce di più?", [["Come si guida e si organizza un'impresa", { EA: 3 }], ["Come funzionano mercati, finanza ed economia di un paese", { EC: 3 }], ["Imprese sostenibili e impatto sociale", { SUSBUS: 3 }], ["Sviluppo, cooperazione e rapporti tra paesi", { SECI: 3 }]]],
+        ["Le materie che ti piacciono", [["Contabilità, marketing, organizzazione", { EA: 2 }], ["Matematica, statistica, modelli", { EC: 2, EA: 1 }], ["Lingue: studiare in inglese mi va bene", { SUSBUS: 2, SECI: 1 }], ["Storia, politica, società", { SECI: 2, EC: 1 }]]],
+        ["Dove ti vedi dopo la laurea?", [["In azienda o in consulenza", { EA: 2 }], ["In banca, nella finanza o nelle istituzioni", { EC: 2 }], ["In una startup o nella sostenibilità (ESG)", { SUSBUS: 2 }], ["In un'organizzazione internazionale o una ONG", { SECI: 2 }]]],
+        ["In che lingua vuoi studiare?", [["In italiano", { EA: 1, EC: 1, SECI: 1 }], ["Tutto in inglese", { SUSBUS: 2 }]]],
+      ],
+      risultati: {
+        EA: { nome: "Economia Aziendale", perche: "Ti interessa capire e guidare un'impresa: contabilità, bilancio, marketing, organizzazione.", poi: "Al III anno scegli il curriculum: Management (gestione e finanza d'impresa) o Marketing, internazionalizzazione e qualità.", link: "hub-economia.html" },
+        EC: { nome: "Economia e Commercio", perche: "Ti attirano mercati, finanza e politica economica, con più matematica e statistica.", poi: "Curriculum: Economia politica e mercati finanziari, Economia e diritto, oppure Economics and data.", link: "hub-economia.html" },
+        SUSBUS: { nome: "Sustainable Business for Societal Challenges", perche: "Vuoi imprese sostenibili e impatto sociale, e ti va di studiare tutto in inglese (numero programmato).", poi: "Condivide con Economia Aziendale le basi: contabilità, diritto, statistica.", link: "hub-economia.html" },
+        SECI: { nome: "Sviluppo sostenibile, cooperazione e gestione dei conflitti (SECI)", perche: "Ti interessano sviluppo, cooperazione e rapporti tra paesi: un corso di scienze sociali con l'economia dentro.", poi: "Al III anno tre curricula; con EA ed EC coincide poco.", link: "hub-economia.html" },
+      },
+      nota: "È un orientamento, non una scelta: controlla piani di studio e accesso sul sito UniFi.",
+    },
+    carriera: {
+      titolo: "Che carriera fa per te?", sotto: "Quattro domande per capire verso quale lavoro ti porta quello che ti piace di Economia.",
+      domande: [
+        ["Cosa ti diverte di più?", [["Numeri, mercati e investimenti", { fin: 3, ric: 1 }], ["Risolvere i problemi di un'azienda", { con: 3 }], ["Persone, brand e comunicazione", { mkt: 3 }], ["Precisione, conti e regole", { ctr: 3 }], ["Politiche e dati sull'economia", { ric: 3 }], ["Creare qualcosa di mio", { imp: 3 }]]],
+        ["Il lavoro ideale", [["Ritmo intenso, carriera veloce", { fin: 2, con: 2 }], ["Creatività", { mkt: 2, imp: 1 }], ["Stabilità e orari chiari", { ctr: 2, ric: 1 }], ["Impatto sulla società", { ric: 2, imp: 1 }]]],
+        ["Gli esami che ti vengono meglio", [["Finanza aziendale, matematica finanziaria", { fin: 2 }], ["Strategia, organizzazione", { con: 2 }], ["Marketing", { mkt: 2 }], ["Contabilità, bilancio", { ctr: 2 }], ["Macro, politica economica, econometria", { ric: 2 }]]],
+        ["Lavoro di squadra o da solo?", [["In squadra, con clienti", { con: 2, mkt: 1 }], ["Da solo, su analisi", { fin: 1, ric: 2, ctr: 1 }], ["Un po' e un po'", { imp: 2, mkt: 1 }]]],
+      ],
+      risultati: {
+        fin: { nome: "Banca, finanza e investimenti", perche: "Ti piacciono mercati e numeri: analisi finanziaria, investimenti, rischio.", poi: "Esami chiave: Finanza aziendale, Matematica finanziaria, Banca e sistema finanziario." },
+        con: { nome: "Consulenza e strategia", perche: "Ti piace risolvere problemi per le aziende, in squadra e con i clienti.", poi: "Esami chiave: Strategia d'impresa, Organizzazione aziendale, Pianificazione e controllo." },
+        mkt: { nome: "Marketing e comunicazione", perche: "Ti interessano persone, brand e mercato.", poi: "Esami chiave: Marketing, Marketing internazionale, Economia e gestione delle imprese." },
+        ctr: { nome: "Amministrazione, controllo e revisione", perche: "Ti trovi bene con conti, regole e precisione.", poi: "Esami chiave: Contabilità, Bilancio d'esercizio, Pianificazione e controllo di gestione." },
+        ric: { nome: "Economia pubblica, dati e ricerca", perche: "Ti interessano politiche economiche e analisi dei dati.", poi: "Esami chiave: Macroeconomia, Politica economica, Introduzione all'econometria." },
+        imp: { nome: "Impresa e startup", perche: "Vuoi costruire qualcosa di tuo.", poi: "Esami chiave: Economia e gestione delle imprese, Strategia d'impresa, Finanza aziendale." },
+      },
+      nota: "È un orientamento basato su quello che ti piace, non una previsione: parlane con chi lavora in quel settore.",
+    },
+  },
+  // «SCEGLIERE» DIVERSO PER OGNI HUB (commento S05.2): titolo, tre carte con le cose utili di quel corso, e l'orientatore se c'è.
+  scegliere: {
+    economia: { titolo: "Quale *Economia* fa per te", sotto: "A Firenze sono quattro corsi diversi: stesso primo anno per EA ed EC, strade che si separano dopo.",
+      carte: [["EA o EC?", "Economia Aziendale guarda dentro l'impresa (bilancio, marketing, organizzazione); Economia e Commercio guarda i mercati e l'economia di un paese, con più matematica."],
+        ["Il curriculum arriva al III anno", "In EA: Management o Marketing. In EC: mercati finanziari, economia e diritto, oppure Economics and data. Non è un contratto: orienta, non chiude porte."],
+        ["E se vuoi l'inglese o il sociale", "Sustainable Business è tutto in inglese e a numero programmato; SECI è un corso di scienze sociali su sviluppo e cooperazione."]], orientatore: true },
+    giurisprudenza: { titolo: "Giurisprudenza: *cinque anni* insieme", sotto: "Un ciclo unico: nessuna scelta a metà strada, ma tante dopo.",
+      carte: [["Ciclo unico", "Cinque anni senza laurea triennale in mezzo: il piano di studi è lungo e molto codificato."], ["Le professioni legali", "Avvocato, notaio, magistrato: ognuna ha il suo percorso dopo la laurea (pratica, scuole, concorsi)."], ["Non solo tribunali", "Aziende, pubblica amministrazione, organizzazioni internazionali: il diritto serve ovunque."]], orientatore: false },
+    medicina: { titolo: "Medicina: prima il *semestre filtro*", sotto: "L'accesso cambia: si parte con un semestre comune e la graduatoria nazionale.",
+      carte: [["Semestre filtro", "Fisica, chimica e biologia, uguali in tutta Italia, con esami che contano per la graduatoria."], ["La graduatoria", "Si entra in base ai risultati: conviene capire presto come funziona il punteggio (bando ministeriale)."], ["E dopo", "Sei anni, tirocini in reparto, poi specializzazione: un percorso lungo da pianificare."]], orientatore: false },
+  },
+
+  // PROGRAMMA INVITI (commento sulla pagina Ambassador): un incentivo per iscriversi e invitare. PROPOSTA, in arrivo dopo il lancio (card L27).
+  inviti: {
+    titolo: "Porta i tuoi compagni, *sblocchi* di più",
+    sotto: "Ognuno ha un codice personale. Più amici si iscrivono con il tuo codice, più cose sblocchi.",
+    livelli: [["1 amico", "Ti si sblocca una Simulazione d'esame a scelta"], ["3 amici", "Una settimana di UniLink Plus: il Planner sui tuoi esami"], ["5 amici", "Una dispensa completa a scelta"]],
+    nota: "Proposta per dopo il lancio: premi e soglie sono da decidere (card L27).",
+  },
+
+  // ===========================================================================================================
+  // ARCHIVIO (solo founder: menu Founder → Archivio, pagina archivio/index.html). Le parti tolte dopo le decisioni dei founder
+  // NON si cancellano: le pagine sono in archivio/ (con <base href="../"> per usare file e immagini della landing) e qui c'è,
+  // per ognuna, cosa era, perché è stata tolta (con la fonte) e come si rimette. Aggiungere una voce: una riga qui.
+  // ===========================================================================================================
+
+  archivio: [
+    { id: "logo-vecchio", titolo: "Logo precedente (rete di persone)", file: "archivio/img/logo-blu-vecchio.png", quando: "2026-10-09", tipo: "Logo",
+      perche: "Sostituito dal nuovo simbolo: libro aperto + persona (variante A della proposta 1B, con la testa più bassa), scelto da Matteo il 9/10. Kit completo in 11_Logo/kit, regole nel PDF «Brand UniLink».", fonte: "Chat del 9/10 con Matteo", rimettere: "Ricopiare archivio/img/logo-blu-vecchio.png e logo-white-vecchio.png in img/ di landing e web app." },
+    { id: "numeri", titolo: "Numeri in home (studenti, pagine, esami)", file: "archivio/index-v8.html", quando: "2026-10-08", tipo: "Sezione della home (H03)",
+      perche: "Commento H03: «così non ha senso, togli questa sezione e passa direttamente all'hub». I numeri restano in config.js → numeri.", fonte: "Commento di Matteo su H03 (demo v10)",
+      rimettere: "Rimettere la sezione H03 in index.html (è nella versione archivio/index-v8.html)." },
+    { id: "guida-altre", titolo: "Guida: le facoltà ancora «in architettura»", file: "guida.html?tutte=1", quando: "2026-10-08", tipo: "Parte della pagina",
+      perche: "Commento S14.1: nella Guida restano Economia (completa), Giurisprudenza e Medicina; le altre facoltà si vedono solo da qui.", fonte: "Commento di Matteo su S14.1 (demo v10)",
+      rimettere: "In guida.js togliere il filtro VISIBILI." },
+    { id: "tools-extra", titolo: "Strumenti tolti dalla vetrina: Voto di laurea per corso, Quanto pesa questo esame, Quanto manca all'appello", file: "archivio/tools-v8.html", quando: "2026-10-08", tipo: "Strumenti",
+      perche: "Commento S09: tenere pochi strumenti utili per tutti. «Quanto pesa» è dentro «Che media mi serve?», «Quanto manca» dentro «Ci stai nei tempi?»; il voto per corso torna quando aprono gli altri hub.", fonte: "Commento di Matteo su S09 (demo v9)",
+      rimettere: "In tools.js togliere «archiviato: true» dalla voce." },
+    { id: "index-v8", titolo: "Home v8: anteprima a numero chiuso e strumenti funzionanti", file: "archivio/index-v8.html", quando: "2026-10-08", tipo: "Versione precedente della pagina",
+      perche: "Registrazione aperta a tutti da subito (niente numero chiuso) e strumenti solo nella web app: nella home restano in vetrina.", fonte: "Risposte di Matteo · PDF «Architettura della landing reale», cap. 1 e 5",
+      rimettere: "La sezione H05b e il blocco 4b2 di app.js sono ancora nel codice: basta rimettere la sezione in index.html." },
+    { id: "tools-v8", titolo: "Strumenti funzionanti nella landing", file: "archivio/tools-v8.html", quando: "2026-10-08", tipo: "Versione precedente della pagina",
+      perche: "«Tool solo nella web app»: nella landing c'è la vetrina (cosa ti dice, esempio, fonte, «Usalo gratis»).", fonte: "Risposte di Matteo · PDF landing reale, cap. 8",
+      rimettere: "In app.js (sezione 5) la costante FUNZIONANTI decide: vale per le pagine *-v8 e per Da decidere." },
+    { id: "materiali-v8", titolo: "Materiali v8: pagamento dalla landing", file: "archivio/materiali-v8.html", quando: "2026-10-08", tipo: "Versione precedente della pagina",
+      perche: "«Si paga nella web app, dopo il login»: nella landing «Sblocca» porta all'area personale. Qui c'è anche la tabella delle commissioni Stripe per i founder.", fonte: "Risposte di Matteo · PDF landing reale, cap. 9",
+      rimettere: "In app.js la costante VENDE_QUI decide se la landing apre Stripe." },
+    { id: "preview-v8", titolo: "Anteprima d'esame v8 con «Acquista» su Stripe", file: "archivio/preview-v8.html?esame=economia_aziendale", quando: "2026-10-08", tipo: "Versione precedente della pagina",
+      perche: "Come sopra: l'acquisto avviene nell'area personale.", fonte: "PDF landing reale, cap. 9", rimettere: "VENDE_QUI in app.js." },
+    { id: "community", titolo: "Community: gruppi per anno, ambassador, mentoring tra pari", file: "archivio/community.html", quando: "2026-10-07", tipo: "Pagina",
+      perche: "Nella barra «Community» lascia il posto ad «Ambassador» (pagina ambassador.html con profili e candidatura). Il gruppo WhatsApp resta in home e nel footer.", fonte: "Meeting dei founder 7/10 · PDF «Architettura della landing reale», cap. 5 e domanda 5",
+      rimettere: "Rimettere la voce «community» in config.js → nav e i link in app.js." },
+    { id: "founder", titolo: "Profili dei founder («Studenti, come te»)", file: "", quando: "2026-10-07", tipo: "Sezione della home (H09)",
+      perche: "«Sul sito niente statistiche false né profili founder». Al suo posto, come suggerito nel commento su S01, la sezione Ambassador.", fonte: "Meeting dei founder 7/10 · commento di Matteo su S01 (demo v6)",
+      rimettere: "I dati sono in config.js → team; la sezione va rimessa in index.html (H09) con il suo codice (versione v7 nel tag landing-v7).", team: true },
+    { id: "tesi", titolo: "Tesi e laurea: checklist in 6 passi", file: "archivio/tesi.html", quando: "2026-10-07", tipo: "Pagina",
+      perche: "Il «tool tesi» è tra le idee in stand-by.", fonte: "Meeting dei founder 7/10 · HQ → Idee «NEW Tool - TESI» (Stand-by)",
+      rimettere: "Rimettere «Tesi e laurea» in config.js → fasi (Dopo) e il link in dopo.html." },
+    { id: "dopo", titolo: "«Dopo la laurea» con Tesi e Carriera e CV", file: "archivio/dopo-v7.html", quando: "2026-10-07", tipo: "Versione precedente della pagina",
+      perche: "«Curriculum» e «tool tesi» in stand-by: nella pagina Dopo restano voto di laurea e magistrali.", fonte: "Meeting dei founder 7/10 · HQ → Idee «CURRICULUM» (Stand-by)",
+      rimettere: "Ricopiare le sezioni #tesi e #carriera da archivio/dopo-v7.html in dopo.html." },
+    { id: "prezzi", titolo: "Pagina «Prezzi» con il listino di esempio del 4/10", file: "archivio/prezzi.html", quando: "2026-10-07", tipo: "Pagina",
+      perche: "Superata dal listino deciso il 7/10 (Materiali).", fonte: "Meeting dei founder 7/10 · HQ → Decisioni «MEETING 7/10»",
+      rimettere: "Non previsto: i prezzi in uso sono in config.js → listino." },
+    { id: "listino-p2", titolo: "Listino P2: Appunti singoli, «fuori sessione», Pacchetto anno, 1 Appunti gratis tra 3 esami", file: "", quando: "2026-10-07", tipo: "Regole del listino",
+      perche: "Deciso il 7/10: niente appunti singoli (al loro posto la Simulazione, oggi a 5,99), niente pacchetto annuo, prezzi come sconto di lancio senza «fuori sessione», Economia Aziendale gratis per tutti al posto del regalo dell'account.", fonte: "HQ → Decisioni «MEETING 7/10»",
+      rimettere: "Il listino P2 è nel tag landing-v7 (config.js → listino) e nella card L07.",
+      tabella: [["Appunti", "4,99 € · in sessione 9,99 €"], ["Dispensa completa", "12,99 € · in sessione 18,99 € (9,99 € senza mappe)"], ["Pacchetto semestre", "29,99 €"], ["Pacchetto anno", "49,99 €"], ["Plus", "14,99 € · 4,99 € con un pacchetto"], ["Gratis", "1 Appunti a scelta tra 3 esami + 1 per invito"]] },
+    { id: "download", titolo: "Dispense da scaricare in PDF con filigrana", file: "", quando: "2026-10-07", tipo: "Regola",
+      perche: "«Materiali non scaricabili: consultabili e annotabili solo nell'area personale della web app». Nella web app c'è il lettore con le note.", fonte: "HQ → Decisioni «MEETING 7/10»",
+      rimettere: "Non previsto." },
+    { id: "mappe", titolo: "«Mappe per ripassare» come promessa del prodotto", file: "", quando: "2026-10-07", tipo: "Testi",
+      perche: "«Mappe concettuali rimandate: richiedono troppo tempo». I testi parlano di dispense, quiz e simulazioni; le mappe che esistono già restano indicate sugli esami che le hanno.", fonte: "Meeting dei founder 7/10",
+      rimettere: "Quando le mappe saranno su più esami: rimetterle nei testi della home e in «Cosa c'è dentro»." },
+  ],
+
+  // ---------------------------------------------------------------------------
+  // DA DECIDERE — ogni card è una proposta NON decisa, con la sua architettura demo.
+  // Campi: id (Lxx: non cambia mai) · titolo · gruppo · stato · impatto/sforzo (1–5) · origine · problema · proposta
+  //        · dove (dove vivrebbe nella landing) · schermata (blocchi della mini demo) · serve · domande
+  //        · consiglio (il parere di Claude, da discutere) · area (card Dxx corrispondente nella web app) · storico
+  // Blocchi per "schermata": hero, cards, steps, list, stats, chips, nota, device, piano, prezzi.
+  // ---------------------------------------------------------------------------
+  decidere: [
+    {
+      id: "L01", titolo: "Gruppi di studio", gruppo: "Community", stato: "Stand-by · 7/10", impatto: 3, sforzo: 3, area: "",
+      origine: "Nota Matteo 6/10 · HQ SOCIALNETWORK (Gianmarco)",
+      problema: "Trovare compagni con lo stesso esame oggi passa solo da WhatsApp e dal passaparola.",
+      proposta: "Pagina «Studia insieme» nella Community: per ogni esame un gruppo (link WhatsApp) e, dopo l'accesso, «cerco un gruppo» come scelta esplicita. Niente social generalista.",
+      dove: "Pagina Community (sezione «Studia insieme»); il matching vero vive nell'area personale (D08).",
+      consiglio: "Sì, ma piccolo: parti con un gruppo WhatsApp per esame, gestito dagli ambassador, e misura quanti entrano. Il matching dentro l'app solo se i gruppi funzionano. Un social network completo costa moderazione e privacy: non ora.",
+      schermata: [
+        { t: "hero", eyebrow: "Community · Studia insieme", titolo: "Prepara *Microeconomia* con altri", testo: "Scegli il tuo esame: ti mostriamo i gruppi del tuo anno." },
+        { t: "list", titolo: "Gruppi per Microeconomia (esempio)", items: [["Novoli · martedì pomeriggio", "4 persone · in presenza", "Unisciti"], ["Serale online", "3 persone · online", "Unisciti"], ["Gruppo ufficiale del corso", "128 persone · WhatsApp", "Entra"]] },
+        { t: "nota", testo: "Privacy: nessuno vede cosa hai scaricato. La partecipazione è sempre una scelta esplicita." },
+      ],
+      serve: ["Un ambassador per esame (o per anno)", "Regole di moderazione scritte", "Informativa privacy per chi cerca un gruppo"],
+      domande: ["Basta il gruppo WhatsApp per esame o serve il matching?", "Chi modera? (ambassador, team)", "I profili sono visibili tra studenti?"],
+      storico: [["2026-10-07", "Meeting dei founder: «social network» tra le idee in stand-by. Restano i gruppi WhatsApp."], ["2026-10-06", "Prima architettura: pagina Community + gruppi per esame."]],
+    },
+    {
+      id: "L02", titolo: "Metodo e piano di studio", gruppo: "Metodo", stato: "Da decidere", impatto: 5, sforzo: 3, area: "D04",
+      origine: "Nota Matteo 6/10 · riferimento «piano» stile TTP (GMAT)",
+      problema: "Lo studente ha dispense e data d'appello, ma non sa come distribuire lo studio: è dove oggi UniLink non aiuta.",
+      proposta: "Una pagina «Il metodo» che spiega come studiamo (capire → fissare → allenarsi) e mostra il piano personalizzato: dalla data dell'appello e dagli argomenti, un calendario che si aggiorna mentre studi. Prima a regole semplici, poi adattivo.",
+      dove: "Pagina «Durante» (sezione Metodo e piano) + strumento «Piano per l'appello» (già in tools) + scheda Piano nell'area personale (D04).",
+      consiglio: "È il tuo differenziatore più forte: le dispense le hanno tutti, il metodo no. Parti con il piano a regole (già funzionante nella demo) e contenuti scritti dal team; l'AI adattiva è una fase successiva, quando ci sono dati di studio reali.",
+      schermata: [
+        { t: "hero", eyebrow: "Il metodo UniLink", titolo: "Studia con un *piano*, non a caso", testo: "Dalla data dell'appello al giorno dell'esame, passo per passo." },
+        { t: "steps", titolo: "Le tre mosse", items: [["1", "Capisci · appunti e mappe, un argomento alla volta"], ["2", "Fissa · quiz e ripasso degli errori"], ["3", "Allenati · simulazione nel formato dell'appello"]] },
+        { t: "piano" },
+      ],
+      serve: ["Argomenti ufficiali per esame (dal programma)", "Regola di distribuzione (già in tools.js)", "Dati di studio reali per renderlo adattivo (fase 2)"],
+      domande: ["Il piano è gratis o fa parte di un pacchetto?", "Promemoria via email il giorno prima?", "Quando introdurre l'AI?"],
+      storico: [["2026-10-06", "Prima architettura: pagina metodo + piano a regole semplici."]],
+    },
+    {
+      id: "L03", titolo: "Mentoring tra pari", gruppo: "Community", stato: "Stand-by · 7/10", impatto: 4, sforzo: 5, area: "D08",
+      origine: "Nota Matteo 6/10 (con punto interrogativo) · ambassador attuali",
+      problema: "Gli studenti più avanti sanno cose che i più giovani cercano, ma oggi lo scambio non è organizzato.",
+      proposta: "Un mentore (studente dell'ultimo anno o laureato) per ogni esame o per il percorso: una chiamata, domande ricorrenti, consigli. Si parte dagli ambassador che già avete.",
+      dove: "Pagina Community (sezione «Parla con chi ci è già passato») e, più avanti, prenotazione nell'area personale.",
+      consiglio: "Bello per la fiducia, ma è il più costoso da gestire (selezione, qualità, pagamenti, responsabilità). Non al lancio: fai una prova manuale con 5 ambassador e 20 studenti, misura se si ripete, poi decidi se costruirlo.",
+      schermata: [
+        { t: "hero", eyebrow: "Community · Mentoring", titolo: "Parla con chi ci è già *passato*", testo: "Un mentore per il tuo esame, una chiamata da 20 minuti." },
+        { t: "cards", titolo: "Mentori (esempio)", items: [["Giulia · III anno EA", "Microeconomia, Statistica · martedì e giovedì"], ["Marco · laureato EC", "Tesi, Erasmus, magistrali · sabato"], ["Sara · II anno", "Diritto privato · tutta la settimana"]] },
+        { t: "nota", testo: "Prima della prova serve decidere: gratis o a pagamento? chi garantisce la qualità? chi risponde se qualcosa va storto?" },
+      ],
+      serve: ["Criteri di selezione dei mentori", "Regole di comportamento e privacy", "Decisione su gratuito/pagamento (e soggetto che incassa)", "Strumento di prenotazione"],
+      domande: ["Prova manuale con 5 ambassador prima di costruire?", "Gratuito, con crediti o a pagamento?", "Per esame o per percorso (tesi, Erasmus, magistrali)?"],
+      storico: [["2026-10-07", "Meeting dei founder: tutoraggio a pagamento messo da parte; pagina Community archiviata."], ["2026-10-06", "Prima architettura: mentori per esame e per percorso. Consiglio: prova manuale."]],
+    },
+    {
+      id: "L04", titolo: "Test d'ingresso (TOLC)", gruppo: "Orientamento", stato: "Da decidere", impatto: 5, sforzo: 5, area: "D16",
+      origine: "HQ · TOLC",
+      problema: "Far conoscere UniLink ai futuri studenti prima dell'iscrizione: è il momento in cui scelgono come studiare.",
+      proposta: "Nella fase «Prima»: diagnostico gratuito di 20 domande e un percorso di preparazione per materia.",
+      dove: "Pagina «Prima» (sezione Test d'ingresso), con diagnostico dentro la landing e percorso nell'area personale.",
+      consiglio: "Settore competitivo e a Firenze molti corsi sono ad accesso libero. Valuta dopo i nuovi hub: per Medicina il semestre filtro è un'opportunità più concreta del TOLC.",
+      schermata: [
+        { t: "stats", items: [["20", "domande diagnostiche"], ["4", "materie"], ["0 €", "diagnostico"]] },
+        { t: "nota", testo: "Serve una banca domande propria e verificata: è il lavoro più grosso." },
+      ],
+      serve: ["Banca domande TOLC", "Decisione strategica rispetto ai nuovi hub"],
+      domande: ["Ha senso prima dei nuovi hub?", "Solo diagnostico gratuito o anche percorso?"],
+      storico: [["2026-10-06", "Prima architettura."]],
+    },
+    {
+      id: "L05", titolo: "Borse di studio e tasse", gruppo: "Orientamento", stato: "Da decidere", impatto: 4, sforzo: 4, area: "",
+      origine: "HQ · BORSE DI STUDIO",
+      problema: "Molti studenti non sanno dove trovare bandi e scadenze (DSU e altri).",
+      proposta: "Una guida nella fase «Prima» con le informazioni chiave del bando, le scadenze e i link alle fonti ufficiali. Promemoria nell'area personale.",
+      dove: "Pagina «Prima» (sezione Borse e tasse) + promemoria in area (D10).",
+      consiglio: "Alto valore e poco sforzo di design, ma richiede qualcuno che aggiorni le scadenze ogni anno: senza responsabile, meglio non pubblicarla.",
+      schermata: [
+        { t: "list", titolo: "Scadenze (esempio, da verificare)", items: [["Borsa DSU", "Fonte: bando ufficiale", "Vedi guida"], ["Esonero tasse", "Fonte: UniFi", "Vedi guida"]] },
+        { t: "nota", testo: "All'UniFi non esistono borse per merito (commento Cosimo): solo per reddito." },
+      ],
+      serve: ["Fonti ufficiali aggiornate", "Un responsabile degli aggiornamenti annuali"],
+      domande: ["Guida statica o aggiornamento automatico?", "Chi la mantiene?"],
+      storico: [["2026-10-06", "Prima architettura."]],
+    },
+    {
+      id: "L06", titolo: "Carriera e CV", gruppo: "Dopo", stato: "Stand-by · 7/10", impatto: 4, sforzo: 2, area: "D05",
+      origine: "HQ · CURRICULUM (quick win) · Demo Versione C",
+      problema: "Chi pensa a magistrali e stage non sa quanto il proprio CV sia vicino al profilo tipo.",
+      proposta: "Nella fase «Dopo»: guida breve (CV, colloquio, LinkedIn) e, nell'area personale, confronto del CV con un profilo tipo. Career Score e opportunità solo nella visione.",
+      dove: "Pagina «Dopo» (sezione Carriera e CV) + strumento in area (D09).",
+      consiglio: "Quick win: parte da contenuti scritti dal team, costa poco e dà traffico organico. Evita le promesse sulle opportunità finché non hai partner reali.",
+      schermata: [
+        { t: "steps", titolo: "Le prossime 3 azioni (esempio)", items: [["1", "Certificazione d'inglese"], ["2", "Uno stage o un progetto"], ["3", "Shortlist di 3 magistrali"]] },
+      ],
+      serve: ["Profili tipo scritti dal team", "Upload CV privato (solo area)"],
+      domande: ["Solo guida ora, Career Score dopo?"],
+      storico: [["2026-10-07", "Meeting dei founder: «curriculum» in stand-by; sezione Carriera e CV archiviata."], ["2026-10-06", "Prima architettura."]],
+    },
+    {
+      id: "L07", titolo: "Listino e pacchetti", gruppo: "Monetizzazione", stato: "Deciso · 7/10", impatto: 3, sforzo: 3, area: "",
+      origine: "HQ · Prezzi & abbonamenti · Stripe",
+      problema: "Il listino non è deciso: appunti singoli, dispensa completa, bundle semestre/anno, Plus mensile sono ipotesi.",
+      proposta: "Una pagina Prezzi pronta ma fuori dalla navigazione, che legge il listino da UL_CFG.prezzi: quando il listino è deciso si cambiano i numeri qui e la pagina si ridisegna.",
+      dove: "Footer (non in navbar) finché non è deciso; poi voce in navbar o dentro Area personale.",
+      consiglio: "Tienila fuori dalla navbar: mostrare prezzi non decisi confonde. Se pensate a prezzi di lancio o sconti, indicate fino a quando valgono e fate verificare da un consulente le regole sugli annunci di riduzione di prezzo (Codice del Consumo) prima di pubblicarli.",
+      schermata: [
+        { t: "prezzi" },
+        { t: "nota", testo: "Prezzi di esempio: si cambiano in UL_CFG.prezzi." },
+      ],
+      serve: ["Listino deciso (sondaggio)", "Soggetto legale e account Stripe", "Termini di vendita e privacy"],
+      domande: ["Cosa resta gratis?", "Per esame o per semestre?", "Upgrade che riconosce quanto già pagato?"],
+      storico: [["2026-10-07", "Deciso: Simulazione 5,99 (da 9,99), Dispensa completa 12,99 (da 18,99), Pacchetto semestre 29,99/34,99 (3/4 esami), niente pacchetto anno né appunti singoli, Plus 14,99 o 7,99 con un pacchetto; sconto di lancio senza «fuori sessione». In Materiali (v8)."], ["2026-10-06", "Pagina pronta e config-driven, fuori dalla navbar."]],
+    },
+    {
+      id: "L08", titolo: "Quale hub parte per primo", gruppo: "Hub", stato: "Deciso · 8/10", impatto: 5, sforzo: 4, area: "D01",
+      origine: "Nota Cosimo 6/10 · landing cap. 10",
+      problema: "Giurisprudenza e Medicina sono «in arrivo»: raccogliamo la lista d'attesa ma non ci sono materiali né studenti nel team.",
+      proposta: "Dopo 3–4 settimane di lista d'attesa si guarda quale hub ha più iscritti e almeno uno o due studenti disposti a costruirlo; quello passa ad «attivo» cambiando una riga della config.",
+      dove: "Sezione Hub della home e pagine hub: stato da «in arrivo» ad «attivo».",
+      consiglio: "Decidi sui numeri veri della lista d'attesa, non sull'intuito. Per Medicina l'obiettivo realistico è il 2027/28 (il semestre filtro 2026/27 è troppo vicino).",
+      schermata: [
+        { t: "stats", items: [["—", "iscritti Giurisprudenza"], ["—", "iscritti Medicina"], ["0", "studenti nel team"]] },
+        { t: "nota", testo: "I numeri compaiono quando la lista d'attesa ha dati reali." },
+      ],
+      serve: ["Dati della lista d'attesa", "Studenti disposti a costruire l'hub", "Piano ufficiale verificato sul Course Catalogue UniFi"],
+      domande: ["Soglia minima di iscritti?", "Quali 3 esami per primi?"],
+      storico: [["2026-10-08", "Giurisprudenza e Medicina restano «in arrivo» con la lista d'attesa (scelta di Matteo dell'8/10)."], ["2026-10-07", "Meeting dei founder: espansione Medicina in stand-by, resta Giurisprudenza «in arrivo». Hub Medicina archiviato."], ["2026-10-06", "Criterio: iscritti + persone disponibili."]],
+    },
+    {
+      id: "L09", titolo: "Voci degli studenti", gruppo: "Fiducia", stato: "Da decidere", impatto: 3, sforzo: 1, area: "",
+      origine: "Landing v1 (sezione «Cosa dicono gli studenti»)",
+      problema: "La v1 mostrava testimonianze di esempio: pubblicate come vere sarebbero recensioni false (vietate dalla normativa europea sulle pratiche commerciali).",
+      proposta: "Tolta dalla home. La sezione si accende solo con almeno tre feedback reali raccolti con il form sulle dispense, con consenso scritto.",
+      dove: "Home, dopo «Chi c'è dietro».",
+      consiglio: "Meglio un numero vero («876 persone nell'ultimo mese») che tre frasi inventate: la home usa già i numeri di Google.",
+      schermata: [
+        { t: "cards", titolo: "Come apparirebbe (esempio, NON vero)", items: [["«Testo di esempio»", "Nome Cognome · II anno · EA"], ["«Testo di esempio»", "Nome Cognome · I anno · EC"], ["«Testo di esempio»", "Nome Cognome · III anno · EA"]] },
+        { t: "nota", testo: "Si accende solo con feedback reali e consenso." },
+      ],
+      serve: ["Form di feedback sulle dispense", "Consenso scritto di chi viene citato"],
+      domande: ["Quanti feedback prima di accenderla (3? 5?)"],
+      storico: [["2026-10-06", "Rimossa dalla home della v2: card in attesa di feedback reali."]],
+    },
+    {
+      id: "L10",
+      titolo: "Dalla vetrina alla piattaforma: cosa cambia",
+      gruppo: "Report · Misure, legale e lancio",
+      stato: "Da decidere",
+      impatto: 0,
+      sforzo: 0,
+      area: "D26",
+      origine: "Report «Dalla vetrina alla piattaforma» · 4 ottobre 2026 · sezione 1 e 4",
+      problema: "Il report descrive la demo in tre parti (landing, web app, pannello del team) e i tre cambiamenti di fondo rispetto a unilinkfirenze.it: account, valore oltre il PDF, tracciamento.",
+      proposta: "La demo è una versione funzionante in locale di come potrebbe diventare UniLink, in tre parti. 1) Landing pubblica: quello che resterebbe su Framer (una landing generale UniLink per tutta l'Università di Firenze, l'hub di Economia con catalogo con anteprime, schede corso e prezzi, le pagine delle altre scuole «in arrivo», l'architettura dei tool, la pagina Plus, ambassador e pagine legali). 2) Web app: l'area personale di ogni studente (dispense con filigrana, simulatore d'esame, piano di studio a sessioni per più esami, libretto e voto con scenari, Career, inviti, profilo). 3) Pannello del team: metriche, controllo del materiale, domanda, ambassador, vendite. Tutto quello che è una scelta di business (prezzi, testi, regole, soglie) sta in file di configurazione separati, così si cambia senza toccare il codice.",
+      dove: "Landing pubblica (Framer): vedi anche la card D26 nella web app.",
+      consiglio: "Dal report: la struttura proposta è «landing su Framer, app su app.unilinkfirenze.it» (decisione 1). Framer non gestisce login, pagamenti e dati degli utenti.",
+      schermata: [{"t": "cards", "titolo": "I tre cambiamenti di fondo", "items": [["Account e freemium", "Oggi: sito aperto e gratuito, i PDF sono file pubblici su Framer. Nella demo: account con email @stud.unifi.it (gratis) + freemium: 1 dispensa gratis, poi singoli, pacchetti e Plus. Perché: servono ricavi e serve sapere chi usa cosa; le schede restano pubbliche per non perdere Google."], ["Il valore non è solo il PDF", "Oggi: il prodotto è il PDF. Nella demo: il PDF ha la filigrana personale, ma il valore sta anche fuori (simulatore, piano di studio, aggiornamenti, Career). Perché: un PDF si può sempre copiare; un account con piano e simulatore no."], ["Misurare per decidere", "Oggi: si misurano visite e pagine (GA4). Nella demo: piano di tracciamento completo (funnel, attivazione, ricerche senza risultato, «porte finte», feedback dopo l'esame). Perché: decidere su dati cosa produrre, cosa costruire, quanto far pagare."]]}, {"t": "cards", "titolo": "Mappa di cosa cambia (oggi → nella demo → perché)", "items": [["Struttura", "Un sito unico su Framer → landing su Framer + web app su app.unilinkfirenze.it → Framer non gestisce login, pagamenti e dati degli utenti."], ["Brand", "UniLink = Economia → landing generale UniLink + un hub per scuola (Economia attiva, 9 in arrivo) → non legarsi a una sola facoltà; misurare la domanda."], ["Accesso", "Nessun account → account con email UniFi e link via email → sappiamo chi scarica; solo studenti UniFi."], ["Dispense", "PDF pubblici → PDF privati con filigrana personale al download → rendere scomodo e tracciabile girare i file."], ["Catalogo", "Schede con informazioni utili → + anteprime, indice, struttura della prova, versione e «aggiornata il» → convincere prima di registrarsi; fiducia."], ["Prezzi", "Tutto gratis → 1 gratis su 3 + regalo per invito; singoli, pacchetti, Plus una tantum → ricavi senza perdere chi non paga."], ["Studio", "— → simulatore d'esame; piano di studio a sessioni per più esami con calendario e ottimizzatore → valore che un PDF girato non ha."], ["Carriera", "Esploratore di carriera (pubblico) → + CV benchmark per carriera, template UniLink, checklist LinkedIn → diventare il metro di «CV fatto bene»."], ["Percorso", "Calcolatori separati → libretto con gauge, grafico dei voti, scenari, obiettivo e simulazione; si riempie da solo dal piano → inserire i dati una volta sola."], ["Tool", "5 tool su Framer → registro dei tool: universali, di scuola, di livello; tenere, unire, spostare → crescere su altre scuole e sulla magistrale senza rifare tutto."], ["Community", "WhatsApp, «Diventa mentor» → + referral con codice fisso, programma ambassador con dashboard → crescere con il passaparola."], ["Corsi di laurea", "EA ed EC → + SUSBUS e SECI: iscrizione e richieste → misurare la domanda prima di produrre."], ["Misure", "GA4 su pagine → piano di tracciamento + pannello team → decidere con i dati."], ["Legale", "— → bozze di privacy, termini, fonti; consenso cookie e recesso → obbligatori quando si vende."]]}, {"t": "nota", "testo": "Cosa la demo del report non è: non è online (gira sul computer, i dati stanno nel browser); non incassa soldi (il checkout è simulato: per incassare serve prima un soggetto legale); non usa l'AI (dove servirebbe, per rifinire il piano, c'è una spiegazione di come funzionerebbe); utenti, ordini e grafici del pannello sono in parte di esempio."}],
+      serve: ["Un soggetto legale per incassare (vedi «Pagamenti»)", "Un backend per account, dati e PDF (vedi «Per andare online»)"],
+      domande: ["Il sito diventa landing + app separata? (proposta nella demo: sì, landing su Framer, app su app.unilinkfirenze.it)"],
+      storico: [["2026-10-04", "Descritta nel report «Dalla vetrina alla piattaforma», sezione 1 e 4."], ["2026-10-06", "Aggiunta al registro dal report: solo contenuto, nessuna modifica al design."]],
+    },
+    {
+      id: "L11",
+      titolo: "Il sito di oggi: errori da sistemare",
+      gruppo: "Report · Struttura e sito",
+      stato: "Da decidere",
+      impatto: 0,
+      sforzo: 0,
+      area: "",
+      origine: "Report «Dalla vetrina alla piattaforma» · 4 ottobre 2026 · sezione 3",
+      problema: "Analizzando unilinkfirenze.it sono emersi errori da sistemare comunque, indipendenti dalla demo (pulsanti, refusi, contatori, indirizzi, copertine, quiz).",
+      proposta: "Mentre si analizzava il sito sono emerse alcune cose da sistemare comunque: sono elencate qui sotto con il punto del sito in cui compaiono. Il report li considera indipendenti dalla demo.",
+      dove: "Sito attuale su Framer (unilinkfirenze.it): home, guida, pagine dispense, PDF Appunti e Quiz, Excel dei tool.",
+      consiglio: "Dal report: sono errori «indipendenti dalla demo»; la decisione 16 chiede solo chi li sistema. I contatori in home devono essere dimostrabili (200+ studenti e 95% di soddisfatti contro 78 iscritti nell'HQ).",
+      schermata: [{"t": "cards", "titolo": "Piccoli errori trovati sul sito", "items": [["Home, riquadro «Entra in unilink»", "Il pulsante «Gruppo WhatsApp» porta al catalogo dispense, non al gruppo."], ["/tools/calcolatore-voto-di-laurea", "Il sottotitolo del calcolatore voto di laurea è quello dell'Erasmus («…trova la destinazione più adatta a te») e la pagina si chiama «Calcolatore Media»."], ["Home e Guida", "Refuso «Quello che avremo voluto sapere» (avremmo)."], ["Home", "I contatori in home dicono 200+ studenti e 95% di soddisfatti; nell'HQ risultano 78 iscritti. I numeri pubblici devono essere dimostrabili."], ["Pagine dispense", "Indirizzi con refusi o parentesi: economia-dell-imrpresa-agroalimentare, topics-in-management-and-marketing-(), marketing-(principi-e-strumenti), contabilit%C3%A1; nel CSV anche il titolo «Imrpresa»."], ["PDF Appunti (Economia Aziendale)", "La copertina riporta il codice B014272, il sito B018991."], ["PDF Appunti (Matematica II, Agroalimentare, Economia Finanziaria)", "Le copertine non hanno il codice esame: verificare che siano quelle ufficiali."], ["PDF Quiz (Banca; Statistica per le app. aziendali)", "La risposta giusta segue sempre A-D-C-B e le domande sono un glossario (vedi «Simulatore d'esame»)."], ["Excel dei tool", "Il foglio Erasmus si chiama «2021-2» e il regolamento della prova finale è del 2017/2018: verificare che siano aggiornati."]]}, {"t": "stats", "items": [["856", "utenti in 28 giorni (Google Analytics, al 4 ottobre)"], ["7.549", "visualizzazioni in 28 giorni"], ["102", "clic da Google in 28 giorni (erano 17 il mese prima)"], ["18 su 50", "pagine indicizzate"], ["78", "studenti registrati"]]}, {"t": "nota", "testo": "Come girano oggi i materiali: i PDF delle dispense sono caricati su Framer come file pubblici: chi ha il link può scaricarli e girarli per sempre. Nelle pagine corso pubblicate oggi non ci sono pulsanti di download (controllato su Microeconomia ed Economia Aziendale). Non c'è login, non c'è pagamento, e Google Analytics vede le pagine ma non i clic sui pulsanti."}, {"t": "cards", "titolo": "Cosa contiene il sito di oggi", "items": [["Home", "Contatori, vetrina dei corsi del 1° anno, guida in PDF, tool, invito al gruppo WhatsApp."], ["Dispense", "Catalogo di 34 corsi (EA ed EC) alimentato da un file CSV. Ogni scheda ha le «Informazioni utili» per partizione (modalità d'esame, CFU, prove intermedie, quanto seguire le lezioni, difficoltà, «Il nostro consiglio»)."], ["Tools", "Calcolatore voto di laurea, calcolatore Erasmus, destinazioni Erasmus (140 università), Master/Magistrale (163 programmi), Esploratore di carriera (aree e percorsi con stipendi, ore, aziende target)."], ["Altro", "Guida (PDF), FAQ, Contatti, Diventa mentor."]]}],
+      serve: ["Qualcuno che sistemi gli errori elencati (fase 1 di «Per andare online», costo 0 €)"],
+      domande: ["Errori del sito (elencati in «Il sito di oggi»): chi li sistema?"],
+      storico: [["2026-10-04", "Descritta nel report «Dalla vetrina alla piattaforma», sezione 3."], ["2026-10-06", "Aggiunta al registro dal report: solo contenuto, nessuna modifica al design."]],
+    },
+    {
+      id: "L12",
+      titolo: "Un brand, tanti hub: le 10 scuole",
+      gruppo: "Report · Struttura e sito",
+      stato: "Da decidere",
+      impatto: 0,
+      sforzo: 0,
+      area: "",
+      origine: "Report «Dalla vetrina alla piattaforma» · 4 ottobre 2026 · sezione 5",
+      problema: "Se UniLink si fa conoscere solo come «la cosa di Economia», quando vorremo aprire a Ingegneria o Giurisprudenza ripartiremo da zero. Ma se diventa troppo generico, a Economia perdiamo la cosa che oggi funziona: essere specifici sui loro esami.",
+      proposta: "UniLink è il brand: la landing generale parla a tutta l'Università di Firenze («Studia meglio, ovunque studi»). Ogni scuola ha il suo hub (UniLink Economia, UniLink Ingegneria…): stesso account, stesso piano di studio, stesso libretto e Career, ma appunti e tool propri. Le 10 scuole sono quelle dell'Università di Firenze. Economia è attiva. Le altre sono «in arrivo»: hanno una pagina con le idee di tool, una lista d'attesa e un invito a fondare l'hub (un piccolo gruppo di studenti di quella scuola che diventano ambassador e scelgono i primi esami). Si apre un hub quando ci sono il team e la domanda. I tool universali (voto di laurea, libretto, piano di studio, Erasmus, CV) funzionano da subito per tutti: portano iscritti da ogni scuola prima ancora dei contenuti.",
+      dove: "Landing generale UniLink con la griglia «Scegli la tua scuola»; una pagina per ogni scuola in arrivo (lista d'attesa, idee di tool da votare, «fonda l'hub»).",
+      consiglio: "Dal report: più avanti, se si esce da Firenze, «UniLink Firenze» diventa una città del brand. Per ora il dominio resta unilinkfirenze.it. Il report indica come criterio per le scuole dopo Economia: quelle con più iscritti in lista d'attesa e un team fondatore.",
+      schermata: [{"t": "cards", "titolo": "Le 10 scuole dell'Università di Firenze e i tool pensati per ciascuna", "items": [["Economia · attiva", "Dispense da 30 e lode, simulatore per gli esami a quiz, carriere in finance, consulting e audit."], ["Ingegneria · in arrivo", "Esercizi passo passo di Analisi e Fisica, propedeuticità e sbarramenti, progetti di gruppo."], ["Giurisprudenza · in arrivo", "Flashcard sugli articoli dei codici, simulazione dell'orale, percorsi dopo la laurea (avvocatura, magistratura, notariato)."], ["Medicina e Salute · in arrivo", "Banca domande per gli esami a quiz, tracker di tirocini e frequenze, simulatore del concorso di specializzazione."], ["Scienze · in arrivo", "Esercizi guidati, relazioni di laboratorio, dottorati e ricerca."], ["Scienze Politiche · in arrivo", "Concorsi pubblici e carriere internazionali (UE, ONG), tirocini."], ["Studi Umanistici · in arrivo", "Percorsi abilitanti all'insegnamento, bibliografie e citazioni, tesi."], ["Psicologia · in arrivo", "Tirocinio post-laurea ed esame di Stato, magistrali e scuole di specializzazione."], ["Architettura · in arrivo", "Calendario di consegne e revisioni, portfolio, concorsi di progettazione."], ["Agraria · in arrivo", "Tirocini in azienda, laboratori, sbocchi nell'agroalimentare."]]}, {"t": "nota", "testo": "I nomi delle scuole e le descrizioni dei tool sono letti dalla schermata «Scegli la tua scuola» del report (pagina 10): nel testo del report si cita solo «10 scuole» e gli esempi Ingegneria, Giurisprudenza e Medicina."}, {"t": "cards", "titolo": "Cosa fanno le realtà che ci assomigliano (analisi del report)", "items": [["Studocu", "Cosa fa: appunti caricati dagli studenti, organizzati per università e corso, con pagine pubbliche indicizzate. Modello: freemium, circa l'80% gratis, il resto Premium a pagamento o in cambio di documenti caricati. Cosa prendiamo: pagine pubbliche per corso (Google) e premi a chi contribuisce."], ["Knowunity", "Cosa fa: appunti e community per studenti, oltre 20 milioni di utenti in 15 paesi. Modello: freemium con abbonamento + employer branding pagato da aziende. Cosa prendiamo: le aziende pagano per farsi conoscere: base per Career."], ["Amboss", "Cosa fa: solo medicina, libreria + banca domande, oltre il 60% delle facoltà di medicina tedesche. Modello: abbonamento annuale; oltre 100 milioni di € di ricavi ricorrenti (2023). Cosa prendiamo: un verticale profondo per area vale più di tanti contenuti generici."], ["Target Test Prep", "Cosa fa: corso GMAT con capitoli, lezioni, quiz di capitolo, piano personalizzato, registro errori, statistiche. Modello: abbonamento a tempo. Cosa prendiamo: il piano a missioni e calendario (vedi «Piano di studio»)."], ["Testbusters", "Cosa fa: preparazione ai test d'ammissione (medicina, professioni sanitarie, IMAT), in 34 città. Modello: corsi, simulazioni, tutor; crescita con acquisizioni (Ammesso.it). Cosa prendiamo: un verticale per tipo di prova, simulazioni come prodotto."], ["Uniwhere", "Cosa fa: libretto e carriera per università italiane e tedesche. Modello: le aziende pagano per proporre formazione e opportunità agli studenti profilati. Cosa prendiamo: il libretto come aggancio, le aziende come cliente."]]}, {"t": "nota", "testo": "Il filo comune (dal report): chi funziona ha un marchio unico e contenuti verticali (per corso o per prova). I ricavi arrivano da freemium + abbonamento o pacchetti, e quasi sempre da una seconda gamba B2B (aziende)."}],
+      serve: ["Il team e la domanda: si apre un hub quando ci sono entrambi", "Un piccolo gruppo di studenti di quella scuola che diventano ambassador e scelgono i primi esami (i «fondatori» dell'hub)"],
+      domande: ["Il brand è «UniLink» con hub per scuola? Quali scuole dopo Economia (proposta: quelle con più iscritti in lista d'attesa e un team fondatore)?", "Brand: UniLink con un hub per scuola; Economia attiva, le altre «in arrivo» con lista d'attesa e team fondatore. Quale scuola dopo?"],
+      storico: [["2026-10-04", "Descritta nel report «Dalla vetrina alla piattaforma», sezione 5."], ["2026-10-06", "Aggiunta al registro dal report: solo contenuto, nessuna modifica al design."]],
+    },
+    {
+      id: "L13",
+      titolo: "L'hub di Economia: «solo landing e poco altro»",
+      gruppo: "Report · Struttura e sito",
+      stato: "Da decidere",
+      impatto: 0,
+      sforzo: 0,
+      area: "",
+      origine: "Report «Dalla vetrina alla piattaforma» · 4 ottobre 2026 · sezione 5",
+      problema: "Le schede corso e i tool sono quello che Google ci porta (102 clic al mese e in crescita). Se le chiudiamo dietro il login perdiamo traffico: tutto si vede, si scarica solo con l'account.",
+      proposta: "L'hub di Economia è la landing di oggi rifatta con un solo scopo: far creare l'account. Sezioni: promessa e «Inizia gratis», tre passi, vetrina dei corsi, cosa c'è dentro l'account, ultimi aggiornamenti, tool gratuiti, prezzi, ambassador e mentor, FAQ. Il «poco altro» sono le pagine che servono a Google e alla fiducia: catalogo, schede corso, prezzi, Plus, ambassador, tool, pagine legali. La landing resta su Framer (si modifica come oggi). I pulsanti portano all'app con un parametro che dice da dove arrivano (?from=hero, ?from=corso…). La demo riproduce struttura e testi; la grafica definitiva si fa con i componenti Framer già esistenti.",
+      dove: "Landing su Framer: hub di Economia e pagine collegate.",
+      consiglio: "Alternative scartate (dal report): tutto dentro l'app (si perde Google e la comodità di modificare i testi su Framer); landing minimale senza catalogo (si perde il traffico delle 34 schede); rifare il sito con un framework (costi e competenze che oggi non abbiamo).",
+      schermata: [{"t": "steps", "titolo": "Sezioni dell'hub di Economia (in ordine)", "items": [["1", "Promessa e «Inizia gratis»"], ["2", "Tre passi"], ["3", "Vetrina dei corsi"], ["4", "Cosa c'è dentro l'account"], ["5", "Ultimi aggiornamenti"], ["6", "Tool gratuiti"], ["7", "Prezzi"], ["8", "Ambassador e mentor"], ["9", "FAQ"]]}, {"t": "chips", "items": ["Catalogo", "Schede corso", "Prezzi", "Plus", "Ambassador", "Tool", "Pagine legali"]}, {"t": "cards", "titolo": "Pensata prima per il telefono", "items": [["Landing", "Costruita per lo smartphone (lì arrivano i link di WhatsApp e Instagram): pulsanti grandi, menu a tendina, numeri in tre riquadri."], ["Area personale", "Pensata per tablet e computer, dove si studia, ma funziona anche da telefono con una barra di navigazione in basso."]]}],
+      serve: ["Parametro ?from=… su ogni pulsante verso l'app (hero, corso, prezzi…), letto da Google Tag Manager e salvato dall'app con l'iscrizione", "Componenti Framer già esistenti per la grafica definitiva"],
+      domande: ["Struttura: landing su Framer + app su app.unilinkfirenze.it. Va bene?"],
+      storico: [["2026-10-04", "Descritta nel report «Dalla vetrina alla piattaforma», sezione 5."], ["2026-10-06", "Aggiunta al registro dal report: solo contenuto, nessuna modifica al design."]],
+    },
+    {
+      id: "L14",
+      titolo: "Catalogo e scheda corso con anteprime",
+      gruppo: "Report · Struttura e sito",
+      stato: "Da decidere",
+      impatto: 0,
+      sforzo: 0,
+      area: "",
+      origine: "Report «Dalla vetrina alla piattaforma» · 4 ottobre 2026 · sezione 5",
+      problema: "Convincere prima di registrarsi e creare fiducia: anteprime, indice, struttura della prova, versione e «aggiornata il».",
+      proposta: "Il catalogo ha filtri per corso di laurea, anno, semestre e area. La ricerca senza risultati propone «Chiedi questo esame»: è un dato su cosa manca. Ogni scheda corso mostra: anteprima delle prime pagine (la quarta è sfocata fino all'accesso), com'è la prova (dai PDF Quiz), le informazioni utili prese dal sito, l'indice della dispensa (dai sorgenti), il registro degli aggiornamenti e un riquadro di acquisto che cambia in base a chi guarda (ospite, chi ha già la dispensa, chi ha ancora il gratuito).",
+      dove: "Hub di Economia: pagine catalogo e scheda corso (34 corsi di EA ed EC).",
+      consiglio: "Dal report: i dati dei 34 corsi si generano da soli con uno script (tools/genera_corsi.py) che legge il CSV del sito, scarica le informazioni utili dalle pagine pubblicate, trova i PDF, conta le pagine, prende la data del file, crea le anteprime e legge i capitoli dai sorgenti Typst.",
+      schermata: [{"t": "steps", "titolo": "Cosa mostra la scheda corso", "items": [["1", "Anteprima delle prime pagine (la quarta è sfocata fino all'accesso)"], ["2", "Com'è la prova (dai PDF Quiz)"], ["3", "Informazioni utili, prese dal sito"], ["4", "Indice della dispensa (dai sorgenti)"], ["5", "Registro degli aggiornamenti"], ["6", "Riquadro di acquisto: cambia per ospite, chi ha già la dispensa, chi ha ancora il gratuito"]]}, {"t": "cards", "titolo": "Catalogo", "items": [["Filtri", "Per corso di laurea, anno, semestre e area."], ["Ricerca senza risultati", "Propone «Chiedi questo esame»: è un dato su cosa manca."]]}],
+      serve: ["Script che genera il catalogo da CSV, sito e PDF (nel report: tools/genera_corsi.py)", "Informazioni utili per partizione prese dalle pagine pubblicate"],
+      domande: ["Nel report la scheda corso non ha domande aperte: la decisione 16 («Errori del sito») riguarda, tra l'altro, codici copertina e indirizzi con refusi delle pagine dispense."],
+      storico: [["2026-10-04", "Descritta nel report «Dalla vetrina alla piattaforma», sezione 5."], ["2026-10-06", "Aggiunta al registro dal report: solo contenuto, nessuna modifica al design."]],
+    },
+    {
+      id: "L15",
+      titolo: "Ultimo aggiornamento e registro versioni",
+      gruppo: "Report · Struttura e sito",
+      stato: "Da decidere",
+      impatto: 0,
+      sforzo: 0,
+      area: "D27",
+      origine: "Report «Dalla vetrina alla piattaforma» · 4 ottobre 2026 · sezione 8",
+      problema: "È il modo più economico per creare fiducia e dare un motivo per tornare. Risponde anche alla domanda tipica «ma è aggiornata al programma di quest'anno?».",
+      proposta: "Ogni dispensa ha versione e data. Nella landing c'è il riquadro «Ultimi aggiornamenti»; nella scheda corso il registro completo; nell'area personale l'avviso «Nuova versione disponibile, riscaricala gratis». Le revisioni vere (es. Marketing Internazionale v1.1 del 7 settembre, allineata al sillabo) si scrivono a mano nel registro aggiornamenti (nel report: config/sito.js).",
+      dove: "Landing (riquadro «Ultimi aggiornamenti», scheda corso) e area personale (avviso).",
+      consiglio: "Alternative scartate (dal report): mostrare solo la data senza versione (non dice cosa è cambiato); notifiche via email a ogni aggiornamento (utili più avanti, quando ci sarà un servizio di email).",
+      schermata: [{"t": "nota", "testo": "Attenzione (dal report): oggi la data «aggiornata il» viene dal file PDF. Per renderla affidabile serve una regola: ogni volta che si ricarica una dispensa si aggiunge una riga al registro con versione e cosa è cambiato. Nel pannello c'è anche una colonna «programma verificato il» da compilare corso per corso."}, {"t": "steps", "titolo": "Dove compare", "items": [["1", "Landing: riquadro «Ultimi aggiornamenti»"], ["2", "Scheda corso: registro completo"], ["3", "Area personale: «Nuova versione disponibile, riscaricala gratis»"]]}],
+      serve: ["La regola del registro: una riga con versione e cosa è cambiato a ogni ricarica", "«Programma verificato il» compilato corso per corso"],
+      domande: ["Concordare la regola: a ogni ricarica di una dispensa si aggiunge una riga al registro con versione e cosa è cambiato (il report la indica come necessaria per rendere affidabile «aggiornata il»)."],
+      storico: [["2026-10-04", "Descritta nel report «Dalla vetrina alla piattaforma», sezione 8."], ["2026-10-06", "Aggiunta al registro dal report: solo contenuto, nessuna modifica al design."]],
+    },
+    {
+      id: "L16",
+      titolo: "Prezzi e piani: la proposta del report",
+      gruppo: "Report · Prezzi e pagamenti",
+      stato: "Superata · 7/10",
+      impatto: 0,
+      sforzo: 0,
+      area: "D28",
+      origine: "Report «Dalla vetrina alla piattaforma» · 4 ottobre 2026 · sezione 9",
+      problema: "Ricavi senza perdere chi non paga: un account gratuito con 1 dispensa a scelta, poi singoli, pacchetti e Plus. I prezzi vanno confermati col sondaggio.",
+      proposta: "Listino proposto nel report (ipotesi da validare col sondaggio): account gratuito, Appunti, Dispensa completa 30L, Pacchetto Semestre, Pacchetto Anno, UniLink Plus (una tantum) e Tutoring 1-1. Il pacchetto semestre è il prodotto da spingere (in evidenza nella pagina prezzi). La pagina prezzi calcola il pacchetto per corso, anno e semestre.",
+      dove: "Pagina Prezzi (con calcolo del pacchetto per corso, anno e semestre) e scheda corso.",
+      consiglio: "Dal report (il parere sulla vostra proposta): 4,99 € per gli Appunti è giusto come prezzo d'impulso; 12,99 € per la completa ha senso se dentro ci sono davvero mappe, quiz e simulatore (oggi le mappe esistono per 17 corsi su 34 e il simulatore per 2: o si produce prima il materiale, o per i corsi senza mappe si scende a 9,99 €); pacchetto anno sì; Plus una tantum sì; tutoring in linea con la media di Firenze.",
+      schermata: [{"t": "list", "titolo": "Cosa c'è nella demo del report (prezzi = ipotesi)", "items": [["Account gratuito", "1 Appunti a scelta tra 3 esami (uno per anno: Microeconomia, Macroeconomia, Finanza Aziendale, si cambiano in config) + 1 Appunti in regalo quando il primo amico invitato conferma l'email", "0 €"], ["Appunti", "La dispensa Appunti/Sbobine di un esame. Prezzo di lancio, poi 9,99 €", "4,99 €"], ["Dispensa completa 30L", "Appunti + Mappe (dove ci sono) + Quiz & Simulazioni + simulatore. Prezzo di lancio, poi 18,99 €", "12,99 €"], ["Pacchetto Semestre", "Tutte le dispense complete di un semestre del proprio corso (3–4 esami). Il «invece di» si calcola da solo (38,97–51,96 €)", "29,99 €"], ["Pacchetto Anno", "I due semestri. Proposta di Claude: da vendere soprattutto a settembre–ottobre", "49,99 €"], ["UniLink Plus", "Piano di studio per tutti gli esami, 30 giorni di esercizi, ripasso errori, CV benchmark completo. Vale fino a fine sessione (28/2, 31/7 o 30/9). Con un pacchetto costa 10 € in meno", "14,99 € una tantum"], ["Tutoring 1-1", "Con chi ha preso 30 in quell'esame; pacchetto 3 ore 54 €; 75% al mentor, 25% a UniLink. Proposta di Claude", "20 €/ora"]]}, {"t": "steps", "titolo": "Il parere sulla vostra proposta (dal report)", "items": [["1", "4,99 € per gli Appunti: giusto come prezzo d'impulso. Per confronto, Studocu Premium costa circa 3–5 € al mese secondo fonti terze, ma è generico; il nostro è specifico per l'esame UniFi."], ["2", "12,99 € per la completa: ha senso se dentro ci sono davvero mappe, quiz e simulatore. Oggi le mappe esistono per 17 corsi su 34 e il simulatore per 2: o si produce prima il materiale, o per i corsi senza mappe si scende a 9,99 €."], ["3", "«4,99 invece di 9,99» con il prezzo barrato: per legge (art. 17-bis del Codice del Consumo, direttiva Omnibus) il prezzo barrato deve essere il più basso praticato nei 30 giorni prima. Se non abbiamo mai venduto a 9,99 € non possiamo barrarlo. Si può invece dire «prezzo di lancio fino al 31 dicembre, poi 9,99 €», che è un'eccezione prevista: la demo fa così."], ["4", "29,99 € «invece di 54,97»: il confronto è corretto solo se si calcola sui prezzi singoli veri. Con la completa a 12,99 € un semestre da 3–4 esami vale 38,97–51,96 €: la demo lo calcola da sola per ogni semestre."], ["5", "Pacchetto anno: sì. Si vende a inizio anno quando la motivazione è alta, incassa subito e fidelizza. Il rischio di «cannibalizzare» il semestre è basso: chi compra l'anno è chi avrebbe comprato due semestri."], ["6", "Plus una tantum: sì. Si studia a sessioni: un abbonamento mensile si disdice dopo l'esame e richiede gestione dei rinnovi e dei rimborsi. Una tantum per sessione è più semplice per tutti e si ricompra in modo naturale alla sessione dopo."], ["7", "Tutoring: a Firenze la media è circa 21,60 €/ora e gli studenti UniFi su Superprof chiedono 15–18 €/ora. A 20 €/ora con un mentor «certificato UniLink» siamo nella media; la piattaforma tiene il 25%."], ["8", "Potere d'acquisto: il pacchetto semestre è il prodotto da spingere (in evidenza nella pagina prezzi). I prezzi vanno comunque confermati col sondaggio."]]}],
+      serve: ["Sondaggio sui prezzi (vedi «Marketing, posizionamento e sondaggio»)", "Materiale prodotto: mappe (oggi 17 corsi su 34) e simulatore (oggi 2 corsi)", "Soggetto legale per incassare (vedi «Pagamenti»)"],
+      domande: ["Confermate i prezzi di partenza? Quali 3 esami nel gratuito? Il regalo per invito resta 1 o cresce (1 ogni amico, massimo 3)? Plus ha senso già al lancio o dopo, quando il simulatore copre più esami?", "Prezzi: 4,99 / 12,99 / 29,99 / 49,99 / Plus 14,99 una tantum / tutoring 20 €/ora. Lanciamo il sondaggio a metà ottobre?", "Prezzo di lancio fino al 31/12 al posto del prezzo barrato: d'accordo?", "Gratuito: quali 3 esami (uno per anno)? Regalo per invito: 1 o più?"],
+      storico: [["2026-10-07", "Superata dal listino deciso il 7/10 (card L07)."], ["2026-10-04", "Descritta nel report «Dalla vetrina alla piattaforma», sezione 9."], ["2026-10-06", "Aggiunta al registro dal report: solo contenuto, nessuna modifica al design."]],
+    },
+    {
+      id: "L17",
+      titolo: "UniLink Plus: il metodo, non i contenuti",
+      gruppo: "Report · Prezzi e pagamenti",
+      stato: "Stand-by · 7/10",
+      impatto: 0,
+      sforzo: 0,
+      area: "D29",
+      origine: "Report «Dalla vetrina alla piattaforma» · 4 ottobre 2026 · sezione 10",
+      problema: "Le dispense sono il prodotto più facile da copiare; il metodo (piano, test, simulazioni, registro errori, carriera) no. Plus è anche il prodotto che regge l'espansione: è uguale per tutte le scuole.",
+      proposta: "Plus è il «metodo», non i contenuti: le dispense si comprano a parte. Costa 14,99 € una tantum e vale fino alla fine della sessione; con un pacchetto costa 10 € in meno. Pagina pubblica #/plus con il confronto gratuito/Plus e i vantaggi per Economia; nell'app i limiti sono visibili (es. il piano gratuito segue un esame alla volta, il CV gratuito mostra 5 regole su 17).",
+      dove: "Pagina pubblica «Plus» (#/plus) con il confronto gratuito/Plus.",
+      consiglio: "Alternative scartate (dal report): Plus con dentro le dispense (prezzo alto e confuso); abbonamento mensile (si disdice dopo l'esame); tutto gratis (niente ricavi dalla parte che costa di più costruire).",
+      schermata: [{"t": "cards", "titolo": "Gratis e Plus, a confronto", "items": [["Piano di studio", "Gratis: 1 esame alla volta. Plus: tutti gli esami della sessione, calendario unico, ottimizzatore degli obiettivi, coach."], ["Test e simulatore", "Gratis: prova da 5 domande. Plus: simulazioni a tempo con il punteggio vero e test dopo ogni capitolo, per tutti gli esami che hai."], ["Registro errori", "Gratis: —. Plus: le domande sbagliate tornano finché non le sai, con il motivo dell'errore."], ["Esercizi quotidiani", "Gratis: —. Plus: 30 giorni di «missioni» brevi."], ["Career", "Gratis: template CV e prime 5 regole. Plus: benchmark completo per 8 carriere, template in inglese, shortlist dei master con scadenze."], ["Avvisi", "Gratis: nuove versioni delle dispense. Plus: appelli, bandi Erasmus, scadenze dei master (nel report il testo di Plus è preceduto da «1.»: probabilmente un «+» venuto male, da confermare)."]]}, {"t": "steps", "titolo": "Perché conviene a chi studia Economia (dal report)", "items": [["1", "Esami diversissimi nello stesso semestre: matematica, diritto e aziendale insieme. Il piano cambia metodo per ognuno invece di dare lo stesso calendario a tutti."], ["2", "Tanti esami a quiz ed esercizi (Statistica, Matematica, Banca, Bilancio): il simulatore con il punteggio vero è l'allenamento più vicino alla prova."], ["3", "La media conta per il dopo: magistrali e master (Bocconi, LSE, HEC…) guardano la media; l'ottimizzatore distribuisce il tempo per tenerla più alta possibile."], ["4", "Carriere con standard rigidi: finance, consulting e audit scartano i CV fatti male in pochi secondi; il benchmark dice cosa manca."]]}],
+      serve: ["Piano di studio multi-esame, simulatore, registro errori ed esercizi quotidiani costruiti (vedi le card su simulatore e piano di studio)", "Career completo (CV benchmark per 8 carriere)"],
+      domande: ["Plus: piano multi-esame, test e simulatore, registro errori, Career completo; le dispense restano a parte. D'accordo?", "Plus ha senso già al lancio o dopo, quando il simulatore copre più esami?"],
+      storico: [["2026-10-07", "Meeting dei founder: Plus in stand-by; se si vende, 14,99 a parte o 7,99 con un pacchetto."], ["2026-10-04", "Descritta nel report «Dalla vetrina alla piattaforma», sezione 10."], ["2026-10-06", "Aggiunta al registro dal report: solo contenuto, nessuna modifica al design."]],
+    },
+    {
+      id: "L18",
+      titolo: "Pagamenti e soggetto legale",
+      gruppo: "Report · Prezzi e pagamenti",
+      stato: "In parte deciso · 7/10",
+      impatto: 0,
+      sforzo: 0,
+      area: "D30",
+      origine: "Report «Dalla vetrina alla piattaforma» · 4 ottobre 2026 · sezione 11",
+      problema: "Oggi UniLink non ha un soggetto legale: senza, non si può vendere né pagare ambassador e mentor. Finché non c'è, nella demo il pagamento è simulato.",
+      proposta: "Le strade tipiche per avere un soggetto sono un'associazione, una partita IVA (regime forfettario) di uno dei founder o una società: ognuna ha costi e obblighi diversi e va scelta con un commercialista. Poi si incassa con Stripe Checkout (consigliato nel report). Nel checkout c'è già la casella per rinunciare al recesso sui contenuti digitali; le pagine «Termini» e «Privacy» sono bozze da far scrivere bene quando esiste il soggetto.",
+      dove: "Checkout e pagine «Termini» e «Privacy».",
+      consiglio: "Dal report: Stripe Checkout è l'opzione consigliata. Per i contenuti digitali il diritto di recesso si perde solo se il cliente chiede di riceverli subito e lo accetta espressamente: nel checkout c'è la casella apposita.",
+      schermata: [{"t": "cards", "titolo": "Come incassare: le opzioni", "items": [["Stripe Checkout (consigliato)", "Pro: carta, Apple Pay, Google Pay; nessun canone; per le carte europee standard 1,5% + 0,25 € a transazione; si collega a Supabase; esistono anche «payment link» senza codice. Contro: serve un soggetto con conto e dati fiscali."], ["PayPal", "Pro: molto conosciuto. Contro: commissioni più alte, esperienza meno fluida."], ["Satispay", "Pro: diffuso tra gli studenti italiani. Contro: da aggiungere dopo, non come unico metodo."], ["Rivenditori «merchant of record» (es. Paddle, Lemon Squeezy)", "Pro: gestiscono loro IVA e fatture. Contro: commissioni più alte; serve comunque qualcuno che riceva i soldi."]]}, {"t": "steps", "titolo": "Strade per avere un soggetto legale", "items": [["1", "Un'associazione"], ["2", "Una partita IVA (regime forfettario) di uno dei founder"], ["3", "Una società"]]}, {"t": "nota", "testo": "Già previsto nella demo del report: per i contenuti digitali il diritto di recesso si perde solo se il cliente chiede di riceverli subito e lo accetta espressamente: nel checkout c'è la casella apposita. Le pagine «Termini» e «Privacy» sono bozze da far scrivere bene quando esiste il soggetto."}],
+      serve: ["Un soggetto legale (scelto con un commercialista)", "Un conto e dati fiscali per Stripe", "Pagine «Termini» e «Privacy» scritte bene"],
+      domande: ["Chi parla con un commercialista e entro quando? Domande da fare: forma più semplice per vendere contenuti digitali a studenti; IVA sui contenuti digitali; come pagare mentor e ambassador.", "Soggetto legale: chi sente un commercialista e entro quando?"],
+      storico: [["2026-10-07", "Deciso Stripe sulla landing; resta il nodo del soggetto legale e della partita IVA (Cosimo sente chi incassa già online)."], ["2026-10-04", "Descritta nel report «Dalla vetrina alla piattaforma», sezione 11."], ["2026-10-06", "Aggiunta al registro dal report: solo contenuto, nessuna modifica al design."]],
+    },
+    {
+      id: "L19",
+      titolo: "Referral e campus ambassador",
+      gruppo: "Report · Crescita",
+      stato: "Deciso · 7/10",
+      impatto: 0,
+      sforzo: 0,
+      area: "D31",
+      origine: "Report «Dalla vetrina alla piattaforma» · 4 ottobre 2026 · sezione 12",
+      problema: "Il canale principale oggi è WhatsApp: le persone che stanno nei gruppi valgono più di qualsiasi pubblicità. Un codice fisso si ricorda e si può stampare su un volantino.",
+      proposta: "Referral: ogni account ha un codice fisso e unico (es. UL-D96C) e un link …?ref=UL-D96C. Chi si iscrive col link vede chi l'ha invitato; quando conferma l'email UniFi scatta il regalo per chi ha invitato. Un'email, un regalo: non si può barare con account falsi. Ambassador: pagina pubblica con candidatura; nell'area personale l'ambassador vede iscritti, confermati, venduto, i suoi crediti (20% del venduto) e un messaggio pronto per il gruppo WhatsApp col suo codice. Si possono avere più ambassador per anno e corso, ognuno col suo codice. Percorso verso il ruolo di mentor. All'inizio gli ambassador ricevono crediti (dispense, Plus) invece di soldi; quando c'è il soggetto legale si passa alla commissione in denaro con le regole giuste.",
+      dove: "Pagina pubblica «Ambassador» con candidatura; volantini con QR e codice in aula e a Novoli.",
+      consiglio: "Alternative scartate (dal report): codici diversi a ogni invito (più complicati da ricordare); pagare gli ambassador in denaro da subito (senza soggetto legale crea problemi fiscali a loro e a noi); sconti al posto dei regali (abbassano il prezzo percepito).",
+      schermata: [{"t": "cards", "titolo": "Come funziona", "items": [["Referral", "Codice fisso e unico per account (es. UL-D96C) e link …?ref=UL-D96C. Chi si iscrive col link vede chi l'ha invitato; quando conferma l'email UniFi scatta il regalo per chi ha invitato. Le regole (quanti amici per un regalo, quanti regali al massimo) sono nel config dei piani."], ["Ambassador", "Pagina pubblica con candidatura. Nell'area personale: iscritti, confermati, venduto, crediti (20% del venduto) e messaggio pronto per il gruppo WhatsApp col suo codice. Più ambassador per anno e corso, ognuno col suo codice."], ["Crediti", "All'inizio gli ambassador ricevono crediti (dispense, Plus) invece di soldi. Quando c'è il soggetto legale si passa alla commissione in denaro con le regole giuste."]]}],
+      serve: ["Soggetto legale per passare dai crediti alla commissione in denaro", "Regole del regalo: quanti amici per un regalo, quanti regali al massimo"],
+      domande: ["Ambassador: commissione 20% in crediti finché non si può pagare. Quanti per anno?", "Gratuito: quali 3 esami (uno per anno)? Regalo per invito: 1 o più? (1 ogni amico, massimo 3?)"],
+      storico: [["2026-10-08", "Ambassador anche con foto e nomi (pagina ambassador.html), solo con liberatoria."], ["2026-10-07", "Deciso: ambassador solo a commissione, 20% sugli acquisti con il proprio codice, senza accesso gratuito. In home (v8) e nella web app (Ambassador)."], ["2026-10-04", "Descritta nel report «Dalla vetrina alla piattaforma», sezione 12."], ["2026-10-06", "Aggiunta al registro dal report: solo contenuto, nessuna modifica al design."]],
+    },
+    {
+      id: "L20",
+      titolo: "SUSBUS e SECI: iscrizione e richieste",
+      gruppo: "Report · Crescita",
+      stato: "Da decidere",
+      impatto: 0,
+      sforzo: 0,
+      area: "D32",
+      origine: "Report «Dalla vetrina alla piattaforma» · 4 ottobre 2026 · sezione 17",
+      problema: "Produrre dispense costa molto: prima si misura quanta domanda c'è e per quali esami.",
+      proposta: "SUSBUS (Sustainable Business for Societal Challenges, B314) è della Scuola di Economia, interamente in inglese, a numero programmato: condivide con EA le basi aziendali (contabilità, diritto, statistica) ma ha esami propri su sostenibilità e impatto. SECI (Sviluppo sostenibile, cooperazione e gestione dei conflitti) è un corso di scienze sociali con tre curricula al terzo anno (Economia Politica, Scienza Politica, Sociologia, Relazioni internazionali, Diritto internazionale): con EA/EC coincide poco. Si possono scegliere alla registrazione. Nel catalogo, scegliendo SUSBUS o SECI compare la lista dei loro esami (dalle pagine ufficiali) con la dispensa UniLink «più vicina» e il pulsante «Chiedi». Le richieste finiscono nel pannello.",
+      dove: "Catalogo (filtro per corso di laurea) e scelta del corso alla registrazione.",
+      consiglio: "Alternative scartate (dal report): produrre subito per tutti e due (rischio di lavorare per pochi); ignorarli (si perde un pubblico vicino che è già a Novoli).",
+      schermata: [{"t": "cards", "titolo": "I due corsi", "items": [["SUSBUS (B314)", "Sustainable Business for Societal Challenges: Scuola di Economia, interamente in inglese, a numero programmato. Condivide con EA le basi aziendali (contabilità, diritto, statistica); esami propri su sostenibilità e impatto."], ["SECI", "Sviluppo sostenibile, cooperazione e gestione dei conflitti: corso di scienze sociali con tre curricula al terzo anno: Economia Politica, Scienza Politica, Sociologia, Relazioni internazionali, Diritto internazionale. Con EA/EC coincide poco."]]}, {"t": "steps", "titolo": "Come funziona", "items": [["1", "Il corso si sceglie alla registrazione"], ["2", "Nel catalogo compare la lista degli esami (dalle pagine ufficiali) con la dispensa UniLink «più vicina» e il pulsante «Chiedi»"], ["3", "Le richieste finiscono nel pannello"], ["4", "Quando un esame supera una soglia di richieste, si cercano i materiali e si produce come per gli altri corsi"]]}],
+      serve: ["Lista degli esami per corso (nel report: config/corsi-di-laurea.js, con EA, EC, SUSBUS, SECI)", "Una soglia di richieste oltre la quale produrre la dispensa"],
+      domande: ["SUSBUS e SECI: richieste ora, dispense quando superano una soglia (quale?)."],
+      storico: [["2026-10-04", "Descritta nel report «Dalla vetrina alla piattaforma», sezione 17."], ["2026-10-06", "Aggiunta al registro dal report: solo contenuto, nessuna modifica al design."]],
+    },
+    {
+      id: "L21",
+      titolo: "Metriche e tracciamento",
+      gruppo: "Report · Misure, legale e lancio",
+      stato: "Da decidere",
+      impatto: 0,
+      sforzo: 0,
+      area: "D33",
+      origine: "Report «Dalla vetrina alla piattaforma» · 4 ottobre 2026 · sezione 18",
+      problema: "Il sito carica Google Analytics 4: conta visite, pagine e provenienza, ma non sa quale pulsante viene cliccato, quanti arrivano alla registrazione o cosa succede dopo.",
+      proposta: "Un piano di tracciamento: per ogni evento dice dove si misura, quando, con quali dati e quale decisione aiuta a prendere. Due livelli: sul sito Framer (anonimo) click sui pulsanti per posizione, apertura delle anteprime, sezione prezzi vista, uso dei tool, provenienza (WhatsApp, Instagram, Google, referral), con Google Tag Manager (due righe nelle impostazioni del sito Framer, sezione Custom Code) più il Cookie Banner di Framer per il consenso; nell'app (con il consenso) registrazione, email confermata, dispensa gratis scelta, download, quiz, piani, sessioni spuntate, questionario dopo l'esame, CV, checkout, acquisti, condivisioni del link, clic sulle «porte finte», richieste di materiale, segnalazioni di errori.",
+      dove: "Sito Framer: Google Tag Manager + Cookie Banner; parametro ?from= sui pulsanti verso l'app.",
+      consiglio: "Dal report: il trucco principale è senza codice: ogni pulsante verso l'app ha un parametro (?from=hero, ?from=corso, ?from=prezzi) che Tag Manager legge e che l'app salva con l'iscrizione. Senza consenso alle statistiche gli eventi restano anonimi.",
+      schermata: [{"t": "list", "titolo": "I numeri da guardare ogni settimana (obiettivi iniziali = ipotesi)", "items": [["Conversione landing → account", "iscrizioni / visitatori unici", "> 8%"], ["Attivazione", "account con un download entro 24 ore / nuovi account", "> 60%"], ["Ritorno a 4 settimane", "attivi nella settimana 4 / iscritti di quella settimana", "> 25%"], ["Fattore referral", "amici confermati / utenti che condividono", "> 0,5"], ["Conversione a pagamento", "acquirenti / account attivi", "> 5% nella prima sessione"], ["North Star", "studenti attivi a settimana (download, quiz o piano)", "crescita costante"]]}, {"t": "nota", "testo": "«Porte finte» (dal report): sono pulsanti di funzioni che non esistono ancora (lettera di presentazione, mentor 1-1, offerte di stage, piano con AI, simulatore per altri esami, tutoring). Chi clicca viene messo in lista d'attesa e il clic viene contato. È il modo più economico per sapere cosa costruire prima di spendere tempo e soldi."}, {"t": "cards", "titolo": "I due livelli", "items": [["Sul sito Framer (anonimo)", "Click sui pulsanti per posizione, apertura delle anteprime, sezione prezzi vista, uso dei tool, provenienza (WhatsApp, Instagram, Google, referral)."], ["Nell'app (con il consenso)", "Registrazione, email confermata, dispensa gratis scelta, download, quiz, piani, sessioni spuntate, questionario dopo l'esame, CV, checkout, acquisti, condivisioni del link, clic sulle «porte finte», richieste di materiale, segnalazioni di errori."]]}],
+      serve: ["Google Tag Manager installato su Framer (due righe in Custom Code)", "Cookie Banner di Framer per il consenso", "Guida passo passo (nel report: docs/framer_tracking.md)"],
+      domande: ["Tracciamento: chi installa Google Tag Manager e il Cookie Banner su Framer?"],
+      storico: [["2026-10-04", "Descritta nel report «Dalla vetrina alla piattaforma», sezione 18."], ["2026-10-06", "Aggiunta al registro dal report: solo contenuto, nessuna modifica al design."]],
+    },
+    {
+      id: "L22",
+      titolo: "Architettura dei tool: universali, di scuola, di livello",
+      gruppo: "Report · Struttura e sito",
+      stato: "Da decidere",
+      impatto: 0,
+      sforzo: 0,
+      area: "D34",
+      origine: "Report «Dalla vetrina alla piattaforma» · 4 ottobre 2026 · sezione 20",
+      problema: "Crescere su altre scuole e sulla magistrale senza rifare tutto: per ogni tool si deve sapere a chi serve, in che stato è e cosa facciamo di quelli che esistono già.",
+      proposta: "Tre famiglie. Universali: un solo motore, con le regole di ogni scuola (voto di laurea, libretto, piano di studio, Erasmus, CV, scadenze, tasse e borse). Di scuola: utili solo lì, e spesso il valore è il tool stesso (a Economia simulatore e Master finder; a Ingegneria esercizi passo passo e propedeuticità; a Giurisprudenza flashcard sui codici e simulatore d'orale; a Medicina tracker dei tirocini). Di livello: tesi, stage e placement, dottorati, per magistrale e ciclo unico. Nella pagina Tools si filtrano per scuola e per livello; quelli che non esistono ancora sono segnati come «Idea» e hanno un pulsante «Mi serve» che conta l'interesse.",
+      dove: "Pagina Tools (filtri per scuola e per livello; «Idea» con pulsante «Mi serve»).",
+      consiglio: "Dal report: il calcolatore voto di laurea resta pubblico (è il più cercato su Google) e nell'account ricorda i voti; Erasmus + Destinazioni si uniscono in un solo tool; Master/Magistrale resta con consultazione pubblica e shortlist nell'account; la Guida PDF va nell'account (meglio pagine web per Google + checklist nell'account).",
+      schermata: [{"t": "cards", "titolo": "Le tre famiglie", "items": [["Universali", "Un solo motore, con le regole di ogni scuola: voto di laurea, libretto, piano di studio, Erasmus, CV, scadenze, tasse e borse."], ["Di scuola", "Utili solo lì: Economia simulatore e Master finder; Ingegneria esercizi passo passo e propedeuticità; Giurisprudenza flashcard sui codici e simulatore d'orale; Medicina tracker dei tirocini."], ["Di livello", "Tesi, stage e placement, dottorati, per magistrale e ciclo unico."]]}, {"t": "list", "titolo": "Tool di oggi: decisione e perché", "items": [["Calcolatore voto di laurea", "Il più cercato su Google: resta pubblico; nell'account ricorda i voti", "Tenere"], ["Calcolatore Erasmus + Destinazioni", "Un solo tool «Erasmus»: punteggio, mete compatibili, learning agreement. Lista da aggiornare a ogni bando", "Unire"], ["Master / Magistrale", "Consultazione pubblica; shortlist e scadenze nell'account", "Tenere"], ["Esploratore di carriera", "Contenuto unico; da collegare al CV benchmark della stessa traiettoria", "Tenere"], ["Guida (PDF)", "Meglio pagine web (Google) + checklist nell'account", "Nell'account"]]}, {"t": "cards", "titolo": "Da verificare", "items": [["Dati Erasmus", "Il foglio si chiama «2021-2»: aggiornare al bando 2026/27."], ["Prova finale", "Il regolamento usato è del 2017/2018: confermare quello in vigore."], ["Master finder", "Righe incomplete (nell'Excel il ritorno sull'investimento dà errore); spiegare in pagina i criteri delle fasce."], ["Supporto", "«Scrivi sul gruppo WhatsApp» per i problemi dei tool diventa il pulsante «segnala» nell'app."]]}],
+      serve: ["Registro dei tool (nel report: config/hub.js) con scuole, livelli, stato e decisione", "Le quattro verifiche elencate in «Da verificare»"],
+      domande: ["Nel report l'architettura dei tool non ha una domanda esplicita per la call; le «Da verificare» (dati Erasmus, regolamento prova finale, Master finder, supporto) sono da chiudere."],
+      storico: [["2026-10-04", "Descritta nel report «Dalla vetrina alla piattaforma», sezione 20."], ["2026-10-06", "Aggiunta al registro dal report: solo contenuto, nessuna modifica al design."]],
+    },
+    {
+      id: "L23",
+      titolo: "Marketing e sondaggio sui prezzi",
+      gruppo: "Report · Crescita",
+      stato: "In parte deciso · 7/10",
+      impatto: 0,
+      sforzo: 0,
+      area: "",
+      origine: "Report «Dalla vetrina alla piattaforma» · 4 ottobre 2026 · sezione 21",
+      problema: "Servono prezzi fissati su dati veri: capire quale pacchetto preferiscono gli studenti e se Plus interessa.",
+      proposta: "Posizionamento: «Da studenti per studenti, gli appunti da 30 e lode e un piano per arrivarci». Onesto, mai aziendale (come oggi), ma con una promessa più concreta: non solo materiale, anche metodo. Canali in ordine di priorità: WhatsApp, referral e ambassador, Google, Instagram, in aula e a Novoli. Sondaggio sui prezzi: 12 domande in 3 minuti su Tally (gratuito), con 4 domande «Van Westendorp» sul pacchetto semestre.",
+      dove: "Fuori dal sito: gruppi WhatsApp, Instagram, Google (Search Console), volantini in aula e a Novoli; sondaggio su Tally.",
+      consiglio: "Dal report: il sondaggio parte da metà ottobre per 10 giorni, analisi entro fine mese, prezzi pronti a novembre, prima della sessione invernale.",
+      schermata: [{"t": "steps", "titolo": "Canali, in ordine di priorità", "items": [["1", "WhatsApp: resta il canale principale (libreria messaggi già pronta). Ogni messaggio con utm_source=whatsapp e, per gli ambassador, il loro codice."], ["2", "Referral e ambassador: il codice fisso trasforma ogni studente in un canale."], ["3", "Google: le schede corso pubbliche; inviare la sitemap a Search Console (oggi 32 pagine su 50 non sono note a Google) e correggere gli indirizzi con refusi."], ["4", "Instagram: reel e caroselli brevi del tipo «come si passa Microeconomia», con link alla scheda corso. Il canale dove gli studenti passano più tempo dopo WhatsApp."], ["5", "In aula e a Novoli: QR sui volantini con il codice dell'ambassador del corso."]]}, {"t": "cards", "titolo": "Sondaggio sui prezzi", "items": [["Perché", "Per fissare i prezzi su dati veri, capire quale pacchetto preferiscono e se Plus interessa."], ["Come", "12 domande in 3 minuti su Tally (gratuito); 4 domande «Van Westendorp» sul pacchetto semestre (a che prezzo è troppo economico, un affare, caro ma lo prenderei, troppo caro)."], ["Dove", "Gruppi WhatsApp di 1°, 2° e 3° anno, storia Instagram, email ai 78 iscritti, ambassador in aula."], ["Quando", "Da metà ottobre per 10 giorni, analisi entro fine mese, prezzi pronti a novembre, prima della sessione invernale."], ["Incentivo", "Una dispensa Appunti gratis a chi risponde (porta anche iscrizioni)."], ["Obiettivo", "Almeno 100 risposte, almeno 30 per anno. Testo pronto nel report (docs/sondaggio_prezzi.md)."]]}],
+      serve: ["Tally (gratuito)", "Sitemap inviata a Search Console e indirizzi con refusi corretti", "Libreria di messaggi WhatsApp (già pronta) con utm_source=whatsapp"],
+      domande: ["Prezzi: lanciamo il sondaggio a metà ottobre? (decisione 7 del report)"],
+      storico: [["2026-10-07", "Deciso: il rebranding non si annuncia; lancio con Instagram sponsorizzato, LinkedIn, WhatsApp e volantini."], ["2026-10-04", "Descritta nel report «Dalla vetrina alla piattaforma», sezione 21."], ["2026-10-06", "Aggiunta al registro dal report: solo contenuto, nessuna modifica al design."]],
+    },
+    {
+      id: "L24",
+      titolo: "Rischi e cose legali",
+      gruppo: "Report · Misure, legale e lancio",
+      stato: "Da decidere",
+      impatto: 0,
+      sforzo: 0,
+      area: "D35",
+      origine: "Report «Dalla vetrina alla piattaforma» · 4 ottobre 2026 · sezione 22",
+      problema: "Obbligatori quando si vende: soggetto legale, privacy, termini, fonti, consenso cookie e recesso.",
+      proposta: "Il report elenca nove temi con cosa fare per ciascuno (tabella qui sotto). Alcuni sono già nella demo del report (nome UniFi nel footer, casella di recesso, informativa e consensi separati, esportazione e cancellazione dei dati dal profilo).",
+      dove: "Pagine «Termini», «Privacy», «Fonti e diritti», footer, checkout, banner cookie.",
+      consiglio: "Dal report: senza soggetto legale non si può vendere né pagare ambassador e mentor: è la prima cosa da sistemare (vedi «Pagamenti»).",
+      schermata: [{"t": "cards", "titolo": "Tema → cosa fare", "items": [["Soggetto legale", "Senza, non si può vendere né pagare ambassador e mentor. Prima cosa da sistemare (vedi «Pagamenti»)."], ["Contenuti e diritti", "Le dispense rielaborano programmi e testi dei docenti. Regola: solo rielaborazioni originali, niente copie di slide o capitoli; pagina «Fonti e diritti»; rimozione rapida su segnalazione."], ["Nome e logo UniFi", "UniLink è indipendente: dirlo chiaramente (già nel footer della demo). Attenzione all'uso del logo dell'Università nelle copertine e sul sito se si vende."], ["Prezzi barrati", "Solo «prezzo di lancio» con aumento annunciato, o prezzi davvero praticati nei 30 giorni prima (art. 17-bis Codice del Consumo)."], ["Recesso", "Casella di rinuncia al recesso per i contenuti digitali nel checkout (già nella demo)."], ["Privacy (GDPR)", "Informativa, consensi separati, banner cookie con Consent Mode, esportazione e cancellazione dei dati dal profilo (già nella demo). Se in futuro i profili vengono mostrati ad aziende serve un consenso specifico."], ["Numeri pubblici", "I contatori in home (200+ studenti, 95% soddisfatti) devono essere dimostrabili."], ["PACRAR", "Citare la fonte o chiedere il permesso prima di usare il nome in un prodotto a pagamento."], ["Qualità dei quiz", "Correggere sequenza delle risposte e stile delle domande prima di venderli."]]}],
+      serve: ["Soggetto legale", "Pagine «Termini», «Privacy» e «Fonti e diritti» scritte bene", "Consenso specifico se in futuro i profili vengono mostrati ad aziende"],
+      domande: ["Soggetto legale: chi sente un commercialista e entro quando?", "Piano di studio: contattiamo Alessandro de Concini? (nome PACRAR)"],
+      storico: [["2026-10-04", "Descritta nel report «Dalla vetrina alla piattaforma», sezione 22."], ["2026-10-06", "Aggiunta al registro dal report: solo contenuto, nessuna modifica al design."]],
+    },
+    {
+      id: "L25",
+      titolo: "Per andare online: le sei fasi",
+      gruppo: "Report · Misure, legale e lancio",
+      stato: "Da decidere",
+      impatto: 0,
+      sforzo: 0,
+      area: "D36",
+      origine: "Report «Dalla vetrina alla piattaforma» · 4 ottobre 2026 · sezione 23",
+      problema: "La demo del report gira sul computer e i dati stanno nel browser: per andare online servono backend, hosting, soggetto legale e contenuti.",
+      proposta: "Il report indica sei fasi in ordine, ognuna con il costo stimato (tabella qui sotto). Il codice della demo è pensato per questo passaggio: lo store ha le stesse tabelle che andrebbero su Supabase, le scelte di business sono già in file separati e le pagine non cambiano.",
+      dove: "Fase 1 sul sito Framer (sitemap, Google Tag Manager, Cookie Banner, pulsanti con ?from=).",
+      consiglio: "Dal report: Supabase ha un piano gratuito (50.000 utenti attivi al mese, 500 MB di database, 1 GB di file); attenzione, i progetti gratuiti si mettono in pausa dopo una settimana senza attività.",
+      schermata: [{"t": "steps", "titolo": "Le sei fasi", "items": [["1", "Sistemare il sito di oggi: errori elencati in «Il sito di oggi», sitemap, Google Tag Manager e Cookie Banner su Framer, pulsanti con ?from= · Costo stimato: 0 €"], ["2", "Backend: Supabase (login con link email, database con le stesse tabelle della demo, storage privato dei PDF, filigrana sul server). Il piano gratuito include 50.000 utenti attivi al mese, 500 MB di database e 1 GB di file; i progetti gratuiti si mettono in pausa dopo una settimana senza attività · Costo stimato: 0 € all'inizio, poi il piano Pro"], ["3", "Web app su app.unilinkfirenze.it (hosting statico gratuito, es. GitHub Pages, già usato per l'HQ), partendo dal codice della demo · Costo stimato: 0 € + dominio già nostro"], ["4", "Soggetto legale + Stripe · Costo stimato: costi del commercialista e della forma scelta; Stripe solo a commissione"], ["5", "Contenuti: quiz corretti, più esami nel simulatore, mappe del 3° anno, Topics in Corporate Finance e Diritto del Lavoro · Costo stimato: tempo"], ["6", "AI per rifinire piano e CV, solo in Plus · Costo stimato: pochi centesimi per studente"]]}],
+      serve: ["Account Supabase", "Dominio app.unilinkfirenze.it (già nostro)", "Soggetto legale + Stripe", "Quiz corretti e più esami nel simulatore"],
+      domande: ["Struttura: landing su Framer + app su app.unilinkfirenze.it. Va bene? (decisione 1 del report)"],
+      storico: [["2026-10-04", "Descritta nel report «Dalla vetrina alla piattaforma», sezione 23."], ["2026-10-06", "Aggiunta al registro dal report: solo contenuto, nessuna modifica al design."]],
+    },
+    {
+      id: "L26",
+      titolo: "Decisioni per la call e fonti del report",
+      gruppo: "Report · Misure, legale e lancio",
+      stato: "Da decidere",
+      impatto: 0,
+      sforzo: 0,
+      area: "D37",
+      origine: "Report «Dalla vetrina alla piattaforma» · 4 ottobre 2026 · sezione 1, 24 e 25",
+      problema: "Il report chiude con le decisioni da prendere nella call: ogni voce ha una proposta già scritta nella demo del report.",
+      proposta: "Le decisioni per la call sono elencate qui sotto come nel report (sezione 24, 16 voci) e come nella sintesi (sezione 1, 10 voci con la proposta nella demo). In fondo le fonti usate dal report (sezione 25).",
+      dove: "Questa card raccoglie le domande che nel report stanno a fine sezione; ogni voce rimanda alla card della sezione corrispondente.",
+      consiglio: "Dal report: ogni sezione ha un riquadro «Da decidere nella call»; qui sono raccolti in un elenco unico.",
+      schermata: [{"t": "steps", "titolo": "Decisioni per la call (sezione 24 del report)", "items": [["1", "Struttura: landing su Framer + app su app.unilinkfirenze.it. Va bene?"], ["2", "Brand: UniLink con un hub per scuola; Economia attiva, le altre «in arrivo» con lista d'attesa e team fondatore. Quale scuola dopo?"], ["3", "Plus: piano multi-esame, test e simulatore, registro errori, Career completo; le dispense restano a parte. D'accordo?"], ["4", "Accesso: email UniFi + link via email. Email personale aggiuntiva per chi si laurea?"], ["5", "PDF: filigrana + marcatura invisibile + PDF privati + limite giornaliero. Limite a 15 download al giorno?"], ["6", "Gratuito: quali 3 esami (uno per anno)? Regalo per invito: 1 o più?"], ["7", "Prezzi: 4,99 / 12,99 / 29,99 / 49,99 / Plus 14,99 una tantum / tutoring 20 €/ora. Lanciamo il sondaggio a metà ottobre?"], ["8", "Prezzo di lancio fino al 31/12 al posto del prezzo barrato: d'accordo?"], ["9", "Soggetto legale: chi sente un commercialista e entro quando?"], ["10", "Ambassador: commissione 20% in crediti finché non si può pagare. Quanti per anno?"], ["11", "Simulatore: correggere i PDF Quiz e partire dagli esami a risposta chiusa. Chi se ne occupa?"], ["12", "Piano di studio: percorso a sessioni da 45 minuti, voto bloccato dopo l'esame, interviste degli ambassador. Contattiamo Alessandro de Concini?"], ["13", "Career: CV benchmark e template subito; lettera, mentor e stage solo se le porte finte lo giustificano."], ["14", "SUSBUS e SECI: richieste ora, dispense quando superano una soglia (quale?)."], ["15", "Tracciamento: chi installa Google Tag Manager e il Cookie Banner su Framer?"], ["16", "Errori del sito (elencati in «Il sito di oggi»): chi li sistema?"]]}, {"t": "list", "titolo": "Le 10 decisioni della sintesi (sezione 1) e la proposta nella demo", "items": [["Il sito diventa landing + app separata?", "Sì: landing su Framer, app su app.unilinkfirenze.it", "1"], ["Accesso", "Email universitaria, link via email (niente password)", "2"], ["Protezione PDF", "Filigrana + marcatura invisibile + PDF privati + limiti", "3"], ["Prezzi", "4,99 / 12,99 / 29,99 / 49,99 / Plus 14,99 una tantum, da validare col sondaggio", "4"], ["Soggetto legale e pagamenti", "Decidere la forma con un commercialista, poi Stripe", "5"], ["Referral e ambassador", "Codice fisso per account; ambassador pagati in crediti all'inizio", "6"], ["Cosa costruire dopo", "Simulatore per gli esami a risposta chiusa, poi piano con AI", "7"], ["SUSBUS e SECI", "Iscrizione e richieste di materiale ora, dispense quando c'è domanda", "8"], ["Brand e altre scuole", "Un brand UniLink con un hub per scuola; Economia attiva, le altre con lista d'attesa e team fondatore", "9"], ["Cosa c'è in Plus", "Piano per tutti gli esami + ottimizzatore, test e simulatore, registro errori, Career completo", "10"]]}, {"t": "chips", "items": ["Sito attuale: unilinkfirenze.it (analizzato il 4 ottobre 2026)", "CareerSet TU Dublin", "Metodo PACRAR (Alessandro de Concini)", "SUSBUS: pagina ufficiale UniFi", "SECI: Booklet 2026/27", "Prezzi barrati: art. 17-bis Codice del Consumo (D.lgs. 26/2023, direttiva Omnibus)", "Studocu Premium: prezzi secondo fonti terze", "Tutoring a Firenze: Superprof", "Stripe: tariffe area economica europea", "Supabase: limiti del piano gratuito 2026", "Target Test Prep, GMAT Club", "Knowunity, Amboss, Studocu", "Testbusters (Ammesso.it), Uniwhere", "Scuole dell'Università di Firenze: guida ai corsi di laurea", "Framer e Google Tag Manager: guida ufficiale, BRIX Templates"]}],
+      serve: ["Una persona che porti le decisioni alla call e le registri"],
+      domande: ["Tutte le decisioni dell'elenco, a partire dalla 1 (struttura) e dalla 9 (soggetto legale), che bloccano le altre."],
+      storico: [["2026-10-04", "Descritta nel report «Dalla vetrina alla piattaforma», sezione 1, 24 e 25."], ["2026-10-06", "Aggiunta al registro dal report: solo contenuto, nessuna modifica al design."]],
+    },
+    {
+      id: "L27", titolo: "Lancio: anteprima a numero chiuso e cosa regalare", gruppo: "Lancio", stato: "Deciso · 8/10", impatto: 4, sforzo: 2, area: "",
+      origine: "Commento di Matteo su S01 (7/10, demo v5) · nota HQ del 7/10 «form di iscrizione per anteprima a numero chiuso» · idea «FOCUS GROUP» · meeting 7/10: «materiali gratis ai primi iscritti» in stand-by",
+      problema: "Per il lancio serve un motivo per iscriversi subito, senza «bruciare» il valore delle dispense che fino a pochi giorni fa erano gratis e senza contraddire le decisioni del 7/10 (niente appunti singoli, ambassador senza accesso gratuito).",
+      proposta: "A) Anteprima a numero chiuso (già in home, v8): chi si iscrive entra per primo nell'area personale e riceve via email il suo codice invito personale. B) Regalo d'ingresso: 1 Simulazione d'esame gratis (valore 5,99 €) a scelta tra 3 esami fissi, uno per anno (proposta del commento: Matematica I, Diritto Privato, Bilancio d'esercizio). C) Chi è già nel gruppo WhatsApp: invito a diventare ambassador (20%) e un credito di benvenuto da spendere sul primo acquisto. D) Inviti: un piccolo credito quando un amico invitato compra, con un tetto.",
+      dove: "Home (sezione «Entra nell'anteprima», al posto di «scarica gli appunti»), email di conferma, area personale (codice invito e crediti).",
+      consiglio: "Parti con A + B: l'anteprima non costa niente e crea la lista; la Simulazione gratis su 3 esami fissi fa provare la parte che vendiamo senza regalare dispense (Economia Aziendale è già gratis per tutti). Il credito da 10 € per il gruppo WhatsApp lo sconsiglio: con 2,99 € in più diventa una Completa quasi gratis e contraddice «nessun accesso gratuito» per gli ambassador. Meglio un codice sconto di benvenuto da 3–5 € valido solo sul primo acquisto e solo nella finestra di lancio: limitato, misurabile, non brucia il listino. Gli esami fissi per anno vanno bene per non regalare tutto.",
+      schermata: [
+        { t: "hero", eyebrow: "Home · anteprima", titolo: "Entra nell'*anteprima*", testo: "150 posti per gli studenti di Economia. Chi entra prova per primo l'area personale." },
+        { t: "steps", titolo: "Cosa ricevi (proposta)", items: [["1", "Accesso anticipato all'area personale"], ["2", "Il tuo codice invito personale, via email"], ["3", "1 Simulazione d'esame gratis a scelta tra 3 esami (uno per anno)"]] },
+        { t: "list", titolo: "Opzioni per il gruppo WhatsApp", items: [["Ambassador al 20%", "regola decisa il 7/10", "Consigliato"], ["Codice di benvenuto 3–5 € sul primo acquisto", "finestra di lancio", "Consigliato"], ["Credito da 10 €", "≈ una Completa quasi gratis", "Sconsigliato"]] },
+        { t: "nota", testo: "Numeri di posti e importi sono ipotesi da decidere. Nessun materiale gratis oltre a quanto deciso senza un nuovo voto dei founder (stand-by del 7/10)." },
+      ],
+      serve: ["Servizio email (conferma, codice invito)", "Codici sconto in Stripe (coupon)", "Regole scritte: posti, scadenza, esami fissi", "Lista degli iscritti esportabile"],
+      domande: ["Quanti posti? (proposta in demo: 150)", "Regalo d'ingresso: Simulazione gratis, codice sconto o niente?", "Quali 3 esami fissi, uno per anno?", "Il gruppo WhatsApp riceve qualcosa in più degli altri?", "Fino a quando vale l'anteprima?"],
+      storico: [["2026-10-08", "Deciso da Matteo: registrazione aperta a tutti da subito (niente numero chiuso) e al lancio solo Economia Aziendale completa gratis. Referral e crediti dopo il lancio."], ["2026-10-07", "Nuova card dai commenti su S01 e dalla nota HQ del 7/10; form dell'anteprima già in home (v8)."]],
+    },
+    {
+      id: "L28", titolo: "Email per usare gli strumenti", gruppo: "Lancio", stato: "Deciso · 8/10", impatto: 3, sforzo: 2, area: "",
+      origine: "Commento di Matteo su S01 (7/10, demo v6): «chiedere le mail per usare i tool, magari creare nell'account»",
+      problema: "Gli strumenti portano traffico ma non lasciano un contatto: non sappiamo chi li usa e non possiamo riportarlo su UniLink.",
+      proposta: "Tre livelli. 1) Lo strumento si usa libero e il risultato si vede subito. 2) Dopo il risultato: «salvalo nel tuo account» o «ricevilo via email» (PDF del calcolo, promemoria della scadenza Erasmus, avviso quando escono le graduatorie). 3) Le parti che vivono nell'area (libretto, Planner) restano con l'account.",
+      dove: "Pagina Strumenti e strumenti in home (sotto il risultato); area personale per i risultati salvati.",
+      consiglio: "Non mettere l'email prima del risultato: si perde chi arriva da Google (le pagine degli strumenti sono tra quelle che portano visite) e calano i numeri che misuriamo. Chiedila dopo, in cambio di qualcosa di concreto: salvare, ricevere il calcolo, un promemoria. Misura la quota di chi usa uno strumento e lascia l'email.",
+      schermata: [
+        { t: "steps", titolo: "Il percorso proposto", items: [["1", "Usi lo strumento, vedi il risultato (libero)"], ["2", "«Salvalo» o «ricevilo via email»: qui chiediamo l'email"], ["3", "Con l'account: il risultato resta nell'area personale"]] },
+        { t: "nota", testo: "Serve il consenso privacy esplicito per scrivere a chi lascia l'email." },
+      ],
+      serve: ["Servizio email", "Testo privacy per l'email", "Un «dopo» per ogni strumento (cosa si salva o si riceve)"],
+      domande: ["Quali strumenti hanno un «dopo» che vale un'email?", "Solo email (lista) o account completo?", "Che quota di chi usa uno strumento deve lasciare l'email per dire che funziona?"],
+      storico: [["2026-10-08", "Deciso da Matteo: gli strumenti si usano solo nella web app con l'account gratuito; nella landing c'è la vetrina."], ["2026-10-07", "Nuova card dal commento su S01 (demo v6)."]],
+    },
+  ],
+};

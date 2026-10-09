@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UniLink · Materiali</title>
+<meta name="description" content="Simulazioni, dispense complete e pacchetti per percorso, a prezzi di lancio. Si leggono e si annotano nell'area personale.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#172554">
+<meta property="og:type" content="website"><meta property="og:title" content="UniLink · Materiali"><meta property="og:description" content="Simulazioni, dispense complete e pacchetti per percorso, a prezzi di lancio. Si leggono e si annotano nell'area personale."><meta property="og:image" content="img/render-dispense.jpg">
+<link rel="preload" href="fonts/Croogla4F.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png"><link rel="apple-touch-icon" href="img/apple-touch-icon-180.png"><link rel="stylesheet" href="ul.css?v=202610091356"><link rel="stylesheet" href="tools.css?v=202610091356"><link rel="stylesheet" href="commenti.css?v=202610091356"></head>
+<body data-page="materiali">
+<div id="ul-nav"></div>
+<section style="padding-top:70px" id="mat-top">
+  <span class="demo-tag">LISTINO DECISO IL 7/10 · PREZZI DI LANCIO</span>
+  <div class="wrap">
+    <div class="testa"><div><span class="eyebrow">Materiali</span><h1 class="h2" style="margin-top:10px">Prezzi di <span class="acc">lancio</span></h1></div><p>Simulazioni, dispense complete e il pacchetto del tuo semestre, divisi per hub. Scontati per il lancio, uguali tutto l'anno. Si leggono nell'area personale.</p></div>
+    <div class="chips" data-mat-hub aria-label="Scegli l'hub"></div>
+    <div data-mat-arrivo></div>
+    <div data-listino></div>
+  </div>
+</section>
+<section class="bg2" id="calcola">
+  <div class="wrap">
+    <div class="testa"><div><span class="eyebrow">Pacchetto semestre</span><h2 style="margin-top:10px">Calcola il tuo <span class="acc">pacchetto</span></h2></div><p>Scegli corso, curriculum e semestre: vedi quali dispense sono incluse e quanto costa (3 o 4 esami).</p></div>
+    <div class="calc-pac" data-calcola></div>
+  </div>
+</section>
+<section id="collezione">
+  <div class="wrap">
+    <div class="testa"><div><span class="eyebrow">Collezione completa</span><h2 style="margin-top:10px">Tutti gli esami <span class="acc">UniLink</span></h2></div><p>Scegli area e corso, poi anno e semestre. Tocca un esame per l'anteprima.</p></div>
+    <div class="col-vant" data-col-vant></div>
+    <div class="col-filtri">
+      <div class="col-f"><span class="col-l">Area</span><div class="col-seg" data-col-area></div></div>
+      <div class="col-f"><span class="col-l">Corso</span><div class="col-seg" data-col-corso></div></div>
+      <div class="col-f col-f2"><div><span class="col-l">Anno</span><div class="col-seg" data-col-anno></div></div><div><span class="col-l">Semestre</span><div class="col-seg" data-col-sem></div></div></div>
+      <form class="cerca" data-mat-cerca><span class="lente">⌕</span><input type="search" placeholder="Cerca un esame in tutte le aree, es. Statistica" aria-label="Cerca un esame"><button class="btn btn-p">Cerca</button></form>
+    </div>
+    <div data-mat-lista></div>
+  </div>
+</section>
+<div id="ul-foot"></div>
+<script src="config.js?v=202610091356"></script>
+<script src="percorsi.js?v=202610091356"></script>
+<script src="data.js?v=202610091356"></script>
+<script src="tools.js?v=202610091356"></script>
+<script src="checkout-stripe.js?v=202610091356"></script>
+<script src="app.js?v=202610091356"></script>
+<script src="archivio-commenti.js?v=202610091356"></script>
+<script src="commenti.js?v=202610091356"></script>
+</body></html>

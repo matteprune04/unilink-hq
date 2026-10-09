@@ -1,0 +1,45 @@
+/* UniLink · stile dei commenti del team (solo demo). Usa i token di ul.css. */
+.cm-ui { font-family: Croogla, sans-serif; }
+.cm-sec { position: relative; }
+.cm-fab { position: fixed; right: 16px; bottom: 16px; z-index: 80; }
+.cm-fab button { font: inherit; font-size: 15px; display: inline-flex; gap: 10px; align-items: center; background: var(--navy); color: var(--crema); border: 0; border-radius: 99px; padding: 12px 18px 12px 20px; cursor: pointer; box-shadow: 0 10px 28px rgba(23,37,84,.35); }
+.cm-fab b { background: var(--arancio-bt, #b05d19); color: #fff; font-weight: 400; border-radius: 99px; min-width: 24px; height: 24px; display: grid; place-items: center; font-size: 13px; padding: 0 7px; }
+@media (max-width: 1100px) { .cm-fab { bottom: 76px; } }
+.cm-panel { position: fixed; top: 0; right: 0; bottom: 0; width: min(400px, 100vw); z-index: 90; background: #fff; box-shadow: -18px 0 50px rgba(23,37,84,.22); display: flex; flex-direction: column; color: var(--navy); }
+.cm-panel[hidden] { display: none; }
+.cm-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 18px 20px 12px; border-bottom: 1px solid var(--linea); }
+.cm-panel h2 { font-size: 22px; line-height: 1.2; letter-spacing: -.01em; } .cm-head p { font-size: 13px; color: var(--nv2); }
+.cm-head button { width: 38px; height: 38px; border-radius: 50%; border: 0; background: var(--crema); color: var(--navy); cursor: pointer; font-size: 15px; }
+.cm-body { flex: 1; overflow-y: auto; padding: 14px 20px 20px; display: grid; gap: 14px; align-content: start; }
+.cm-who { display: grid; gap: 4px; font-size: 13px; color: var(--nv2); } .cm-who input, .cm-form select, .cm-form textarea { font: inherit; font-size: 15px; color: var(--navy); border: 1.5px solid var(--linea); border-radius: 12px; padding: 10px 12px; background: #fff; width: 100%; min-height: 44px; }
+.cm-act, .cm-exp { display: flex; gap: 8px; flex-wrap: wrap; }
+.cm-btn { font: inherit; font-size: 14px; border: 1.5px solid var(--navy); border-radius: 99px; padding: 9px 16px; background: #fff; color: var(--navy); cursor: pointer; min-height: 40px; display: inline-flex; align-items: center; }
+.cm-btn.pri { background: var(--navy); color: var(--crema); }
+.cm-form { display: grid; gap: 10px; background: var(--ar2); border: 1.5px dashed var(--arancio); border-radius: 16px; padding: 14px; font-size: 13.5px; }
+.cm-form label { display: grid; gap: 4px; }
+.cm-tabs { display: flex; gap: 6px; } .cm-tabs button { font: inherit; font-size: 14px; border: 0; background: transparent; padding: 8px 12px; border-radius: 99px; cursor: pointer; color: var(--nv2); }
+.cm-tabs button.on { background: var(--navy); color: var(--crema); } .cm-tabs b { font-weight: 400; opacity: .75; margin-left: 4px; }
+.cm-flt { display: flex; gap: 6px; } .cm-flt button { font: inherit; font-size: 13px; border: 1.5px solid var(--linea); background: #fff; border-radius: 99px; padding: 5px 12px; cursor: pointer; color: var(--navy); } .cm-flt button.on { border-color: var(--navy); background: var(--crema); }
+#cm-list { display: grid; gap: 10px; }
+.cm-c { border: 1px solid var(--linea); border-radius: 16px; padding: 14px 16px; background: #fff; display: grid; gap: 6px; }
+.cm-c.risolto { opacity: .62; }
+.cm-c.cm-flash { animation: cmflash 1.6s ease; }
+.cm-m { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--nv2); } .cm-t { background: var(--ar2); color: var(--ar3); border-radius: 99px; padding: 1px 10px; }
+.cm-w { font-size: 13px; color: var(--ar3); } .cm-p { font-size: 15px; line-height: 1.45; }
+.cm-r { display: flex; gap: 12px; flex-wrap: wrap; } .cm-r button { font: inherit; font-size: 13px; border: 0; background: none; color: var(--navy); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; padding: 4px 0; }
+.cm-vuoto { font-size: 14px; color: var(--nv2); padding: 10px 2px; }
+.cm-foot { border-top: 1px solid var(--linea); padding: 12px 20px 16px; display: grid; gap: 10px; background: var(--crema); color: var(--navy); } .cm-foot a { font-size: 14px; text-decoration: underline; text-underline-offset: 3px; }
+/* modalità «commenta»: la sezione sotto il cursore si evidenzia */
+body.cm-add { cursor: crosshair; } body.cm-add .cm-ui { cursor: auto; }
+.cm-hot { outline: 3px solid var(--arancio-bt, #b05d19) !important; outline-offset: -3px; background-image: linear-gradient(rgba(207,117,39,.07), rgba(207,117,39,.07)); }
+.cm-tag { position: fixed; z-index: 85; background: var(--arancio-bt, #b05d19); color: #fff; border-radius: 99px; padding: 6px 14px; font-size: 13px; pointer-events: none; max-width: 80vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 6px 18px rgba(0,0,0,.25); }
+.cm-flash { animation: cmflash 2.4s ease; }
+@keyframes cmflash { 0%, 60% { box-shadow: inset 0 0 0 4px var(--arancio); } 100% { box-shadow: inset 0 0 0 0 transparent; } }
+.cm-pin { display: none; position: absolute; top: 12px; right: 12px; z-index: 40; width: 32px; height: 32px; border-radius: 50%; border: 2px solid #fff; background: var(--arancio-bt, #b05d19); color: #fff; font: inherit; font-size: 14px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,.3); }
+body.cm-on .cm-pin, body.cm-add .cm-pin { display: grid; place-items: center; }
+/* rapporto (commenti.html) */
+.cm-rep-top { display: grid; gap: 14px; margin-bottom: 26px; } .cm-rep { margin-bottom: 30px; } .cm-rep h2 { font-size: 26px; margin-bottom: 4px; letter-spacing: -.01em; }
+.cm-rep .cm-c { margin-top: 12px; } .cm-rep blockquote { font-size: 13.5px; color: var(--nv2); border-left: 3px solid var(--linea); padding-left: 12px; }
+@media (max-width: 700px) { .cm-panel { width: 100vw; top: auto; height: 82vh; border-radius: 22px 22px 0 0; } }
+@media print { .cm-ui, .cm-fab, .cm-pin { display: none !important; } }
+.toast { z-index: 120; }

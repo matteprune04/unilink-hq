@@ -1,0 +1,10 @@
+# Vecchi indirizzi del sito Framer -> sito nuovo (301 = spostato per sempre, Google trasferisce il posizionamento)
+/dispense                          /materiali                 301
+/dispense/metodi-statistici        /materiali                 301
+/tools                             /strumenti                 301
+/tools/*                           /strumenti                 301
+/guide                             /guida                     301
+/faq                               /#faq                      301
+/contact                           /#faq                      301
+/mentorship                        /ambassador                301
+/mentorship/*                      /ambassador                301

@@ -1,0 +1,30 @@
+/* UniLink v3 — poche aggiunte, solo con i token della demo A (css/style.css). Non ridefinisce nulla. */
+.side-head { margin-top: 0; margin-bottom: 16px; }
+.side-head .select { min-height: 40px; padding: 8px 12px; font-size: 14px; }
+.side-head a { color: var(--navy); }
+.vista-btn { position: fixed; right: 14px; bottom: 52px; z-index: 35; box-shadow: var(--shadow-lg); border: 1px solid var(--line); }
+@media (max-width: 860px) { .vista-btn { bottom: 50px; } }
+/* gruppo «Da decidere» della sidebar: arancio e tratteggiato, per non confonderlo con le sezioni decise (shell.js → g.cls) */
+.side-group.dd { color: var(--orange); border-top: 1px dashed rgba(207, 117, 39, .55); margin-top: 10px; padding-top: 14px; }
+.side-link.dd { color: #f3cfa9; }
+.side-link.dd:hover { background: rgba(207, 117, 39, .16); color: #fff; }
+.side-link.dd.active { background: var(--orange); color: #fff; }
+.side-link.dd .cnt { background: rgba(255, 255, 255, .18); }
+/* banner in cima alle pagine dei moduli da decidere */
+.dd-banner { border: 2px dashed var(--orange); background: #fbf1e6; }
+.dd-card { border: 2px dashed #e7b98e !important; }
+.dd-card:hover { border-color: var(--orange) !important; }
+/* commenti del team (js/commenti.js) */
+.comm-btn { position: fixed; right: 14px; bottom: 96px; z-index: 35; box-shadow: var(--shadow-lg); }
+.comm-cnt { background: #fff; color: var(--orange); border-radius: var(--r-pill); padding: 1px 7px; font-size: 11px; margin-left: 4px; }
+.comm-cnt-soft { background: rgba(255, 255, 255, .25); color: #fff; }
+.comm-hint { display: none; position: fixed; top: 14px; left: 50%; transform: translateX(-50%); z-index: 90; background: var(--navy); color: #fff; padding: 10px 16px; border-radius: var(--r-pill); font-size: 13px; align-items: center; gap: 8px; box-shadow: var(--shadow-lg); }
+body.comm-pick .comm-hint { display: flex; }
+body.comm-pick #app * { cursor: crosshair !important; }
+.comm-over { outline: 3px dashed var(--orange) !important; outline-offset: 3px; background-color: rgba(207, 117, 39, .06); }
+.comm-host { position: relative; }
+.comm-pin { position: absolute; top: 6px; right: 6px; z-index: 5; width: 24px; height: 24px; border-radius: 50%; border: 2px solid #fff; background: var(--orange); color: #fff; font: 600 11px/1 var(--font-display, inherit); display: grid; place-items: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0, 0, 0, .2); padding: 0; }
+.comm-pin-static { position: static; flex: none; margin-top: 2px; border: 0; }
+.comm-focus { background: var(--orange-soft); border-radius: 10px; }
+@media (max-width: 860px) { .comm-btn { bottom: 94px; } }
+@media print { .comm-ui, .vista-btn { display: none !important; } }

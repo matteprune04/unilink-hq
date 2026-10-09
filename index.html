@@ -381,7 +381,7 @@ img { max-width: 100%; }
 /* ================= costanti ================= */
 const LOGO = "brand/unilink-orizzontale-negativo.png";
 const AREE = ["Dispense e quiz", "Tools", "Mentor", "Community", "Social e marketing", "Partnership e B2B", "Prodotto e tech", "Monetizzazione", "Organizzazione"];
-const IDEA_ST = ["Nuova", "Approvata", "In sviluppo", "Fatta", "Archiviata"];
+const IDEA_ST = ["Nuova", "Stand-by", "In sviluppo", "Fatta", "Archiviata"];
 /* Tipo = di che cosa parla l'idea (colore + icona). Natura = che genere di intervento è. */
 const _ic = {
   prod: '<path d="M12 3 3 7.5 12 12l9-4.5L12 3Z"/><path d="M3 7.5v9L12 21l9-4.5v-9M12 12v9"/>',
@@ -509,16 +509,23 @@ const SCHEMA = {
     { k: "since", l: "Nel team dal", t: "date" }, { k: "birthday", l: "Compleanno", t: "date" },
     { k: "equity", l: "Quota societaria (%)", t: "number" }, { k: "contact", l: "Altri contatti", ph: "Instagram, indirizzo, contatto di emergenza…" },
     { k: "notes", l: "Note interne", t: "textarea", rows: 3, wide: 1 } ] },
+  accounts: { one: "strumento", fields: [
+    { k: "name", l: "Strumento o servizio", req: 1, ph: "Es. Framer, Canva, dominio unilinkfirenze.it" },
+    { k: "kind", l: "Tipo", t: "select", o: ["Sito e hosting", "Design", "Marketing e social", "Comunicazione", "Dati e analisi", "Pagamenti", "Altro"] },
+    { k: "owner", l: "Chi lo gestisce", t: "person" }, { k: "login", l: "Email dell'account", ph: "Con quale email si accede (mai la password)" },
+    { k: "cost", l: "Costo (€)", t: "number" }, { k: "period", l: "Si paga", t: "select", o: ["Ogni mese", "Ogni anno", "Una tantum", "Gratis"], d: "Ogni mese" },
+    { k: "renewal", l: "Prossimo rinnovo", t: "date" }, { k: "url", l: "Link", t: "url" },
+    { k: "notes", l: "A cosa serve e note", t: "textarea", rows: 3, wide: 1 } ] },
 };
 Object.values(SCHEMA).forEach(sc => sc.fields.push({ k: "files", l: "Allegati", t: "files", wide: 1 }));
-const COLS = ["ideas", "feedback", "okrs", "tasks", "metrics", "mvalues", "partners", "finance", "meetings", "decisions", "links", "team", "google", "sfiles", "docs", "notes", "lab", "labver", "aibriefs", "ctx", "mat", "exams", "matver"];
+const COLS = ["ideas", "feedback", "okrs", "tasks", "metrics", "mvalues", "partners", "finance", "meetings", "decisions", "links", "team", "accounts", "google", "sfiles", "docs", "notes", "lab", "labver", "aibriefs", "ctx", "mat", "exams", "matver"];
 
 const NAV = [
   { items: [["home", "Cruscotto"], ["calendar", "Calendario"]] },
   { g: "Idee e ascolto", items: [["ideas", "Idee"], ["feedback", "Voce degli studenti"], ["notes", "Note rapide"]] },
   { g: "Pianificazione", items: [["goals", "Obiettivi e numeri"], ["tasks", "Scadenze e task"]] },
   { g: "Crescita", items: [["web", "Sito e Google"], ["partners", "Partner e contatti"], ["finance", "Finanze"]] },
-  { g: "Team", items: [["meetings", "Meeting"], ["decisions", "Decisioni"], ["team", "Persone"], ["links", "Risorse"]] },
+  { g: "Team", items: [["meetings", "Meeting"], ["decisions", "Decisioni"], ["team", "Persone"], ["accounts", "Strumenti e account"], ["links", "Risorse"]] },
   { g: "Intelligenza artificiale", items: [["lab", "Laboratorio AI"], ["aictx", "Contesto per AI"]] },
   { g: "Materiali e archivio", items: [["mat", "Materiali"], ["docs", "Documenti"]] },
 ];
@@ -548,7 +555,7 @@ const IC = {
 
 function toast(msg, ms = 2800) { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => t.hidden = true, ms); }
 const svgI = p => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
-const ideaSt = i => !i.status || i.status === "Da valutare" ? "Nuova" : i.status; /* "Da valutare" è stato unito a "Nuova" */
+const ideaSt = i => !i.status || i.status === "Da valutare" ? "Nuova" : i.status === "Approvata" ? "Stand-by" : i.status; /* "Da valutare" è unito a "Nuova"; "Approvata" è diventata "Stand-by" */
 const tipoOf = i => TIPI.find(t => t.id === i.type) || TIPI.find(t => t.from.includes(i.area)) || TIPO_NONE;
 const kindOf = i => IKIND.find(k => k.id === i.kind);
 const tipoChip = t => `<span class="tchip" style="--tc:${t.c};--ts:${t.s}">${svgI(t.ic)}${esc(t.id)}</span>`;
@@ -569,7 +576,7 @@ function ideaKey(i, t) {
 }
 function syncOnly() { const sel = document.getElementById("f_type") || document.getElementById("f_tipo"), ty = sel && sel.value; $$("#frm [data-only]").forEach(el => { el.hidden = !el.dataset.only.split("|").includes(ty); }); }
 function chip(text, cls = "") { return text ? `<span class="chip ${cls}">${esc(text)}</span>` : ""; }
-function stChip(s) { const m = { "Nuova": "navy", "Da valutare": "yl", "Approvata": "gr", "In sviluppo": "or", "Fatta": "gr", "Archiviata": "", "Da fare": "navy", "In corso": "or", "Bloccato": "rd", "Fatto": "gr", "Problema": "rd", "Richiesta": "or", "Apprezzamento": "gr", "Critica": "yl", "Presa": "gr", "Da rivedere": "yl", "Superata": "", "Alta": "rd", "Bassa": "" }; return chip(s, m[s] || ""); }
+function stChip(s) { const m = { "Nuova": "navy", "Da valutare": "yl", "Approvata": "yl", "Stand-by": "yl", "In sviluppo": "or", "Fatta": "gr", "Archiviata": "", "Da fare": "navy", "In corso": "or", "Bloccato": "rd", "Fatto": "gr", "Problema": "rd", "Richiesta": "or", "Apprezzamento": "gr", "Critica": "yl", "Presa": "gr", "Da rivedere": "yl", "Superata": "", "Alta": "rd", "Bassa": "" }; return chip(s, m[s] || ""); }
 function whenCls(s) { const n = daysFrom(s); return n < 0 ? "late" : n <= 3 ? "soon" : ""; }
 const hasFiles = () => !!window.HQ_FILES;
 const fsize = b => b > 1048576 ? (b / 1048576).toFixed(1).replace(".", ",") + " MB" : Math.max(1, Math.round((b || 0) / 1024)) + " KB";
@@ -577,7 +584,25 @@ const attChip = d => hasFiles() && d.files && d.files.length ? " " + chip(`${d.f
 function fileList(list) {
   return `<div>${list.map(f => `<div class="li"><div class="grow"><button type="button" class="linkbtn t" data-openfile="${esc(f.path)}">${esc(f.name)}</button><div class="small muted">${fsize(f.size)}${f.by ? " · " + esc(f.by) : ""}${f.at ? " · " + fmtD(f.at.slice(0, 10)) : ""}</div></div></div>`).join("")}</div>`;
 }
-const filesBlock = d => hasFiles() && d.files && d.files.length ? `<section class="stack"><h3>Allegati</h3>${fileList(d.files)}</section>` : "";
+const filesBlock = (d, col) => !hasFiles() || !((d.files && d.files.length) || (S.canWrite && col)) ? "" : `<section class="stack"><div class="row between"><h3>Allegati</h3>${S.canWrite && col ? `<label class="btn sm acc" style="cursor:pointer">+ Allega file<input type="file" multiple hidden data-dfin="${col}:${d.id}"></label>` : ""}</div>${d.files && d.files.length ? fileList(d.files) : `<p class="small muted">Nessun allegato. Puoi caricarne quanti vuoi, anche insieme.</p>`}</section>`;
+async function attachToDoc(col, id, files) {
+  let n = 0;
+  for (const f of files) {
+    if (f.size > HQ_FILES.max) { toast(`“${f.name}” supera i 25 MB.`); continue; }
+    toast(`Carico ${f.name}…`);
+    try {
+      await guard(async () => {
+        const up = await HQ_FILES.upload(f, col);
+        const cur = (S.data[col].find(x => x.id === id) || {}).files || [];
+        const nf = { ...up, by: S.uid || "", at: new Date().toISOString() };
+        await S.db.collection(col).doc(id).update({ files: [...cur, nf] });
+        const d = S.data[col].find(x => x.id === id); if (d) d.files = [...cur, nf];
+      }); n++;
+    } catch (e) {}
+  }
+  if (n) toast(n === 1 ? "File allegato" : `${n} file allegati`);
+  const open = { ideas: openIdea, meetings: openMeeting, metrics: openMetric }[col]; if (open && !$("#modal").hidden) open(id);
+}
 function sectionFiles() {
   if (!hasFiles() || !S.ready || S.view === "home") return "";
   const list = S.data.sfiles.filter(f => f.section === S.view).sort(byDate("createdAt")).reverse();
@@ -900,6 +925,18 @@ V.team = () => {
   </div>`;
 };
 
+V.accounts = () => {
+  const list = S.data.accounts.slice().sort((a, b) => String(a.renewal || "9999").localeCompare(String(b.renewal || "9999")));
+  const monthly = a => { const c = Number(a.cost) || 0; return a.period === "Ogni mese" ? c : a.period === "Ogni anno" ? c / 12 : 0; };
+  const tot = list.reduce((x, a) => x + monthly(a), 0);
+  const soon = list.filter(a => a.renewal && daysFrom(a.renewal) >= 0 && daysFrom(a.renewal) <= 30).length;
+  return `<div class="wrap">
+  ${head("Team", "Strumenti e account", "Gli strumenti che pagate o usate: chi li gestisce, quanto costano e quando si rinnovano. Mai password: solo l'email dell'account.", addBtn("accounts", "Aggiungi strumento", "acc"))}
+  ${list.length ? `<div class="kpis"><div class="card kpi"><div class="lab">Strumenti</div><div class="val num">${list.length}</div></div><div class="card kpi"><div class="lab">Costo mensile stimato</div><div class="val num">${eur(tot)}</div></div><div class="card kpi"><div class="lab">Rinnovi nei prossimi 30 giorni</div><div class="val num">${soon}</div></div></div>
+  <div class="tbl-wrap"><table><thead><tr><th>Strumento</th><th>Gestito da</th><th>Account</th><th class="r">Costo</th><th>Rinnovo</th></tr></thead><tbody>${list.map(a => `<tr data-edit="accounts:${a.id}" style="cursor:pointer"><td><div class="t" style="font-weight:500">${esc(a.name)}</div>${chip(a.kind)}${attChip(a)}${a.notes ? `<div class="small muted">${esc(a.notes)}</div>` : ""}</td><td>${esc(a.owner || "")}</td><td class="small" style="overflow-wrap:anywhere">${esc(a.login || "")}</td><td class="r num">${a.period === "Gratis" ? "Gratis" : a.cost ? eur(a.cost) + '<div class="small muted">' + esc((a.period || "").toLowerCase()) + "</div>" : "—"}</td><td class="num">${a.renewal ? `<span class="when ${whenCls(a.renewal)}">${fmtD(a.renewal, 1)}<br>${rel(a.renewal)}</span>` : "—"}</td></tr>`).join("")}</tbody></table></div>` : emptyBox("Nessuno strumento registrato", "Elenca sito, dominio, Canva, social e ogni abbonamento: così sapete sempre chi lo gestisce e quando scade.", "accounts", "Aggiungi il primo strumento")}
+  <div class="banner warn">Non scrivere password o codici: chiunque abbia il link della pagina potrebbe leggerli. Usate un gestore di password condiviso.</div>
+  </div>`;
+};
 V.links = () => {
   const cats = LCAT.filter(c => S.data.links.some(l => (l.category || "Altro") === c));
   return `<div class="wrap">
@@ -1094,7 +1131,7 @@ function openIdea(id) {
     ${i.body ? `<section class="stack" style="gap:4px">${i.problem ? "<h3>L'idea</h3>" : ""}<p class="pre">${esc(i.body)}</p></section>` : ""}
     ${shorts.length ? `<div class="meta">${shorts.map(f => `<div><span>${esc(f.l)}</span>${esc(specVal(f, i[f.k]))}</div>`).join("")}</div>` : ""}
     ${longs.map(f => f.k === "m_caption" ? `<section class="stack" style="gap:6px"><div class="row between"><h3>${esc(f.l)}</h3><button class="btn sm" data-copy="${esc(i[f.k])}">Copia testo</button></div><div class="comment pre">${esc(i[f.k])}</div></section>` : `<section class="stack" style="gap:4px"><h3>${esc(f.l)}</h3><p class="pre">${esc(i[f.k])}</p></section>`).join("")}
-    ${filesBlock(i)}
+    ${filesBlock(i, "ideas")}
     <div class="meta"><div><span>Stato</span>${S.canWrite ? `<select class="mini-sel" data-move="ideas:${i.id}">${IDEA_ST.map(s => `<option ${s === ideaSt(i) ? "selected" : ""}>${s}</option>`).join("")}</select>` : esc(ideaSt(i))}</div><div><span>Impatto</span>${esc(i.impact || "—")} / 5</div><div><span>Sforzo</span>${esc(i.effort || "—")} / 5</div><div><span>Proposta da</span>${author(i) || "—"}${i.createdAt ? " · " + fmtD(i.createdAt.slice(0, 10)) : ""}</div></div>
     ${i.url ? `<a href="${esc(safeUrl(i.url))}" target="_blank" rel="noopener" class="small" style="overflow-wrap:anywhere">${esc(i.url)}</a>` : ""}
     <div class="row"><button class="vote ${voted(i) ? "on" : ""}" data-vote="${i.id}">${IC.up}<span class="num">${votes(i)}</span> ${voted(i) ? "Hai votato" : "Vota"}</button>${S.canWrite ? `<button class="btn sm" data-edit="ideas:${i.id}">Modifica</button><button class="btn sm" data-ideatask="${i.id}">Crea un task</button>` : ""}</div>
@@ -1112,7 +1149,7 @@ function openMeeting(id) {
   openModal(`${sheetHead(m.when ? fmtDT(m.when) : "Meeting", esc(m.title))}
     <div class="row">${chip(m.kind)}${m.link ? `<a class="btn acc" href="${esc(safeUrl(m.link))}" target="_blank" rel="noopener">Entra nel meeting</a><button class="btn sm" data-copy="${esc(safeUrl(m.link))}">Copia link</button>` : ""}</div>
     ${m.agenda ? `<section class="stack"><h3>Agenda</h3><p class="pre">${esc(m.agenda)}</p></section>` : ""}
-    ${filesBlock(m)}
+    ${filesBlock(m, "meetings")}
     <section class="stack"><h3>Verbale</h3>${m.notes ? `<p class="pre">${esc(m.notes)}</p>` : `<p class="small muted">Ancora nessun verbale. Modifica il meeting per scriverlo.</p>`}</section>
     ${acts.length ? `<section class="stack"><h3>Azioni decise</h3><ul style="margin:0;padding-left:20px">${acts.map(a => `<li>${esc(a)}</li>`).join("")}</ul>${S.canWrite ? `<div><button class="btn sm acc" data-acts="${m.id}" ${m.tasksCreated ? "disabled" : ""}>${m.tasksCreated ? "Task già creati" : "Trasforma in task"}</button></div>` : ""}</section>` : ""}
     ${S.canWrite ? `<div class="row"><button class="btn" data-edit="meetings:${m.id}">Modifica e scrivi il verbale</button></div>` : ""}`);
@@ -1127,7 +1164,7 @@ function openMetric(id) {
     <div class="row between" style="align-items:flex-end"><div><div class="small muted">Ultimo valore</div><div class="num" style="font-family:var(--fd);font-size:36px;color:var(--navy)">${st.v != null ? nf(st.v, 1) : "—"} <span class="small muted" style="font-family:var(--fb)">${esc(m.unit || "")}</span></div>${st.delta}</div>${spark(st.s.slice(-20).map(x => +x.value), 260, 60)}</div>
     ${S.canWrite ? `<form class="row" id="mval" data-mid="${m.id}"><input class="inp" type="date" id="mv_date" value="${localISO()}" style="width:auto"><input class="inp num" type="number" step="any" id="mv_val" placeholder="Valore" style="width:140px"><input class="inp" id="mv_note" placeholder="Nota (facoltativa)" style="flex:1;min-width:140px"><button class="btn pri">Aggiungi valore</button></form>` : ""}
     ${rows.length ? `<div class="tbl-wrap"><table><thead><tr><th>Data</th><th class="r">Valore</th><th>Nota</th><th></th></tr></thead><tbody>${rows.map(r => `<tr><td class="num">${fmtD(r.date, 1)}</td><td class="r num">${nf(r.value, 2)}</td><td class="muted">${esc(r.note || "")}</td><td class="r">${S.canWrite ? `<button class="btn ghost sm danger" data-delval="${r.id}">Elimina</button>` : ""}</td></tr>`).join("")}</tbody></table></div>` : `<p class="small muted">Nessun valore ancora.</p>`}
-    ${filesBlock(m)}
+    ${filesBlock(m, "metrics")}
     ${S.canWrite ? `<div class="row"><button class="btn" data-edit="metrics:${m.id}">Modifica metrica</button></div>` : ""}`);
 }
 
@@ -1195,6 +1232,7 @@ document.addEventListener("change", async e => {
     for (const f of Array.from(t.files || [])) { if (f.size > HQ_FILES.max) { toast(`“${f.name}” supera i 25 MB.`); continue; } S.form.files.push({ name: f.name, size: f.size, type: f.type, file: f }); }
     drawFiles(); return;
   }
+  if (t.dataset.dfin !== undefined) { const fl = Array.from(t.files || []); t.value = ""; const [c, id] = t.dataset.dfin.split(":"); if (hasFiles()) await attachToDoc(c, id, fl); return; }
   if (t.dataset.sfin !== undefined) { const fl = Array.from(t.files || []); t.value = ""; if (hasFiles()) await uploadSection(fl); return; }
   if (t.id === "f_file") { addFiles(Array.from(t.files || [])); return; }
   if (t.dataset.move) { const [c, id] = t.dataset.move.split(":"); await setDoc(c, id, { status: t.value }); toast("Spostato in “" + t.value + "”"); return; }
@@ -1658,7 +1696,15 @@ const labVers = id => (S.data.labver || []).filter(v => v.itemId === id).sort((a
 const verCur = vs => vs.find(v => v.role === "attuale") || vs[0];
 const aiChip = a => { const c = AI_COL[a] || AI_COL.Altro; return `<span class="aichip" style="--tc:${c[0]};--ts:${c[1]}">${esc(a || "AI")}</span>`; };
 const roleChip = r => { const c = ROLE[r] || ROLE.archivio; return `<span class="rchip" style="--tc:${c[1]};--ts:${c[2]}">${r === "attuale" ? "★ " : ""}${c[0]}</span>`; };
-function loadFrames(root) { $$("iframe[data-blob]", root).forEach(async f => { const t = await getBlob(f.dataset.blob); f.srcdoc = t || "<p style='font:14px sans-serif;padding:20px'>Anteprima non disponibile.</p>"; }); }
+// Le demo girano in un iframe sandbox senza allow-same-origin: lì localStorage/sessionStorage lanciano un errore
+// e molte web app restano bloccate al caricamento. Diamo loro una memoria temporanea (si azzera a ogni apertura).
+const DEMO_STORAGE_SHIM = `<script>(function(){function m(){var d={};return{getItem:function(k){return Object.prototype.hasOwnProperty.call(d,k)?d[k]:null},setItem:function(k,v){d[k]=String(v)},removeItem:function(k){delete d[k]},clear:function(){d={}},key:function(i){return Object.keys(d)[i]||null},get length(){return Object.keys(d).length}}}["localStorage","sessionStorage"].forEach(function(n){try{window[n].getItem("x")}catch(e){try{Object.defineProperty(window,n,{value:m(),configurable:true})}catch(_){}}})})();<\/script>`;
+function withDemoShim(html) {
+  if (/<head[^>]*>/i.test(html)) return html.replace(/<head[^>]*>/i, m => m + DEMO_STORAGE_SHIM);
+  if (/<!doctype[^>]*>/i.test(html)) return html.replace(/<!doctype[^>]*>/i, m => m + DEMO_STORAGE_SHIM);
+  return DEMO_STORAGE_SHIM + html;
+}
+function loadFrames(root) { $$("iframe[data-blob]", root).forEach(async f => { const t = await getBlob(f.dataset.blob); f.srcdoc = t ? withDemoShim(t) : "<p style='font:14px sans-serif;padding:20px'>Anteprima non disponibile.</p>"; }); }
 function openLab(id) { S.labOpen = id; S.labV = { mode: "cur", pick: "", dev: "desk" }; go("lab"); }
 
 V.lab = () => {
@@ -2224,6 +2270,98 @@ async function boot() {
   let name = ""; try { name = localStorage.getItem("ulhq_name") || ""; } catch (e) {}
   if (data && data.session && name) enter(name); else showLogin();
 }
+
+/* ================= Laboratorio AI → DEMO (landing + web app) =================
+   Le demo vivono nel repository (demo-landing/, demo-webapp/) e si aggiornano con un push.
+   La GitHub Action "Backup demo" crea a ogni modifica uno ZIP (Release GitHub) e una riga in
+   demos/registro.json: qui si legge il registro e si mostrano anteprima, download e storico.
+   Nessun caricamento a mano. Questo blocco sta in _src/online.js, quindi sopravvive alle build. */
+const demoVer = (x) => x && x.demo_v ? `demo v${x.demo_v} · backup ${x.n}` : x ? `v${x.n}` : "";
+const DEMO_REG = ["https://raw.githubusercontent.com/matteprune04/unilink-hq/main/demos/registro.json", "demos/registro.json"];
+const DEMO_BASE = [
+  { id: "sito", titolo: "Sito vero · con l'audit", cartella: "demo-sito", descrizione: "Il sito vero (unilinkfirenze.it) importato nella demo, con le modifiche dell'audit UX. Com'era prima: demo-sito-prima/.", url: "demo-sito/", versioni: [] },
+  { id: "app", titolo: "Web app vera · con l'audit", cartella: "demo-app", descrizione: "La web app vera importata nella demo (dati di esempio, accesso rapido), con le modifiche dell'audit UX. Com'era prima: demo-app-prima/.", url: "demo-app/accedi", versioni: [] },
+  { id: "landing", titolo: "Landing demo (idee)", cartella: "demo-landing", descrizione: "Landing v2: Prima · Durante · Dopo, strumenti, anteprima area personale, Da decidere (riferimento per Framer).", url: "demo-landing/", versioni: [] },
+  { id: "webapp", titolo: "Web app demo (idee)", cartella: "demo-webapp", descrizione: "Demo della web app: sezioni decise + sezione «Da decidere».", url: "demo-webapp/", versioni: [] },
+];
+const DM = { reg: null, err: "", busy: false, open: "", dev: "desk" };
+// Anteprima tablet (820 px): lo stile del telefono è nel sorgente dell'HQ, questo si aggiunge da qui
+document.head.insertAdjacentHTML("beforeend", "<style>.fr-b.tab iframe { width: 820px; max-width: 100%; border-left: 1px solid var(--line); border-right: 1px solid var(--line); }</style>");
+async function demoLoad(force) {
+  if (DM.busy || (DM.reg && !force) || (DM.tried && !force)) return;
+  DM.busy = true; DM.tried = true; DM.err = "";
+  for (const u of DEMO_REG) {
+    try { const r = await fetch(u + "?t=" + Date.now(), { cache: "no-store" }); if (r.ok) { DM.reg = await r.json(); break; } } catch (e) {}
+  }
+  if (!DM.reg) DM.err = "Registro non ancora disponibile: si crea al primo backup automatico.";
+  DM.busy = false; if (S.view === "lab") render();
+}
+const demoList = () => DEMO_BASE.map(b => ({ ...b, ...((DM.reg && DM.reg.demo || []).find(x => x.id === b.id) || {}) }));
+const demoDate = s => s ? new Date(s).toLocaleString("it-IT", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "";
+function demoSection() {
+  demoLoad();
+  const card = d => { const v = (d.versioni || [])[0];
+    return `<article class="card click labcard" data-demoopen="${d.id}" style="--tc:#cf7527;--ts:#f6e4d1">
+      <div class="row">${chip("Demo live", "or")}${v ? `<span class="vbadge">${esc(demoVer(v))}</span><span class="muted small">${(d.versioni || []).length} ${(d.versioni || []).length === 1 ? "versione" : "versioni"}</span>` : ""}</div>
+      <h3>${esc(d.titolo)}</h3><div class="excerpt">${esc(d.descrizione)}</div>
+      <div class="small muted">${v ? `Ultima: ${esc(demoDate(v.data))} · ${esc(v.autore)} · «${esc(v.nota)}»` : "Storico in preparazione"}</div>
+      <div class="row">${v ? `<a class="btn sm pri" href="${esc(v.download)}" data-stop>Scarica ${esc(demoVer(v))}</a>` : ""}<a class="btn sm" href="${esc(d.url)}" target="_blank" rel="noopener" data-stop>Apri in una scheda</a></div></article>`; };
+  return `<section class="stack" id="demo-sez"><div class="gh" style="--tc:#cf7527;--ts:#f6e4d1"><h2>DEMO</h2><span class="num muted">sempre all'ultima versione · backup automatico</span></div>
+    <div class="grid">${demoList().map(card).join("")}</div>${DM.err ? `<p class="small muted">${esc(DM.err)}</p>` : ""}</section>`;
+}
+/* Commenti archiviati delle demo: le demo, quando si scaricano i commenti, li salvano qui (col «demo_commenti»,
+   archivio-commenti.js delle demo). Chi accede all'HQ li vede e li riscarica in .md (per l'AI), JSON o PDF (stampa). */
+function demoCommenti(d) {
+  const L = [...((LOCAL.demo_commenti || new Map()).values())].filter((e) => e && e.demo === d.id).sort((a, b) => String(b.data).localeCompare(String(a.data)));
+  return `<section class="card panel"><div class="panel-h"><h2>Commenti archiviati</h2><span class="small muted">${L.length} esportazioni · si archiviano quando un founder scarica i commenti dalla demo</span><button class="btn sm ghost" data-dcmagg>Aggiorna</button></div>
+    ${L.length ? L.map((e) => `<div class="li"><div class="grow"><div class="t">${(e.commenti || []).length} commenti · demo v${esc(e.versione)} <span class="small muted">· ${esc(new Date(e.data).toLocaleString("it-IT"))} · ${esc(e.autore || "anonimo")} · scaricati in ${esc(String(e.formato || "").toUpperCase())}</span></div>
+      <details><summary class="small muted">Vedi i commenti</summary>${(e.commenti || []).map((c) => `<p class="small" style="margin:6px 0"><b>${esc(c.pagina || "")}</b> · ${esc(c.testo || "")} <span class="muted">(${esc(c.autore || "anonimo")})</span></p>`).join("")}</details></div>
+      <div class="row"><button class="btn sm" data-dcm="${esc(e.id)}" data-k="md">.md per l'AI</button><button class="btn sm ghost" data-dcm="${esc(e.id)}" data-k="json">JSON</button><button class="btn sm ghost" data-dcm="${esc(e.id)}" data-k="pdf">PDF</button></div></div>`).join("")
+      : `<p class="muted small">Ancora nessun archivio. Nella demo: pulsante «Commenti» → scarica (PDF, .md o JSON): i commenti escono dalle pagine e arrivano qui.</p>`}</section>`;
+}
+function demoCommentoFile(id, k) {
+  const e = (LOCAL.demo_commenti || new Map()).get(id); if (!e) return;
+  const nome = String(e.file || "UniLink_commenti").replace(/\.\w+$/, "");
+  const giu = (testo, tipo, est) => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([testo], { type: tipo + ";charset=utf-8" })); a.download = nome + est; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 800); };
+  const md = e.md || (e.commenti || []).map((c) => `- ${c.pagina}: ${c.testo}`).join("\n");
+  if (k === "md") return giu(md, "text/markdown", ".md");
+  if (k === "json") return giu(JSON.stringify(e.commenti || [], null, 1), "application/json", ".json");
+  // PDF: versione stampabile del testo (dal dialogo di stampa → «Salva come PDF»)
+  const html = md.split("\n").map((r) => /^### /.test(r) ? `<h3>${esc(r.slice(4))}</h3>` : /^## /.test(r) ? `<h2>${esc(r.slice(3))}</h2>` : /^# /.test(r) ? `<h1>${esc(r.slice(2))}</h1>` : /^> /.test(r) ? `<blockquote>${esc(r.slice(2))}</blockquote>` : r.trim() ? `<p>${esc(r)}</p>` : "").join("");
+  const w = window.open("", "_blank"); if (!w) return toast("Consenti le finestre per stampare il PDF");
+  w.document.write(`<!doctype html><meta charset="utf-8"><title>${esc(nome)}</title><style>body{font:14px/1.5 system-ui,sans-serif;max-width:760px;margin:30px auto;color:#172554}h1{font-size:24px}h2{font-size:18px;border-bottom:1px solid #ddd;padding-bottom:4px;margin-top:24px}h3{font-size:15px;margin:14px 0 4px}blockquote{background:#f6e4d1;border-radius:8px;padding:8px 12px;margin:8px 0}p{margin:4px 0}</style>${html}<script>setTimeout(()=>print(),300)<\/script>`);
+  w.document.close();
+}
+function demoDetail(d) {
+  demoLoad();
+  const vs = d.versioni || [], v = vs[0];
+  return `<div class="wrap">
+    <div class="row between"><button class="btn sm" data-demoback>← Laboratorio AI</button><div class="row"><div class="seg">${[["desk", "Desktop"], ["tab", "Tablet"], ["mob", "Telefono"]].map(([m, l]) => `<button class="${DM.dev === m ? "on" : ""}" data-demodev="${m}">${l}</button>`).join("")}</div><a class="btn sm" href="${esc(d.url)}" target="_blank" rel="noopener">Schermo intero</a></div></div>
+    ${head("Laboratorio AI · DEMO", esc(d.titolo), esc(d.descrizione) + (d.architettura ? ` Architettura: <b>${esc(d.architettura)}</b>.` : ""), v ? `<a class="btn pri" href="${esc(v.download)}">Scarica l'ultima versione (${esc(demoVer(v))})</a>` : "")}
+    <div class="fr"><div class="fr-h"><b>${v ? esc(demoVer(v)) : "Dal vivo"}</b>${chip("attuale", "gr")}<span class="small muted">${esc(d.url)}</span></div><div class="fr-b ${DM.dev === "mob" ? "mob" : DM.dev === "tab" ? "tab" : ""}"><iframe class="demo full" src="${esc(d.cartella)}/${v && v.commit ? "?v=" + esc(v.commit) : ""}" title="${esc(d.titolo)}"></iframe></div></div>
+    ${demoCommenti(d)}
+    <section class="card panel"><div class="panel-h"><h2>Storico delle versioni</h2><span class="small muted">ogni versione è un backup scaricabile</span></div>
+      ${vs.length ? vs.map((x, i) => `<div class="li"><div class="grow"><div class="t">${esc(demoVer(x))} ${i === 0 ? chip("attuale", "gr") : ""} <span class="small muted">· ${esc(demoDate(x.data))} · ${esc(x.autore)}</span></div><div class="small muted">${esc(x.nota)} · ${nf(x.kb)} KB · commit ${esc(x.commit || "")}</div></div><div class="row"><a class="btn sm" href="${esc(x.download)}">Scarica ZIP</a><a class="btn sm ghost" href="${esc(x.sorgente)}" target="_blank" rel="noopener">File su GitHub</a></div></div>`).join("")
+        : `<p class="muted small">Il primo backup compare qui pochi minuti dopo la prima pubblicazione.</p>`}
+      <p class="small muted" style="margin-top:10px">Per tornare a una versione: scarica lo ZIP, oppure chiedi a Claude «ripristina ${esc(d.id)} alla v…» (usa il tag <code>${esc(d.id)}-vN</code> su GitHub).</p></section>
+  </div>`;
+}
+const _labView = V.lab;
+V.lab = () => {
+  if (DM.open) { const d = demoList().find(x => x.id === DM.open); if (d) return demoDetail(d); }
+  const html = _labView();
+  if (S.labOpen) return html;
+  const i = html.indexOf("</header>");
+  return i < 0 ? html : html.slice(0, i + 9) + demoSection() + html.slice(i + 9);
+};
+document.addEventListener("click", e => {
+  if (e.target.closest("[data-stop]")) return;
+  const o = e.target.closest("[data-demoopen]"); if (o) { DM.open = o.dataset.demoopen; S.labOpen = null; window.scrollTo(0, 0); render(); return; }
+  if (e.target.closest("[data-demoback]") || (DM.open && e.target.closest('[data-nav="lab"]'))) { DM.open = ""; render(); return; }
+  const dv = e.target.closest("[data-demodev]"); if (dv) { DM.dev = dv.dataset.demodev; render(); }
+  const dc = e.target.closest("[data-dcm]"); if (dc) { demoCommentoFile(dc.dataset.dcm, dc.dataset.k); return; }
+  if (e.target.closest("[data-dcmagg]")) { loadAll().then(render).catch(() => toast("Non riesco ad aggiornare: controlla la connessione")); return; }
+});
 
 window.addEventListener("hashchange", () => { const v = location.hash.slice(1); if (V[v] && v !== S.view) go(v); });
 boot();

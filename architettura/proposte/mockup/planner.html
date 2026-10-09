@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UniLink Planner · mockup</title>
+<!-- Mockup del «UniLink Planner» per il PDF delle proposte (P3). Stile UniLink, logica ispirata a Target Test Prep:
+     il piano si calcola UNA volta dalle variabili (fascia di voto, giorni, ore nette, margine) e si mostra per fasi → sessioni.
+     Ogni .frame è una schermata (1280×800) che _src/proposte/build_proposte.py fotografa. Dati di esempio. -->
+<style>
+@font-face { font-family: Croogla; src: url(../../../demo-landing/fonts/Croogla4F.ttf); }
+:root { --navy:#172554; --crema:#f4f1ea; --arancio:#cf7527; --ar2:#f6e4d1; --ar3:#a95d1c; --crema2:#ebe4d5; --nv2:#4b5675; --linea:#e2dccf; --nvt:#dfe4f1; --verde:#2f6b4f; --verde2:#e3efe8; --ombra:0 10px 30px rgba(23,37,84,.08); }
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:Croogla,sans-serif; background:#ddd6c8; color:var(--navy); }
+.frame { width:1280px; height:auto; min-height:560px; padding-bottom:50px; background:var(--crema); position:relative; overflow:hidden; display:grid; grid-template-columns:232px 1fr; margin-bottom:40px; }
+.side { align-self:stretch; background:var(--navy); color:var(--crema); padding:26px 18px; display:flex; flex-direction:column; gap:6px; margin:14px 0 14px 14px; border-radius:22px; }
+.side .logo { font-size:22px; margin-bottom:18px; display:flex; gap:8px; align-items:center; } .side .logo i { width:26px; height:26px; border-radius:50%; background:var(--arancio); display:inline-block; }
+.side .g { font-size:11px; letter-spacing:.14em; color:#9aa3c2; margin:14px 8px 4px; }
+.side a { padding:9px 12px; border-radius:12px; font-size:14.5px; color:var(--crema); text-decoration:none; display:flex; justify-content:space-between; }
+.side a.on { background:var(--crema); color:var(--navy); }
+.side a b { font-weight:400; background:var(--arancio); color:#fff; border-radius:99px; font-size:11px; padding:1px 7px; }
+.main { padding:30px 36px; overflow:hidden; }
+.eyebrow { font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--ar3); }
+h1 { font-size:34px; font-weight:400; letter-spacing:-.01em; margin:6px 0 4px; } h1 .acc { color:var(--arancio); }
+h2 { font-size:19px; font-weight:400; } h3 { font-size:15.5px; font-weight:400; }
+.sub { color:var(--nv2); font-size:14.5px; }
+.card { background:#fff; border-radius:20px; padding:18px 20px; box-shadow:var(--ombra); }
+.row { display:flex; gap:14px; align-items:center; } .between { justify-content:space-between; }
+.grid2 { display:grid; grid-template-columns:1.25fr 1fr; gap:18px; margin-top:18px; }
+.grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.pill { flex-shrink:0; white-space:nowrap; display:inline-flex; align-items:center; gap:6px; border-radius:99px; padding:5px 12px; font-size:12.5px; background:var(--crema2); }
+.pill.on { background:var(--navy); color:var(--crema); } .pill.ar { background:var(--ar2); color:var(--ar3); } .pill.ok { background:var(--verde2); color:var(--verde); }
+.lab { font-size:12px; color:var(--nv2); margin-bottom:6px; letter-spacing:.04em; }
+.field { border:1.5px solid var(--linea); border-radius:12px; padding:9px 12px; font-size:14.5px; background:#fff; }
+.track { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+.track div { border:1.5px solid var(--linea); border-radius:14px; padding:12px; background:#fff; }
+.track div.sel { border-color:var(--arancio); background:var(--ar2); }
+.track b { font-weight:400; font-size:15px; display:block; } .track span { font-size:12px; color:var(--nv2); }
+.days span { width:38px; height:38px; border-radius:50%; display:inline-grid; place-items:center; font-size:13px; border:1.5px solid var(--linea); margin-right:6px; background:#fff; }
+.days span.on { background:var(--navy); color:var(--crema); border-color:var(--navy); }
+.bar { height:10px; border-radius:99px; background:var(--crema2); overflow:hidden; position:relative; } .bar i { position:absolute; inset:0 auto 0 0; background:var(--navy); border-radius:99px; }
+.bar.ar i { background:var(--arancio); } .bar.ok i { background:var(--verde); }
+.btn { display:inline-flex; gap:10px; align-items:center; border-radius:99px; padding:12px 22px; font-size:15px; border:1.5px solid var(--navy); background:var(--navy); color:var(--crema); box-shadow:0 4px 0 #0c1538; }
+.btn.s { background:#fff; color:var(--navy); box-shadow:0 4px 0 var(--navy); }
+.disc { font-size:11.5px; color:var(--nv2); margin-top:8px; }
+.phases { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; }
+.ph { background:#fff; border-radius:16px; padding:14px; box-shadow:var(--ombra); border-top:4px solid var(--crema2); }
+.ph.done { border-top-color:var(--verde); } .ph.now { border-top-color:var(--arancio); }
+.ph .n { font-size:11px; letter-spacing:.12em; color:var(--ar3); }
+.task { display:grid; grid-template-columns:28px 1fr auto auto; gap:12px; align-items:center; padding:11px 0; border-bottom:1px solid var(--linea); font-size:14px; }
+.chk { width:22px; height:22px; border-radius:7px; border:1.5px solid var(--linea); display:grid; place-items:center; font-size:13px; }
+.chk.ok { background:var(--verde); border-color:var(--verde); color:#fff; } .task.done .t { color:var(--nv2); text-decoration:line-through; }
+.tipo { font-size:11.5px; border-radius:99px; padding:2px 9px; background:var(--nvt); }
+.tipo.ex { background:var(--ar2); color:var(--ar3); } .tipo.te { background:var(--verde2); color:var(--verde); } .tipo.ri { background:var(--crema2); }
+.cal { display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-top:12px; }
+.cal .h { font-size:11.5px; color:var(--nv2); text-align:center; }
+.cal .d { background:#fff; border-radius:12px; min-height:84px; padding:7px 8px; font-size:11.5px; display:flex; flex-direction:column; gap:3px; }
+.cal .d .num { font-size:12px; color:var(--nv2); } .cal .d.off { background:transparent; border:1.5px dashed var(--linea); }
+.cal .d.oggi { outline:2px solid var(--arancio); } .cal .d.esame { background:var(--navy); color:var(--crema); }
+.cal .s { border-radius:6px; padding:2px 5px; background:var(--nvt); } .cal .s.ex { background:var(--ar2); color:var(--ar3); } .cal .s.te { background:var(--verde2); color:var(--verde); } .cal .s.fatto { opacity:.45; text-decoration:line-through; }
+.stat b { font-size:30px; font-weight:400; display:block; } .stat span { font-size:12.5px; color:var(--nv2); }
+.note { position:absolute; right:22px; bottom:18px; background:var(--navy); color:var(--crema); font-size:11.5px; border-radius:99px; padding:6px 12px; letter-spacing:.04em; }
+.ring { width:120px; height:120px; border-radius:50%; background:conic-gradient(var(--verde) 0 38%, var(--crema2) 38% 100%); display:grid; place-items:center; }
+.ring div { width:92px; height:92px; border-radius:50%; background:#fff; display:grid; place-items:center; text-align:center; font-size:12px; color:var(--nv2); } .ring b { font-size:24px; color:var(--navy); font-weight:400; display:block; }
+</style></head><body>
+
+<!-- ========== 1 · VARIABILI ========== -->
+<section class="frame" id="f1">
+  <nav class="side"><div class="logo"><i></i>unilink</div><span class="g">STUDIO</span><a>Dashboard</a><a>I miei esami</a><a class="on">Planner <b>Plus</b></a><a>Materiali</a><a>Esercitazioni</a></nav>
+  <main class="main">
+    <span class="eyebrow">UniLink Planner · nuovo piano</span>
+    <h1>Costruisci il tuo <span class="acc">piano</span></h1>
+    <p class="sub">Quattro scelte. Il piano si calcola una volta sola, con il metodo standard per questo esame e per il voto che vuoi.</p>
+    <div class="grid2">
+      <div class="card" style="display:grid;gap:16px">
+        <div class="row" style="gap:16px"><div style="flex:1"><div class="lab">ESAME</div><div class="field">Microeconomia · 9 CFU · scritto</div></div><div style="width:200px"><div class="lab">DATA DELL'APPELLO</div><div class="field">20 gennaio 2027</div></div></div>
+        <div><div class="lab">FASCIA DI VOTO OBIETTIVO</div>
+          <div class="track"><div><b>Passare</b><span>18–21</span></div><div><b>Buono</b><span>22–25</span></div><div class="sel"><b>Ottimo</b><span>26–28</span></div><div><b>Massimo</b><span>29–30L</span></div></div>
+          <p class="disc">Le fasce indicano quanto lavoro prevede il metodo, non un voto garantito: UniLink non garantisce punteggi.</p></div>
+        <div><div class="lab">GIORNI IN CUI STUDI</div><div class="days"><span class="on">L</span><span class="on">M</span><span class="on">M</span><span class="on">G</span><span class="on">V</span><span class="on">S</span><span>D</span></div></div>
+        <div class="row" style="gap:16px"><div style="flex:1"><div class="lab">ORE NETTE AL GIORNO</div><div class="field">2 h 30 min</div></div><div style="flex:1"><div class="lab">MARGINE PER IMPREVISTI</div><div class="field">18%  (consigliato 15–20%)</div></div></div>
+      </div>
+      <div class="card" style="display:grid;gap:14px;align-content:start">
+        <h2>Ci stai nei tempi?</h2>
+        <div><div class="row between"><span class="sub">Ore che servono (Ottimo)</span><b style="font-weight:400">48 h · 64 sessioni</b></div><div class="bar ar" style="margin-top:8px"><i style="width:69%"></i></div></div>
+        <div><div class="row between"><span class="sub">Ore utili fino all'appello</span><b style="font-weight:400">70 h</b></div><div class="bar" style="margin-top:8px"><i style="width:100%"></i></div><p class="disc">28 giorni × 2 h 30 − margine 18% = 57 h di lavoro pianificabile</p></div>
+        <div class="pill ok" style="justify-self:start;font-size:13.5px">✓ Fattibile · 9 h di riserva</div>
+        <div class="card" style="background:var(--crema);box-shadow:none;padding:12px 14px"><p class="sub" style="font-size:13px">Con <b style="font-weight:400">Massimo</b> servirebbero 59 h: 2 h oltre il tempo utile. Puoi aggiungere la domenica o scegliere Ottimo.</p></div>
+        <span class="btn" style="justify-self:start">Crea il piano →</span>
+      </div>
+    </div>
+  </main><span class="note">MOCKUP · 1 di 6 · variabili</span>
+</section>
+
+<!-- ========== 2 · PANORAMICA PER FASI ========== -->
+<section class="frame" id="f2">
+  <nav class="side"><div class="logo"><i></i>unilink</div><span class="g">STUDIO</span><a>Dashboard</a><a>I miei esami</a><a class="on">Planner <b>Plus</b></a><a>Materiali</a><a>Esercitazioni</a></nav>
+  <main class="main">
+    <div class="row between"><div><span class="eyebrow">Microeconomia · obiettivo Ottimo 26–28 · appello 20 gen</span><h1>Il tuo <span class="acc">percorso</span></h1></div>
+      <div class="row" style="gap:8px"><span class="pill on">Percorso</span><span class="pill">Calendario</span><span class="pill">Oggi</span></div></div>
+    <div class="row" style="gap:18px;margin:14px 0 20px">
+      <div class="ring"><div><span><b>38%</b>completato</span></div></div>
+      <div class="grid3" style="flex:1">
+        <div class="card stat"><b>24 / 64</b><span>sessioni fatte</span></div>
+        <div class="card stat"><b>18 h</b><span>studiate · ritmo 2 h 10 al giorno</span></div>
+        <div class="card stat"><b style="color:var(--verde)">In linea</b><span>con il piano creato il 23 dic</span></div>
+      </div></div>
+    <div class="phases">
+      <div class="ph done"><span class="n">FASE 1</span><h3>Avvio</h3><p class="sub" style="font-size:12.5px">Indice, prova d'esame, diagnostico</p><div class="bar ok" style="margin-top:10px"><i style="width:100%"></i></div><p class="disc">4 / 4 sessioni</p></div>
+      <div class="ph done"><span class="n">FASE 2</span><h3>Basi</h3><p class="sub" style="font-size:12.5px">Capitoli 1–6: lezione, esercizi, test</p><div class="bar ok" style="margin-top:10px"><i style="width:100%"></i></div><p class="disc">18 / 18 sessioni</p></div>
+      <div class="ph now"><span class="n">FASE 3 · ORA</span><h3>Approfondimento</h3><p class="sub" style="font-size:12.5px">Capitoli 7–12 e ripassi di blocco</p><div class="bar ar" style="margin-top:10px"><i style="width:10%"></i></div><p class="disc">2 / 20 sessioni</p></div>
+      <div class="ph"><span class="n">FASE 4</span><h3>Allenamento d'esame</h3><p class="sub" style="font-size:12.5px">Simulazioni a tempo + registro errori</p><div class="bar" style="margin-top:10px"><i style="width:0"></i></div><p class="disc">0 / 16 sessioni</p></div>
+      <div class="ph"><span class="n">FASE 5</span><h3>Rifinitura</h3><p class="sub" style="font-size:12.5px">Ripasso finale e vigilia</p><div class="bar" style="margin-top:10px"><i style="width:0"></i></div><p class="disc">0 / 6 sessioni</p></div>
+    </div>
+    <div class="card" style="margin-top:18px;display:flex;justify-content:space-between;align-items:center"><div><span class="lab">PROSSIMA SESSIONE · 45 MIN</span><h2>Capitolo 7 · Monopolio — Lezione</h2><p class="sub">Dispensa pagine 112–121 · poi 2 sessioni di esercizi e il test di capitolo</p></div><span class="btn">Inizia →</span></div>
+  </main><span class="note">MOCKUP · 2 di 6 · percorso per fasi</span>
+</section>
+
+<!-- ========== 3 · VISTA TASK (MISSIONI) ========== -->
+<section class="frame" id="f3">
+  <nav class="side"><div class="logo"><i></i>unilink</div><span class="g">STUDIO</span><a>Dashboard</a><a>I miei esami</a><a class="on">Planner <b>Plus</b></a><a>Materiali</a><a>Esercitazioni</a></nav>
+  <main class="main">
+    <div class="row between"><div><span class="eyebrow">Fase 3 · Approfondimento · 2 di 20 sessioni</span><h1>Le tue <span class="acc">missioni</span></h1></div>
+      <div class="row" style="gap:8px"><span class="pill on">Da fare</span><span class="pill">Completate</span><span class="pill">Tutte</span></div></div>
+    <div class="grid2" style="grid-template-columns:1.6fr 1fr">
+      <div class="card">
+        <div class="task done"><span class="chk ok">✓</span><span class="t">Cap. 7 · Monopolio — Lezione <span class="sub">(pp. 112–121)</span></span><span class="tipo">Lezione</span><span class="sub">45′</span></div>
+        <div class="task done"><span class="chk ok">✓</span><span class="t">Cap. 7 · Esercizi (grafico + calcolo)</span><span class="tipo ex">Esercizi</span><span class="sub">45′</span></div>
+        <div class="task"><span class="chk"></span><span class="t">Cap. 7 · Test di capitolo — 10 domande</span><span class="tipo te">Test</span><span class="sub">45′</span></div>
+        <div class="task"><span class="chk"></span><span class="t">Cap. 8 · Oligopolio — Lezione <span class="sub">(pp. 122–134)</span></span><span class="tipo">Lezione</span><span class="sub">45′</span></div>
+        <div class="task"><span class="chk"></span><span class="t">Cap. 8 · Esercizi (grafico + calcolo)</span><span class="tipo ex">Esercizi</span><span class="sub">45′</span></div>
+        <div class="task"><span class="chk"></span><span class="t">Cap. 8 · Test di capitolo</span><span class="tipo te">Test</span><span class="sub">45′</span></div>
+        <div class="task"><span class="chk"></span><span class="t">Ripasso di blocco · capitoli 7–9</span><span class="tipo ri">Ripasso</span><span class="sub">45′</span></div>
+        <div class="task" style="border:0"><span class="chk"></span><span class="t sub">+ 13 missioni in questa fase</span><span></span><span></span></div>
+      </div>
+      <div style="display:grid;gap:14px;align-content:start">
+        <div class="card"><span class="lab">METODO STANDARD · MODELLI ECONOMICI</span><p class="sub" style="font-size:13.5px;margin-top:4px">Ogni capitolo: Lezione → Esercizi (grafico + calcolo) → Test di capitolo. Ogni 3 capitoli un ripasso di blocco. È lo stesso schema per tutti gli esami di questo gruppo; cambiano solo capitoli e pagine.</p></div>
+        <div class="card"><span class="lab">DOPO IL TEST</span><p class="sub" style="font-size:13.5px;margin:4px 0 10px">Come ti senti su questo capitolo?</p><div class="row" style="gap:8px"><span class="pill">Da rivedere</span><span class="pill">Così così</span><span class="pill ok">Sicuro</span></div><p class="disc">«Da rivedere» aggiunge una missione di ripasso mirato, senza spostare il resto del piano.</p></div>
+      </div>
+    </div>
+  </main><span class="note">MOCKUP · 3 di 6 · vista task</span>
+</section>
+
+<!-- ========== 4 · CALENDARIO ========== -->
+<section class="frame" id="f4">
+  <nav class="side"><div class="logo"><i></i>unilink</div><span class="g">STUDIO</span><a>Dashboard</a><a>I miei esami</a><a class="on">Planner <b>Plus</b></a><a>Materiali</a><a>Esercitazioni</a></nav>
+  <main class="main">
+    <div class="row between"><div><span class="eyebrow">Gennaio 2027 · piano calcolato il 23 dicembre</span><h1>Il tuo <span class="acc">calendario</span></h1></div>
+      <div class="row" style="gap:8px"><span class="pill">Percorso</span><span class="pill on">Calendario</span><span class="pill">Oggi</span></div></div>
+    <div class="row" style="gap:10px;margin-top:6px"><span class="pill">● Lezione</span><span class="pill ar">● Esercizi</span><span class="pill ok">● Test</span><span class="sub" style="font-size:12.5px">Ogni giorno mostra le sessioni previste dal piano. Il calendario non si riorganizza da solo: se salti, le missioni restano in ordine e vedi il ritardo.</span></div>
+    <div class="cal">
+      <span class="h">Lun</span><span class="h">Mar</span><span class="h">Mer</span><span class="h">Gio</span><span class="h">Ven</span><span class="h">Sab</span><span class="h">Dom</span>
+      <div class="d"><span class="num">4</span><span class="s fatto">Cap. 6 test</span><span class="s fatto">Ripasso</span></div>
+      <div class="d"><span class="num">5</span><span class="s fatto">Cap. 7 lezione</span><span class="s ex fatto">Cap. 7 esercizi</span></div>
+      <div class="d oggi"><span class="num">6 · oggi</span><span class="s te">Cap. 7 test</span><span class="s">Cap. 8 lezione</span><span class="s ex">Cap. 8 eserc.</span></div>
+      <div class="d"><span class="num">7</span><span class="s te">Cap. 8 test</span><span class="s">Ripasso 7–9</span><span class="s">Cap. 9 lezione</span></div>
+      <div class="d"><span class="num">8</span><span class="s ex">Cap. 9 eserc.</span><span class="s te">Cap. 9 test</span></div>
+      <div class="d"><span class="num">9</span><span class="s">Cap. 10 lezione</span><span class="s ex">Cap. 10 eserc.</span><span class="s te">Test</span></div>
+      <div class="d off"><span class="num">10 · riposo</span></div>
+      <div class="d"><span class="num">11</span><span class="s">Cap. 11</span><span class="s ex">Esercizi</span><span class="s te">Test</span></div>
+      <div class="d"><span class="num">12</span><span class="s">Cap. 12</span><span class="s ex">Esercizi</span><span class="s te">Test</span></div>
+      <div class="d"><span class="num">13</span><span class="s">Ripasso 10–12</span><span class="s te">Simulazione 1</span></div>
+      <div class="d"><span class="num">14</span><span class="s te">Simulazione 2</span><span class="s ex">Registro errori</span></div>
+      <div class="d"><span class="num">15</span><span class="s te">Simulazione 3</span><span class="s ex">Registro errori</span></div>
+      <div class="d"><span class="num">16</span><span class="s te">Simulazione 4</span><span class="s">Ripasso</span></div>
+      <div class="d off"><span class="num">17 · riposo</span></div>
+      <div class="d"><span class="num">18</span><span class="s">Ripasso finale</span><span class="s ex">Errori</span></div>
+      <div class="d"><span class="num">19</span><span class="s">Vigilia</span></div>
+      <div class="d esame"><span class="num" style="color:var(--crema)">20</span>Esame · Microeconomia</div>
+    </div>
+  </main><span class="note">MOCKUP · 4 di 6 · calendario</span>
+</section>
+
+<!-- ========== 5 · OGGI / DA FARE ========== -->
+<section class="frame" id="f5">
+  <nav class="side"><div class="logo"><i></i>unilink</div><span class="g">STUDIO</span><a>Dashboard</a><a>I miei esami</a><a class="on">Planner <b>Plus</b></a><a>Materiali</a><a>Esercitazioni</a></nav>
+  <main class="main">
+    <div class="row between"><div><span class="eyebrow">Mercoledì 6 gennaio · 3 sessioni · 2 h 15</span><h1>Cosa fai <span class="acc">oggi</span></h1></div>
+      <div class="row" style="gap:8px"><span class="pill">Percorso</span><span class="pill">Calendario</span><span class="pill on">Oggi</span></div></div>
+    <div class="grid2" style="grid-template-columns:1.5fr 1fr">
+      <div style="display:grid;gap:12px">
+        <div class="card" style="border-left:5px solid var(--verde)"><div class="row between"><div><span class="lab">SESSIONE 1 · TEST · 45′</span><h2>Cap. 7 · Test di capitolo</h2><p class="sub">10 domande nel formato dell'appello · simulatore</p></div><span class="btn">Inizia →</span></div></div>
+        <div class="card"><div class="row between"><div><span class="lab">SESSIONE 2 · LEZIONE · 45′</span><h2>Cap. 8 · Oligopolio</h2><p class="sub">Dispensa pp. 122–134 · mappa del capitolo</p></div><span class="btn s">Apri</span></div></div>
+        <div class="card"><div class="row between"><div><span class="lab">SESSIONE 3 · ESERCIZI · 45′</span><h2>Cap. 8 · Esercizi</h2><p class="sub">Grafico + calcolo · 8 esercizi con soluzione</p></div><span class="btn s">Apri</span></div></div>
+      </div>
+      <div style="display:grid;gap:12px;align-content:start">
+        <div class="card"><span class="lab">STATO DEL PIANO</span><h2 style="color:var(--verde)">In linea</h2><p class="sub" style="font-size:13.5px">Se oggi non riesci, domani avrai 4 sessioni: il piano non cambia, ti mostriamo il ritardo e quanto recuperare.</p></div>
+        <div class="card"><span class="lab">SETTIMANA</span><div class="row between" style="margin:6px 0"><span class="sub">Sessioni fatte</span><span>6 / 15</span></div><div class="bar ok"><i style="width:40%"></i></div><div class="row between" style="margin:10px 0 6px"><span class="sub">Ore nette</span><span>4 h 30 / 12 h 30</span></div><div class="bar"><i style="width:36%"></i></div></div>
+      </div>
+    </div>
+  </main><span class="note">MOCKUP · 5 di 6 · oggi e da fare</span>
+</section>
+
+<!-- ========== 6 · COMPLETATE ========== -->
+<section class="frame" id="f6">
+  <nav class="side"><div class="logo"><i></i>unilink</div><span class="g">STUDIO</span><a>Dashboard</a><a>I miei esami</a><a class="on">Planner <b>Plus</b></a><a>Materiali</a><a>Esercitazioni</a></nav>
+  <main class="main">
+    <div class="row between"><div><span class="eyebrow">Sessione completata</span><h1>Fatto: Cap. 7 · <span class="acc">Test</span></h1></div><span class="pill ok" style="font-size:14px">✓ 25 / 64 sessioni</span></div>
+    <div class="grid2" style="grid-template-columns:1fr 1fr">
+      <div class="card" style="display:grid;gap:12px">
+        <div class="grid3"><div class="stat"><b>8 / 10</b><span>risposte giuste</span></div><div class="stat"><b>38′</b><span>tempo usato</span></div><div class="stat"><b>2</b><span>errori nel registro</span></div></div>
+        <div><span class="lab">COME TI SENTI SU QUESTO CAPITOLO?</span><div class="row" style="gap:8px;margin-top:6px"><span class="pill">Da rivedere</span><span class="pill on">Così così</span><span class="pill">Sicuro</span></div></div>
+        <p class="sub" style="font-size:13.5px">I 2 errori tornano nel registro finché non li indovini due volte di fila. Nessuna sessione si sposta.</p>
+        <span class="btn" style="justify-self:start">Prossima: Cap. 8 · Lezione →</span>
+      </div>
+      <div class="card">
+        <span class="lab">COMPLETATE DI RECENTE</span>
+        <div class="task done"><span class="chk ok">✓</span><span class="t">Cap. 7 · Test di capitolo</span><span class="tipo te">Test</span><span class="sub">oggi</span></div>
+        <div class="task done"><span class="chk ok">✓</span><span class="t">Cap. 7 · Esercizi</span><span class="tipo ex">Esercizi</span><span class="sub">ieri</span></div>
+        <div class="task done"><span class="chk ok">✓</span><span class="t">Cap. 7 · Lezione</span><span class="tipo">Lezione</span><span class="sub">ieri</span></div>
+        <div class="task done"><span class="chk ok">✓</span><span class="t">Ripasso di blocco 4–6</span><span class="tipo ri">Ripasso</span><span class="sub">4 gen</span></div>
+        <div class="task done" style="border:0"><span class="chk ok">✓</span><span class="t">Cap. 6 · Test di capitolo</span><span class="tipo te">Test</span><span class="sub">4 gen</span></div>
+      </div>
+    </div>
+  </main><span class="note">MOCKUP · 6 di 6 · completate</span>
+</section>
+</body></html>

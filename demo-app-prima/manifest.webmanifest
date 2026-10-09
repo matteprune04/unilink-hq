@@ -1,0 +1,16 @@
+{
+  "name": "UniLink · Area Personale",
+  "short_name": "UniLink",
+  "description": "Le tue dispense, i tuoi esami e gli strumenti di UniLink.",
+  "lang": "it",
+  "start_url": "/unilink-hq/demo-app-prima/",
+  "scope": "/unilink-hq/demo-app-prima/",
+  "display": "standalone",
+  "background_color": "#f4f1ea",
+  "theme_color": "#f4f1ea",
+  "icons": [
+    { "src": "/unilink-hq/demo-app-prima/img/icona-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/unilink-hq/demo-app-prima/img/icona-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/unilink-hq/demo-app-prima/img/icona-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
