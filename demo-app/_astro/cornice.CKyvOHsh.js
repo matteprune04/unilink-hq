@@ -1,1 +1,0 @@
-export{r as toast}from"./cornice.ax7TTJsf.js";
