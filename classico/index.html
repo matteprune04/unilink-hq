@@ -4,20 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#172554">
-<link rel="icon" href="brand/favicon.svg" type="image/svg+xml">
-<link rel="icon" href="brand/favicon-32.png" sizes="32x32" type="image/png">
-<link rel="icon" href="brand/favicon.ico" sizes="48x48">
-<link rel="apple-touch-icon" href="brand/apple-touch-icon-180.png">
-<link rel="manifest" href="brand/site.webmanifest">
-<title>UniLink HQ</title>
+<link rel="icon" href="../brand/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../brand/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="../brand/favicon.ico" sizes="48x48">
+<link rel="apple-touch-icon" href="../brand/apple-touch-icon-180.png">
+<link rel="manifest" href="../brand/site.webmanifest">
+<title>UniLink HQ · classico</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
-<script src="config.js"></script>
+<script src="../config.js"></script>
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-@font-face { font-family: "Croogla"; src: url("Croogla4F.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "Croogla"; src: url("../Croogla4F.ttf") format("truetype"); font-display: swap; }
 
 /* Layout: sidebar navy fissa a sinistra (come il sito) + area di lavoro crema; su telefono la sidebar diventa un cassetto */
 :root {
@@ -378,12 +378,11 @@ img { max-width: 100%; }
 .login-logo { height: 56px; margin-left: -10px; width: auto; align-self: flex-start; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
-<link rel="stylesheet" href="hq2.css?v=20261009224231">
 
 </head>
 <body>
 <div id="login" hidden></div>
-<div class="mtop"><img src="brand/unilink-orizzontale-negativo.png" alt="UniLink"><button type="button" data-menu>Menu</button></div>
+<div class="mtop"><img src="../brand/unilink-orizzontale-negativo.png" alt="UniLink"><button type="button" data-menu>Menu</button></div>
 <aside id="side" aria-label="Sezioni"></aside>
 <div id="scrim" data-menu></div>
 <main id="main"><div class="wrap"><div class="empty" style="margin-top:20vh">Caricamento dello spazio di lavoro…</div></div></main>
@@ -393,7 +392,7 @@ img { max-width: 100%; }
 <script>
 "use strict";
 /* ================= costanti ================= */
-const LOGO = "brand/unilink-orizzontale-negativo.png";
+const LOGO = "../brand/unilink-orizzontale-negativo.png";
 const AREE = ["Dispense e quiz", "Tools", "Mentor", "Community", "Social e marketing", "Partnership e B2B", "Prodotto e tech", "Monetizzazione", "Organizzazione"];
 const IDEA_ST = ["Nuova", "Stand-by", "In sviluppo", "Fatta", "Archiviata"];
 /* Tipo = di che cosa parla l'idea (colore + icona). Natura = che genere di intervento è. */
@@ -2548,7 +2547,7 @@ function showLogin(msg) {
   const box = document.getElementById("login");
   let name = ""; try { name = localStorage.getItem("ulhq_name") || ""; } catch (e) {}
   box.innerHTML = `<form class="login-card" id="loginForm" novalidate>
-    <img src="brand/unilink-orizzontale-negativo.png" alt="UniLink" class="login-logo">
+    <img src="../brand/unilink-orizzontale-negativo.png" alt="UniLink" class="login-logo">
     <div class="stack" style="gap:6px"><span class="eyebrow">Area riservata ai founder</span><h1>UniLink HQ</h1></div>
     <label class="fld"><span>Il tuo nome</span><input id="lg_name" autocomplete="nickname" value="${esc(name)}" placeholder="Es. Matteo" list="lg_names"><datalist id="lg_names">${(HQ_CONFIG.founders || []).map(n => `<option value="${esc(n)}">`).join("")}</datalist><small>Serve solo a firmare idee, voti e commenti.</small></label>
     <label class="fld"><span>Password del team</span><input id="lg_pass" type="password" autocomplete="current-password"></label>
@@ -2598,7 +2597,7 @@ async function boot() {
    demos/registro.json: qui si legge il registro e si mostrano anteprima, download e storico.
    Nessun caricamento a mano. Questo blocco sta in _src/online.js, quindi sopravvive alle build. */
 const demoVer = (x) => x && x.demo_v ? `demo v${x.demo_v} · backup ${x.n}` : x ? `v${x.n}` : "";
-const DEMO_REG = ["https://raw.githubusercontent.com/matteprune04/unilink-hq/main/demos/registro.json", "demos/registro.json"];
+const DEMO_REG = ["https://raw.githubusercontent.com/matteprune04/unilink-hq/main/demos/registro.json", "../demos/registro.json"];
 const DEMO_BASE = [
   { id: "sito", titolo: "Sito vero · con l'audit", cartella: "demo-sito", descrizione: "Il sito vero (unilinkfirenze.it) importato nella demo, con le modifiche dell'audit UX. Com'era prima: demo-sito-prima/.", url: "demo-sito/", versioni: [] },
   { id: "app", titolo: "Web app vera · con l'audit", cartella: "demo-app", descrizione: "La web app vera importata nella demo (dati di esempio, accesso rapido), con le modifiche dell'audit UX. Com'era prima: demo-app-prima/.", url: "demo-app/accedi", versioni: [] },
@@ -2685,9 +2684,8 @@ document.addEventListener("click", e => {
 });
 
 window.addEventListener("hashchange", () => { const v = location.hash.slice(1); if (V[v] && v !== S.view) go(v); });
-/* l'avvio (boot) è in hq2.js, che si carica subito dopo */
+boot();
 </script>
-<script src="hq2.js?v=20261009224231"></script>
 
 </body>
 </html>

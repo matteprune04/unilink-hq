@@ -11,6 +11,11 @@ lo impediscono le regole del database (Row Level Security), non solo la pagina.
 
 Segreti (solo in GitHub → Settings → Secrets, mai nel codice): `GOOGLE_KEY_JSON`, `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`.
 
+## Nuovo HQ (v2, 9 ottobre 2026)
+- `hq2.css` + `hq2.js` sono il nuovo strato: pagine Oggi, Argomenti, Proposte, Call, File, ricerca globale e nuova grafica. Si caricano dopo lo script di `index.html` e usano lo stesso database; le sezioni di prima restano in **Archivio del vecchio HQ** e la copia completa in `classico/`.
+- Nuove collezioni nella tabella `docs`: `topics` (argomenti) e `bozze` (proposte dell'AI da confermare). Nessuna modifica allo schema SQL.
+- A ogni rilascio aggiornare il numero `?v=` di `hq2.css` e `hq2.js` in `index.html`.
+
 ## Demo e backup
 - `demo-landing/` — demo navigabile della landing v3 (Prima · Durante · Dopo, strumenti, schermate reali dell'area, 9 schede «Da decidere» complete, commenti del team) · `demo-webapp/` — demo della web app (area personale).
 - `_src/verifica_landing.js` — verifica prima del push (errori, accessibilità, tre formati) · `_src/build_schede.js` — genera schede e PDF «Da decidere» · `_src/screenshot_webapp.js` — rifà le schermate reali della web app.
