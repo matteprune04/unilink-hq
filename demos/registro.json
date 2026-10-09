@@ -4,6 +4,21 @@
    "id": "landing",
    "versioni": [
     {
+     "n": 33,
+     "tag": "landing-v33",
+     "data": "2026-10-09T11:52+00:00",
+     "autore": "Claude",
+     "nota": "Demo: immagini realistiche con UniLink (computer e telefono con la web app vera, quaderni con copertina UniLink) in Strumenti, home e Guida",
+     "commit": "c6ca444",
+     "demo_v": 14,
+     "demo_data": "2026-10-09",
+     "impronta": "e24b1d10c5e2f6e8",
+     "kb": 5663,
+     "file": "UniLink_landing_demo-v14_backup33_2026-10-09.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v33/UniLink_landing_demo-v14_backup33_2026-10-09.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v33/demo-landing"
+    },
+    {
      "n": 32,
      "tag": "landing-v32",
      "data": "2026-10-09T11:26+00:00",
@@ -493,6 +508,21 @@
   {
    "id": "webapp",
    "versioni": [
+    {
+     "n": 34,
+     "tag": "webapp-v34",
+     "data": "2026-10-09T11:52+00:00",
+     "autore": "Claude",
+     "nota": "Demo: immagini realistiche con UniLink (computer e telefono con la web app vera, quaderni con copertina UniLink) in Strumenti, home e Guida",
+     "commit": "c6ca444",
+     "demo_v": 18,
+     "demo_data": "2026-10-09",
+     "impronta": "3b749fab2eca80cf",
+     "kb": 487,
+     "file": "UniLink_webapp_demo-v18_backup34_2026-10-09.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/webapp-v34/UniLink_webapp_demo-v18_backup34_2026-10-09.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v34/demo-webapp"
+    },
     {
      "n": 33,
      "tag": "webapp-v33",
@@ -996,5 +1026,5 @@
    "url": "https://matteprune04.github.io/unilink-hq/demo-webapp/"
   }
  ],
- "aggiornato": "2026-10-09T11:26+00:00"
+ "aggiornato": "2026-10-09T11:52+00:00"
 }
