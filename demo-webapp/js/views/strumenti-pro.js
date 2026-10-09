@@ -13,7 +13,15 @@
   const UL = window.UL, B = UL.B, U = UL.U;
   const { icon, esc } = UL.ui;
   const base = UL.views.strumentiU; if (!base) return;
-  const PRO = ["voto", "media", "erasmus"];
+  if (window.ULTools && !window.ULTools._pro) { const L0 = window.ULTools.lista; window.ULTools._pro = true;
+    window.ULTools.lista = (hub) => { const L = L0(hub).filter((t) => t.id !== "media"); if (!L.some((t) => t.id === "magistrali")) { const i = L.findIndex((t) => t.id === "erasmus"); L.splice(i + 1, 0, { id: "magistrali", nome: "Magistrali e master", desc: "163 programmi in Italia e in Europa: filtra, salva e confronta.", hub: ["economia"], stato: "live" }); } return L; }; }
+  const VV = (window.UL_VETRINA = window.UL_VETRINA || { illus: {}, perche: {}, tools: {} });
+  VV.illus.magistrali = VV.illus.magistrali || `<svg viewBox="0 0 220 150" fill="none"><rect x="34" y="28" width="152" height="100" rx="18" fill="#f4f1ea"/><path d="M60 62l50-22 50 22z" fill="#172554"/><rect x="66" y="64" width="88" height="8" rx="2" fill="#172554" opacity=".8"/><rect x="72" y="74" width="10" height="34" rx="3" fill="#172554" opacity=".55"/><rect x="92" y="74" width="10" height="34" rx="3" fill="#172554" opacity=".55"/><rect x="118" y="74" width="10" height="34" rx="3" fill="#172554" opacity=".55"/><rect x="138" y="74" width="10" height="34" rx="3" fill="#172554" opacity=".55"/><rect x="62" y="108" width="96" height="8" rx="2" fill="#172554"/><circle cx="168" cy="44" r="14" fill="#cf7527"/><path d="M162 44l4 4 8-9" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  VV.perche.magistrali = VV.perche.magistrali || "Trova la magistrale o il master giusto per te, e confrontali fianco a fianco.";
+  VV.tools.magistrali = VV.tools.magistrali || { domanda: "Quale magistrale o master fa per me, dove e quanto costa?", esempio: "Finance · Olanda · 12 mesi → 9 programmi, da confrontare fianco a fianco", tempo: "3 minuti", fonte: "163 programmi del tool «Master / Magistrale» di unilinkfirenze.it (classificazione editoriale UniLink)" };
+  VV.perche.voto = "Il voto di laurea da dove sei oggi, e la media che ti serve per arrivare dove vuoi.";
+  if (VV.tools.voto) { VV.tools.voto.domanda = "Che voto prendo alla laurea, e che media mi serve per arrivare a quello che voglio?"; }
+  const PRO = ["voto", "erasmus", "magistrali"]; // v14b: «Che media mi serve?» è il passo 4 del voto di laurea (come sul sito attuale)
   const n2 = (x, d = 2) => (x == null || isNaN(x) ? "—" : Number(x).toFixed(d).replace(".", ","));
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   const seg = (k, opts, cur, extra = "") => `<div class="seg tp-seg" role="group">${opts.map(([v, t]) => `<button type="button" class="${String(v) === String(cur) ? "on" : ""}" data-k="${k}" data-v="${v}" ${extra}>${t}</button>`).join("")}</div>`;
@@ -43,7 +51,7 @@
   const bando = () => { const d = new Date(); let y = d.getFullYear(); if (d.getMonth() === 0 && d.getDate() < 15) y--; return `https://www.economia.unifi.it/vp-274-erasmus-per-studio-${y}-${String((y + 1) % 100).padStart(2, "0")}.html`; };
 
   /* ======================= 1 · QUANTO PRENDO ALLA LAUREA ======================= */
-  const defVoto = (u) => { const R = libretto(u); return { cds: u.profile.cds === "EC" ? "EC" : "EA", media: R && R.media ? Math.round(R.media * 100) / 100 : 27, cfu: R && R.cfu ? R.cfu : 96, lodi: R ? R.lodi : 1, quando: 2, tesi: 2, anni: [1, 1, 0.5], sim: [], dalLibretto: !!(R && R.media) }; };
+  const defVoto = (u) => { const R = libretto(u); const cfu = R && R.cfu ? R.cfu : 96; return { cds: u.profile.cds === "EC" ? "EC" : "EA", media: R && R.media ? Math.round(R.media * 100) / 100 : 27, cfu, lodi: R ? R.lodi : 1, quando: 2, tesi: 2, anni: [1, 1, 0.5], sim: [], ob: 108, resto: Math.max(0, 180 - 21 - cfu), dalLibretto: !!(R && R.media) }; };
   function htmlVoto(u) {
     const d = dati(u, "voto", defVoto(u));
     return `<div class="tp-grid"><div class="tp-col">
@@ -58,10 +66,14 @@
         <div class="tp-bonus"><div class="tp-bh"><b>Regolarità: CFU presi in ogni anno</b><span class="tp-pt" data-pt="regol"></span></div>
           ${[0, 1, 2].map((i) => `<div class="tp-anno"><span>${["I", "II", "III"][i]} anno</span>${seg("anno" + i, [[0, "meno di 20 · +0"], [0.5, "20–39 · +0,5"], [1, "40 o più · +1"]], d.anni[i])}</div>`).join("")}</div>`)}
       ${passo(3, "Simula i prossimi esami", "Aggiungi i voti che pensi di prendere: vedi subito come cambiano media e voto.", `<div data-sim></div><button type="button" class="btn btn-ghost btn-sm" data-sim-add>${icon("plus")} Aggiungi un esame</button>`)}
+      ${passo(4, "Voglio arrivare a…", "Scegli il voto che vuoi: ti diciamo che media ti serve negli esami che restano, con i bonus che hai scelto sopra.", `
+        ${seg("ob", [[100, "100"], [105, "105"], [108, "108"], [110, "110"], [111, "110 e lode"]], d.ob)}
+        <div class="tp-campi c2" style="margin-top:12px">${campo("resto", "CFU con voto che restano", d.resto, 'min="0" max="180"', "Di solito: 180 meno quelli fatti meno circa 21 CFU senza voto (prova finale, idoneità, attività a scelta).")}<div></div></div>
+        <div class="tp-serve" data-serve></div>`)}
     </div>
     <aside class="tp-col tp-side"><section class="card navy tp-ris" data-ris></section>
-      <a class="tp-poi" href="#/app/strumenti/media">${icon("target")} <span><b>Vuoi arrivare a un voto preciso?</b><br>Scopri che media ti serve →</span></a></aside></div>
-    ${comeFunziona([["01", "Media ponderata", "Ogni voto pesa per i CFU dell'esame; il 30 e lode vale 30."], ["02", "Voto di presentazione", "Media × 110 ÷ 30, più 0,333 punti per ogni lode."], ["03", "Bonus", "Rapidità (fino a +2), tesi (fino a +3), regolarità (fino a +3): si sommano."], ["04", "Voto finale", "Presentazione + bonus, arrotondato, massimo 110. Lode se superi 110 con presentazione da almeno 104,5 e tesi ottima."]])}`;
+      <a class="tp-poi" href="#/app/strumenti/magistrali">${icon("cap")} <span><b>E dopo la laurea?</b><br>Trova e confronta magistrali e master →</span></a></aside></div>
+    ${comeFunziona([["01", "Media ponderata", "Ogni voto pesa per i CFU dell'esame; il 30 e lode vale 30."], ["02", "Voto di presentazione", "Media × 110 ÷ 30, più 0,333 punti per ogni lode."], ["03", "Bonus", "Rapidità (fino a +2), tesi (fino a +3), regolarità (fino a +3): si sommano."], ["04", "Voto finale e obiettivo", "Presentazione + bonus, arrotondato, massimo 110 (lode con presentazione da almeno 104,5 e tesi ottima). Per l'obiettivo si fa il conto al contrario: voto − bonus − lodi → media che serve."]])}`;
   }
   function risVoto(el, d) {
     const r = votoLaurea(d), p = clamp((r.voto - 66) / 44, 0, 1);
@@ -76,11 +88,25 @@
     const S = d.sim, box = el.querySelector("[data-sim]");
     const cfuS = S.reduce((s, x) => s + x.cfu, 0), sommaS = S.reduce((s, x) => s + Math.min(30, x.v) * x.cfu, 0), lodiS = S.filter((x) => x.v > 30).length;
     const nm = d.cfu + cfuS ? (d.media * d.cfu + sommaS) / (d.cfu + cfuS) : d.media, r2 = votoLaurea(Object.assign({}, d, { media: nm, lodi: d.lodi + lodiS }));
+    // passo 4 · «Voglio arrivare a…» (la vecchia «Che media mi serve?»): stesso conto del sito, all'indietro
+    const ob = Math.min(110, Number(d.ob)), resto = Math.max(0, d.resto), totC = d.cfu + resto, lodeOb = Number(d.ob) > 110;
+    const mediaOb = ((ob - r.bonus - LODE * d.lodi) * 30) / 110, serve = resto ? (mediaOb * totC - d.media * d.cfu) / resto : null, maxM = totC ? (d.media * d.cfu + 30 * resto) / totC : d.media;
+    let st, cl, fr;
+    if (serve == null) { st = r.voto >= ob ? "Già raggiunto" : "Non raggiungibile"; cl = r.voto >= ob ? "ok" : "no"; fr = "Non restano CFU con voto: conta quello che hai."; }
+    else if (serve <= 18) { st = "Già raggiunto"; cl = "ok"; fr = "Anche con tutti 18 ci arrivi: puoi puntare più in alto."; }
+    else if (serve <= d.media) { st = "Sei in linea"; cl = "ok"; fr = `Basta restare sotto la media di oggi: voti tra ${Math.floor(serve)} e ${Math.min(30, Math.ceil(serve) + 1)}.`; }
+    else if (serve <= Math.min(30, d.media + 1.5)) { st = "Fattibile"; cl = "ok"; fr = `Un piccolo passo in più: voti tra ${Math.floor(serve)} e ${Math.min(30, Math.ceil(serve) + 1)}.`; }
+    else if (serve <= 30) { st = "Impegnativo"; cl = "warn"; fr = `Quasi tutti gli esami che restano tra ${Math.floor(serve)} e 30.`; }
+    else { st = "Non raggiungibile"; cl = "no"; fr = `Anche con tutti 30 arrivi a ${n2(maxM)} di media (circa ${Math.min(110, Math.round((maxM * 110) / 30 + LODE * d.lodi + r.bonus))}/110): prova un obiettivo più basso o più bonus.`; }
+    const pos = (v) => clamp(((v - 18) / 12) * 100, 0, 100);
+    el.querySelector("[data-serve]").innerHTML = `<div class="tp-serve-g"><div><span>Media che ti serve nei prossimi ${resto} CFU</span><b>${serve == null ? "—" : serve > 30 ? "oltre 30" : n2(Math.max(18, serve))}</b><em class="tp-stato ${cl}">${st}</em></div>
+      <div class="tp-linea chiara"><div class="tp-lbar"></div><i class="m-oggi" style="left:${pos(d.media)}%"><span>oggi ${n2(d.media, 1)}</span></i>${serve != null && serve <= 30 && serve >= 18 ? `<i class="m-serve" style="left:${pos(serve)}%"><span>serve ${n2(serve, 1)}</span></i>` : ""}<div class="tp-lscala"><span>18</span><span>24</span><span>30</span></div></div></div>
+      <p class="tp-frase chiara">${fr}${lodeOb ? " Per la lode servono anche presentazione da almeno 104,5 e tesi ottima." : ""}</p>`;
     box.innerHTML = S.length ? `<div class="tp-simrighe">${S.map((x, i) => `<div class="tp-sim"><span>Esame ${i + 1}</span><select class="select" data-sv="${i}" aria-label="Voto">${[18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31].map((v) => `<option value="${v}" ${x.v === v ? "selected" : ""}>${v === 31 ? "30L" : v}</option>`).join("")}</select><select class="select" data-sc="${i}" aria-label="CFU">${[6, 9, 12].map((c) => `<option value="${c}" ${x.cfu === c ? "selected" : ""}>${c} CFU</option>`).join("")}</select><button type="button" class="icon-btn" data-sx="${i}" aria-label="Togli">${icon("trash")}</button></div>`).join("")}</div>
       <div class="tp-simris"><div><span>Nuova media</span><b>${n2(nm)}</b><small class="${nm >= d.media ? "su" : "giu"}">${nm >= d.media ? "+" : ""}${n2(nm - d.media)}</small></div><div><span>Nuovo voto stimato</span><b>${r2.voto}${r2.lode ? " e lode" : ""}</b><small class="${r2.voto >= votoLaurea(d).voto ? "su" : "giu"}">${r2.voto - votoLaurea(d).voto >= 0 ? "+" : ""}${r2.voto - votoLaurea(d).voto}</small></div></div>` : `<p class="small muted" style="margin-bottom:10px">Nessun esame simulato.</p>`;
   }
 
-  /* ======================= 2 · CHE MEDIA MI SERVE ======================= */
+  /* ======================= (archiviato) «Che media mi serve?» come strumento a sé: dal 9/10 è il passo 4 del voto ======================= */
   const defMedia = (u) => { const R = libretto(u); const cfu = R && R.cfu ? R.cfu : 96; return { modo: "media", media: R && R.media ? Math.round(R.media * 100) / 100 : 26.1, cfu, resto: Math.max(0, 180 - 21 - cfu) || 63, obMedia: 27, obVoto: 108, lodi: R ? R.lodi : 1, bonus: 5, dalLibretto: !!(R && R.media) }; };
   function htmlMedia(u) {
     const d = dati(u, "media", defMedia(u));
@@ -125,7 +151,7 @@
 
   /* ======================= 3 · ERASMUS: PUNTEGGIO E METE ======================= */
   const LINGUE = ["Inglese", "Francese", "Tedesco", "Spagnolo", "Portoghese", "Altra lingua"];
-  const defEra = (u) => { const R = libretto(u); return { tab: "punteggio", cds: u.profile.cds === "EC" ? "EC" : "EA", anno: Number(u.profile.anno) || 2, media: R && R.media ? Math.round(R.media * 100) / 100 : 27.45, cfu: R && R.cfu ? R.cfu : 76, lingue: [{ l: "Inglese", liv: "B2" }], q: "", paese: "", mesi: "", portata: false, conMedia: false, fav: [], quante: 24, dalLibretto: !!(R && R.media) }; };
+  const defEra = (u) => { const R = libretto(u); return { tab: "punteggio", cds: u.profile.cds === "EC" ? "EC" : "EA", anno: Number(u.profile.anno) || 2, media: R && R.media ? Math.round(R.media * 100) / 100 : 27.45, cfu: R && R.cfu ? R.cfu : 76, lingue: [{ l: "Inglese", liv: "B2" }], cmp: [], q: "", paese: "", mesi: "", portata: false, conMedia: false, fav: [], quante: 24, dalLibretto: !!(R && R.media) }; };
   const ME = () => (window.UL_ERASMUS || { mete: [], mediaGenerale: 56.46 });
   const reqOk = (m, d) => { const r = (m.languageRequirement || "").trim(); if (!r || /nessun/i.test(r)) return true; const mm = r.match(/(A1|A2|B1|B2|C1|C2)\s*(\w+)/i); if (!mm) return null;
     const lv = Object.keys(QT), need = lv.indexOf(mm[1].toUpperCase()), lng = mm[2].toLowerCase(); const mio = d.lingue.find((x) => x.l.toLowerCase().startsWith(lng.slice(0, 4))); return mio ? lv.indexOf(mio.liv) >= need : false; };
@@ -150,7 +176,7 @@
           <label class="tp-chk"><input type="checkbox" data-k="portata" ${d.portata ? "checked" : ""}> Solo alla mia portata</label>
           <label class="tp-chk"><input type="checkbox" data-k="conMedia" ${d.conMedia ? "checked" : ""}> Solo con media storica</label>
           <label class="tp-chk"><input type="checkbox" data-k="soloFav" ${d.soloFav ? "checked" : ""}> ★ Solo salvate</label></div>
-        <p class="small muted" data-mete-n></p><div class="tp-mete" data-mete></div><div style="text-align:center;margin-top:14px"><button type="button" class="btn btn-ghost" data-piu>Mostra altre</button></div>
+        <p class="small muted" data-mete-n></p><div class="tp-mete" data-mete></div><div style="text-align:center;margin-top:14px"><button type="button" class="btn btn-ghost" data-piu>Mostra altre</button></div><div data-tray></div>
         <p class="tiny muted" style="margin-top:10px">Media storica = punteggio medio dell'ultima graduatoria di quella sede. Dove manca usiamo la media generale (${n2(ME().mediaGenerale)}). Requisiti, posti e corsi vanno sempre verificati sul bando e sulla scheda della sede.</p></div>`;
   }
   function risErasmus(el, d) {
@@ -179,25 +205,91 @@
         <h4>${esc(x.name)}</h4><span class="tiny muted">${esc(x.code)}</span>
         <div class="tp-mc-dati"><span>${x.places} ${x.places === 1 ? "posto" : "posti"}</span><span>${x.durationMonths} mesi</span><span>${esc((x.languageRequirement || "nessun requisito").replace(/^nessuno$/i, "nessun requisito di lingua"))}${ok === false ? " ⚠" : ""}</span>${x.minYear > 1 ? `<span>dal ${["", "I", "II", "III"][x.minYear]} anno</span>` : ""}</div>
         <div class="tp-mc-fondo"><div><small>media storica</small><b>${x.historicalAverage == null ? "—" : n2(x.historicalAverage, 1)}</b></div><span class="tp-prob ${PROB[p][1]}">${PROB[p][0]}</span></div>
-        <div class="tp-mc-link">${x.factsheet ? `<a href="${esc(x.factsheet)}" target="_blank" rel="noopener">Scheda della sede</a>` : ""}${x.courses ? `<a href="${esc(x.courses)}" target="_blank" rel="noopener">Corsi</a>` : ""}</div></article>`; }).join("") || '<div class="card empty">Nessuna meta con questi filtri.</div>';
+        <div class="tp-mc-link">${x.factsheet ? `<a href="${esc(x.factsheet)}" target="_blank" rel="noopener">Scheda della sede</a>` : ""}${x.courses ? `<a href="${esc(x.courses)}" target="_blank" rel="noopener">Corsi</a>` : ""}<span style="flex:1"></span>${cmpBtn(d, x.code)}</div></article>`; }).join("") || '<div class="card empty">Nessuna meta con questi filtri.</div>';
     el.querySelector("[data-piu]").hidden = L.length <= d.quante;
+    el.querySelector("[data-tray]").innerHTML = trayHtml(d, (c) => { const x = m.find((y) => y.code === c); return x ? x.name.slice(0, 24) : c; });
   }
+
+  /* ======================= CONFRONTO fianco a fianco (fino a 3), per mete Erasmus e magistrali ======================= */
+  const MAXC = 3;
+  const cmpBtn = (d, id) => `<button type="button" class="tp-cmpb ${d.cmp.includes(id) ? "on" : ""}" data-cmp="${esc(id)}">${d.cmp.includes(id) ? "✓ Nel confronto" : "+ Confronta"}</button>`;
+  const trayHtml = (d, nome) => d.cmp.length ? `<div class="tp-tray"><span>${d.cmp.length} ${d.cmp.length === 1 ? "selezionato" : "selezionati"} · fino a ${MAXC}</span><div class="tp-tray-n">${d.cmp.map((id) => `<em>${esc(nome(id))}<button type="button" data-cmp="${esc(id)}" aria-label="Togli">×</button></em>`).join("")}</div><button type="button" class="btn btn-orange btn-sm" data-cmp-apri ${d.cmp.length < 2 ? "disabled" : ""}>Confronta${d.cmp.length < 2 ? " (almeno 2)" : ""}</button></div>` : "";
+  const apriConfronto = (titolo, cols, righe) => {
+    const ov = document.createElement("div"); ov.className = "tp-cmp-ov"; ov.setAttribute("role", "dialog"); ov.setAttribute("aria-modal", "true");
+    ov.innerHTML = `<div class="tp-cmp card"><div class="tp-cmp-h"><h2>${titolo}</h2><button type="button" class="btn btn-ghost btn-sm" data-chiudi>Chiudi</button></div>
+      <div class="tp-cmp-t" style="--n:${cols.length}"><div class="tp-cmp-k"></div>${cols.map((c) => `<div class="tp-cmp-c"><span class="tp-paese">${esc(c.sopra)}</span><b>${esc(c.nome)}</b></div>`).join("")}
+        ${righe.map(([k, f, meglio]) => { const v = cols.map(f); const best = meglio ? meglio(v) : -1; return `<div class="tp-cmp-k">${k}</div>${v.map((x, i) => `<div class="tp-cmp-v ${i === best ? "best" : ""}">${x}</div>`).join("")}`; }).join("")}</div></div>`;
+    document.body.appendChild(ov); document.body.style.overflow = "hidden";
+    const chiudi = () => { ov.remove(); document.body.style.overflow = ""; document.removeEventListener("keydown", esc2); };
+    const esc2 = (e) => e.key === "Escape" && chiudi(); document.addEventListener("keydown", esc2);
+    ov.addEventListener("click", (e) => { if (e.target === ov || e.target.closest("[data-chiudi]")) chiudi(); });
+  };
+  const migliore = (dir) => (v) => { const n = v.map((x) => parseFloat(String(x).replace(/<[^>]*>/g, "").replace(",", ".").replace(/[^\d.]/g, ""))); const ok = n.filter((x) => !isNaN(x)); if (ok.length < 2) return -1; const t = dir > 0 ? Math.max(...ok) : Math.min(...ok); return n.filter((x) => x === t).length > 1 ? -1 : n.indexOf(t); };
+
+  /* ======================= 4 · MAGISTRALI E MASTER ======================= */
+  const PR = () => window.UL_PROGRAMMI || [];
+  const REG = [["UK & Irlanda", /Regno Unito|Irlanda/], ["Italia", /Italia/], ["Francia", /Francia/], ["Germania", /Germania/], ["Spagna", /Spagna/], ["Olanda", /Paesi Bassi|Olanda/], ["BELUX", /Belgio|Lussemburgo/], ["Svizzera", /Svizzera/], ["Austria", /Austria/], ["Portogallo", /Portogallo/], ["Nordics", /Danimarca|Svezia|Norvegia|Finlandia/], ["East EU", /Polonia|Cechia|Ungheria|Slovenia|Romania|Slovacchia|Croazia|Estonia|Lettonia|Lituania|Bulgaria/], ["Asia", /Singapore|Cina|Hong Kong|Giappone|Corea|India/]];
+  const regione = (p) => (REG.find(([, r]) => r.test(p.loc || "")) || ["Altro"])[0];
+  const mesi = (p) => { const m = String(p.durata || "").match(/(\d+)/); return m ? Number(m[1]) : null; };
+  const fascia = (p) => { const m = mesi(p); return m == null ? "" : m <= 12 ? "12" : m <= 18 ? "18" : "24"; };
+  const TIER = { T: ["Target", "tg-t"], S: ["Semi-target", "tg-s"], R: ["Regional", "tg-r"] };
+  const defMag = (u) => ({ q: "", reg: "", area: "", tier: "", dur: "", cems: false, soloFav: false, fav: [], cmp: [], quante: 18, aperto: "" });
+  function htmlMag(u) {
+    const d = dati(u, "magistrali", defMag(u)), P = PR(), aree = window.UL_AREE_PROF || [];
+    const chip = (k, v, t) => `<button type="button" class="chip ${String(d[k]) === String(v) ? "on" : ""}" data-k="${k}" data-v="${esc(v)}">${esc(t)}</button>`;
+    return `<div class="tp-mag-f card">
+        <div class="tp-mag-r"><span>Cerca</span><input class="input" type="search" data-k="q" value="${esc(d.q)}" placeholder="Scuola, programma o città"></div>
+        <div class="tp-mag-r"><span>Area professionale</span><div class="chips">${chip("area", "", "Tutte")}${aree.map((a) => chip("area", a, a)).join("")}</div></div>
+        <div class="tp-mag-r"><span>Dove</span><div class="chips">${chip("reg", "", "Ovunque")}${REG.map(([r]) => chip("reg", r, r)).join("")}</div></div>
+        <div class="tp-mag-r dop"><div><span>Classificazione</span><div class="chips">${chip("tier", "", "Tutte")}${Object.entries(TIER).map(([k, [t]]) => chip("tier", k, t)).join("")}</div></div>
+          <div><span>Durata</span><div class="chips">${chip("dur", "", "Tutte")}${chip("dur", "12", "fino a 12 mesi")}${chip("dur", "18", "13–18 mesi")}${chip("dur", "24", "2 anni")}</div></div></div>
+        <div class="tp-mag-r riga"><label class="tp-chk"><input type="checkbox" data-k="cems" ${d.cems ? "checked" : ""}> Solo CEMS</label><label class="tp-chk"><input type="checkbox" data-k="soloFav" ${d.soloFav ? "checked" : ""}> ★ Solo salvati</label><button type="button" class="link small" data-azzera>Azzera i filtri</button></div></div>
+      <p class="small muted" data-mag-n></p><div class="tp-mag" data-mag></div><div style="text-align:center;margin-top:14px"><button type="button" class="btn btn-ghost" data-piu>Mostra altri</button></div>
+      <div data-tray></div>
+      <section class="tp-come"><h2>Come leggere <span class="accent">Target, Semi-target e Regional</span></h2><div class="tp-come-g">${[["T", "Target", "Recruiting strutturato e presenza ricorrente nei principali hub per almeno una delle aree indicate."], ["S", "Semi-target", "Buon accesso al mercato, più forte in alcune aree o paesi: conta molto il profilo personale."], ["R", "Regional", "Forte nel mercato locale: può essere la scelta migliore per costo, specializzazione o paese."], ["?", "Test / profilo", "Il profilo che normalmente serve per essere davvero competitivi, diverso dal minimo formale."]].map(([n, t, x]) => `<div class="card"><span class="tp-cn">${n === "?" ? "★" : n}</span><b>${t}</b><p class="small">${x}</p></div>`).join("")}</div>
+        <p class="tiny muted" style="margin-top:10px">Classificazione editoriale UniLink, relativa alle aree e ai mercati indicati, non alla qualità accademica assoluta. Rette, durate e test cambiano ogni anno: verifica sempre sul sito del programma.</p></section>`;
+  }
+  function risMag(el, d) {
+    const P = PR(), q = (d.q || "").toLowerCase().trim();
+    el.querySelectorAll(".tp-mag-f .chip[data-k]").forEach((b) => b.classList.toggle("on", String(d[b.dataset.k]) === b.dataset.v));
+    const L = P.filter((p) => (!q || `${p.school} ${p.program} ${p.loc}`.toLowerCase().includes(q)) && (!d.area || (p.aree || []).includes(d.area)) && (!d.reg || regione(p) === d.reg)
+      && (!d.tier || p.tier === d.tier) && (!d.dur || fascia(p) === d.dur) && (!d.cems || p.cems) && (!d.soloFav || d.fav.includes(p.id)));
+    el.querySelector("[data-mag-n]").textContent = `${L.length} programmi${L.length !== P.length ? " su " + P.length : ""}`;
+    el.querySelector("[data-mag]").innerHTML = L.slice(0, d.quante).map((p) => { const fav = d.fav.includes(p.id), ap = d.aperto === p.id;
+      return `<article class="tp-mag-c ${ap ? "aperto" : ""}"><div class="tp-mc-top"><span class="tp-tier ${TIER[p.tier][1]}">${TIER[p.tier][0]}${p.cems ? " · CEMS" : ""}</span><button type="button" class="tp-fav ${fav ? "on" : ""}" data-fav="${esc(p.id)}" aria-label="${fav ? "Togli dai salvati" : "Salva"}">${fav ? "★" : "☆"}</button></div>
+        <span class="tp-paese">${esc(p.school)}</span><h4>${esc(p.program)}</h4>
+        <div class="tp-mc-dati"><span>${icon("globe")} ${esc(p.loc)}</span><span>${esc(p.durata)}</span><span>${esc(p.retta)}</span>${p.lingua ? `<span>${esc(p.lingua)}</span>` : ""}</div>
+        <div class="tp-aree">${(p.aree || []).map((a) => `<em class="${d.area === a ? "on" : ""}">${esc(a)}</em>`).join("")}</div>
+        ${ap ? `<div class="tp-det"><span class="sq-label">Test e profilo</span><p class="small">${esc(p.test || "—")}</p>${p.url ? `<a class="small" href="${esc(p.url)}" target="_blank" rel="noopener">Sito del programma →</a>` : ""}</div>` : ""}
+        <div class="tp-mag-az"><button type="button" class="link small" data-apri="${esc(p.id)}">${ap ? "Chiudi" : "Dettagli"}</button>${cmpBtn(d, p.id)}</div></article>`; }).join("") || '<div class="card empty">Nessun programma con questi filtri.</div>';
+    el.querySelector("[data-piu]").hidden = L.length <= d.quante;
+    el.querySelector("[data-tray]").innerHTML = trayHtml(d, (id) => { const p = P.find((x) => x.id === id); return p ? p.school.split(" — ")[0].slice(0, 22) : id; });
+  }
+  const confrontaMag = (d) => { const cols = d.cmp.map((id) => PR().find((p) => p.id === id)).filter(Boolean).map((p) => Object.assign({ sopra: p.school, nome: p.program }, p));
+    apriConfronto("Confronta i programmi", cols, [["Dove", (p) => esc(p.loc)], ["Classificazione", (p) => `<span class="tp-tier ${TIER[p.tier][1]}">${TIER[p.tier][0]}</span>${p.cems ? " · CEMS" : ""}`], ["Durata", (p) => esc(p.durata), migliore(-1)], ["Retta", (p) => esc(p.retta)], ["Lingua", (p) => esc(p.lingua || "—")],
+      ["Aree professionali", (p) => (p.aree || []).map(esc).join("<br>")], ["Test e profilo", (p) => esc(p.test || "—")], ["Link", (p) => p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">Sito del programma</a>` : "—"]]); };
+  const confrontaEra = (d) => { const r = puntiErasmus(d); const cols = d.cmp.map((c) => ME().mete.find((m) => m.code === c)).filter(Boolean).map((m) => Object.assign({ sopra: m.country.trim(), nome: m.name }, m));
+    apriConfronto("Confronta le mete", cols, [["Codice", (m) => esc(m.code)], ["Posti", (m) => m.places, migliore(1)], ["Durata", (m) => m.durationMonths + " mesi"], ["Lingua richiesta", (m) => esc((m.languageRequirement || "nessuna").replace(/^nessuno$/i, "nessuna")) + (reqOk(m, d) === false ? " ⚠" : "")], ["Da quale anno", (m) => ["", "I", "II", "III"][m.minYear || 1] + " anno"],
+      ["Media ultima graduatoria", (m) => m.historicalAverage == null ? "—" : n2(m.historicalAverage, 1), migliore(-1)], [`Con il tuo ${n2(r.tot, 1)}`, (m) => { const p = prob(r.tot, m.historicalAverage ?? ME().mediaGenerale); return `<span class="tp-prob ${PROB[p][1]}">${PROB[p][0]}</span>`; }],
+      ["Schede", (m) => [m.factsheet ? `<a href="${esc(m.factsheet)}" target="_blank" rel="noopener">Sede</a>` : "", m.courses ? `<a href="${esc(m.courses)}" target="_blank" rel="noopener">Corsi</a>` : ""].filter(Boolean).join(" · ") || "—"]]); };
 
   /* ======================= pezzi comuni ======================= */
   const comeFunziona = (L) => `<section class="tp-come"><h2>Come si <span class="accent">calcola</span></h2><div class="tp-come-g">${L.map(([n, t, x]) => `<div class="card"><span class="tp-cn">${n}</span><b>${t}</b><p class="small">${x}</p></div>`).join("")}</div></section>`;
-  const HTML = { voto: htmlVoto, media: htmlMedia, erasmus: htmlErasmus }, RIS = { voto: risVoto, media: risMedia, erasmus: risErasmus };
-  const DEF = { voto: defVoto, media: defMedia, erasmus: defEra };
+  const HTML = { voto: htmlVoto, erasmus: htmlErasmus, magistrali: htmlMag }, RIS = { voto: risVoto, erasmus: risErasmus, magistrali: risMag };
+  const DEF = { voto: defVoto, erasmus: defEra, magistrali: defMag };
 
   const origRender = base.render.bind(base), origMount = base.mount.bind(base);
   base.render = function (u, params) {
+    if (params[0] === "media") { setTimeout(() => UL.app.go("#/app/strumenti/voto"), 0); params = ["voto"]; }
     const out = origRender(u, params);
     if (!PRO.includes(params[0])) return out;
     // si tiene la testata della vetrina (← Strumenti, gli altri strumenti, illustrazione e domanda) e si mette sotto lo strumento completo
     const i = out.indexOf('<section class="card vt-calcolo');
-    return (i > 0 ? out.slice(0, i) : out) + `<div class="tp-wrap" data-tp="${params[0]}">${HTML[params[0]](u)}</div><div class="tp-mobile" data-tp-mob></div>`;
+    const testa = (i > 0 ? out.slice(0, i) : out);
+    return (params[0] === "magistrali" ? testa.replace(/ · i voti arrivano già dal tuo libretto/, "").replace("i voti arrivano già dal tuo libretto", "") : testa) + `<div class="tp-wrap" data-tp="${params[0]}">${HTML[params[0]](u)}</div><div class="tp-mobile" data-tp-mob></div>`;
   };
   base.mount = function (root, u, params) {
-    const id = params[0]; if (!PRO.includes(id)) return origMount(root, u, params);
+    const id = params[0] === "media" ? "voto" : params[0]; if (!PRO.includes(id)) return origMount(root, u, params);
     const el = root.querySelector("[data-tp]"); if (!el) return;
     const d = dati(u, id, DEF[id](u));
     const T = (u.activity.tool = u.activity.tool || {}); T[id] = (T[id] || 0) + 1; B.track("tool-" + id);
@@ -209,7 +301,7 @@
       if (e.target.type === "checkbox") d[k] = e.target.checked;
       else if (e.target.type === "number" || e.target.type === "range") { d[k] = num(k, e.target.value); el.querySelectorAll(`[data-k="${k}"]`).forEach((x) => { if (x !== e.target && (x.type === "number" || x.type === "range")) x.value = d[k]; }); }
       else d[k] = e.target.value;
-      if (["q", "paese", "mesi", "portata", "conMedia", "soloFav"].includes(k)) d.quante = 24;
+      if (["q", "paese", "mesi", "portata", "conMedia", "soloFav", "cems"].includes(k)) d.quante = id === "magistrali" ? 18 : 24;
       aggiorna();
     });
     el.addEventListener("change", (e) => { const t = e.target;
@@ -221,7 +313,8 @@
       if (b.dataset.k && b.dataset.v !== undefined) { const k = b.dataset.k, v = b.dataset.v;
         if (/^anno\d$/.test(k)) d.anni[Number(k.slice(4))] = Number(v);
         else if (/^liv\d+$/.test(k)) d.lingue[Number(k.slice(3))].liv = v;
-        else d[k] = isNaN(Number(v)) || k === "cds" || k === "modo" || k === "tab" ? v : Number(v);
+        else d[k] = isNaN(Number(v)) || ["cds", "modo", "tab", "area", "reg", "tier", "dur"].includes(k) || v === "" ? v : Number(v);
+        if (["area", "reg", "tier", "dur"].includes(k)) d.quante = 18;
         if (k === "tab") { el.querySelector("[data-era-punteggio]").hidden = v !== "punteggio"; el.querySelector("[data-era-mete]").hidden = v !== "mete"; el.querySelectorAll('.tp-tabs [data-k="tab"]').forEach((x) => x.classList.toggle("on", x.dataset.v === v)); window.scrollTo({ top: el.getBoundingClientRect().top + scrollY - 90, behavior: "smooth" }); }
         if (k === "modo") { el.querySelector("[data-ob-media]").hidden = v !== "media"; el.querySelector("[data-ob-voto]").hidden = v !== "voto"; }
         const g = b.closest(".tp-seg"); g && g.querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b));
@@ -232,7 +325,11 @@
       if (b.hasAttribute("data-lng-add")) { d.lingue.push({ l: LINGUE.find((l) => !d.lingue.some((x) => x.l === l)) || "Altra lingua", liv: "B1" }); aggiorna(); }
       if (b.dataset.lx) { d.lingue.splice(Number(b.dataset.lx), 1); aggiorna(); }
       if (b.dataset.fav) { const i = d.fav.indexOf(b.dataset.fav); i >= 0 ? d.fav.splice(i, 1) : d.fav.push(b.dataset.fav); aggiorna(); const n = el.querySelector(".tp-favn"); if (n) n.textContent = `★ ${d.fav.length} salvate`; }
-      if (b.hasAttribute("data-piu")) { d.quante += 24; aggiorna(); }
+      if (b.hasAttribute("data-piu")) { d.quante += id === "magistrali" ? 18 : 24; aggiorna(); }
+      if (b.dataset.cmp) { const i = d.cmp.indexOf(b.dataset.cmp); if (i >= 0) d.cmp.splice(i, 1); else if (d.cmp.length >= MAXC) { UL.ui.toast(`Puoi confrontarne fino a ${MAXC}: togline uno`); return; } else d.cmp.push(b.dataset.cmp); aggiorna(); }
+      if (b.hasAttribute("data-cmp-apri")) { (id === "magistrali" ? confrontaMag : confrontaEra)(d); }
+      if (b.dataset.apri) { d.aperto = d.aperto === b.dataset.apri ? "" : b.dataset.apri; aggiorna(); }
+      if (b.hasAttribute("data-azzera")) { Object.assign(d, { q: "", reg: "", area: "", tier: "", dur: "", cems: false, soloFav: false, quante: 18 }); el.querySelector('[data-k="q"]').value = ""; el.querySelectorAll(".tp-mag-f input[type=checkbox]").forEach((x) => (x.checked = false)); aggiorna(); }
     });
     aggiorna();
   };
