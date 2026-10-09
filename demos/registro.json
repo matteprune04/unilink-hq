@@ -4,6 +4,21 @@
    "id": "landing",
    "versioni": [
     {
+     "n": 29,
+     "tag": "landing-v29",
+     "data": "2026-10-09T10:31+00:00",
+     "autore": "Claude",
+     "nota": "Demo sito e web app: risorse in «risorse/» invece di «_astro/» (GitHub Pages non pubblica le cartelle con _)",
+     "commit": "8a47cba",
+     "demo_v": 14,
+     "demo_data": "2026-10-09",
+     "impronta": "edaef6e44cafddf8",
+     "kb": 5663,
+     "file": "UniLink_landing_demo-v14_backup29_2026-10-09.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v29/UniLink_landing_demo-v14_backup29_2026-10-09.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v29/demo-landing"
+    },
+    {
      "n": 28,
      "tag": "landing-v28",
      "data": "2026-10-09T10:27+00:00",
@@ -433,6 +448,21 @@
   {
    "id": "webapp",
    "versioni": [
+    {
+     "n": 30,
+     "tag": "webapp-v30",
+     "data": "2026-10-09T10:31+00:00",
+     "autore": "Claude",
+     "nota": "Demo sito e web app: risorse in «risorse/» invece di «_astro/» (GitHub Pages non pubblica le cartelle con _)",
+     "commit": "8a47cba",
+     "demo_v": 18,
+     "demo_data": "2026-10-09",
+     "impronta": "085d363a6496bd1e",
+     "kb": 487,
+     "file": "UniLink_webapp_demo-v18_backup30_2026-10-09.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/webapp-v30/UniLink_webapp_demo-v18_backup30_2026-10-09.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v30/demo-webapp"
+    },
     {
      "n": 29,
      "tag": "webapp-v29",
@@ -876,5 +906,5 @@
    "url": "https://matteprune04.github.io/unilink-hq/demo-webapp/"
   }
  ],
- "aggiornato": "2026-10-09T10:27+00:00"
+ "aggiornato": "2026-10-09T10:31+00:00"
 }
