@@ -4,6 +4,21 @@
    "id": "landing",
    "versioni": [
     {
+     "n": 22,
+     "tag": "landing-v22",
+     "data": "2026-10-09T08:30+00:00",
+     "autore": "Claude",
+     "nota": "Nuovo logo nelle demo (libro + persona con la U); il vecchio nell'archivio dei founder",
+     "commit": "900505a",
+     "demo_v": 14,
+     "demo_data": "2026-10-09",
+     "impronta": "14250799ec5f5b18",
+     "kb": 5669,
+     "file": "UniLink_landing_demo-v14_backup22_2026-10-09.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v22/UniLink_landing_demo-v14_backup22_2026-10-09.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v22/demo-landing"
+    },
+    {
      "n": 21,
      "tag": "landing-v21",
      "data": "2026-10-08T20:04+00:00",
@@ -329,6 +344,21 @@
    "id": "webapp",
    "versioni": [
     {
+     "n": 22,
+     "tag": "webapp-v22",
+     "data": "2026-10-09T08:30+00:00",
+     "autore": "Claude",
+     "nota": "Nuovo logo nelle demo (libro + persona con la U); il vecchio nell'archivio dei founder",
+     "commit": "900505a",
+     "demo_v": 17,
+     "demo_data": "2026-10-09",
+     "impronta": "4790b9428392dab5",
+     "kb": 491,
+     "file": "UniLink_webapp_demo-v17_backup22_2026-10-09.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/webapp-v22/UniLink_webapp_demo-v17_backup22_2026-10-09.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v22/demo-webapp"
+    },
+    {
      "n": 21,
      "tag": "webapp-v21",
      "data": "2026-10-09T07:50+00:00",
@@ -651,5 +681,5 @@
    "url": "https://matteprune04.github.io/unilink-hq/demo-webapp/"
   }
  ],
- "aggiornato": "2026-10-09T07:50+00:00"
+ "aggiornato": "2026-10-09T08:30+00:00"
 }
