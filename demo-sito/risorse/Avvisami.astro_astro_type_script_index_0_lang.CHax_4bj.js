@@ -1,1 +1,0 @@
-import{t as e}from"./modulo.CCjAXWhK.js";document.querySelectorAll(`form[data-avvisami]`).forEach(t=>{let n=t.dataset.avvisami;e(t,`avvisami`,()=>({hub:n}),()=>{t.parentElement.innerHTML=`<div class="modulo-ok"><span class="spunta">✓</span><h2 class="h3">Ci sei!</h2><p class="piccolo">Ti scriviamo una sola volta, quando l'hub apre.</p></div>`})});
