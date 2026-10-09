@@ -2146,7 +2146,9 @@ function csvToExams(text, defCorso) {
 }
 async function importExams(list, repl) {
   let nuovi = 0, agg = 0, rim = 0; const have = new Map(exAll().map(e => [e.slug, e]));
-  if (repl) { const corsi = new Set(list.map(x => x.corso)); await guard(async () => { for (const e of exAll()) if (e.bozza && !e.confermato && corsi.has(e.corso)) { await S.db.collection("exams").doc(e.id).delete(); have.delete(e.slug); rim++; } }); }
+  if (repl) { /* toglie solo le bozze che nel piano importato non ci sono: quelle che combaciano si aggiornano e tengono le spunte */
+    const corsi = new Set(list.map(x => x.corso)), keep = new Set(list.map(x => x.corso + "|" + x.slug));
+    await guard(async () => { for (const e of exAll()) if (e.bozza && !e.confermato && corsi.has(e.corso) && !keep.has(e.corso + "|" + e.slug)) { await S.db.collection("exams").doc(e.id).delete(); have.delete(e.slug); rim++; } }); }
   await guard(async () => { for (const x of list) {
     /* identità = corso + esame: lo stesso nome in corsi diversi (es. Diritto privato) sono due esami */
     let old = have.get(x.slug); if (old && (old.corso || "") !== (x.corso || "")) { x.slug = x.slug + "_" + slugify(x.corso || "altro"); old = have.get(x.slug); }
@@ -2187,7 +2189,7 @@ function openExImport() {
     <label class="fld wide"><span>File CSV</span><input type="file" id="exi_file" accept=".csv,text/csv,.tsv,.txt"></label>
     <label class="fld wide"><span>Oppure incolla l'elenco</span><textarea id="exi_text" rows="6" placeholder="Diritto privato&#9;I anno&#9;I semestre&#9;9&#9;Obbligatorio"></textarea></label>
     <label class="fld wide"><span>Corso per le righe che non lo indicano</span><select id="exi_corso">${CORSO_OPT.map(c => `<option>${c}</option>`).join("")}</select></label>
-    <label class="fld chk-f wide"><input type="checkbox" id="exi_repl"><span>Sostituisci TUTTE le bozze ancora «da confermare» dei corsi che importo (usalo solo con il piano ufficiale completo di quel corso, non con un file di sole aggiunte)</span></label>
+    <label class="fld chk-f wide"><input type="checkbox" id="exi_repl"><span>Togli le bozze «da confermare» che non compaiono nel file, per i corsi che importo (usalo solo con il piano ufficiale completo di quel corso, non con un file di sole aggiunte)</span></label>
     <div id="exi_msg" class="small" style="grid-column:1/-1"></div>
     <div class="form-foot fld wide"><div class="row"><button type="button" class="btn ghost sm" data-extpl>Scarica il modello CSV</button></div><div class="row"><button type="button" class="btn" data-close>Chiudi</button><button class="btn pri">Importa</button></div></div></form>`);
 }
