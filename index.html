@@ -967,7 +967,7 @@ function doRender() {
   main.innerHTML = html;
   if (actId) { const el = document.getElementById(actId); if (el) { el.focus(); try { el.setSelectionRange(sel, sel); } catch (e) {} } }
   hydrate(main);
-  if (S.ready && !S._autoChk) { S._autoChk = true; setTimeout(() => { try { maybeAutoBrief(); } catch (e) {} }, 3500); }
+  if (S.ready && !S._autoChk) { S._autoChk = true; setTimeout(() => { try { maybeSeedExams(); } catch (e) {} }, 1800); setTimeout(() => { try { maybeAutoBrief(); } catch (e) {} }, 3500); }
 }
 function hydrate(root) { loadImgs(root); loadFrames(root); loadThumbs(root); }
 function getImg(id) {
@@ -2098,7 +2098,7 @@ SCHEMA.exams = { one: "esame", fields: [
   { k: "codice", l: "Codice UniFi", ph: "Es. B018991" }, { k: "slug", l: "Nome nel database (facoltativo)", ph: "es. microeconomia" },
   { k: "urlUnifi", l: "Scheda ufficiale UniFi", t: "url", wide: 1 }, { k: "voto", l: "Voto di chi ha scritto gli appunti", ph: "Es. 30 / 30 e lode" },
   { k: "l_appunti", l: "Link appunti", t: "url", wide: 1 }, { k: "l_schemi", l: "Link schemi e mappe", t: "url", wide: 1 }, { k: "l_quiz", l: "Link quiz", t: "url", wide: 1 }, { k: "l_materiali", l: "Link altri materiali", t: "url", wide: 1 },
-  { k: "note", l: "Note", t: "textarea", rows: 2, wide: 1 }] };
+  { k: "note", l: "Note", t: "textarea", rows: 2, wide: 1 }, { k: "confermato", l: "Confermato sul piano ufficiale", t: "check" }] };
 const exSlug = e => e.slug || slugify(e.name);
 const exDb = e => MAT_DB.exams.find(x => x.slug === exSlug(e));
 function exSt(e, k) {
@@ -2143,15 +2143,16 @@ function csvToExams(text, defCorso) {
   });
   return out;
 }
-async function importExams(list) {
-  let nuovi = 0, agg = 0; const have = new Map(exAll().map(e => [e.slug, e]));
+async function importExams(list, repl) {
+  let nuovi = 0, agg = 0, rim = 0; const have = new Map(exAll().map(e => [e.slug, e]));
+  if (repl) { const corsi = new Set(list.map(x => x.corso)); await guard(async () => { for (const e of exAll()) if (e.bozza && !e.confermato && corsi.has(e.corso)) { await S.db.collection("exams").doc(e.id).delete(); have.delete(e.slug); rim++; } }); }
   await guard(async () => { for (const x of list) {
     /* identità = corso + esame: lo stesso nome in corsi diversi (es. Diritto privato) sono due esami */
     let old = have.get(x.slug); if (old && (old.corso || "") !== (x.corso || "")) { x.slug = x.slug + "_" + slugify(x.corso || "altro"); old = have.get(x.slug); }
     const id = old ? old.id : "ex-" + slugify(x.corso || "altro") + "-" + x.slug.slice(0, 60);
     const clean = Object.fromEntries(Object.entries(x).filter(([, v]) => v !== "" && v !== undefined)), merged = old ? { ...old, ...clean, st: { ...(old.st || {}), ...(x.st || {}) } } : { ...clean, by: S.uid || "", createdAt: new Date().toISOString() };
     delete merged.id; await S.db.collection("exams").doc(id).set(merged); old ? agg++ : nuovi++; have.set(x.slug, { ...merged, id }); } });
-  return { nuovi, agg };
+  return { nuovi, agg, rim };
 }
 function csvTemplate() { return "Title;Corso di studio;Anno;Semestre;CFU;Tipo;Link UNIFI;Appunti/Sbobine;Schemi/Mappe;Quiz/Mock;Voto degli Appunti\n\"Diritto privato (B000000)\";Giurisprudenza;I anno;I semestre;9;Obbligatorio;;;;;\n\"Esame a scelta\";Giurisprudenza;V anno;II semestre;6;Opzionale;;;;;\n"; }
 function csvExport() { const q = v => '"' + String(v ?? "").replace(/"/g, '""') + '"'; const H = ["abbreviazione", "Title", "Link UNIFI", "Corso di studio", "Anno", "Semestre", "CFU", "Tipo", "Appunti/Sbobine", "Schemi/Mappe", "Materiali", "Quiz/Mock", "Voto degli Appunti", ...EX_KINDS.map(([, l]) => "Stato " + l)]; return "﻿" + [H.map(q).join(";")].concat(exAll().sort((a, b) => corsoRank(a.corso) - corsoRank(b.corso) || String(a.anno).localeCompare(String(b.anno)) || String(a.semestre).localeCompare(String(b.semestre))).map(e => [e.slug, e.name + (e.codice ? " (" + e.codice + ")" : ""), e.urlUnifi, e.corso, e.anno, e.semestre, e.cfu, e.tipo, e.l_appunti, e.l_schemi, e.l_materiali, e.l_quiz, e.voto, ...EX_KINDS.map(([k]) => ST_LAB[exSt(e, k)])].map(q).join(";"))).join("\n"); }
@@ -2163,11 +2164,11 @@ V.esami = () => {
   const inC = (e, c) => !c || corsiDi(e).includes(c) || e.corso === c;
   const list = all.filter(e => inC(e, fC) && (!fA || e.anno === fA) && (!fS || e.semestre === fS) && (!fT || e.tipo === fT) && (!fM || EX_KINDS.some(([k]) => exSt(e, k) === "manca")) && match({ n: e.name, c: e.codice, s: e.slug }, "esami", ["n", "c", "s"]));
   const cover = l => { const t = l.length * EX_KINDS.length, got = l.reduce((a, e) => a + EX_KINDS.filter(([k]) => exSt(e, k) !== "manca").length, 0), ok = l.reduce((a, e) => a + EX_KINDS.filter(([k]) => exSt(e, k) === "ok").length, 0); return { t, got, ok }; };
-  const cCard = c => { const l = all.filter(e => inC(e, c)), s = cover(l); return `<button class="card click excard ${fC === c ? "on" : ""}" data-f="exC" data-v="${fC === c ? "" : c}"><div class="row between"><b>${c}</b><span class="num small muted">${l.length} esami</span></div>${l.length ? `<div class="small muted">Abbiamo ${s.t ? Math.round(s.got / s.t * 100) : 0}% · verificato ${s.t ? Math.round(s.ok / s.t * 100) : 0}%</div>${progBar(s.ok, s.t)}` : '<div class="small" style="color:var(--orange-dark)">Nessun esame: importa l\'elenco</div>'}</button>`; };
+  const cCard = c => { const l = all.filter(e => inC(e, c)), s = cover(l); return `<button class="card click excard ${fC === c ? "on" : ""}" data-f="exC" data-v="${fC === c ? "" : c}"><div class="row between"><b>${c}</b><span class="num small muted">${l.length} esami</span></div>${l.length ? `<div class="small muted">Abbiamo ${s.t ? Math.round(s.got / s.t * 100) : 0}% · verificato ${s.t ? Math.round(s.ok / s.t * 100) : 0}%</div>${progBar(s.ok, s.t)}` : '<div class="small" style="color:var(--orange-dark)">Nessun esame: importa l\'elenco</div>'}${CORSO_INFO[c] && l.some(e => e.bozza && !e.confermato) ? `<div class="small"><span class="chip yl">Bozza · ${CORSO_INFO[c].liv}</span></div>` : ""}</button>`; };
   const groups = {}; list.forEach(e => { const g = fC ? "" : e.corso; ((groups[g] = groups[g] || {})[e.anno || "Anno n/d"] = groups[g][e.anno || "Anno n/d"] || []).push(e); });
   const T = cover(list);
   const thead = `<thead><tr><th>Esame</th><th>Sem.</th><th class="r">CFU</th><th>Tipo</th>${EX_KINDS.map(([, l]) => `<th class="c">${l}</th>`).join("")}<th>Voto appunti</th><th></th></tr></thead>`;
-  const row = e => `<tr><td class="exn"><b>${esc(e.name)}</b>${e.codice ? ` <small class="muted">${esc(e.codice)}</small>` : ""}${e.urlUnifi ? ` <a class="stl" href="${esc(safeUrl(e.urlUnifi))}" target="_blank" rel="noopener" title="Scheda ufficiale UniFi">UniFi ↗</a>` : ""}${e.note ? `<div class="small muted">${esc(e.note)}</div>` : ""}</td><td class="small">${esc(String(e.semestre || "").replace(" semestre", " sem."))}</td><td class="r num">${e.cfu || ""}</td><td>${e.tipo === "Opzionale" ? '<span class="chip or">opzionale</span>' : '<span class="small muted">obbl.</span>'}</td>${EX_KINDS.map(([k, l]) => stBtn(e, k, l)).join("")}<td class="small">${esc(e.voto || "")}</td><td>${S.canWrite ? `<button class="btn ghost sm" data-edit="exams:${e.id}" aria-label="Modifica">⋯</button>` : ""}</td></tr>`;
+  const row = e => `<tr><td class="exn"><b>${esc(e.name)}</b>${e.codice ? ` <small class="muted">${esc(e.codice)}</small>` : ""}${e.urlUnifi ? ` <a class="stl" href="${esc(safeUrl(e.urlUnifi))}" target="_blank" rel="noopener" title="Scheda ufficiale UniFi">UniFi ↗</a>` : ""}${e.bozza && !e.confermato ? ' <span class="chip yl" title="Bozza ricavata dal piano ufficiale: da confermare">da confermare</span>' : ""}${e.note ? `<div class="small muted">${esc(e.note)}</div>` : ""}</td><td class="small">${esc(String(e.semestre || "").replace(" semestre", " sem."))}</td><td class="r num">${e.cfu || ""}</td><td>${e.tipo === "Opzionale" ? '<span class="chip or">opzionale</span>' : '<span class="small muted">obbl.</span>'}</td>${EX_KINDS.map(([k, l]) => stBtn(e, k, l)).join("")}<td class="small">${esc(e.voto || "")}</td><td>${S.canWrite ? `<button class="btn ghost sm" data-edit="exams:${e.id}" aria-label="Modifica">⋯</button>` : ""}</td></tr>`;
   const sections = Object.keys(groups).sort((a, b) => corsoRank(a) - corsoRank(b)).map(c => Object.keys(groups[c]).sort(((a, b) => ANNI.indexOf(a) - ANNI.indexOf(b))).map(a => { const l = groups[c][a].sort((x, y) => String(x.semestre).localeCompare(String(y.semestre)) || x.name.localeCompare(y.name)); return `<section class="stack"><div class="gh" style="--tc:#172554"><h2>${c ? (c === "EA/EC" ? "EA / EC · in comune" : esc(c)) + " · " : ""}${esc(a)}</h2><span class="num muted">${l.length} ${l.length === 1 ? "esame" : "esami"}</span></div><div class="tbl-wrap"><table class="extbl">${thead}<tbody>${l.map(row).join("")}</tbody></table></div></section>`; }).join("")).join("");
   return `<div class="wrap">
   <section class="hero mat"><div class="hero-t"><div class="eyebrow" style="color:var(--orange)">Materiali e archivio</div><h1>Esami e <span class="accw">dispense</span></h1><p style="max-width:640px;opacity:.9">Tutti gli esami, divisi per corso, anno e semestre. Per ognuno spunti cosa abbiamo: clicca una casella per cambiarla.</p><p class="small" style="margin-top:6px"><span class="lgd"><i>–</i>manca</span><span class="lgd"><i class="da"></i>da verificare</span><span class="lgd"><i class="ok">✓</i>verificato</span></p><div class="row" style="margin-top:12px;max-width:520px;align-items:center"><div class="grow">${progBar(T.ok, T.t)}</div><span class="hchip"><b class="num">${all.length}</b> esami · <b class="num">${T.ok}</b>/${T.t} verificati</span></div></div>
@@ -2175,6 +2176,7 @@ V.esami = () => {
   <div class="grid4">${["EA", "EC", "SUSBUS", "SECI", "Giurisprudenza", "Medicina"].map(cCard).join("")}</div>
   <div class="filters">${searchBox("esami", "Cerca un esame")}${fchips("exA", ANNI.slice(0, 5), "Tutti gli anni")}</div>
   <div class="filters">${fchips("exS", SEMS, "Tutti i semestri")}${fchips("exT", ["Obbligatorio", "Opzionale"], "Obbligatori e opzionali")}<button class="fchip ${fM ? "on" : ""}" data-toggle="exM">Solo con qualcosa che manca</button>${fC ? `<button class="fchip on" data-f="exC" data-v="">Corso: ${esc(fC)} ✕</button>` : ""}</div>
+  ${fC && CORSO_INFO[fC] && all.some(e => e.corso === fC && e.bozza && !e.confermato) ? `<div class="banner warn"><b>${esc(CORSO_INFO[fC].nome)}</b> · elenco in bozza (${esc(CORSO_INFO[fC].liv)}). ${esc(CORSO_INFO[fC].nota)} <a href="${esc(CORSO_INFO[fC].url)}" target="_blank" rel="noopener">Pagina ufficiale ↗</a>. Per sostituire la bozza importa il piano ufficiale con «Carica CSV / elenco».</div>` : ""}
   ${all.length ? (sections || '<p class="muted">Nessun esame corrisponde ai filtri.</p>') : `<div class="empty"><h3>Carica il catalogo degli esami</h3><p>Importa il CSV delle dispense (Dispense_1.csv): compaiono tutti gli esami per corso, anno e semestre, con i link e le spunte. Per Giurisprudenza, Medicina, SUSBUS e SECI incolla l'elenco ufficiale degli esami (anche gli opzionali) o carica un CSV nello stesso formato.</p>${S.canWrite ? '<button class="btn pri" data-eximport>Carica CSV / elenco</button>' : ""}</div>`}
   </div>`;
 };
@@ -2184,6 +2186,7 @@ function openExImport() {
     <label class="fld wide"><span>File CSV</span><input type="file" id="exi_file" accept=".csv,text/csv,.tsv,.txt"></label>
     <label class="fld wide"><span>Oppure incolla l'elenco</span><textarea id="exi_text" rows="6" placeholder="Diritto privato&#9;I anno&#9;I semestre&#9;9&#9;Obbligatorio"></textarea></label>
     <label class="fld wide"><span>Corso per le righe che non lo indicano</span><select id="exi_corso">${CORSO_OPT.map(c => `<option>${c}</option>`).join("")}</select></label>
+    <label class="fld chk-f wide"><input type="checkbox" id="exi_repl" checked><span>Sostituisci le bozze ancora «da confermare» dei corsi che importo</span></label>
     <div id="exi_msg" class="small" style="grid-column:1/-1"></div>
     <div class="form-foot fld wide"><div class="row"><button type="button" class="btn ghost sm" data-extpl>Scarica il modello CSV</button></div><div class="row"><button type="button" class="btn" data-close>Chiudi</button><button class="btn pri">Importa</button></div></div></form>`);
 }
@@ -2199,10 +2202,60 @@ document.addEventListener("submit", async e => {
   const msg = document.getElementById("exi_msg"), file = document.getElementById("exi_file").files[0], pasted = document.getElementById("exi_text").value.trim();
   if (!file && !pasted) { msg.textContent = "Scegli un file o incolla un elenco."; return; }
   const b = e.target.querySelector("button.pri"); b.disabled = true; b.textContent = "Importo…";
-  try { const text = file ? await file.text() : pasted, list = csvToExams(text, document.getElementById("exi_corso").value); if (!list.length) throw new Error("Non ho trovato nessun esame."); const r = await importExams(list); msg.innerHTML = `Fatto: <b>${r.nuovi}</b> nuovi, <b>${r.agg}</b> aggiornati.`; toast(`${list.length} esami importati`); S.f.exC = ""; render(); }
+  try { const text = file ? await file.text() : pasted, list = csvToExams(text, document.getElementById("exi_corso").value); if (!list.length) throw new Error("Non ho trovato nessun esame."); const r = await importExams(list, document.getElementById("exi_repl").checked); msg.innerHTML = `Fatto: <b>${r.nuovi}</b> nuovi, <b>${r.agg}</b> aggiornati${r.rim ? `, <b>${r.rim}</b> bozze sostituite` : ""}.`; toast(`${list.length} esami importati`); S.f.exC = ""; render(); }
   catch (er) { msg.innerHTML = `<span style="color:var(--red)">${esc(er.message || "Importazione non riuscita")}</span>`; }
   b.disabled = false; b.textContent = "Importa";
 });
+
+/* ====================================================== v2: bozze degli esami dei corsi (da piani ufficiali UniFi, da confermare) ====================================================== */
+const SEED_VER = 1;
+const CORSO_INFO = {
+  SUSBUS: { nome: "Sustainable Business for Societal Challenges (L-18, B314, in inglese)", liv: "Quasi completo", nota: "Due versioni del piano non coincidono (sito della Scuola e catalogo 2025/26): conferma quale è in vigore.", url: "https://www.unifi.it/en/study-us/degree-programs/first-cycle-degree/sustainable-business-societal-challenges" },
+  SECI: { nome: "Sviluppo sostenibile, cooperazione e gestione dei conflitti (L-37)", liv: "Parziale", nota: "Primo anno comune; secondo e terzo anno cambiano per curriculum e qui ci sono solo gli esami citati dalla fonte. Mancano CFU e semestri.", url: "https://www.seci-gc.unifi.it/vp-95-insegnamenti.html" },
+  Giurisprudenza: { nome: "Giurisprudenza (ciclo unico, B344)", liv: "Parziale", nota: "Gli anni 4–5 sono raggruppati in modo incerto e i titoli italiani sono da controllare. Opzionali: elenco incompleto (24 CFU dal 3° anno).", url: "https://www.unifi.it/it/studia-con-noi/corsi-di-laurea/corsi-di-laurea-triennali-e-a-ciclo-unico/giurisprudenza" },
+  Medicina: { nome: "Medicina e Chirurgia (ciclo unico, B414)", liv: "Solo corsi integrati", nota: "Sono i grandi blocchi per anno, non ogni singolo esame. Da dettagliare con il piano ufficiale della tua coorte.", url: "https://www.unifi.it/en/study-us/degree-programs/first-cycle-degree/medicine-and-surgery" },
+};
+const SEED_ESAMI = (() => {
+  const out = [], add = (corso, anno, name, cfu, opt, note, sem) => out.push({ corso, anno: anno + " anno", name, cfu: cfu || "", tipo: opt ? "Opzionale" : "Obbligatorio", note: note || "", semestre: sem || "", urlUnifi: CORSO_INFO[corso].url, bozza: true });
+  const SB = "Piano sul sito della Scuola di Economia.", SBC = SB + " Nel catalogo 2025/26 il piano differisce: da confermare.";
+  ["I|Economy and Society|9", "I|Accounting and Reporting for Business and Sustainability|9", "I|Analytic Tools for Social Change|6", "I|Fundamentals of Sustainable Entrepreneurship and Business Ethics|9", "I|Design and Evaluation of Behavioural Policies|12"].forEach(r => { const [a, n, c] = r.split("|"); add("SUSBUS", a, n, +c, 0, SB); });
+  add("SUSBUS", "I", "Introduction to Private Law", 6, 0, SBC + " Assente nella versione del catalogo.");
+  add("SUSBUS", "I", "Economic Geography in the Anthropocene & Socio-Ecological Transition Policies (con laboratorio)", 12, 0, "Presente nel catalogo 2025/26 come obbligatorio del 1° anno; non nel piano sul sito della Scuola. Da confermare.");
+  ["Social Innovation and CSR for Sustainable Firms|9", "Statistical Methods for Assessing Societal Challenges (con laboratorio)|9", "Business Law, Innovation and Sustainability|12", "Quantitative Risk Assessment Tools|6", "Sustainable Regional Development|6"].forEach(r => { const [n, c] = r.split("|"); add("SUSBUS", "II", n, +c, 0, SB); });
+  ["Impact investing", "Organisation design for well-being", "Sustainable finance", "Social enterprise in food systems"].forEach(n => add("SUSBUS", "II", n, "", 1, "A scelta: 3 corsi per 18 CFU totali. Titolo da confermare."));
+  add("SUSBUS", "III", "Demography and Social Challenges", 6, 0, SB); add("SUSBUS", "III", "Business Planning and Impact Evaluation", 9, 0, SB);
+  ["Environmental challenges", "Intellectual property law", "Industrial chemical processes", "International regulatory harmonisation", "Psychology (due corsi a scelta)"].forEach(n => add("SUSBUS", "III", n, "", 1, "A scelta: 12 CFU totali. Titolo da confermare."));
+  add("SUSBUS", "III", "Altra lingua europea (diversa dall'inglese)", 6, 0, SB); add("SUSBUS", "III", "Laboratorio", 3, 0, "Attività. " + SB); add("SUSBUS", "III", "Tirocinio", 6, 0, "Attività. " + SB); add("SUSBUS", "III", "A scelta dello studente", 12, 1, "Crediti liberi. " + SB); add("SUSBUS", "III", "Prova finale", 3, 0, "Attività. " + SB);
+  const S1 = "Primo anno comune a tutti i curriculum.";
+  [["Economia politica", 12], ["Economia dello sviluppo sostenibile", 9], ["Antropologia dello sviluppo", 6], ["Storia delle relazioni internazionali", 6], ["Scienza politica", 6], ["Sociologia generale", 6], ["Laboratorio di matematica per l'economia e la statistica", 3]].forEach(([n, c]) => add("SECI", "I", n, c, 0, S1 + " Fonte: pagina «Insegnamenti» del corso (può non essere completo)."));
+  add("SECI", "II", "Politica economica dello sviluppo sostenibile", 9, 0, "Curriculum: Economia dello sviluppo, Inclusione sociale conflitti e pace."); add("SECI", "II", "Fonti e metodi per l'analisi dei dati economici e sociali", 12, 0, "Curriculum: Economia dello sviluppo, Inclusione sociale conflitti e pace.");
+  add("SECI", "II", "Elementi di matematica per l'economia", "", 0, "Curriculum: Economia dello sviluppo. CFU da confermare."); add("SECI", "II", "English", "", 0, "Curriculum: Economia dello sviluppo, Inclusione sociale conflitti e pace. CFU da confermare."); add("SECI", "II", "Diritto internazionale", "", 0, "Curriculum: Inclusione sociale, conflitti e pace. CFU da confermare.");
+  [["International Economics", "Economia dello sviluppo"], ["Public economics and policies", "Economia dello sviluppo"], ["Agriculture in economic development", "Economia dello sviluppo"], ["Demography", "Economia dello sviluppo, Inclusione sociale conflitti e pace"], ["Development economics and international cooperation", "Economia dello sviluppo, Inclusione sociale conflitti e pace"], ["Economia sociale e politiche di coesione", "Economia circolare e coesione sociale, Inclusione sociale conflitti e pace"], ["Piani e progetti per la cooperazione internazionale", "Economia circolare e coesione sociale"], ["Diritto internazionale e sfide globali", "Inclusione sociale, conflitti e pace"], ["Politica comparata", "Inclusione sociale, conflitti e pace"], ["Relazioni internazionali", "Inclusione sociale, conflitti e pace"], ["Management of humanitarian emergencies", "Inclusione sociale, conflitti e pace"]].forEach(([n, c]) => add("SECI", "III", n, "", 0, "Curriculum: " + c + ". CFU da confermare."));
+  add("SECI", "III", "Sustainable rural development", "", 1, "Curriculum: Economia circolare e coesione sociale. Opzionale. CFU da confermare."); add("SECI", "III", "Prova finale", "", 0, "Attività.");
+  const G = "Titolo italiano da confermare sul piano ufficiale.";
+  ["Diritto costituzionale", "Diritto privato I", "Sistemi giuridici comparati", "Diritto dell'Unione europea", "Istituzioni di diritto romano", "Storia del diritto medievale e moderno I"].forEach(n => add("Giurisprudenza", "I", n, "", 0, G));
+  ["Diritto penale I", "Diritto del lavoro", "Filosofia del diritto", "Diritto privato II", "Diritto amministrativo I"].forEach(n => add("Giurisprudenza", "II", n, "", 0, G));
+  ["Diritto penale II", "Diritto internazionale", "Procedura penale", "Diritto commerciale"].forEach(n => add("Giurisprudenza", "III", n, "", 0, G));
+  add("Giurisprudenza", "III", "Insegnamenti di storia del diritto e diritto romano (da dettagliare)", "", 0, "La fonte cita un gruppo di corsi senza titoli.");
+  ["Diritto civile", "Diritto processuale civile", "Diritto tributario", "Diritto costituzionale della tecnologia"].forEach(n => add("Giurisprudenza", "IV", n, "", 0, G + " Anno 4 o 5: la fonte non lo distingue."));
+  add("Giurisprudenza", "V", "Idoneità linguistica (livello B2)", "", 0, "Anno da confermare.");
+  ["Argomentazione giuridica / Informatica giuridica (a scelta tra i due)", "Diritto ecclesiastico"].forEach(n => add("Giurisprudenza", "V", n, "", 0, G + " Anno 4 o 5: la fonte non lo distingue."));
+  ["Criminologia", "Diritto canonico", "Diritto della crisi d'impresa", "Protezione dei dati personali", "Tirocinio"].forEach(n => add("Giurisprudenza", "V", n, "", 1, "Opzionale (24 CFU a scelta dal 3° anno). Elenco incompleto; anno indicativo. " + G));
+  add("Giurisprudenza", "V", "A scelta dello studente", 9, 1, "Crediti liberi."); add("Giurisprudenza", "V", "Prova finale", "", 0, "Attività.");
+  const M = "Corso integrato / blocco indicato dalla fonte: da dettagliare nei singoli esami.";
+  ["Fisica", "Chimica e propedeutica biochimica", "Biologia", "Biochimica e scienze umane", "Anatomia umana I", "Istologia", "Fondamenti di ricerca clinica e tecnologia biomedica", "Attività professionalizzante I"].forEach(n => add("Medicina", "I", n, "", 0, M));
+  ["Anatomia umana", "Fisiologia I", "Fisiologia II", "Microbiologia e metodologia clinica e di laboratorio", "Attività professionalizzante II"].forEach(n => add("Medicina", "II", n, "", 0, M));
+  ["Patologia generale", "Medicina legale e del lavoro", "Malattie dell'apparato locomotore", "Malattie cardiovascolari e respiratorie", "Malattie endocrino-metaboliche e gastroenterologiche", "Attività professionalizzante III"].forEach(n => add("Medicina", "III", n, "", 0, M));
+  ["Specialità medico-chirurgiche", "Farmacologia", "Specialità mediche", "Organizzazione dei servizi sanitari", "Anestesia e terapia intensiva"].forEach(n => add("Medicina", "IV", n, "", 0, M));
+  ["Diagnostica per immagini", "Ginecologia e ostetricia", "Neurologia", "Anatomia patologica", "Pediatria", "Psichiatria", "Geriatria", "One Health"].forEach(n => add("Medicina", "V", n, "", 0, M)); add("Medicina", "V", "Attività professionalizzante V", 23, 0, M);
+  ["Chirurgia clinica", "Medicina interna", "Emergenze medico-chirurgiche"].forEach(n => add("Medicina", "VI", n, "", 0, M)); add("Medicina", "VI", "Tirocinio pratico valutativo", 15, 0, "Per l'abilitazione."); add("Medicina", "VI", "Prova finale", 10, 0, "Attività.");
+  return out;
+})();
+async function maybeSeedExams() {
+  if (!S.canWrite || !S.ready || ctxDoc().seedExams >= SEED_VER) return;
+  const have = new Set((S.data.exams || []).map(e => e.id)); let n = 0;
+  try { await guard(async () => { for (const x of SEED_ESAMI) { const id = "ex-" + slugify(x.corso) + "-" + slugify(x.name).slice(0, 55) + "-" + fnv(x.corso + "|" + x.name).slice(0, 4); if (have.has(id)) continue; await S.db.collection("exams").doc(id).set({ ...x, slug: slugify(x.name) + "_" + slugify(x.corso), by: "UniLink HQ", createdAt: new Date().toISOString() }); n++; } }); await saveCtx({ seedExams: SEED_VER }); if (n) toast(n + " esami di SUSBUS, SECI, Giurisprudenza e Medicina aggiunti (bozza da confermare)", 6000); } catch (e) {}
+}
 
 function go(v) {
   if (v === "okrs" || v === "metrics") { S.f.goalTab = v; v = "goals"; }
