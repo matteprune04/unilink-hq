@@ -26,3 +26,8 @@ Segreti (solo in GitHub → Settings → Secrets, mai nel codice): `GOOGLE_KEY_J
 ## Materiali
 - Sezione **Materiali** dell'HQ: Panoramica, Didattica (esame per esame), Fonti raw (zip per tipo e per esame), Brand, Modelli, Database.
 - La fotografia del database del sito (`MAT_DB` in `index.html`) è statica: va aggiornata a mano quando cambia `contenuti_studio`.
+
+## Esami e dispense (catalogo a tabella)
+- Voce **Esami e dispense**: gli esami per corso (EA, EC, SUSBUS, SECI, Giurisprudenza, Medicina), anno e semestre, con spunta a tre stati (manca · da verificare · verificato) su appunti, schemi, esercizi, quiz, simulazione, syllabus.
+- Si carica da CSV (stesso formato di `Dispense_1.csv`) o incollando un elenco; gli esami con lo stesso nome in corsi diversi restano distinti. Le spunte non si perdono rimportando. Si scarica anche in CSV.
+- I link ai PDF restano nel database privato dell'HQ, non nel repository.
