@@ -4,6 +4,21 @@
    "id": "landing",
    "versioni": [
     {
+     "n": 27,
+     "tag": "landing-v27",
+     "data": "2026-10-09T10:12+00:00",
+     "autore": "Claude",
+     "nota": "HQ: tra le demo anche il sito vero e la web app vera con l'audit",
+     "commit": "4aab659",
+     "demo_v": 14,
+     "demo_data": "2026-10-09",
+     "impronta": "4080c85688b119ff",
+     "kb": 5663,
+     "file": "UniLink_landing_demo-v14_backup27_2026-10-09.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v27/UniLink_landing_demo-v14_backup27_2026-10-09.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v27/demo-landing"
+    },
+    {
      "n": 26,
      "tag": "landing-v26",
      "data": "2026-10-09T10:07+00:00",
@@ -403,6 +418,21 @@
   {
    "id": "webapp",
    "versioni": [
+    {
+     "n": 28,
+     "tag": "webapp-v28",
+     "data": "2026-10-09T10:12+00:00",
+     "autore": "Claude",
+     "nota": "HQ: tra le demo anche il sito vero e la web app vera con l'audit",
+     "commit": "4aab659",
+     "demo_v": 18,
+     "demo_data": "2026-10-09",
+     "impronta": "2e9181a94c4646ab",
+     "kb": 487,
+     "file": "UniLink_webapp_demo-v18_backup28_2026-10-09.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/webapp-v28/UniLink_webapp_demo-v18_backup28_2026-10-09.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v28/demo-webapp"
+    },
     {
      "n": 27,
      "tag": "webapp-v27",
@@ -816,5 +846,5 @@
    "url": "https://matteprune04.github.io/unilink-hq/demo-webapp/"
   }
  ],
- "aggiornato": "2026-10-09T10:07+00:00"
+ "aggiornato": "2026-10-09T10:12+00:00"
 }
