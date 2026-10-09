@@ -4,6 +4,21 @@
    "id": "landing",
    "versioni": [
     {
+     "n": 31,
+     "tag": "landing-v31",
+     "data": "2026-10-09T10:57+00:00",
+     "autore": "Claude",
+     "nota": "Demo sito: sezioni di prima con copertine per area, menu Hub e Materiali con immagini, Prezzi a parte, Strumenti più visivi, Simulazione di nuovo. Web app: Planner come il kit (in arrivo, Avvisami), catalogo per macroarea con copertine, filigrana su tutta la pagina stampata",
+     "commit": "6a36c45",
+     "demo_v": 14,
+     "demo_data": "2026-10-09",
+     "impronta": "1e95d5191a970649",
+     "kb": 5663,
+     "file": "UniLink_landing_demo-v14_backup31_2026-10-09.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v31/UniLink_landing_demo-v14_backup31_2026-10-09.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v31/demo-landing"
+    },
+    {
      "n": 30,
      "tag": "landing-v30",
      "data": "2026-10-09T10:38+00:00",
@@ -463,6 +478,21 @@
   {
    "id": "webapp",
    "versioni": [
+    {
+     "n": 32,
+     "tag": "webapp-v32",
+     "data": "2026-10-09T10:57+00:00",
+     "autore": "Claude",
+     "nota": "Demo sito: sezioni di prima con copertine per area, menu Hub e Materiali con immagini, Prezzi a parte, Strumenti più visivi, Simulazione di nuovo. Web app: Planner come il kit (in arrivo, Avvisami), catalogo per macroarea con copertine, filigrana su tutta la pagina stampata",
+     "commit": "6a36c45",
+     "demo_v": 18,
+     "demo_data": "2026-10-09",
+     "impronta": "31f310d735beafdf",
+     "kb": 487,
+     "file": "UniLink_webapp_demo-v18_backup32_2026-10-09.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/webapp-v32/UniLink_webapp_demo-v18_backup32_2026-10-09.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v32/demo-webapp"
+    },
     {
      "n": 31,
      "tag": "webapp-v31",
@@ -936,5 +966,5 @@
    "url": "https://matteprune04.github.io/unilink-hq/demo-webapp/"
   }
  ],
- "aggiornato": "2026-10-09T10:38+00:00"
+ "aggiornato": "2026-10-09T10:57+00:00"
 }
