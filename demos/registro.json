@@ -4,6 +4,21 @@
    "id": "landing",
    "versioni": [
     {
+     "n": 34,
+     "tag": "landing-v34",
+     "data": "2026-10-09T11:56+00:00",
+     "autore": "Claude",
+     "nota": "Demo sito: Ambassador con la foto del gruppo di studenti",
+     "commit": "4f17d5a",
+     "demo_v": 14,
+     "demo_data": "2026-10-09",
+     "impronta": "9f1a2cfa6f4837b6",
+     "kb": 5663,
+     "file": "UniLink_landing_demo-v14_backup34_2026-10-09.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/landing-v34/UniLink_landing_demo-v14_backup34_2026-10-09.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/landing-v34/demo-landing"
+    },
+    {
      "n": 33,
      "tag": "landing-v33",
      "data": "2026-10-09T11:52+00:00",
@@ -508,6 +523,21 @@
   {
    "id": "webapp",
    "versioni": [
+    {
+     "n": 35,
+     "tag": "webapp-v35",
+     "data": "2026-10-09T11:56+00:00",
+     "autore": "Claude",
+     "nota": "Demo sito: Ambassador con la foto del gruppo di studenti",
+     "commit": "4f17d5a",
+     "demo_v": 18,
+     "demo_data": "2026-10-09",
+     "impronta": "277336cd3099a713",
+     "kb": 487,
+     "file": "UniLink_webapp_demo-v18_backup35_2026-10-09.zip",
+     "download": "https://github.com/matteprune04/unilink-hq/releases/download/webapp-v35/UniLink_webapp_demo-v18_backup35_2026-10-09.zip",
+     "sorgente": "https://github.com/matteprune04/unilink-hq/tree/webapp-v35/demo-webapp"
+    },
     {
      "n": 34,
      "tag": "webapp-v34",
@@ -1026,5 +1056,5 @@
    "url": "https://matteprune04.github.io/unilink-hq/demo-webapp/"
   }
  ],
- "aggiornato": "2026-10-09T11:52+00:00"
+ "aggiornato": "2026-10-09T11:56+00:00"
 }
