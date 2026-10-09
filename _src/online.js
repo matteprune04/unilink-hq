@@ -130,7 +130,7 @@ function showLogin(msg) {
   const box = document.getElementById("login");
   let name = ""; try { name = localStorage.getItem("ulhq_name") || ""; } catch (e) {}
   box.innerHTML = `<form class="login-card" id="loginForm" novalidate>
-    <img src="logo-white.png" alt="UniLink" class="login-logo">
+    <img src="brand/unilink-orizzontale-negativo.png" alt="UniLink" class="login-logo">
     <div class="stack" style="gap:6px"><span class="eyebrow">Area riservata ai founder</span><h1>UniLink HQ</h1></div>
     <label class="fld"><span>Il tuo nome</span><input id="lg_name" autocomplete="nickname" value="${esc(name)}" placeholder="Es. Matteo" list="lg_names"><datalist id="lg_names">${(HQ_CONFIG.founders || []).map(n => `<option value="${esc(n)}">`).join("")}</datalist><small>Serve solo a firmare idee, voti e commenti.</small></label>
     <label class="fld"><span>Password del team</span><input id="lg_pass" type="password" autocomplete="current-password"></label>
@@ -191,8 +191,8 @@ const DM = { reg: null, err: "", busy: false, open: "", dev: "desk" };
 // Anteprima tablet (820 px): lo stile del telefono è nel sorgente dell'HQ, questo si aggiunge da qui
 document.head.insertAdjacentHTML("beforeend", "<style>.fr-b.tab iframe { width: 820px; max-width: 100%; border-left: 1px solid var(--line); border-right: 1px solid var(--line); }</style>");
 async function demoLoad(force) {
-  if (DM.busy || (DM.reg && !force)) return;
-  DM.busy = true; DM.err = "";
+  if (DM.busy || (DM.reg && !force) || (DM.tried && !force)) return;
+  DM.busy = true; DM.tried = true; DM.err = "";
   for (const u of DEMO_REG) {
     try { const r = await fetch(u + "?t=" + Date.now(), { cache: "no-store" }); if (r.ok) { DM.reg = await r.json(); break; } } catch (e) {}
   }

@@ -17,3 +17,12 @@ Segreti (solo in GitHub → Settings → Secrets, mai nel codice): `GOOGLE_KEY_J
 - `.github/workflows/demo-backup.yml` + `_src/demo_snapshot.py` — a ogni modifica delle demo: ZIP, Release GitHub (`landing-vN`, `webapp-vN`) e riga in `demos/registro.json`.
 - In HQ, Laboratorio AI → sezione **DEMO** legge il registro (anteprima, download, storico). Il codice sta in `_src/online.js`, quindi resta dopo ogni build.
 - `architettura/` — PDF di architettura di landing e web app, PDF delle schede «Da decidere» (generato da `architettura/schede/`) e `CONTESTO_DEMO.md`: la versione compatta da allegare come contesto quando si chiede una modifica alle demo. `LINEA_GUIDA_UNILINK.md` (e `UniLink_Linea_Guida.pdf`) è il manuale unico: landing + web app + report del 4 ottobre, con le discordanze non risolte; si rigenera con `_src/linea_guida/build_linea_guida.py`.
+
+## Brand (rebranding 9 ottobre 2026)
+- `brand/` contiene **solo** i file che la pagina deve mostrare: simbolo, marchio orizzontale, favicon, icone e `site.webmanifest`. Il vecchio logo è in `brand/_archivio/`.
+- Colori e regole sono nel manuale del brand (`11_Logo/UniLink_Brand.pdf`); i token sono nelle variabili `:root` di `index.html`.
+- Il resto del kit e i modelli **non stanno nel repository** (è pubblico): si importano dentro l'HQ da **Materiali → Importa zip**, che li apre nel browser e li carica nell'archivio privato (bucket `hq-files`), segnandoli "da verificare".
+
+## Materiali
+- Sezione **Materiali** dell'HQ: Panoramica, Didattica (esame per esame), Fonti raw (zip per tipo e per esame), Brand, Modelli, Database.
+- La fotografia del database del sito (`MAT_DB` in `index.html`) è statica: va aggiornata a mano quando cambia `contenuti_studio`.
