@@ -66,7 +66,8 @@ if not arg:
     sys.exit(f"Argomento «{D.get('argomento')}» non trovato nell'HQ: niente è stato caricato.")
 esistenti = {norm(t["data"].get("title")) for t in leggi("tasks")}
 bozze = leggi("bozze")
-esistenti |= {norm((b["data"].get("data") or {}).get("titolo")) for b in bozze if b["data"].get("state") != "scartata"}
+# anche le bozze SCARTATE contano: uno scarto è una decisione dei founder, non si ripropone
+esistenti |= {norm((b["data"].get("data") or {}).get("titolo")) for b in bozze}
 # bozze di questa stessa verifica ancora da confermare: si aggiornano (dettagli e passi), non si duplicano
 mie = {norm((b["data"].get("data") or {}).get("titolo")): b for b in bozze
        if b["data"].get("batch") == f"affidabilita-{giorno}" and b["data"].get("state") == "da confermare"}
@@ -85,6 +86,14 @@ for a in D.get("attivita", []):
         "data": {"titolo": a["titolo"], "argomento": arg["id"], "dettagli": a.get("dettagli", ""), "passi": a.get("passi", []), "chi": a.get("chi", [])},
         "createdAt": ora, "by": "Verifica di affidabilità"}})
     esistenti.add(norm(a["titolo"]))
+# attività che la verifica stessa ha già fatto: la bozza ancora da confermare passa a «scartata» (resta consultabile, non si cancella)
+superate = []
+for t in D.get("attivita_superate", []):
+    b = mie.get(norm(t))
+    if b:
+        b["data"].update({"state": "scartata", "nota": "Fatta durante la verifica"})
+        nuove.append({"col": "bozze", "id": b["id"], "updated_at": ora, "data": b["data"]})
+        superate.append(t)
 if nuove:
     salva(nuove)
 
@@ -93,5 +102,5 @@ doc = {k: D.get(k) for k in ("data", "titolo", "ambiente", "versione", "esito", 
 doc.update({"id": giorno, "pdf": {"path": path, "name": pdf.name, "size": pdf.stat().st_size, "type": "application/pdf"},
             "createdAt": ora, "by": "Verifica di affidabilità"})
 salva([{"col": "affidabilita", "id": giorno, "data": doc, "updated_at": ora}])
-print(f"OK: verifica {giorno} caricata (PDF {pdf.stat().st_size // 1024} KB) · {len(nuove) - len(aggiornate)} bozze di attività nuove · {len(aggiornate)} aggiornate"
+print(f"OK: verifica {giorno} caricata (PDF {pdf.stat().st_size // 1024} KB) · {len(nuove) - len(aggiornate) - len(superate)} bozze di attività nuove · {len(aggiornate)} aggiornate · {len(superate)} superate"
       + (f" · {len(saltate)} già presenti: {', '.join(saltate)}" if saltate else ""))
