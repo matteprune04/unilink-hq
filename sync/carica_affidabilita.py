@@ -65,9 +65,18 @@ arg = next((t for t in topics if norm(t["data"].get("title")) == norm(D.get("arg
 if not arg:
     sys.exit(f"Argomento «{D.get('argomento')}» non trovato nell'HQ: niente è stato caricato.")
 esistenti = {norm(t["data"].get("title")) for t in leggi("tasks")}
-esistenti |= {norm((b["data"].get("data") or {}).get("titolo")) for b in leggi("bozze") if b["data"].get("state") != "scartata"}
-nuove, saltate = [], []
+bozze = leggi("bozze")
+esistenti |= {norm((b["data"].get("data") or {}).get("titolo")) for b in bozze if b["data"].get("state") != "scartata"}
+# bozze di questa stessa verifica ancora da confermare: si aggiornano (dettagli e passi), non si duplicano
+mie = {norm((b["data"].get("data") or {}).get("titolo")): b for b in bozze
+       if b["data"].get("batch") == f"affidabilita-{giorno}" and b["data"].get("state") == "da confermare"}
+nuove, saltate, aggiornate = [], [], []
 for a in D.get("attivita", []):
+    if norm(a["titolo"]) in mie:
+        b = mie[norm(a["titolo"])]
+        b["data"]["data"].update({"dettagli": a.get("dettagli", ""), "passi": a.get("passi", [])})
+        nuove.append({"col": "bozze", "id": b["id"], "updated_at": ora, "data": b["data"]})
+        aggiornate.append(a["titolo"]); continue
     if norm(a["titolo"]) in esistenti:
         saltate.append(a["titolo"]); continue
     bid = "aff" + "".join(random.choices(string.ascii_lowercase + string.digits, k=12))
@@ -84,5 +93,5 @@ doc = {k: D.get(k) for k in ("data", "titolo", "ambiente", "versione", "esito", 
 doc.update({"id": giorno, "pdf": {"path": path, "name": pdf.name, "size": pdf.stat().st_size, "type": "application/pdf"},
             "createdAt": ora, "by": "Verifica di affidabilità"})
 salva([{"col": "affidabilita", "id": giorno, "data": doc, "updated_at": ora}])
-print(f"OK: verifica {giorno} caricata (PDF {pdf.stat().st_size // 1024} KB) · {len(nuove)} bozze di attività nuove"
+print(f"OK: verifica {giorno} caricata (PDF {pdf.stat().st_size // 1024} KB) · {len(nuove) - len(aggiornate)} bozze di attività nuove · {len(aggiornate)} aggiornate"
       + (f" · {len(saltate)} già presenti: {', '.join(saltate)}" if saltate else ""))
