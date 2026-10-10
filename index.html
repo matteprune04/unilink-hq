@@ -532,7 +532,7 @@ const SCHEMA = {
     { k: "notes", l: "A cosa serve e note", t: "textarea", rows: 3, wide: 1 } ] },
 };
 Object.values(SCHEMA).forEach(sc => sc.fields.push({ k: "files", l: "Allegati", t: "files", wide: 1 }));
-const COLS = ["ideas", "feedback", "okrs", "tasks", "metrics", "mvalues", "partners", "finance", "meetings", "decisions", "links", "team", "accounts", "google", "sfiles", "docs", "notes", "lab", "labver", "aibriefs", "ctx", "mat", "exams", "matver", "reports"];
+const COLS = ["ideas", "feedback", "okrs", "tasks", "metrics", "mvalues", "partners", "finance", "meetings", "decisions", "links", "team", "accounts", "google", "sfiles", "docs", "notes", "lab", "labver", "aibriefs", "ctx", "mat", "exams", "matver", "reports", "affidabilita"];
 
 const NAV = [
   { items: [["home", "Cruscotto"], ["calendar", "Calendario"]] },
@@ -850,10 +850,27 @@ function homeWeb() {
     <div class="row between" style="align-items:flex-start"><div><div class="small muted">Utenti, ultimi 7 giorni</div><div class="num" style="font-family:var(--fd);font-size:26px;color:var(--navy)">${nf(a.users)}</div>${dlt(a.users, p.users)}</div><div><div class="small muted">Clic da Google, 28 giorni</div><div class="num" style="font-family:var(--fd);font-size:26px;color:var(--navy)">${nf(s.clicks)}</div>${dlt(s.clicks, g.gsc.prev28.clicks)}</div><div><div class="small muted">Pagine indicizzate</div><div class="num" style="font-family:var(--fd);font-size:26px;color:var(--navy)">${ix.indexed}/${ix.total}</div></div></div>
     ${spark(g.ga.daily.slice(-28).map(x => x.users), 320, 40)}<span class="small muted">Aggiornato ${rel(g.updatedAt.slice(0, 10))} da Google Analytics e Search Console</span></section>`;
 }
+/* «Affidabilità e capacità»: esito dei test di carico e delle verifiche prima del lancio (docs col «affidabilita»,
+   scritte da sync/carica_affidabilita.py; report completo in hq-files/affidabilita/, script nel repository del sito, cartella test-carico) */
+const affBox = () => {
+  const all = (S.data.affidabilita || []).slice().sort((a, b) => String(b.data).localeCompare(String(a.data)));
+  const r = all[0]; if (!r) return "";
+  const es = r.esito || {}, cls = { ok: "gr", parziale: "or", ko: "rd" }[es.tipo] || "";
+  const prob = (r.problemi || []).filter(p => p.stato !== "chiuso"), prima = prob.filter(p => p.quando === "prima del lancio");
+  const li = t => `<li>${esc(t)}</li>`;
+  return `<section class="card panel"><div class="panel-h"><h2>Affidabilità e capacità</h2>${chip(es.etichetta || es.tipo, cls)}</div>
+    <div class="small muted">Verifica del ${fmtD(r.data, 1)} · ${esc(r.ambiente || "")}${r.versione ? ` · versione ${esc(r.versione)}` : ""}</div>
+    ${es.testo ? `<p style="margin:6px 0 0">${esc(es.testo)}</p>` : ""}
+    <div class="kpis">${(r.capacita || []).map(k => `<div class="card kpi"><div class="lab">${esc(k.l)}</div><div class="val num">${esc(k.v)}</div>${k.nota ? `<div class="small muted">${esc(k.nota)}</div>` : ""}</div>`).join("")}</div>
+    ${prob.length ? `<details ${prima.length ? "open" : ""}><summary><b>Problemi aperti: ${prob.length}</b>${prima.length ? ` · ${prima.length} da risolvere prima del lancio` : ""}</summary><div>${prob.map(p => `<div class="li"><div class="grow">${esc(p.testo)}</div>${chip(p.quando, p.quando === "prima del lancio" ? "or" : "")}</div>`).join("")}</div><p class="small muted">Sono anche tra le bozze da confermare (pagina Call), collegate all'argomento «Sito e area personale».</p></details>` : ""}
+    ${(r.limiti || []).length ? `<details><summary><b>Cosa non è stato verificato</b></summary><ul>${r.limiti.map(li).join("")}</ul></details>` : ""}
+    <div class="row">${r.pdf ? `<button type="button" class="btn acc sm" data-openfile="${esc(r.pdf.path)}">Apri il report completo</button>` : ""}${all.length > 1 ? `<span class="small muted">${all.length - 1} verifiche precedenti nel report di ciascuna</span>` : ""}</div>
+  </section>`;
+};
 V.web = () => {
   const g = gdoc();
   const sub = "Il traffico del sito e come ci trovano su Google. I dati arrivano ogni giorno da Google Analytics e Search Console, in sola lettura: nessuno deve inserirli a mano.";
-  if (!g) return `<div class="wrap">${head("Crescita", "Sito e Google", sub)}${emptyBox("I dati non sono ancora arrivati", "Compariranno qui al primo aggiornamento automatico.")}</div>`;
+  if (!g) return `<div class="wrap">${head("Crescita", "Sito e Google", sub)}${affBox()}${emptyBox("I dati non sono ancora arrivati", "Compariranno qui al primo aggiornamento automatico.")}</div>`;
   const a = g.ga, s = g.gsc, ix = g.index;
   const tile = (l, v, dl, sub2) => `<div class="card kpi"><div class="lab">${l}</div><div class="val num">${v}</div>${dl || ""}${sub2 ? `<div class="small muted">${sub2}</div>` : ""}</div>`;
   const alerts = [];
@@ -864,6 +881,7 @@ V.web = () => {
   ${head("Crescita", "Sito e Google", sub)}
   <div class="row small muted">Ultimo aggiornamento: ${updated.toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" })} alle ${updated.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" })} · <a href="https://www.unilinkfirenze.it" target="_blank" rel="noopener">unilinkfirenze.it</a></div>
   ${alerts.map(t => `<div class="banner warn">${t}</div>`).join("")}
+  ${affBox()}
   <section class="stack"><h2>Visitatori <span class="small muted" style="font-family:var(--fb)">ultimi 7 giorni, ${fmtD(a.range7[0])} – ${fmtD(a.range7[1])}</span></h2>
   <div class="kpis">${tile("Utenti attivi", nf(a.last7.users), dlt(a.last7.users, a.prev7.users))}${tile("Nuovi utenti", nf(a.last7.newUsers), dlt(a.last7.newUsers, a.prev7.newUsers))}${tile("Pagine viste", nf(a.last7.views), dlt(a.last7.views, a.prev7.views))}${tile("Durata media visita", Math.floor(a.last7.avgSessionSec / 60) + "m " + (a.last7.avgSessionSec % 60) + "s", dlt(a.last7.avgSessionSec, a.prev7.avgSessionSec), "")}${tile("Utenti, 28 giorni", nf(a.last28.users), "", nf(a.last28.views) + " pagine viste")}</div></section>
   <section class="card panel"><div class="panel-h"><h3>Utenti al giorno, ultimi 90 giorni</h3><span class="small muted">Google Analytics</span></div>${lineChart(a.daily, "users", "utenti")}</section>
