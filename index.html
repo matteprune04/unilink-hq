@@ -378,7 +378,7 @@ img { max-width: 100%; }
 .login-logo { height: 56px; margin-left: -10px; width: auto; align-self: flex-start; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
-<link rel="stylesheet" href="hq2.css?v=20261009224231">
+<link rel="stylesheet" href="hq2.css?v=202610111019">
 
 </head>
 <body>
@@ -538,7 +538,7 @@ const NAV = [
   { items: [["home", "Cruscotto"], ["calendar", "Calendario"]] },
   { g: "Idee e ascolto", items: [["ideas", "Idee"], ["feedback", "Voce degli studenti"], ["notes", "Note rapide"]] },
   { g: "Pianificazione", items: [["goals", "Obiettivi e numeri"], ["tasks", "Scadenze e task"]] },
-  { g: "Crescita", items: [["web", "Sito e Google"], ["partners", "Partner e contatti"], ["finance", "Finanze"]] },
+  { g: "Crescita", items: [["web", "Sito e Google"], ["leads", "Iscritti e richieste"], ["partners", "Partner e contatti"], ["finance", "Finanze"]] },
   { g: "Team", items: [["meetings", "Meeting"], ["decisions", "Decisioni"], ["team", "Persone"], ["accounts", "Strumenti e account"], ["links", "Risorse"]] },
   { g: "Intelligenza artificiale", items: [["lab", "Laboratorio AI"], ["aictx", "Contesto per AI"]] },
   { g: "Materiali e archivio", items: [["esami", "Esami e dispense"], ["mat", "Materiali"], ["docs", "Documenti"]] },
@@ -904,6 +904,59 @@ V.web = () => {
   </section>
   </div>`;
 };
+
+/* ---------- Iscritti e richieste dal sito (email lasciate nei moduli; lette in diretta dal database del sito con la funzione «hq-iscritti») ---------- */
+const LEADS = { st: "idle", d: null, err: "" };
+const SITO_FN = "https://kebtobqxskebxdckeggy.supabase.co/functions/v1/hq-iscritti";
+async function caricaLeads() {
+  if (LEADS.st === "load") return; LEADS.st = "load"; LEADS.err = "";
+  try {
+    const { data } = await SB.auth.getSession(); const t = data && data.session && data.session.access_token;
+    if (!t) throw new Error("Accesso scaduto: esci e rientra nell'HQ");
+    const r = await fetch(SITO_FN, { method: "POST", headers: { Authorization: "Bearer " + t, "Content-Type": "application/json" }, body: "{}" });
+    const j = await r.json().catch(() => ({})); if (!r.ok || !j.ok) throw new Error(j.errore || "Lettura non riuscita");
+    LEADS.d = j; LEADS.st = "ok";
+  } catch (e) { LEADS.st = "err"; LEADS.err = e.message || "Lettura non riuscita"; }
+  render();
+}
+const HUB_IT = { giurisprudenza: "Giurisprudenza", medicina: "Medicina", app: "Web app", plus: "UniLink Plus" };
+const leadRows = () => {
+  const d = LEADS.d; if (!d) return [];
+  const rows = [];
+  d.liste.forEach(x => rows.push({ k: "attesa", kl: "Lista d'attesa", at: x.creato, email: x.email, det: HUB_IT[x.hub] || x.hub, hub: x.hub, extra: x.avvisato ? "già avvisato" : "da avvisare" }));
+  d.candidature.forEach(x => rows.push({ k: "candidatura", kl: "Candidatura team", at: x.creato, email: x.email, nome: x.nome, det: [x.corso, x.anno].filter(Boolean).join(" · "), extra: x.perche || "", stato: x.stato }));
+  d.scuole.forEach(x => rows.push({ k: "scuola", kl: "Nuova facoltà", at: x.creato, email: x.email || "", det: [x.facolta, x.corso, x.anno].filter(Boolean).join(" · "), extra: x.servirebbe || "", novita: x.consenso_novita }));
+  d.orientatori.forEach(x => rows.push({ k: "orientatore", kl: "Test orientamento", at: x.creato, email: x.email || "", det: `${x.tipo === "carriera" ? "Carriera" : "Corso"}: ${x.risultato}`, extra: [x.provenienza, x.anno].filter(Boolean).join(" · "), novita: x.consenso_novita }));
+  return rows.sort((a, b) => String(b.at).localeCompare(String(a.at)));
+};
+V.leads = () => {
+  const sub = "Chi ha lasciato la propria email sul sito: liste d'attesa «Avvisami quando apre», candidature al team, richieste di nuove facoltà e test di orientamento. I dati si leggono in diretta dal database del sito e solo dopo l'accesso all'HQ.";
+  const act = `<button class="btn" data-leadsrefresh>Aggiorna</button><button class="btn pri" data-leadscsv>Esporta CSV</button>`;
+  if (LEADS.st === "idle") caricaLeads();
+  if (LEADS.st === "idle" || LEADS.st === "load") return `<div class="wrap">${head("Crescita", "Iscritti e richieste", sub)}<div class="empty"><h3>Sto leggendo i dati dal sito…</h3></div></div>`;
+  if (LEADS.st === "err") return `<div class="wrap">${head("Crescita", "Iscritti e richieste", sub, act)}<div class="banner warn">${esc(LEADS.err)}</div></div>`;
+  const all = leadRows(), tipo = S.f.leadTipo || "", hub = S.f.leadHub || "";
+  const rows = all.filter(r => (!tipo || r.k === tipo) && (!hub || r.hub === hub) && match(r, "leads", ["email", "nome", "det", "extra"]));
+  const cnt = k => all.filter(r => r.k === k).length;
+  const tile = (l, v, s2) => `<div class="card kpi"><div class="lab">${l}</div><div class="val num">${v}</div>${s2 ? `<div class="small muted">${s2}</div>` : ""}</div>`;
+  const uniche = new Set(all.map(r => r.email.toLowerCase()).filter(Boolean)).size;
+  const hubs = [...new Set(LEADS.d.liste.map(x => x.hub))];
+  const tipi = [["attesa", "Lista d'attesa"], ["candidatura", "Candidature"], ["scuola", "Nuove facoltà"], ["orientatore", "Orientamento"]];
+  const tabella = rows.length ? `<div class="tbl-wrap"><table><thead><tr><th>Data</th><th>Cosa ha fatto</th><th>Email</th><th>Dettaglio</th></tr></thead><tbody>${rows.map(r => `<tr><td class="small muted" style="white-space:nowrap">${fmtD(String(r.at).slice(0, 10), 1)}</td><td>${chip(r.kl)}</td><td>${r.email ? `<a href="mailto:${esc(r.email)}">${esc(r.email)}</a>` : `<span class="muted">— nessuna email</span>`}${r.nome ? `<div class="small">${esc(r.nome)}</div>` : ""}</td><td>${esc(r.det)}${r.extra ? `<div class="small muted">${esc(r.extra)}</div>` : ""}</td></tr>`).join("")}</tbody></table></div>` : emptyBox("Nessuna riga", all.length ? "Nessun risultato con questi filtri." : "Quando qualcuno lascerà la sua email sul sito comparirà qui.");
+  return `<div class="wrap">${head("Crescita", "Iscritti e richieste", sub, act)}
+  <div class="kpis">${tile("Lista d'attesa", cnt("attesa"), hubs.map(h => `${HUB_IT[h] || h}: ${LEADS.d.liste.filter(x => x.hub === h).length}`).join(" · "))}${tile("Candidature team", cnt("candidatura"))}${tile("Nuove facoltà", cnt("scuola"))}${tile("Test orientamento", cnt("orientatore"))}${tile("Email diverse", uniche)}</div>
+  <div class="filters">${searchBox("leads", "Cerca per email, nome o corso")}<button class="fchip ${!tipo ? "on" : ""}" data-f="leadTipo" data-v="">Tutti</button>${tipi.map(([k, l]) => `<button class="fchip ${tipo === k ? "on" : ""}" data-f="leadTipo" data-v="${k}">${l}</button>`).join("")}</div>
+  ${tipo === "attesa" && hubs.length > 1 ? `<div class="filters"><button class="fchip ${!hub ? "on" : ""}" data-f="leadHub" data-v="">Tutti gli hub</button>${hubs.map(h => `<button class="fchip ${hub === h ? "on" : ""}" data-f="leadHub" data-v="${esc(h)}">${esc(HUB_IT[h] || h)}</button>`).join("")}</div>` : ""}
+  ${tabella}
+  <p class="small muted">Letto ${LEADS.d.letto ? fmtDT(LEADS.d.letto) : ""}. Sono dati personali: usali solo per lo scopo dichiarato nel modulo (avvisare dell'apertura) e non girare l'elenco fuori dal team. Le liste d'attesa si cancellano da sole dopo 12 mesi.</p></div>`;
+};
+document.addEventListener("click", e => {
+  if (e.target.closest("[data-leadsrefresh]")) { LEADS.st = "idle"; render(); return; }
+  if (!e.target.closest("[data-leadscsv]")) return;
+  const q = v => '"' + String(v ?? "").replace(/"/g, '""') + '"';
+  const lines = [["Data", "Tipo", "Email", "Nome", "Dettaglio", "Note"].join(";")].concat(leadRows().map(r => [String(r.at).slice(0, 10), q(r.kl), q(r.email), q(r.nome || ""), q(r.det), q(r.extra)].join(";")));
+  downloadText("UniLink-HQ_Iscritti_" + localISO() + ".csv", "\ufeff" + lines.join("\n"), "text/csv"); toast("CSV scaricato");
+});
 
 V.partners = () => {
   const list = S.data.partners.filter(p => (!S.f.pType || p.type === S.f.pType) && match(p, "partners", ["name", "contact", "notes", "next"]));
@@ -2705,7 +2758,7 @@ document.addEventListener("click", e => {
 window.addEventListener("hashchange", () => { const v = location.hash.slice(1); if (V[v] && v !== S.view) go(v); });
 /* l'avvio (boot) è in hq2.js, che si carica subito dopo */
 </script>
-<script src="hq2.js?v=20261009224231"></script>
+<script src="hq2.js?v=202610111019"></script>
 
 </body>
 </html>

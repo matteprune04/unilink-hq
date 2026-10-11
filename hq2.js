@@ -101,7 +101,7 @@
 
   /* ================= barra laterale, barra in alto, barra in basso ================= */
   const MAIN = [["oggi", "Oggi", IC.oggi], ["argomenti", "Argomenti", IC.arg], ["proposte", "Proposte", IC.prop], ["call", "Call", IC.call], ["file", "File", IC.file]];
-  const TOOLS = [["goals", "Obiettivi e numeri", IC.num], ["web", "Sito e Google", IC.web], ["finance", "Finanze", IC.eur], ["partners", "Partner e contatti", IC.hand], ["team", "Persone", IC.users], ["accounts", "Strumenti e account", IC.key], ["esami", "Esami e dispense", IC.book], ["mat", "Materiali", IC.box], ["lab", "Laboratorio AI e demo", IC.play], ["aictx", "Contesto per AI", IC.ai], ["archivio", "Archivio del vecchio HQ", IC.arch]];
+  const TOOLS = [["goals", "Obiettivi e numeri", IC.num], ["web", "Sito e Google", IC.web], ["leads", "Iscritti e richieste", IC.users], ["finance", "Finanze", IC.eur], ["partners", "Partner e contatti", IC.hand], ["team", "Persone", IC.users], ["accounts", "Strumenti e account", IC.key], ["esami", "Esami e dispense", IC.book], ["mat", "Materiali", IC.box], ["lab", "Laboratorio AI e demo", IC.play], ["aictx", "Contesto per AI", IC.ai], ["archivio", "Archivio del vecchio HQ", IC.arch]];
   const OLD = ["home", "calendar", "ideas", "feedback", "notes", "tasks", "meetings", "decisions", "links", "docs", "okrs", "metrics"];
   function badge(id) {
     if (!S.ready) return 0;
@@ -714,7 +714,7 @@ ${tr || "(incollala qui)"}`;
   }
 
   /* ================= strumenti: barra in alto anche lì ================= */
-  ["goals", "web", "finance", "partners", "team", "accounts", "esami", "mat", "lab", "aictx", ...OLD.filter(x => !["okrs", "metrics"].includes(x))].forEach(k => { const f = V[k]; if (f) V[k] = () => `<div class="w2" style="margin-bottom:-4px">${topbar()}</div>` + f(); });
+  ["goals", "web", "leads", "finance", "partners", "team", "accounts", "esami", "mat", "lab", "aictx", ...OLD.filter(x => !["okrs", "metrics"].includes(x))].forEach(k => { const f = V[k]; if (f) V[k] = () => `<div class="w2" style="margin-bottom:-4px">${topbar()}</div>` + f(); });
 
   /* ================= navigazione ================= */
   const _go = window.go;
