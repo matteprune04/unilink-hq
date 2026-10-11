@@ -21,7 +21,7 @@ Segreti (solo in GitHub → Settings → Secrets, mai nel codice): `GOOGLE_KEY_J
 - `_src/verifica_landing.js` — verifica prima del push (errori, accessibilità, tre formati) · `_src/build_schede.js` — genera schede e PDF «Da decidere» · `_src/screenshot_webapp.js` — rifà le schermate reali della web app.
 - `.github/workflows/demo-backup.yml` + `_src/demo_snapshot.py` — a ogni modifica delle demo: ZIP, Release GitHub (`landing-vN`, `webapp-vN`) e riga in `demos/registro.json`.
 - In HQ, Laboratorio AI → sezione **DEMO** legge il registro (anteprima, download, storico). Il codice sta in `_src/online.js`, quindi resta dopo ogni build.
-- `architettura/` — PDF di architettura di landing e web app, PDF delle schede «Da decidere» (generato da `architettura/schede/`) e `CONTESTO_DEMO.md`: la versione compatta da allegare come contesto quando si chiede una modifica alle demo. `LINEA_GUIDA_UNILINK.md` (e `UniLink_Linea_Guida.pdf`) è il manuale unico: landing + web app + report del 4 ottobre, con le discordanze non risolte; si rigenera con `_src/linea_guida/build_linea_guida.py`.
+- `architettura/` — **non è più nel repository** (il repository è pubblico e i documenti di strategia sono riservati). Resta solo in locale, ignorata da Git (`.gitignore`): PDF di architettura di landing e web app, schede «Da decidere», linea guida e `CONTESTO_DEMO.md`. Gli script in `_src/` continuano a generarli lì; non vanno rimessi nel repository.
 
 ## Brand (rebranding 9 ottobre 2026)
 - `brand/` contiene **solo** i file che la pagina deve mostrare: simbolo, marchio orizzontale, favicon, icone e `site.webmanifest`. Il vecchio logo è in `brand/_archivio/`.
