@@ -4,3 +4,5 @@ __pycache__/
 *.json.key
 unilink-lettura.json
 _dist/
+# materiale riservato (strategia, linea guida, proposte): non va nel repository pubblico
+architettura/
