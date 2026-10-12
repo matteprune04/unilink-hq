@@ -1,0 +1,1 @@
+import{t as e}from"./cornice.BACkogr5.js";e();
