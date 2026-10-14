@@ -110,8 +110,21 @@ GSC = {
 
 # ---------------- Indicizzazione ----------------
 sitemaps = sc.sitemaps().list(siteUrl=SITE).execute().get("sitemap", [])
-xml = urllib.request.urlopen(SITE + "sitemap.xml", timeout=30).read().decode("utf-8", "ignore")
-urls = re.findall(r"<loc>(.*?)</loc>", xml)
+# il sito nuovo (Astro, dietro Cloudflare) ha sitemap-index.xml con sotto-mappe e blocca i programmi senza un User-Agent da browser
+UA = {"User-Agent": "Mozilla/5.0 (compatible; UniLinkHQ-sync/1.0)"}
+def leggi(u): return urllib.request.urlopen(urllib.request.Request(u, headers=UA), timeout=30).read().decode("utf-8", "ignore")
+try: mappe = re.findall(r"(?im)^sitemap:\s*(\S+)", leggi(SITE + "robots.txt")) or [SITE + "sitemap-index.xml"]
+except Exception: mappe = [SITE + "sitemap-index.xml", SITE + "sitemap.xml"]
+urls, viste = [], set()
+while mappe:
+    m = mappe.pop(0)
+    if m in viste: continue
+    viste.add(m)
+    try: xml = leggi(m)
+    except Exception: continue
+    locs = re.findall(r"<loc>(.*?)</loc>", xml)
+    if "<sitemapindex" in xml: mappe += locs
+    else: urls += locs
 pages = []
 for u in urls[:200]:
     try:
